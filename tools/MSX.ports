@@ -1,0 +1,13 @@
+98 Port_VDPData
+99 Port_VDPAddress out
+99 Port_VDPStatus in
+9a Port_VDPPalette out
+9b Port_VDPRegisterWrite out
+a0 Port_PSGRegister out
+a1 Port_PSGData out
+a2 Port_PSGData in
+a9 Port_Keyboard in
+fc Port_RAMMapper0 out
+fd Port_RAMMapper1 out
+fe Port_RAMMapper2 out
+ff Port_RAMMapper3 out

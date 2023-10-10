@@ -1,0 +1,1154 @@
+==========
+2023-09-30
+==========
+- Fixed an issue that could sometimes cause the cursor not to follow the current instruction (thanks to ISSOtm)
+- Fixed an issue with step back while OAM DMA is running (thanks to leina)
+- Fixed a memory leak when a rom keeps the LCD disabled all the time (thanks to sono)
+- Fixed that modifying PSG frequencies and volumes for SMS were swapped (thanks to superdisk)
+- Fixed a bug that could cause the disassembler to crash (thanks to Studio Loading)
+
+==========
+2023-08-31
+==========
+- Added .sc as supported filename extension for games supported by the Master System (thanks to Popfan)
+- Added an option to the Debugger's File menu to unload the currently loaded sources
+- Added some more variables to the Variables tab (e.g. if SRAM is enabled)
+- Made the data execution exception breakpoint trigger in less cases (thanks to Maxim)
+- Fixed a regression that could cause variables to not be changable from the Variables tab (thanks to rdp)
+- Fixed dot numbers reported for events when Game Boy Color's double speed mode is enabled (thanks to bbbbbr)
+- Fixed a deadlock that could be caused by the Game Boy's STOP instruction (thanks to Famicuber)
+- Fixed that sometimes a general profiler didn't update unless it is selected (thanks to ISSOtm)
+- Fixed that CTRL+END caused graphical glitches in the Memory Editor (thanks to Maxim)
+- Fixed a regression that could cause general profilers to not get persisted properly
+- Fixed crackling sound that could occur on initial suspend after skipping through a bootrom
+
+==========
+2023-07-31
+==========
+- Added Cartridge variable to investigate the current state of the cartridge hardware (thanks to ISSOtm and ax6)
+- Fixed a deadlock issue that could be caused by Reset while profiling (thanks to ISSOtm)
+- Fixed the symbol listed for the bank operator in the expressions manual (thanks to superdisk)
+- Fixed a regression in sound quality of Game Boy emulation (thanks to superdisk)
+- Fixed an issue with Game Boy window emulation (thanks to Kabcorp and sukus)
+- Fixed an issue with Step Out when C debugging
+- Fixed that the debugger could show a port name for an SRAM address
+- Fixed that No Disk for MSX's Disk B could not be selected
+- Improved Copy address in the Memory Editor's status bar (thanks to Antígeno)
+- Improved mapper detection for SEGA Mastersystem (thanks to tbsp)
+
+==========
+2023-06-30
+==========
+- Fixed an issue where the Reference Hierarchy could display null as a label
+- Fixed an issue with RAM symbols defined in the disassembly if an RBGDS map file is loaded
+- Fixed a rendering issue of the CPU usage graph in dark theme
+- Fixed that loading a GBC rom with the Tile Viewer open caused the list of palettes to be limitted to DMG palettes (thanks to leina)
+- Fixed a bug that could cause the disassembly to not get amended properly (thanks to Zumi)
+- Fixed crackling sound when throttle is not 100% (thanks to Zumi)
+- Fixed missing dot numbers for some IRQs (thanks to Trirosmos and sono)
+- Fixed that cheats did not work while debugging (thanks to Antígeno)
+- Fixed that the displayed ROM bank number wasn't masked (thanks to Antígeno)
+- Fixed a bug that could make the GUI cause a wave RAM corruption exception (thanks to ISSOtm and Evie)
+- Reduced input latency with gamepads (thanks to Kabcorp)
+- Improved debugging of MSXgl projects (thanks to aoineko)
+- Improved performance of syntax highlighting (thanks to superdisk)
+
+==========
+2023-06-01
+==========
+- Added Step Back Over action to the debugger
+- Fixed an issue with the Step Back Return action
+
+==========
+2023-05-31
+==========
+- Added a disassembler setting to pad mnemonics (thanks to Kak)
+- Added a proper error if a debugfile ends unexpectedly (thanks to leina)
+- Added selection of tile base address to Tilemap Viewer (thanks to leina)
+- Added Step Back Return action to the debugger
+- Added Run Backwards To Line action to the debugger
+- Allow changing sound buffer size without realod (thanks to Zumi)
+- Fixed that sometimes execution broke twice on a line breakpoint
+- Fixed that for more complex expressions the tooltip text did not display correct values (thanks to ISSOtm)
+- Fixed a regression where sometimes a line breakpoint could not be set on a line in a high bank (thanks to arnaud33200)
+- Fixed that on some Linux systems sound randomly silenced (thanks to Zumi)
+- Fixed that sometimes exception breakpoints would point to the line after the exception happened (thanks to CeL)
+
+==========
+2023-04-22
+==========
+- Added Step Back to the debugger
+- Fixed misdetection of dahjee adapter in Pop Flamer for SG-1000 (thanks to Saverio Russo)
+
+==========
+2023-04-06
+==========
+- Added variable for Game Boy's Wave Pattern RAM (thanks to ISSOtm)
+- Added variable for Game Boy's internal window line counter
+- Fixed an issue where the state of the Game Boy's timer didn't get saved properly into savestates (thanks to 256 and ProstatePunch)
+- Fixed that a watchpoint on WRAM address $c000 could break on a write to $ff80 (thanks to ISSOtm)
+- Fixed an issue with banked vs. unbanked symbols in debugfiles (thanks to ax6)
+
+==========
+2023-03-31
+==========
+- Added an exception that triggers for an incorrect Game Boy cartridge header (thanks to leina)
+- Added missing register annotations in Memory Editor for Game Boy's HRAM (thanks to ISSOtm)
+- Added some more variables for Game Boy, most notably APU variables (thanks to ISSOtm)
+- Improved wording in table headers of profiler (thanks to ISSOtm)
+- Fixed that if the status bar of the Memory Editor grows after selection, it could hide the selected address
+- Fixed that for Mastersystem VRAM write events the old and new value were swapped (thanks to Aissen)
+- Fixed a regression that could cause unsigned variables in remote debugging to be displayed with signed values (thanks to MyNewSoundtrack)
+- Fixed a regression that could cause wrong breakpoints to be added when double-clicking the ruler on banked code (thanks to purple tissue box)
+- Fixed a bug where the disassembler did not amend an instruction on a sub-instruction boundary (thanks to ISSOtm)
+
+==========
+2023-02-28
+==========
+- Added support for debugfiles (thanks to ax6 and ISSOtm)
+- Added options for font anti aliasing (thanks to ISSOtm)
+- Made most variables in the Variables tab editable (thanks to leina)
+- Made the Memory Editor reduce the spacing between bytes if Show Registers is disabled (thanks to ISSOtm)
+- Improved invalid VDP access exception to catch a case that hadn't been caught yet (thanks to sverx)
+- Fixed a crash that could be caused by cheats (thanks to Revo)
+- Fixed an issue that had caused memory mapped ports to not be displayed using their names (thanks to ISSOtm)
+- Fixed an issue in the Memory Tracer that could make it display an incorrect source for WRAM (thanks to ISSOtm)
+- Fixed the tooltip shown when hovering hli (thanks to ISSOtm)
+- Fixed an issue that could cause the disassembler to timeout too quickly when remote debugging (thanks to pokeglitch)
+- Fixed the mnemonic used for the ldh opcode using the c register (thanks to ax6)
+- Fixed that code didn't get amended when its being executed on a sub-instruction byte (thanks to ISSOtm and Maxim)
+- Fixed color of caret in dark mode if OS uses light mode
+- Fixed an issue in the Sprite Viewer that could falsly display sprites as 8x16 (thanks to 256)
+
+==========
+2023-01-31
+==========
+- Added tooltips to breakpoints table (thanks to lestar)
+- Added an option to control whether .sav files should be saved next to the roms or not (thanks to Kuro)
+- Improved breakpoint management (thanks to 256)
+- Fixed a few issues in the disassembler (thanks to bankbank)
+
+==========
+2022-12-30
+==========
+- Added support for Gamepads on M1 Macs (thanks to mattcurrie)
+- Made Set Code / Set Data with multiple selected lines apply on all selected lines (thanks to bbbbbr)
+- Fixed an issue where remote debugging would suspend on start even though stopOnEntry is false (thanks to narbys)
+- Fixed a regression in Mastersystem / Game Gear sound emulation that could cause audible pops (thanks to Atmostfear)
+- Fixed a regression in MSX disk emulation that could cause disk operations to fail while they shouldn't (thanks to Zipper)
+- Fixed a regression with Game Boy joypad delays (thanks to Under4Mhz)
+- Fixed an issue with watch expressions referencing banked data in remote debugging (thanks to FerrantePescara)
+- Fixed an issue that could cause local variables to be missing when C debugging (thanks to FerrantePescara)
+
+==========
+2022-11-30
+==========
+- Added option to show tool windows in the Windows taskbar (thanks to Trirosmos)
+- Added support for sym files in UTF-8 format (thanks to Maxim)
+- Added options to change the window theme
+- Several UI improvements, most notably for dark theme
+- Fixed that the Event Viewer did not rerender immediately after changing the integer scaling setting
+- Fixed a regression that could cause Emulicious to crash with some dsk files (thanks to eruiz00)
+- Fixed a regression that could cause settings to not be saved on restart
+- Fixed a bug that could keep displaying a black screen on Linux until the window is resized (thanks to nitro2k01)
+- Fixed that on Linux the main window sometimes jumped in front of the debugger window (thanks to sverx)
+- Fixed that sometimes the debugger window did not get brought to top when it should (thanks to sverx and bbbbbr)
+
+==========
+2022-11-12
+==========
+- Fixed a regression that could cause breakpoints set via remote debugging to break on wrong lines (thanks to FerrantePescara)
+
+==========
+2022-10-31
+==========
+- Added change indicator for ROM tab of the Memory Editor (thanks to 256)
+- Improved performance of debug mode
+- Fixed that profilers did not get persisted properly when loading another ROM
+- Fixed that sometimes when loading a Game Boy savestate the initial image contained garbage (thanks to DevEd)
+- Fixed an issue that could cause a toolbar icon in the debugger to display as a black square
+- Fixed a bug that could rarely cause Emulicious to save a corrupted Game Boy savestate (thanks to bbbbbr)
+
+==========
+2022-10-07
+==========
+- Fixed a regression in the YM2413 emulation that made it sound noisy (thanks to bengalack)
+- Fixed duplicated Locals scope in remote debugging (thanks to darkowl)
+- Fixed an issue that caused crackling noise when recording the YM2413 alone
+- Fixed an issue related to installed gamepads that could prevent Emulicious from starting (thanks to VOXEL)
+
+==========
+2022-10-01
+==========
+- Fixed breakpoints set via remote debugging (thanks to Mallow)
+
+==========
+2022-09-30
+==========
+- Added missing base addresses in Tilemap Viewer for tile based modes on MSX2 (thanks to Bengalak)
+- Improved focus traversal via TAB and Shift+TAB in the debugger (thanks to FIQ)
+- Fixed that the data execution exception did not take the Suspend setting into account (thanks to superdisk)
+- Fixed an issue that could cause an exception to get disabled by reloading a ROM (thanks to superdisk)
+- Fixed that sometimes WRAM labels were missing in Memory Editor's Go To dialog (thanks to FIQ)
+- Fixed an issue with loading a savestate while the Game Boy is stuck in STOP (thanks to FIQ)
+- Fixed missing symbols if RGBDS map files only contains sections (thanks to FIQ)
+
+==========
+2022-09-10
+==========
+- Fixed false positive on nested interrupts in the interrupt exception (thanks to Eievui, asie)
+- Fixed an issue with modal dialogs (e.g. Configure Input) on Mac OS (thanks to Snoopdroop, armixer24)
+- Slightly reduced startup time
+
+==========
+2022-08-31
+==========
+- Added sorting by column to RAM Search tool and added a right-click menu (thanks to Crash)
+- Fixed issue with watch expressions in remote debugging displaying the same subvariables (thanks to Banks)
+- Fixed tracking of uninitialized memory on MSX (thanks to wimpie3)
+- Fixed that saving wasn't possible from all tabs of the Memory Editor (thanks to klop)
+- Fixed an issue with parsing ELIF in sources compiled with RGBDS (thanks to FIQ)
+- Fixed palettes displayed in Palette Viewer in Game Boy Color's DMG mode (thanks to bbbbbr)
+- Fixed an issue with sprite mixing on MSX2 (thanks to aoineko, bengalack)
+- Fixed a regression with CRAM writes on Game Gear (thanks to Maxim, Revo)
+
+==========
+2022-07-31
+==========
+- Added MSX2 emulation
+- Improved scoping of C local variables in VS Code (thanks to Streuwinkel)
+- Improved parsing of Sjasm lst files (thanks to bas)
+- Made pause shortcut configurable (thanks to Kabcorp)
+- Fixed an issue with persisting window positions at the left edge of the screen (thanks to aoineko)
+- Fixed that the Memory Editor did sometimes not open when clicking a VRAM address in the viewers (thanks to bas)
+- Fixed an issue with negative numbers in VS Code
+- Fixed an issue in C debugging with files containing spaces or dashes (thanks to Streuwinkel)
+- Fixed a bug in Game Boy noise channel emulation that could cause audible clicks (thanks to tbsp, Matt Hughson)
+- Fixed the value displayed for the Z80's R register (thanks to sverx)
+
+==========
+2022-07-01
+==========
+- Fixed an issue that could cause the Event Viewer to lag on selections
+
+==========
+2022-06-30
+==========
+- Added sound recording (thanks to Kabcorp)
+- Added option to enable/disable high-pass filter for Game Boy (thanks to Kabcorp)
+- Improved visibily of theme options by also adding them to the Appearance menu (thanks to Chong)
+- Combined the emulation menus for Game Boy and Game Boy Color
+- Made key shortcuts for exit and screenshot configurable (thanks to Under4MHz)
+- Also display referenced values for instructions operating on 2-bytes (thanks to sverx)
+- Fixed an issue with the stack view when debugging on MSX (thanks to aoineko)
+- Fixed an issue that could cause local variables to be missing with C debugging (thanks to Studio Loading)
+- Fixed that the main window key shortcuts did not work on the debugger anymore (thanks to tbsp)
+
+==========
+2022-05-31
+==========
+- Added filter for reads to the Event Viewer
+- Added support for multi-byte symbols from tbl files (thanks to borkitall)
+- Added configurable keyboard shortcuts for exit and screenshot (thanks to Under4Mhz)
+- Minor speedup of Game Boy emulation
+- Better handle PUSHS/POPS in Outline (thanks to Eievui)
+- Fixed that for the SMS/MSX VDP old value and new value were swapped in the Event Viewer (thanks to sverx)
+- Fixed a layout issue on Mac OS (thanks to vinheim3)
+- Fixed a layout issue with the registers table (thanks to bbbbbr)
+- Fixed a layout issue with the expressions table on Ubuntu (thanks to bbbbbr)
+- Fixed a sound resampling issue (thanks to alexmush)
+- Fixed that the savestates did not correctly restore the state of the SMS audio mixer (thanks to alexmush)
+- Fixed an issue that could prevent the Profile From Line option to add a profiler (thanks to bbbbbr)
+- Fixed an issue that made signed C types display unsigned values in the VS Code adapter (thanks to Eric Abroad)
+- Fixed an issue that could lead to unmapped lines when using RGBDS's FOR directive (thanks to rondnelson99)
+
+==========
+2022-05-03
+==========
+- Fixed a regression that could cause loading savestates on Master System games to crash (thanks to Atmostfear)
+- Fixed an issue int the Event Viewer that could cause it to update more often than it should (thanks to Eievui)
+- Fixed a regression that could in rare cases cause Master System games to display a wrong color (thanks to Atmostfear)
+
+==========
+2022-04-30
+==========
+- Added Event Viewer
+- Added some notes on troubleshooting to the ReadMe.txt
+- Allow pressing Reset in the Profiler while it's enabled (thanks to bbbbbr)
+- Fixed that sometimes a wrong value was displayed as old value for HRAM writes
+- Fixed missing local variables in of functions defined in included .c files (thanks to djlink)
+- Fixed a memory leak in the Trace Logger window (thanks to Revo)
+
+==========
+2022-04-07
+==========
+- Fixed hex values displayed for negative values in the Sprite Viewer (thanks to Maxim)
+- Fixed crash of the debugger when loading a different ROM
+
+==========
+2022-04-06
+==========
+- Fixed a bug that caused input to stop working on Mac OS (thanks to NoFr1ends)
+- Fixed an issue that could cause debugging of code in WRAM on Game Boy Color to misbehave (thanks to bbbbbr)
+- Fixed an issue with resizing the window when a non 1:1 PAR is selected
+
+==========
+2022-04-05
+==========
+- Fixed a bug that could cause MSX2SMS conversions and SG-1000 games not to boot (thanks to Revo and Under4Mhz)
+
+==========
+2022-04-01
+==========
+- Fixed a bug that could cause Game Gear games not to boot (thanks to thatawesomeguy)
+
+==========
+2022-03-31
+==========
+- Improved Sprite Viewer for TMS modes (SMS, GG, MSX)
+- Fixed a bug that could prevent the Coverage tool from opening
+- Fixed a bug in the Procedure Profiler that could cause procedures to be nested incorrectly for code generated by SDCC (thanks to aoineko)
+- Fixed a bug that caused the debugger's Suspend On Open option to be ignored when Remote Debugging is enabled (thanks to aoineko)
+- Fixed a bug that could cause the stack view to get smaller everytime Emulicious is started
+- Fixed an issue with write watchpoints on GameBoy's HRAM when added from CPU tab (thanks to michel_iwaniec)
+
+==========
+2022-03-08
+==========
+- Added style options for the CPU Usage graph (thanks to Kabcorp)
+- Added options to specify the background color for sprite tiles in the Tile Viewer on MSX (thanks to toxa)
+- Fixed a bug that could cause TMS/legacy modes on Mastersystem to only show a black screen (thanks to Revo)
+- Fixed a bug in GameBoy's game link emulation that could cause one of the instances to lock up (Thanks to Matt Hughson)
+
+==========
+2022-02-28
+==========
+- Added option to hide the CPU usage graph
+- Added Compare and Comparator to Cheats (thanks to TheAlmightyGuru)
+- Added -linkport option to specify the port used for the Game Boy link cable (thanks to Junji Takakura)
+- Added VDP addresses to the Variables tree (thanks to toxa)
+- Added VDP labels to the Memory Editor
+- Added support for ld d,d debugging messages for the remaining systems (thanks to bbbbbr)
+- Improved usability of the Cheats window (thanks to Revo)
+- Persist the selected tab in the Video Viewer
+- Fixed the VRAM address shown for tiles of the TMS modes in the Tile Viewer
+- Fixed support for watchpoint set from the I/O tab of the Memory Editor for Game Boy
+- Fixed a bug that could cause an incorrect state of the debugger's toolbar after loading a state (thanks to JoseJX)
+- Fixed a rendering issue of the status bar of the Memory Editor (thanks to Kabcorp)
+- Fixed that the color cache did not get invalidated when manually changing CGB palettes (thanks to Eievui and Sono)
+- Fixed a bug that could cause C source-level debugging not to work with MSX (thanks to Mallow)
+- Fixed a bug that could cause global variables from SDCC sources to display wrong values (thanks to joyrider3774)
+
+==========
+2022-01-31
+==========
+- Added -fullscreen flag to start Emulicious in fullscreen (thanks to aoineko)
+- Added RDiM (Remaining Dots in Mode) register (thanks to Sono, tbsp and bbbbbr)
+- Added an option to disable hardware acceleration which can fix slowdowns on Windows 11 (thanks to SelvinPL)
+- Added an option to allow inputs from keyboard as well when a gamepad is used (thanks to Matt Hughson)
+- Improved usability of the Go To dialogs (thanks to BestPig)
+- Use a better color for selection in Memory Editor when using a dark color theme (thanks to Kabcorp)
+- Fixed missing tooltips in Registers table
+- Fixed a bug that could cause RAM symbols to show up twice in the Go To dialog (thanks to Eievui)
+- Fixed a misdetection of a Korean mapper on Mastersystem (thanks to Maxim)
+- Fixed a bug that could display a wrong color on Game Boy Color due to a missing cache update (thanks to BestPig)
+- Fixed a bug that could cause the disassembly to fail when a map file from a very old version of GBDK is present (thanks to BestPig)
+- Fixed an issue with savestates for .pocket roms (thanks to BestPig)
+- Fixed issues with C source-level debugging of banked devkitSMS roms (thanks to SteveProXNA)
+- Fixed a memory leak caused by closing/reopening remote debugging sessions (thanks to Matt Hughson)
+- Fixed a desync of the breakpoints table caused by closing/reopening the Debugger (thanks to BestPig and fracturetrey)
+- Fixed a bug that could cause loading RGBDS sources to take a lot longer (thanks to Sukus)
+
+==========
+2021-12-30
+==========
+- Added an option to the Trace Logger to disable logging of breakpoints
+- Added more font sizes to the Font Size menu (up to 24 Pt now)
+- Fixed an issue that could prevent the debugger from opening when the other files were missing (thanks to Jamey)
+- Fixed loading savestates for .pocket roms (thanks to BestPig)
+- Fixed an issue in the .noi parser that could slow down opening the Debugger
+- Fixed a bug in the RGBDS disassembler that could remove section headers (thanks to BestPig)
+- Fixed that the preference for dark/light theme was only respected when a highlighter was selected
+- Fixed an issue that could cause the PPU variables of the GB to be displyed incorrectly (thanks to bbbbbr)
+- Fixed a NullPointerException in the Variables Tab when using GNOME desktop theme (thanks to Under4MHz)
+- Fixed a bug that could prevent VS Code from connecting to Emulicious after it launched it
+
+==========
+2021-11-30
+==========
+- Added options for font configuration
+- Added an option to disable UI scaling
+- Added dark-themed syntax highlighters
+- Greatly improved the UI of the Debugger's Variables tab
+- Fixed a bug in the trace logger that could prevent it from logging instruction
+- Fixed that the Memory Editor did not accept entering capital hex letters (thanks to Revo)
+- Fixed font color in some debugger menus on Mac OS (thanks to Martz)
+
+==========
+2021-11-08
+==========
+- Added cheats
+- Added support for Analoge Pocket roms
+- Added support for starting Emulicious with remote debugging enabled immediately
+
+==========
+2021-10-31
+==========
+- Added support for software breakpoints (ld b,b) for the remaining systems
+- Added an option to display memory values referenced by instructions in the Debugger
+- Added an option to arrange the video viewers in tabs
+- Added an option to freeze memory values from the Memory Editor
+- Added Memory tab to the Debugger
+- Added breakpoint properties to the Breakpoint tab in the Debugger (thanks to dan jia)
+- Improved performance of plot widgets (e.g. used in the Sound Viewer)
+- Fixed missing symbols from linked libraries with C debugging (thanks to Zalo)
+- Fixed the appearance of some icons
+
+==========
+2021-09-30
+==========
+- Added a Sound Device Selection (thanks to martendo)
+- Fixed Undo/Redo in the RAM Search tool (thanks to GOMF)
+- Fixed an issue with symbols from an RGBDS tiny rom build (thanks to tbsp)
+- Fixed that F2 could not be used to toggle breakpoints (thanks to martendo)
+- Fixed an issue that could make the debugger misbehave when sound is unsupported (thanks to superdisk)
+
+==========
+2021-09-08
+==========
+- Added an Auto Palette option the Tilemap Viewer that allows to disable the paletization (thanks to tbsp)
+- The Outline is now split up by ASM file when sources are loaded (thanks to rondnelson99)
+- Improved the initial layout of the Debugger
+- Fixed duplicated DE register in the initial register configuration for Game Boy (thanks to martendo)
+- Fixed an issue with the trace logger that could cause duplicated entries
+- Fixed an issue that sometimes kept the Breakpoints tab in the Debugger from updating
+- Fixed that VRAM bank attribute of sprites didn't get ignored in CGB's DMG mode (thanks to CasualPokePlayer)
+- Fixed that sometimes control flow arrows could get duplicated
+
+==========
+2021-08-14
+==========
+- Added a Variables tab to the Debugger
+- Added a Breakpoints tab to the Debugger
+- Added a Console tab to the Debugger
+- Added a Call Stack to the Debugger
+- Added a Toolbar to the Debugger
+- Added Control Flow Arrows to the Debugger
+- Added an option to the Debugger's context menu to watch the selected expression
+- Added support for ld d,d message logging for Game Boy
+- Reorganized the MSX menu (thanks to theNestruo)
+- When MSX is emulated, do not open the menu when ALT is pressed (thanks to theNestruo)
+- Fixed wrong colors of underline in Memory Editor
+- Fixed an issue with the initial layout (on first start of Emulicious) of the Tile Viewer
+- Fixed an issue with Remote Debugging that could disconnect the remote debugger on launch if a ROM was already loaded
+
+==========
+2021-08-01
+==========
+- Fixed a regression with sound emulation of the Mastersystem (thanks to Revo)
+- Fixed a regression in the Game Boy emulation that had caused a few games to crash (thanks to KAT and Cavencruiser)
+- Fixed an issue that sometimes after loading a ROM, toggling turbo via the SPACE key did not work
+- Fixed an issue in the Memory Editor that had caused underlined entries to blink with the cursor
+- Fixed an issue with Attach from VS Code that sometimes prevented it from working
+
+==========
+2021-07-22
+==========
+- Fixed crackling noise when starting Emulicious with Sync To Audio enabled
+- Fixed that Sync To Audio could potentially freeze Emulicious
+
+==========
+2021-07-19
+==========
+- Improved the stability of the profiler
+- Added TMS palette as alternative palette for the Tile Viewer for SMS (thanks to sverx)
+- Added tooltips for the additional registers in the debugger
+- Added Sync To Audio as a new speed option
+- Added an option to the Memory Editor to copy the currently selected address
+- Fixed inproper initial window sizes for the viewers on some (mostly Linux) systems (thanks to basxto)
+- Fixed an incompatibility with Java 16, thank you Oracle... (thanks to RicardoLuis0)
+- Fixed that for small window sizes of the debugger, it did not properly scroll to the current address (thanks to Kabcorp)
+- Fixed an issue with Game Boy's sweep sometimes falsely muting the channel (thanks to DevEd and kivan117)
+- Fixed that on SMS the Tile Viewer used a wrong tile as the bottom tile of 8x16 tiles in 2nd bank of tiles
+- Fixed that an expression reading from non-existant cartridge RAM crashed the debugger (thanks to TypeDefinition)
+- Fixed wrong row/column numbers in Tilemap Viewer when grid is enabled
+- Fixed that sometimes the breakpoint console stopped updating
+- Fixed that Game Gear ports did not trigger port breakpoints (thanks to sverx and djbass)
+
+==========
+2021-06-07
+==========
+- Improved Sprite Viewer to support 8x8 and 8x16 sprites at the same time
+- Made the addresses in the video viewers clickable to open them in the Memory Editor
+- Fixed an issue that had prevented some of the additional registers in the debugger from being edited
+- Fixed that sometimes directly after disabling turbo an old frame was shown
+- Fixed an issue that caused the state of some of the exception breakpoints not to be persisted
+- Fixed that the Coverage tool did not update when a new rom was loaded, only after new data was gathered
+
+==========
+2021-05-31
+==========
+- Improved Game Boy Color color correction and made it configurable (thanks to Eievui)
+- Fixed an issue with sound not playing on some computers running Linux (thanks to lhs_azevedo)
+- Minor improvements of the combined video viewer
+
+==========
+2021-04-30
+==========
+- Added an option to the tracer to write its log to a file
+- Added selection to the video viewers
+- Added an option to combine the video viewers into one window
+- Added grids for the video viewers
+- Added more options to the Debugger's View menu (one is to reduce the spacing between rows)
+- Added support for GameBoy BESS savestates that are interoperable with SameBoy and BGB (thanks to LIJI)
+- Added a workaround for the path issue when remote debugging from WSL (thanks to tbsp)
+- Added ROM bank and SRAM banks to the additional registers of the debugger
+- Added a prototypical assembler to the debugger
+- Fixed an issue with remote debugging that could make VS Code disconnect from Emulicious
+- Fixed Reload ROM shortcut did not always work
+- Fixed copy&paste in Go To boxes (thanks to Kabcorp)
+- Keep the tool windows open when a rom is loaded
+- Made the sources in the viewers clickable to directly open them in the Memory Editor / Debugger
+- Overhauled the Tile Viewer (thanks to Daid)
+- Improved support for RGBDS 0.5.0
+- In Memory Editor, show up to two labels before showing ellipsis (thanks to Advert665)
+- Fixed a bug that could make the Tracer ignore its conditions
+- Highlight uninitialized memory in Memory Editor
+- Highlight the tile in the Tile Viewer that is currently hovered in one of the other viewers
+
+==========
+2021-04-01
+==========
+- Fixed an issue that could lock up Game Boy Color emulation when the Emulicious Bootrom is selected
+- Fixed an issue that could cause Emulicious to freeze when an extended WLA DX sym file is used
+
+==========
+2021-03-31
+==========
+- Added CPU usage meter to debugger
+- Added procedure cycles to Profiler's Hotspot view
+- Avoid collapsing nodes in Profiler's call tree when the order changes (thanks to toxa)
+- Added option to Memory Tracer to display file offsets in for ROM (thanks to EmuBoarding)
+- Added an option to control whether to bring the debugger to top upon suspend (thanks to tbsp)
+- Added options for sound sample rate and sound buffer size (thanks to Kabcorp)
+- Added option to decide whether to keep ingame save data (SRAM) when loading a savestate (thanks to Maxim)
+- Added color schemes for the Game Boy monochrome colors (thanks to Eievui)
+- Show data types in their respective color in the status bar of the Memory Editor (thanks to Advert665)
+- Fixed on Linux, sometimes the main window stayed black until a resize of the window (thanks to basxto)
+- Fixed Game Boy RTC did not always load properly from .sav files (thanks to kivan117)
+- Fixed SHIFT + key did not treat key as pressed (thanks to .exe)
+- Fixed that after changing the layout of the Tile Viewer, its cursor did not work properly for the new layout (thanks to Kabcorp)
+- Improved the performance of the disassembler
+- Several other minor fixes and improvements
+
+==========
+2021-02-28
+==========
+- Added raw value for tilemap/sprite attributes
+- Fixed a reset of the emulated system even caused the debugger to go on top even if it wasn't suspended
+- Fixed Reload ROM option was disabled when a zip file was loaded and the zip file extension was not lowercase
+- Fixed that disabling turbo sometimes caused a bit of stutter before it got back to normal speed
+- Fixed an issue in the MSX mapper detection (thanks to Revo)
+- Fixed a bug that would cause Emulicious to go unresponsive when a rom is inside a folder named src (thanks to basxto)
+- Fixed that integer scaling and stretch to window could be enabled at the same time (thanks to Stiffie)
+- Fixed adding of expressions from symbols included symbols for rom bank 3 (thanks to sverx)
+- Fixed layout issue in Tilemap Viewer on Mac OS (thanks to romes)
+- Fixed warning when running on Mac OS (thanks to romes)
+- Fixed an issue with remote debugging of C code that could make Emulicious unresponsive for some mins (thanks to Alex Cash)
+
+==========
+2021-01-30
+==========
+- Added more registers to the debugger and made them exchangable
+- Added a Key Setup to customize emulator/debug keys
+- Show banked addresses in the Memory Editor
+- Improved support for installing Emulicious into a folder where it doesn't have write access (thanks to basxto)
+- Fixed the working directory of Emulicious when it gets invoked via Emulicious.exe (thanks to tbsp)
+- Fixed an issue where the Outline would show opcodes as labels (thanks to Maxim)
+- Fixed Emulicious reverted to scale=1 when it gets closed without loading a ROM (thanks to eruiz)
+- Fixed initial state of VBK in Emulicious BIOS for GBC (thanks to .exe)
+
+==========
+2020-12-29
+==========
+- Added more options to the Tracer
+- Fixed Debugger did not skip BIOS for Game Gear
+
+==========
+2020-12-27
+==========
+- Fixed issues with sound on some Mac Books (thanks to glinesbdev)
+- Added "bankS" variable to query the current SRAM bank
+- Added Profile To Next Line option to debugger's context menu (useful for profiling call sites)
+
+==========
+2020-12-17
+==========
+- VS Code integration: Added support for 4 byte values (long/uint32)
+- Added 8x16 mode to the Tile Viewer
+- When keys were pressed when Emulicious lost focus, they get treated as released now
+- Made the cursor boxes in the viewers more visible
+- The Memory Editor now persists its selection
+- Fixed an issue when the Highlighters folder does not exist
+
+==========
+2020-11-30
+==========
+- Added an option to always keep main window on top (can be useful for VSCode debugging)
+- Reduced cracking sounds when emulation lags (e.g. when the debugger is opened)
+- Added emulation of the GG X-Terminator cheat device for the Game Gear
+
+==========
+2020-10-04
+==========
+- Fixed issues when CTRL or SHIFT were used as buttons (thanks to Kilkakon)
+- Fixed code pointer in C source-level debugging
+- Fixed an error when trying to paste at the end of the memory editor (thanks to JonteP)
+
+==========
+2020-09-09
+==========
+- Added Remote Debugging via VS Code
+
+==========
+2020-08-20
+==========
+- Fixed Space key in fullscreen with MSX emulation toggled turbo
+- Added different disassembler dialects (WLA-DX, RGBDS, Sjasm)
+- Added comments on GB header in disassembly.
+- Added support for Notepad++ syntax highlighters
+
+==========
+2020-07-25
+==========
+- Added support for tniASM symbol files
+- Added support for symbols from RGBDS map files
+
+==========
+2020-07-17
+==========
+- Fixed an issue in YM2413 emulation
+- Added a setting to the disassembler to use uppercase mnemonics
+- Added a dialog to add watchpoints to the Breakpoints window
+- Added support for MIDI devices in MSX emulation
+- Added CPU tab to Memory Editor
+- Added Hot Spots view to the Profiler
+
+==========
+2020-06-18
+==========
+- Fixed a crash with Uninitialized Memory set to random for Game Boy (Color)
+- The Memory Editor now also accepts digits entered from the numpad
+
+==========
+2020-06-15
+==========
+- Added setup of file associations for Windows users
+- Added exe executable for Windows users
+- Added a proper icon (thanks to MasterEmerald)
+- Improved performance of YM2413 implementation
+- Added @@ operator to read from locations and :: operator to map to a bank (see Expressions.txt)
+- Fixed graphical glitches in main window on Linux (thanks to sverx)
+- Screenshots are now saved with selected Pixel Aspect Ratio
+
+==========
+2020-06-05
+==========
+- Added stretch to window option
+- Fixed issues with glitches in viewers on Linux (thanks to sverx)
+- Added integer scaling option to main window and viewers
+- Added Pixel Aspect Ratio settings to emulation options
+- Slightly improved startup time
+
+==========
+2020-05-19
+==========
+- Fixed some disassembler issues with MSX ROMs
+
+==========
+2020-05-17
+==========
+- Fixed display issues after resetting Mastersystem, that were introduced in last update
+
+==========
+2020-05-14
+==========
+- Added MSX emulation
+- Added support to load lst files containing Sjasm sourcecode in the debugger
+- Improved Profiler to better work with C calling convention
+- Remember last directory for loading sources/symbols
+- Fixed an issue with breakpoints on ROMs larger than 4 MB (thanks to Antígeno)
+- Improved Auto Palette option in Tile Viewer for SMS Mode 4
+- Added View menu to Tile Viewer to choose different layouts
+- Added Frame Advance to the main emulator (formerly only available in debugger)
+- Improved Tilemap Viewer and Tile Viewer support for TMS Modes
+- Added CTRL+SHIFT+BACKSPACE as hotkey for Reload ROM
+- Added an option to automatically reload a ROM when it changes
+- Fixed a bug that wouldn't allow setting gamepad inputs if there
+  are more than 2 gamepads connected (Thanks to Niloct)
+- Several minor bugfixes and improvements
+
+==========
+2020-04-13
+==========
+- Improved mapper support for Mastersystem games
+
+==========
+2020-04-08
+==========
+- Fixed persisted ROM watchpoints did not work correctly
+
+==========
+2020-04-07
+==========
+- Fixed Save As in PAL tab of Memory Editor was disabled
+- Fixed disassembler labels resolving to wrong values that was
+  causing breakpoints to be off by a few bytes
+
+==========
+2020-04-02
+==========
+- When using Table Files the Memory Editor now shows all symbols (e.g. [LF])
+- Added missing label for the volume of the noise channel of the Mastersystem
+- Fixed a bug where some persisted breakpoints did not work anymore
+- Fixed that very long lines did not fully display in the debugger
+- Added a status bar to the debugger showing size and cycles of selected lines
+- Reduced delay caused by the debugger when changing a lot of bytes
+  in the Memory Editor
+
+==========
+2020-02-02
+==========
+- PAUSE key on the keyboard can now also be used for pausing
+  the emulator (do not confuse with suspend)
+- Fixed Memory Tracer for Game Boy Color
+- Support multiple labels at the same address in the disassembly
+- Ignore _sizeof_ labels in WLA-DX symbol files
+- Added support for child labels
+- Breakpoints are based on expressions now instead of just addresses.
+  This improves the use of breakpoints for ROM development.
+- Fixed a bug with sustain in YM2413 emulation (thanks to Kagesan)
+- Fixed a repaint glitch in the disassembler table
+- Added a sound viewer
+- Improved batch file to work independently from the current working directory
+
+==========
+2019-11-24
+==========
+- Fixed a bug with breakpoint messages
+
+==========
+2019-11-17
+==========
+- Added FM chip emulation for the SEGA Mastersystem
+- Added a Clear Log button to the Breakpoint Window
+- Added Palettes tab to the Memory Editor
+- Added VDP and PSG tabs for Mastersystem/Game Gear to the Memory Editor
+- Added OAM and HRAM tabs for Game Boy (Color) to the Memory Editor
+- Added Memory Tracer support for Game Boy (Color)
+- Added Watchpoints for the Memory Editor tabs
+- Improved the UI of the disassembler table
+- Improved Go To dialogs by adding auto-completion
+- Improved Find dialogs by adding a history and several search options
+- Fixed cropped images in screenshots taken from Game Boy games
+
+==========
+2019-10-19
+==========
+- Added undo/redo of run actions in the debugger
+- Added "Chat with the community" menu item to join Emulicious's Discord Server
+- Added Expressions.txt with explanations and examples on how to use expressions
+
+==========
+2019-10-12
+==========
+- Fixed a bug in the disassembler where it used labels located in wrong slots
+  (Thanks to Wafer for pointing this out)
+
+==========
+2019-10-07
+==========
+- Minor bugfix in procedure profiler
+
+==========
+2019-09-27
+==========
+- Fixed an issue with automatic updates
+- Added the possibility to set a message to log when a breakpoint is hit
+  These messages can consist of multiple expressions separated by commas.
+  An example is "Entered WaitForVBlank at scanline ", scanline
+  (The quotation marks need to be there to indicate a string)
+  This will yield log messages such as the following:
+  Entered WaitForVBlank at scanline 100
+
+==========
+2019-08-30
+==========
+- Fixed an issue with the outline when sources are loaded
+
+==========
+2019-07-19
+==========
+- The debugger now allows to load sourcefiles so you can work with your own code now
+- The disassembler now groups consecutive runs of equal bytes with dsb directives
+- Added Volume levels to Sound menu
+- The Outline can hide code or data now
+- Outline and Reference Hierarchy use icons now to differentiate between code and data
+- Coverage data is now persisted
+- The memory editor now allows to save the current selection as a binary file
+- On Mac OS when Emulicious is closed via Cmd+Q it will now also save its settings
+- Fixed issues with symbols loaded from SDCC map files
+- Fixed wrong position of current address in overview ruler
+- Several minor bugfixes and improvements
+
+==========
+2019-02-16
+==========
+- Added Game Pad support
+- Restructured setup input dialog
+- Added BIOS emulation for Game Gear
+- Added an option to skip all breakpoints
+- Fixed that screenshots on Game Gear had always shown offscreen area
+- Fixed that expressions could affect the emulated system
+- Added value in different formats of selected byte in Memory Editor
+- Improved Reference Hierarchy
+- Improved Outline
+- Several improvements of the disassembler
+- Improved Light Phaser emulation accuracy
+
+==========
+2018-06-21
+==========
+- Fixed a memory leak that could cause Emulicious to crash
+  after loading too many ROMs in a row while the viewers are open
+- Fixed a bug that broke throttled turbo
+- Improved debugger UI: The right part can be resized now as well
+
+==========
+2018-01-22
+==========
+- Some minor bugfixes
+
+==========
+2018-01-14
+==========
+- Improved emulation accuracy of the sound chip of the SEGA Master System and SEGA Game Gear.
+  The improvement fixes issues with PDM sound.
+- Added an option to force hardware acceleration for graphics. Bilinear Filtering can only be
+  enabled when graphics are hardware acceleration is available
+- Several improvements of the disassembler and the memory tracer. They both are aware of SRAM now.
+
+==========
+2017-10-22
+==========
+- Several UI Improvements
+- Loading files via Drag&Drop
+
+==========
+2017-09-23
+==========
+- Added support for new format of z88dk map files
+- SRAM Watchpoints can now be added in the Memory Editor and in the Breakpoint Window using
+  the prefix 's' so entering "s0" would add an SRAM watchpoint on the SRAM address 0.
+- Added a procedure profiler that detects procedures automatically and profiles them
+
+==========
+2017-08-14
+==========
+Minor improvements:
+- Display "suspended" in title bar when emulation is suspended
+- Bring debugger to top when a breakpoint is hit
+- CTRL+TAB switches between main window and debugger
+- Added option to "Setup Keys" dialog to allow input even
+  when other windows of Emulicious are focused
+- Added region selection for Game Gear
+
+Improved accuracy of Everdrive Emulation:
+- ROM and RAM are persisted
+- True handling of SRAM files
+- The files from the recent files menu are accessible via a folder called RECENT
+
+==========
+2017-05-05
+==========
+Added option to control if emulation should be suspended when debugger is opened.
+
+==========
+2017-04-20
+==========
+Improved Tilemap Viewer
+Fixed inconsistency in coloring of coverage tool.
+
+==========
+2017-04-02
+==========
+VRAM Watchpoints can now be added in the Memory Editor and in the Breakpoint Window using
+the prefix 'v' so entering "v0" would add a VRAM watchpoint on the VRAM address 0.
+The Whats New file has been added to the project to let you keep track on what's new
+more easily.
+
+==========
+2017-02-27
+==========
+The update comes with serveral new features and some improvements to existing tools.
+
+BIOS files for all supported systems can be selected now. For casual users this can help
+to improve the authenticity of the emulated system. But also developers can benefit from it
+because they can test if their rom will be rejected by the BIOS. Additionally, the state
+of the system after the BIOS will be faithfully reproduced. Appropriate BIOS files
+can be found on the web.
+
+The Master Everdrive and the Everdrive GG can be emulated now. This feature as well can help
+to improve the authenticity of the emulated system. Developers can test if their rom is
+compatible with an Everdrive and also the state of the system after the Everdrive will be
+faithfully reproduced. To enable Everdrive emulation you need an Everdrive OS file. These can
+be found on the official website of the Everdrive. You can select a 1bpp font to use with
+the Everdrive but you can also let Emulicious derive a 1bpp font from the system font.
+Recent versions of the Everdrive OS come with their own font. They ignore the selected font.
+
+The Memory Editor got expanded by a context menu and its interaction with the Debugger
+has been improved. Table files can now be manually selected in the Memory Editor and symbol
+files can now be manually selected in the Debugger. Furthermore, the Memory Editor now supports
+multi-selection and copy&paste. The Coverage Analyzer also got expanded by a context menu.
+It allows to exclude selected addresses from the analysis or to reset the collected data
+for selected addresses.
+
+==========
+2016-12-04
+==========
+The update comes with some improvements to existing tools and also introduces new tools.
+
+Improvements
+------------
+The disassembler now also identifies accesses to ports and creates labels for them as well.
+Profiler data is now persisted between runs of Emulicious.
+When hovering a sprite in the Sprite Editor it now also gets highlighted in the main window.
+New errors have been added to expressions that should help with writing correct expressions.
+
+Savestates
+----------
+Savestates can now be used with hotkeys. The number keys 1-9 load the savestate from
+the corresponding slot. Holding the CTRL key while pressing the number keys saves into
+the corresponding slot. If you accidentally loaded a state instead of saving to it you
+can just undo the load and return to the state before loading. The same works for saving.
+If you accidentally saved into a slot that you wanted to keep you can just undo the save.
+You can also quick save using CTRL+S and load the quicksave using CTRL+Q.
+Furthermore, you can setup Emulicious to automatically load the most recent state when a
+rom is loaded. You can also steup Emulicious to automatically save the current state on exit.
+
+New tools
+---------
+A RAM Search tool (also known as Cheat Search) has been added to Emulicious. It filters
+RAM addresses based on the comparison of the current value with its previous value. It helps
+to identify variables within RAM such as the number of lives, the current position, and so on.
+A plotter has been added that can plot the data of a specified range in ROM. It can help to
+identify tables such as sine/cosine tables or other pattern data.
+A RAM Watch tool has been added. It keeps track of the values of specified
+variables / values in RAM and plots them.
+
+==========
+2016-06-17
+==========
+Finally the tools previously only available for the Master System and the Game Gear
+are now also available for the Game Boy and Game Boy Color. That means that all the
+viewers, i.e., the Palette Viewer, the Tile Viewer, the Tilemap Viewer and the Sprite
+Viewer are now also available for the Game Boy and the Game Boy Color.
+Furthermore, the debugger including the smart disassembler with automated code/data
+separation and all of its additional tools are also usable for Game Boy and Game Boy
+Color debugging. These additional tools are the Tracer, the Profiler and the Coverage
+Analyzer. The only tool that isn't supported for the Game Boy and the Game Boy Color
+is the Memory Tracer
+
+Additionally, the accuracy of Game Boy and Game Boy Color emulation has been
+improved greatly.
+
+==========
+2016-04-29
+==========
+The update comes with a lot of improvements and additions:
+	Performance
+	-----------
+	- The overall performance has been improved
+	- The impact of the debugger on the performance has been reduced significantly
+	
+	Bugfixes
+	--------
+	- A bug has been fixed that could cause crashes on Linux based systems
+	- A bug has been fixed that could cause Emulicious to run even slower
+	  when it couldn't reach 100%
+
+	Additions to Emulation
+	----------------------
+	- Light Phaser Emulation
+	- Emulation 3 and 6 button Mega Drive Controllers
+
+	Additions to Tooling
+	--------------------
+	- Hovering over a RAM address in the debugger shows its current value
+	- The Memory Editor now indicates labels by underlining the corresponding bytes
+	- When the Tracer is enabled the debugger now also visualizes the trace
+	- Port Watchpoints can now be added in the Breakpoint Window using the prefix 'p'
+	  so entering "pdd" would add a port breakpoint on port dd
+	- Acompletely new tool has beed added called "Coverage". It records all accesses
+	  to any address. It uses different colors to encode relative numbers of accesses.
+	  It uses 3 base colors at different levels of brightness. Yellow means it is
+	  accessed significantly more often than green and red means it is accessed
+	  significantly more often than yellow. The brightness indicates the relation
+	  to other values with the same base color. A brighter color means that it has more
+	  accesses than the one with the darker color. The Coverage tool can be used to
+	  identify hotspots but also to identify dead code, unused data or unused RAM.
+	  In conjunction with breakpoints and stepping it can also be used to identify which
+	  code/data/ram is used from one point of the execution to another.
+	- An overview ruler has been added to the debugger which is a 1 dimensional
+	  representation of the whole file of the debugger. It also shows the colors of the
+	  tracer and the coverage tool. It can be clicked to directly scroll to the
+	  corresponding address
+
+	Misc
+	----
+	- Patch files can now be loaded like ROM files
+	- Screenshots can now be taken by pressing F12
+
+==========
+2015-12-03
+==========
+Changelog:
+	- Several bugs have been fixed and some inconsistencies have been eliminated
+	- Performance has been improved
+	- An option to enable scanlines has been added
+	- Sub-line selections in the debugger have been enabled
+	- The disassembler has been made more stable to significantly reduce the number
+	  of crashes and freezes caused by it
+	- The reference hierarchy has been improved and now also supportes jump
+	  table, pointer tables and RAM addresses
+
+==========
+2015-06-25
+==========
+A log has been added to the Breakpoint Window.
+All breakpoints that get hi will be logged there. By disabling the checkbox for
+"Suspend" you can avoid suspension when breakpoints are hit and only log them instead.
+
+==========
+2015-05-17
+==========
+The update comes with additional options for the tracer and introduces
+an outline to the debugger.
+The outline helps you navigate through code more easily by providing
+a sructured representation of the code. It is directly linked to the
+selection of the debugger so it can also help to orient yourself in the code.
+The tracer can be controlled using conditions now. You can define conditions
+on which to start/end tracing and a condition on which to trace an instruction
+at all. Besides that, the tracer allows you to provide an expression to be
+evaluated before each instruction being trace. The result of the evaluation is
+appended to the trace.
+This way you can add additional information to your trace. For example, if you
+want to watch the value in RAM at $c000 you can set the expression to "@$c000".
+Using this expression each line of your trace will also show you the value at $c000.
+
+==========
+2015-04-22
+==========
+For Windows users that don't have Java installed on their system
+an alternative download including Java binaries has been added to
+the Downloads section.
+
+The update comes with several new features:
+	- The stack now shows labels of the functions that have been
+	  called (it can be double-clicked to navigate to the call)
+	- The stack now shows the names of the registers that have
+	  been stored int it
+	- Conditional breakpoints
+	- An option for setting uninitialized memory and a breakpoint
+	  that suspends execution on access of uninitialized memory
+	- A breakpoint that suspends when an interrupt does't restore
+	  the state properly (Break on inconsistent state after interrupt)
+	- Emulation of PAL for the SEGA Master System
+	- Emulation of the screen borders of the SEGA Master System
+	- Options to unhide the offscreen area of the SEGA Game Gear
+	- DATA labels in the Z80 disassembler
+	- RAM labels in the Z80 disassembler
+
+Z80 disassembler / Master System disassembler
+---------------------------------------------
+
+The Z80 disassembler / Master System disassembler has been improved
+to create DATA labels for data that is referenced. This can help to
+identify blocks of data. It now also creates RAM labels that can help to
+determine RAM usage and variable sizes
+
+Expressions/conditions support the following
+--------------------------------------------
+
+arithmetic operators: +, -
+boolean/logical operators: &, |
+shift operators: <<, >>
+compare operators: =, ==, !=, <, >, <=, >=
+decimal numbers
+hex numbers (prefixed by either $ or 0x)
+binary numbers (prefixed by %)
+symbols loaded from a symfile
+variables (see below)
+the @ operator to "read" a value from a calculated address.
+
+Besides that, the following variables are supported:
+
+All register names. As single registers and as register pairs.
+va (the current vdp address)
+scanline (the current scanline)
+address (the current address)
+bank0 (the bank in slot 0)
+bank1 (the bank in slot 1)
+bank2 (the bank in slot 2)
+
+For read/write watchpoints only:
+value (the value being read/written)
+source (the address being read/written)
+
+For write watchpoints only:
+oldvalue (the value being overwritten)
+
+==========
+2015-02-09
+==========
+The new version extends the debugger with a Find Dialog and helps
+you track the control flow by highlighting the trace of the
+instructions being executed. A Reference Hierarchy has been added
+that lists all references to a specified label.
+
+When hovering a control flow instruction its destination will be
+highlighted now and when it is clicked while holding the CTRL key
+the debugger will be scrolled to its destination.
+
+==========
+2014-12-07
+==========
+With this new version you can finally enjoy your favorite games
+in fullscreen! You can enter fullscreen by either pressing
+ALT+ENTER or from the Graphics menu.
+
+The debugger has been extended by watchpoints (aka memory
+breakpoints) that will suspend execution on a read/write of a
+specified memory location.
+
+The memory editor has been extended by a find dialog that allows
+searching the memory. Besides that the memory editor now supports
+simple table files.
+
+==========
+2014-09-19
+==========
+A Memory Editor has been added and the Profiler and Tracer in
+the Debugger have been improved
+
+==========
+2014-06-26
+==========
+New features:
+	- SEGA Game Gear Emulation
+	- Emulation of Master System/Game Gear Legacy Video Modes
+	- Debugger
+	- Palette Viewer
+	- Tilemap Viewer
+	- Memory Tracer
+	- IPS Patching

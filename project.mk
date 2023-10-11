@@ -10,6 +10,4 @@ ROMNAME := out
 ROMEXT  := gb
 ASFLAGS += -h
 LDFLAGS += -d
-ASFLAGS += -v
-LDFLAGS += -v
 LDFLAGS += -t

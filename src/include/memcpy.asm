@@ -22,3 +22,13 @@ SafeMemCopy::
     or a, c
     jp nz, SafeMemCopy
     ret
+
+; Sets memory from hl to hl+bc to d
+UnsafeMemSet::
+    ld [hl], d
+    inc hl
+    dec bc
+    ld a, b
+    or a, c
+    jp nz, UnsafeMemSet
+    ret

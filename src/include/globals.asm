@@ -3,8 +3,8 @@
 ; *  Libraries and Defines                                                    *
 ; *                                                                           *
 ; *****************************************************************************
-INCLUDE "hardware.inc"
-INCLUDE "structs.asm"
+INCLUDE "vendor/hardware.inc"
+INCLUDE "vendor/structs.asm"
 
 ; *****************************************************************************
 ; *                                                                           *
@@ -14,12 +14,37 @@ INCLUDE "structs.asm"
 SECTION "General Game Variables", WRAM0
 wLCDCCtr:: db
 wEvenFrame:: db
-wField:: ds 200
+wField:: ds (10*22)
 wRNGSeed:: ds 4
-wFill:: db
 
 SECTION "Important Game Variables", HRAM
-hUnused:: ds 126
+hScore:: ds 6
+hCLevel:: ds 6
+hNLevel:: ds 6
+
+
+; *****************************************************************************
+; *                                                                           *
+; *  Static Data                                                              *
+; *                                                                           *
+; *****************************************************************************
+SECTION "Static Data", ROM0
+sPieceXOffsets::
+    db 0, 8, 16, 24 ; I
+    db 0, 8, 8, 16  ; Z
+    db 0, 8, 8, 16  ; S
+    db 0, 8, 16, 16 ; J
+    db 0, 0, 8, 16  ; L
+    db 8, 8, 16, 16 ; O
+    db 0, 8, 8, 16  ; T
+sPieceYOffsets::
+    db 0, 0, 0, 0   ; I
+    db 0, 0, 7, 7   ; Z
+    db 7, 7, 0, 0   ; S
+    db 0, 0, 0, 7   ; J
+    db 0, 7, 0, 0   ; L
+    db 0, 7, 0, 7   ; O
+    db 0, 0, 7, 0   ; T
 
 
 ; *****************************************************************************
@@ -41,6 +66,7 @@ DEF PALETTE_LIGHTER_0 EQU %11100100
 DEF PALETTE_LIGHTER_1 EQU %10010000
 DEF PALETTE_LIGHTER_2 EQU %01000000
 DEF PALETTE_LIGHTER_3 EQU %00000000
+DEF FIELD_TOP_LEFT    EQU $9800+(0*32)+1
 DEF FIELD_ROW_1       EQU $9800+(0*32)+1
 DEF FIELD_ROW_2       EQU $9800+(1*32)+1
 DEF FIELD_ROW_3       EQU $9800+(2*32)+1
@@ -61,6 +87,17 @@ DEF FIELD_ROW_17      EQU $9800+(16*32)+1
 DEF FIELD_ROW_18      EQU $9800+(17*32)+1
 DEF FIELD_ROW_19      EQU $9800+(18*32)+1
 DEF FIELD_ROW_20      EQU $9800+(19*32)+1
+DEF TILE_FIELD_EMPTY  EQU 7
+DEF TILE_PIECE_0      EQU 10
+DEF TILE_0            EQU 110
+DEF NEXT_BASE_X       EQU 120
+DEF NEXT_BASE_Y       EQU 40
+DEF HOLD_BASE_X       EQU 120
+DEF HOLD_BASE_Y       EQU 80
+DEF DIGIT_BASE_X      EQU 112
+DEF SCORE_BASE_Y      EQU 115
+DEF CLEVEL_BASE_Y     EQU 136
+DEF NLEVEL_BASE_Y     EQU 148
 
 
 ; *****************************************************************************
@@ -93,6 +130,29 @@ MACRO wait_vblank_end
     cp STATF_VBL
     jr z, .waitvbe\@
 ENDM
+
+; Sets the background palette to A.
+MACRO set_bg_palette
+    ldh [rBGP], a
+ENDM
+
+; Sets the object0 palette to A.
+MACRO set_obj0_palette
+    ldh [rOBP0], a
+ENDM
+
+; Sets the object1 palette to A.
+MACRO set_obj1_palette
+    ldh [rOBP1], a
+ENDM
+
+; Sets all palettes to A.
+MACRO set_all_palettes
+    set_bg_palette a
+    set_obj0_palette a
+    set_obj1_palette a
+ENDM
+
 
 ; Writes two bytes to a register pair.
 MACRO lb

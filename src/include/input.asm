@@ -43,7 +43,10 @@ GetInput::
     bit 0, b ; A
     jr nz, .clearA
 .setA
-    ld a, 1
+    ldh a, [hAState]
+    cp $FF
+    jr z, .readB
+    inc a
     ldh [hAState], a
     jr .readB
 .clearA
@@ -54,7 +57,10 @@ GetInput::
     bit 1, b ; B
     jr nz, .clearB
 .setB
-    ld a, 1
+    ldh a, [hBState]
+    cp $FF
+    jr z, .readSelect
+    inc a
     ldh [hBState], a
     jr .readSelect
 .clearB
@@ -65,7 +71,10 @@ GetInput::
     bit 2, b ; Select
     jr nz, .clearSelect
 .setSelect
-    ld a, 1
+    ldh a, [hSelectState]
+    cp $FF
+    jr z, .readStart
+    inc a
     ldh [hSelectState], a
     jr .readStart
 .clearSelect
@@ -76,7 +85,10 @@ GetInput::
     bit 3, b ; Start
     jr nz, .clearStart
 .setStart
-    ld a, 1
+    ldh a, [hStartState]
+    cp $FF
+    jr z, .dpad
+    inc a
     ldh [hStartState], a
     jr .dpad
 .clearStart
@@ -98,7 +110,10 @@ GetInput::
     bit 2, b ; Up
     jr nz, .clearUp
 .setUp
-    ld a, 1
+    ldh a, [hUpState]
+    cp $FF
+    jr z, .readDown
+    inc a
     ldh [hUpState], a
     jr .readDown
 .clearUp
@@ -109,7 +124,10 @@ GetInput::
     bit 3, b ; Down
     jr nz, .clearDown
 .setDown
-    ld a, 1
+    ldh a, [hDownState]
+    cp $FF
+    jr z, .readLeft
+    inc a
     ldh [hDownState], a
     jr .readLeft
 .clearDown

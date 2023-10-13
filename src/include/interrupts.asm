@@ -1,3 +1,7 @@
+IF !DEF(INTERRUPTS_ASM)
+DEF INTERRUPTS_ASM EQU 1
+
+
 SECTION "Interrupt Initialization Functions", ROM0
 InitializeLCDCInterrupt::
     ld a, STATF_LYC
@@ -52,3 +56,5 @@ LCDCInterrupt_End:
     pop af
     reti
 
+
+ENDC

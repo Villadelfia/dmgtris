@@ -22,7 +22,7 @@
 ; SOFTWARE.
 
 
-
+IF !DEF(STRUCTS_VERSION)
 DEF STRUCTS_VERSION equs "3.0.1"
 MACRO structs_assert
     assert (\1), "rgbds-structs {STRUCTS_VERSION} bug. Please report at https://github.com/ISSOtm/rgbds-structs, and share the above stack trace *and* your code there!"
@@ -336,3 +336,5 @@ MACRO dstructs ; nb_structs, struct_type, instance_name
     ENDR
     PURGE STRUCT_ID
 ENDM
+
+ENDC

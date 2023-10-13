@@ -1,3 +1,7 @@
+IF !DEF(MEMORY_ASM)
+DEF MEMORY_ASM EQU 1
+
+
 SECTION "Memory Functions", ROM0
 ; Copies data from de to hl, bc bytes
 UnsafeMemCopy::
@@ -32,3 +36,6 @@ UnsafeMemSet::
     or a, c
     jp nz, UnsafeMemSet
     ret
+
+
+ENDC

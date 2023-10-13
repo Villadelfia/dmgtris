@@ -1,3 +1,7 @@
+IF !DEF(SPRITES_ASM)
+DEF SPRITES_ASM EQU 1
+
+
 SECTION "Shadow OAM", WRAM0, ALIGN[8]
 UNION
 wShadowOAM:: ds 160
@@ -84,12 +88,18 @@ ApplyNext::
     ld hl, sPieceXOffsets
     ld de, sPieceYOffsets
     cp 0
-    jp z, .skipoffn
+    jr z, .skipoffn
 .getoffn
     inc hl
+    inc hl
+    inc hl
+    inc hl
+    inc de
+    inc de
+    inc de
     inc de
     dec a
-    jp nz, .getoffn
+    jr nz, .getoffn
 .skipoffn
     ld a, [hl+]
     add a, NEXT_BASE_X
@@ -144,12 +154,18 @@ ApplyHold::
     ld hl, sPieceXOffsets
     ld de, sPieceYOffsets
     cp 0
-    jp z, .skipoffh
+    jr z, .skipoffh
 .getoffh
     inc hl
+    inc hl
+    inc hl
+    inc hl
+    inc de
+    inc de
+    inc de
     inc de
     dec a
-    jp nz, .getoffh
+    jr nz, .getoffh
 .skipoffh
     ld a, [hl+]
     add a, HOLD_BASE_X
@@ -320,3 +336,6 @@ SetNumberSpritePositions::
     ld [hl], a
     add a, 8
     ret
+
+
+ENDC

@@ -51,7 +51,7 @@ LCDCInterrupt_WaitUntilNotBusy:
     ; Check our interrupt counter
     ldh a, [hLCDCCtr]
     cp 21
-    jp nz, LCDCInterrupt_End
+    jr nz, LCDCInterrupt_End
     ld a, 255
     ldh [hLCDCCtr], a
     ld a, 6

@@ -118,7 +118,7 @@ GameLoopEnd:
     wait_vblank
     call hOAMDMA
     call BlitField
-    jp GameLoop
+    jr GameLoop
 
 
 

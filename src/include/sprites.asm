@@ -134,7 +134,7 @@ ApplyNext::
 ; Index of hold piece in A.
 ApplyHold::
     cp 255
-    jp nz, .doApplyHold
+    jr nz, .doApplyHold
     ld hl, wSPRHold1
     ld bc, 16
     ld d, 0

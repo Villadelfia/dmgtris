@@ -11,7 +11,7 @@ UnsafeMemCopy::
     dec bc
     ld a, b
     or a, c
-    jp nz, UnsafeMemCopy
+    jr nz, UnsafeMemCopy
     ret
 
 
@@ -24,7 +24,7 @@ SafeMemCopy::
     dec bc
     ld a, b
     or a, c
-    jp nz, SafeMemCopy
+    jr nz, SafeMemCopy
     ret
 
 ; Sets memory from hl to hl+bc to d
@@ -34,7 +34,7 @@ UnsafeMemSet::
     dec bc
     ld a, b
     or a, c
-    jp nz, UnsafeMemSet
+    jr nz, UnsafeMemSet
     ret
 
 

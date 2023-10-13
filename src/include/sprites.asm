@@ -249,92 +249,210 @@ SetNumberSpritePositions::
     ld [hl], SCORE_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRScore2
     ld [hl], SCORE_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRScore3
     ld [hl], SCORE_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRScore4
     ld [hl], SCORE_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRScore5
     ld [hl], SCORE_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRScore6
     ld [hl], SCORE_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld a, OAMF_PAL1
+    ld [hl], a
+
     ld a, DIGIT_BASE_X
     ld hl, wSPRCLevel1
     ld [hl], CLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRCLevel2
     ld [hl], CLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRCLevel3
     ld [hl], CLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRCLevel4
     ld [hl], CLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRCLevel5
     ld [hl], CLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRCLevel6
     ld [hl], CLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld a, OAMF_PAL1
+    ld [hl], a
+
     ld a, DIGIT_BASE_X
     ld hl, wSPRNLevel1
     ld [hl], NLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRNLevel2
     ld [hl], NLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRNLevel3
     ld [hl], NLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRNLevel4
     ld [hl], NLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRNLevel5
     ld [hl], NLEVEL_BASE_Y
     inc hl
     ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1
+    ld [hl], a
+    ld a, b
     add a, 8
+
     ld hl, wSPRNLevel6
     ld [hl], NLEVEL_BASE_Y
     inc hl
     ld [hl], a
-    add a, 8
+    inc hl
+    inc hl
+    ld a, OAMF_PAL1
+    ld [hl], a
     ret
 
 

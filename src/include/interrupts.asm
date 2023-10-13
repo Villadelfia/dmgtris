@@ -2,7 +2,17 @@ IF !DEF(INTERRUPTS_ASM)
 DEF INTERRUPTS_ASM EQU 1
 
 
+SECTION "Interrupt Variables", HRAM
+hLCDCCtr:: ds 1
+
+
 SECTION "Interrupt Initialization Functions", ROM0
+IntrInit::
+    xor a, a
+    ldh [hLCDCCtr], a
+    ret
+
+
 InitializeLCDCInterrupt::
     ld a, STATF_LYC
     ldh [rSTAT], a
@@ -18,7 +28,7 @@ InitializeLCDCInterrupt::
     ret
 
 
-SECTION "LCDC Interrupt", ROM0[$0048]
+SECTION "LCDC Interrupt", ROM0[INT_HANDLER_STAT]
 LCDCInterrupt:
     push af
     push hl
@@ -39,11 +49,11 @@ LCDCInterrupt_WaitUntilNotBusy:
     ldh [rLYC], a
 
     ; Check our interrupt counter
-    ld a, [wLCDCCtr]
+    ldh a, [hLCDCCtr]
     cp 21
     jp nz, LCDCInterrupt_End
     ld a, 255
-    ld [wLCDCCtr], a
+    ldh [hLCDCCtr], a
     ld a, 6
     ldh [rLYC], a
     ld a, 0
@@ -51,7 +61,7 @@ LCDCInterrupt_WaitUntilNotBusy:
 
 LCDCInterrupt_End:
     inc a
-    ld [wLCDCCtr], a
+    ldh [hLCDCCtr], a
     pop hl
     pop af
     reti

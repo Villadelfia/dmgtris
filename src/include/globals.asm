@@ -7,17 +7,8 @@ INCLUDE "vendor/structs.asm"
 INCLUDE "constants.asm"
 
 
-SECTION "General Game Variables", WRAM0
-wLCDCCtr::   db
-wEvenFrame:: db
-wField::     ds (10*22)
-
-
 SECTION "Important Game Variables", HRAM
-hCtr::    ds 1
-hScore::  ds 6
-hCLevel:: ds 6
-hNLevel:: ds 6
+hCtr:: ds 1
 
 
 ; Waits for VRAM to be safe to access. (Includes hblank.)
@@ -69,9 +60,9 @@ ENDM
 
 ; Sets all palettes to A.
 MACRO set_all_palettes
-    set_bg_palette a
-    set_obj0_palette a
-    set_obj1_palette a
+    set_bg_palette
+    set_obj0_palette
+    set_obj1_palette
 ENDM
 
 

@@ -3,6 +3,11 @@ INCLUDE "memory.asm"
 INCLUDE "interrupts.asm"
 INCLUDE "sprites.asm"
 INCLUDE "rng.asm"
+INCLUDE "input.asm"
+INCLUDE "time.asm"
+INCLUDE "score.asm"
+INCLUDE "level.asm"
+INCLUDE "field.asm"
 INCLUDE "res/tiles.inc"
 INCLUDE "res/gameplay_map.inc"
 
@@ -47,7 +52,10 @@ Main::
 
     ; Set up the palettes.
     ld a, PALETTE_REGULAR
-    set_all_palettes
+    set_bg_palette
+    set_obj0_palette
+    ld a, PALETTE_LIGHTER_1
+    set_obj1_palette
 
     ; Get the timer going. It's used for RNG.
     xor a, a
@@ -95,15 +103,15 @@ GameLoop::
     call ApplyHold
 
     ld hl, wSPRScore1
-    ld de, hScore
+    ld de, wScore
     call ApplyNumbers
 
     ld hl, wSPRCLevel1
-    ld de, hCLevel
+    ld de, wCLevel
     call ApplyNumbers
 
     ld hl, wSPRNLevel1
-    ld de, hNLevel
+    ld de, wNLevel
     call ApplyNumbers
 
 GameLoopEnd:
@@ -121,61 +129,10 @@ GameLoopEnd:
 ; *****************************************************************************
 SECTION "Functions", ROM0
 InitializeVariables:
-    xor a, a
-    ld [wLCDCCtr], a
-    ld hl, wField
-    ld bc, 10*22
-    ld d, TILE_FIELD_EMPTY
-    call UnsafeMemSet
-    ld hl, hScore
-    ld bc, (6*3)
-    ld d, 0
-    call UnsafeMemSet
-    ret
-
-
-BlitField:
-    ; The first 14 rows can be blitted without checking for vram access.
-    ld de, wField + (2*10)
-    DEF row = 0
-    REPT 14
-        ld hl, FIELD_TOP_LEFT+(32*row)
-        REPT 10
-            ld a, [de]
-            ld [hl+], a
-            inc de
-        ENDR
-        DEF row += 1
-    ENDR
-
-    ; The last 6 rows need some care.
-    REPT 6
-        ld hl, FIELD_TOP_LEFT+(32*row)
-        REPT 2
-:           ldh a, [rSTAT]
-            and STATF_LCD
-            cp STATF_HBL
-            jr z, :-
-:           ldh a, [rSTAT]
-            and STATF_LCD
-            cp STATF_HBL
-            jr nz, :-
-            REPT 5
-                ld a, [de]
-                ld [hl+], a
-                inc de
-            ENDR
-        ENDR
-        DEF row += 1
-    ENDR
-    ret
-
-GetInput:
-    ret
-
-HandleTimers:
-    ld a, [wEvenFrame]
-    inc a
-    and 1
-    ld [wEvenFrame], a
+    call TimeInit
+    call IntrInit
+    call InputInit
+    call ScoreInit
+    call LevelInit
+    call FieldInit
     ret

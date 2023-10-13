@@ -1,8 +1,4 @@
-; *****************************************************************************
-; *                                                                           *
-; *  Cartridge Header.                                                        *
-; *                                                                           *
-; *****************************************************************************
-SECTION "Header", ROM0[$100]
-    jp MainEntryPoint
-    ds $150 - @, 0 ; RGBFIX will fill in the header.
+SECTION "Cartridge Header", ROM0[$100]
+    nop
+    jp Main
+    ds $150 - @, 0

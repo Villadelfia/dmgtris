@@ -1,18 +1,21 @@
 INCLUDE "globals.asm"
-INCLUDE "memcpy.asm"
-INCLUDE "hardwarectl.asm"
+INCLUDE "memory.asm"
 INCLUDE "interrupts.asm"
 INCLUDE "sprites.asm"
+INCLUDE "rng.asm"
 INCLUDE "res/tiles.inc"
 INCLUDE "res/gameplay_map.inc"
 
 SECTION "Code Entry Point", ROM0
-MainEntryPoint::
+Main::
     ; Turn off LCD during initialization.
-    call DisableLCD
+    wait_vram
+    xor a, a
+    ldh [rLCDC], a
 
     ; Save some power and turn off the audio.
-    call DisableAudio
+    xor a, a
+    ldh [rNR52], a
 
     ; We use a single set of tiles for the entire game, so we copy it at the start.
     ld de, Tiles
@@ -27,7 +30,9 @@ MainEntryPoint::
     call UnsafeMemCopy
 
     ; Make sure both sprites and bg use the same tile data.
-    call SetTileDataBanks
+    ldh a, [rLCDC]
+    or LCDCF_BLK01
+    ldh [rLCDC], a
 
     ; The tilemap is just for testing for now.
     ld de, GameplayTilemap
@@ -44,6 +49,11 @@ MainEntryPoint::
     ld a, PALETTE_REGULAR
     set_all_palettes
 
+    ; Get the timer going. It's used for RNG.
+    xor a, a
+    ldh [rTMA], a
+    ld a, TACF_262KHZ | TACF_START
+
     ; Zero out the ram where needed.
     call InitializeVariables
 
@@ -51,11 +61,16 @@ MainEntryPoint::
     call InitializeLCDCInterrupt
 
     ; And turn the LCD back on before we start.
-    call EnableLCD
+    ldh a, [rLCDC]
+    or LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
+    ldh [rLCDC], a
 
     ; Make sure the first game loop starts just like all the future ones.
     wait_vblank
     wait_vblank_end
+
+    ; TEMP: Set up the game.
+    call StartNewGame
 
 
 GameLoop::
@@ -65,10 +80,18 @@ GameLoop::
     ; Handle gameplay here
     ; TODO
 
-    ld a, 0
+    ldh a, [hCtr]
+    inc a
+    and a, $1F
+    ldh [hCtr], a
+
+    jr nz, :+
+    call GetNextPiece
+
+:   ld a, [wNextPiece]
     call ApplyNext
 
-    ld a, 4
+    ld a, [wNextPiece]
     call ApplyHold
 
     ld hl, wSPRScore1

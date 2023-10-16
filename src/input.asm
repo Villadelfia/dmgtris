@@ -2,6 +2,9 @@ IF !DEF(INPUT_ASM)
 DEF INPUT_ASM EQU 1
 
 
+INCLUDE "globals.asm"
+
+
 SECTION "Input Variables", HRAM
 hUpState::     ds 1
 hDownState::   ds 1

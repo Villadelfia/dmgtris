@@ -2,6 +2,9 @@ IF !DEF(TIME_ASM)
 DEF TIME_ASM EQU 1
 
 
+INCLUDE "globals.asm"
+
+
 SECTION "Time Variables", HRAM
 hEvenFrame:: ds 1
 

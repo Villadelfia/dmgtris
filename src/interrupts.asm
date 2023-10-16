@@ -2,6 +2,9 @@ IF !DEF(INTERRUPTS_ASM)
 DEF INTERRUPTS_ASM EQU 1
 
 
+INCLUDE "globals.asm"
+
+
 SECTION "Interrupt Variables", HRAM
 hLCDCCtr:: ds 1
 

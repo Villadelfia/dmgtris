@@ -1,3 +1,6 @@
+IF !DEF(TILES_INC)
+DEF TILES_INC EQU 1
+
 SECTION "Tile data", ROM0
 Tiles::
     DB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
@@ -257,3 +260,6 @@ Tiles::
     DB $00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
 TilesEnd::
+
+
+ENDC

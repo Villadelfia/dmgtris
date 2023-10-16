@@ -1,15 +1,16 @@
+IF !DEF(MAIN_ASM)
+DEF MAIN_ASM EQU 1
+
+
 INCLUDE "globals.asm"
-INCLUDE "memory.asm"
-INCLUDE "interrupts.asm"
-INCLUDE "sprites.asm"
-INCLUDE "rng.asm"
-INCLUDE "input.asm"
-INCLUDE "time.asm"
-INCLUDE "score.asm"
-INCLUDE "level.asm"
-INCLUDE "field.asm"
 INCLUDE "res/tiles.inc"
 INCLUDE "res/gameplay_map.inc"
+
+
+SECTION "Globals", WRAM0
+wStateEventHandler:: ds 2
+wStateVBlankHandler:: ds 2
+
 
 SECTION "Code Entry Point", ROM0
 Main::
@@ -39,16 +40,9 @@ Main::
     or LCDCF_BLK01
     ldh [rLCDC], a
 
-    ; The tilemap is just for testing for now.
-    ld de, GameplayTilemap
-    ld hl, $9800
-    ld bc, GameplayTilemapEnd - GameplayTilemap
-    call UnsafeMemCopy
-
     ; Clear OAM.
     call ClearOAM
     call CopyOAMHandler
-    call SetNumberSpritePositions
 
     ; Set up the palettes.
     ld a, PALETTE_REGULAR
@@ -68,57 +62,37 @@ Main::
     ; Set up the interrupt handlers.
     call InitializeLCDCInterrupt
 
-    ; And turn the LCD back on before we start.
-    ldh a, [rLCDC]
-    or LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
-    ldh [rLCDC], a
-
-    ; Make sure the first game loop starts just like all the future ones.
-    wait_vblank
-    wait_vblank_end
-
-    ; TEMP: Set up the game.
-    call StartNewGame
+    ; Switch to gameplay state.
+    call SwitchToGameplay
 
 
-GameLoop::
+EventLoop::
+    ; Wrangle inputs and timers at the start of every frame.
     call GetInput
     call HandleTimers
 
-    ; Handle gameplay here
-    ; TODO
+    ; Call the current state's event handler.
+    ld a, [wStateEventHandler]
+    ld l, a
+    ld a, [wStateEventHandler + 1]
+    ld h, a
+    jp hl
+EventLoopPostHandler::
 
-    ldh a, [hCtr]
-    inc a
-    and a, $1F
-    ldh [hCtr], a
-
-    jr nz, :+
-    call GetNextPiece
-
-:   ld a, [wNextPiece]
-    call ApplyNext
-
-    ld a, [wNextPiece]
-    call ApplyHold
-
-    ld hl, wSPRScore1
-    ld de, wScore
-    call ApplyNumbers
-
-    ld hl, wSPRCLevel1
-    ld de, wCLevel
-    call ApplyNumbers
-
-    ld hl, wSPRNLevel1
-    ld de, wNLevel
-    call ApplyNumbers
-
-GameLoopEnd:
+    ; Wait for vblank and update OAM.
     wait_vblank
     call hOAMDMA
-    call BlitField
-    jr GameLoop
+
+    ; Call the current state's vblank handler.
+    ld a, [wStateVBlankHandler]
+    ld l, a
+    ld a, [wStateVBlankHandler + 1]
+    ld h, a
+    jp hl
+EventLoopPostVBlankHandler::
+
+    ; Jump back to the start of the event loop.
+    jr EventLoop
 
 
 
@@ -136,3 +110,6 @@ InitializeVariables:
     call LevelInit
     call FieldInit
     ret
+
+
+ENDC

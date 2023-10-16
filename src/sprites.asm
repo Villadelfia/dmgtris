@@ -2,6 +2,9 @@ IF !DEF(SPRITES_ASM)
 DEF SPRITES_ASM EQU 1
 
 
+INCLUDE "globals.asm"
+
+
 SECTION "Shadow OAM", WRAM0, ALIGN[8]
 UNION
 wShadowOAM:: ds 160
@@ -24,15 +27,11 @@ wSPRCLevel1:: ds 4
 wSPRCLevel2:: ds 4
 wSPRCLevel3:: ds 4
 wSPRCLevel4:: ds 4
-wSPRCLevel5:: ds 4
-wSPRCLevel6:: ds 4
 wSPRNLevel1:: ds 4
 wSPRNLevel2:: ds 4
 wSPRNLevel3:: ds 4
 wSPRNLevel4:: ds 4
-wSPRNLevel5:: ds 4
-wSPRNLevel6:: ds 4
-wSPRUnused:: ds (14 * 4)
+wSPRUnused:: ds (16 * 4)
 ENDU
 
 
@@ -244,7 +243,7 @@ ApplyNumbers::
 
 
 SetNumberSpritePositions::
-    ld a, DIGIT_BASE_X
+    ld a, SCORE_BASE_X
     ld hl, wSPRScore1
     ld [hl], SCORE_BASE_Y
     inc hl
@@ -314,7 +313,7 @@ SetNumberSpritePositions::
     ld a, OAMF_PAL1
     ld [hl], a
 
-    ld a, DIGIT_BASE_X
+    ld a, LEVEL_BASE_X
     ld hl, wSPRCLevel1
     ld [hl], CLEVEL_BASE_Y
     inc hl
@@ -357,34 +356,10 @@ SetNumberSpritePositions::
     ld [hl], a
     inc hl
     inc hl
-    ld b, a
-    ld a, OAMF_PAL1
-    ld [hl], a
-    ld a, b
-    add a, 8
-
-    ld hl, wSPRCLevel5
-    ld [hl], CLEVEL_BASE_Y
-    inc hl
-    ld [hl], a
-    inc hl
-    inc hl
-    ld b, a
-    ld a, OAMF_PAL1
-    ld [hl], a
-    ld a, b
-    add a, 8
-
-    ld hl, wSPRCLevel6
-    ld [hl], CLEVEL_BASE_Y
-    inc hl
-    ld [hl], a
-    inc hl
-    inc hl
     ld a, OAMF_PAL1
     ld [hl], a
 
-    ld a, DIGIT_BASE_X
+    ld a, LEVEL_BASE_X
     ld hl, wSPRNLevel1
     ld [hl], NLEVEL_BASE_Y
     inc hl
@@ -422,30 +397,6 @@ SetNumberSpritePositions::
     add a, 8
 
     ld hl, wSPRNLevel4
-    ld [hl], NLEVEL_BASE_Y
-    inc hl
-    ld [hl], a
-    inc hl
-    inc hl
-    ld b, a
-    ld a, OAMF_PAL1
-    ld [hl], a
-    ld a, b
-    add a, 8
-
-    ld hl, wSPRNLevel5
-    ld [hl], NLEVEL_BASE_Y
-    inc hl
-    ld [hl], a
-    inc hl
-    inc hl
-    ld b, a
-    ld a, OAMF_PAL1
-    ld [hl], a
-    ld a, b
-    add a, 8
-
-    ld hl, wSPRNLevel6
     ld [hl], NLEVEL_BASE_Y
     inc hl
     ld [hl], a

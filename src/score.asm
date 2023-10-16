@@ -2,6 +2,9 @@ IF !DEF(SCORE_ASM)
 DEF SCORE_ASM EQU 1
 
 
+INCLUDE "globals.asm"
+
+
 SECTION "Score Variables", WRAM0
 wScore:: ds 6
 

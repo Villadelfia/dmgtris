@@ -19,10 +19,6 @@ Main::
     xor a, a
     ldh [rLCDC], a
 
-    ; Save some power and turn off the audio.
-    xor a, a
-    ldh [rNR52], a
-
     ; We use a single set of tiles for the entire game, so we copy it at the start.
     ld de, Tiles
     ld hl, _VRAM
@@ -67,6 +63,9 @@ Main::
 
 
 EventLoop::
+    ; Play the sound effect, if any.
+    call SFXPlay
+
     ; Wrangle inputs and timers at the start of every frame.
     call GetInput
     call HandleTimers
@@ -109,6 +108,7 @@ InitializeVariables:
     call ScoreInit
     call LevelInit
     call FieldInit
+    call SFXInit
     ret
 
 

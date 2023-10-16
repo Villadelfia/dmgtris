@@ -47,6 +47,10 @@ SwitchToGameplay::
     call LevelInit
     call FieldInit
 
+    ; Next level is 0100.
+    ld a, 1
+    ld [wNLevel+1], a
+
     ; We don't start with a held piece.
     ld a, PIECE_NONE
     ld [wHeldPiece], a
@@ -54,7 +58,7 @@ SwitchToGameplay::
     ; Leady mode.
     ld a, MODE_LEADY
     ld [wMode], a
-    ld a, 150
+    ld a, 90
     ld [wModeCounter], a
 
     ; Install the event loop handlers.
@@ -101,7 +105,7 @@ leadyMode:
     jr nz, :+
     ld a, MODE_GO
     ld [wMode], a
-    ld a, 150
+    ld a, 90
 :   ld [wModeCounter], a
     ld de, sLeady
     ld hl, wField+(10*10)

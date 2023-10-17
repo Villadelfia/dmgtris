@@ -191,6 +191,8 @@ sSpeedCurve::         ; Speed curve of the game.
     db 20, 1          ; 20G
     db 1, 1, 1, 1     ; ARE, DAS, LOCK, LINECLEAR
 
+    dw $FFFF          ; End.
+
 sPieceRotationStates:: ; How each piece is rotated.
     ; I
     db %0000

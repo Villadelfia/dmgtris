@@ -15,8 +15,13 @@ DEF MODE_SPAWN_PIECE EQU 4
 SECTION "Gameplay Variables", WRAM0
 wMode: ds 1
 wModeCounter: ds 1
-wCurrentPiece: ds 1
-wHeldPiece: ds 1
+
+SECTION "Critical Gameplay Variables", HRAM
+hCurrentPiece: ds 1
+hCurrentPieceX: ds 1
+hCurrentPieceY: ds 1
+hCurrentPieceRotationState: ds 1
+hHeldPiece: ds 1
 
 
 SECTION "Gameplay Functions", ROM0
@@ -47,13 +52,9 @@ SwitchToGameplay::
     call LevelInit
     call FieldInit
 
-    ; Next level is 0100.
-    ld a, 1
-    ld [wNLevel+1], a
-
     ; We don't start with a held piece.
     ld a, PIECE_NONE
-    ld [wHeldPiece], a
+    ldh [hHeldPiece], a
 
     ; Leady mode.
     ld a, MODE_LEADY
@@ -138,7 +139,7 @@ postGoMode:
     ; Fetch the next piece.
 fetchPieceMode:
     ld a, [wNextPiece]
-    ld [wCurrentPiece], a
+    ldh [hCurrentPiece], a
     call GetNextPiece
 
     ; Check if IRS is charged.
@@ -159,6 +160,9 @@ fetchPieceMode:
     ; Spawn the piece.
 spawnPieceMode:
     ; todo
+
+    ld e, 1
+    call LevelUp
 
     ld a, [hUpState]
     cp a, 1
@@ -192,7 +196,7 @@ drawStaticInfo:
 :   ld a, [wNextPiece]
     call ApplyNext
 
-    ld a, [wHeldPiece]
+    ldh a, [hHeldPiece]
     call ApplyHold
 
     ld hl, wSPRScore1

@@ -134,6 +134,8 @@ LevelUp::
     ld a, [hl]
     cp a, 8
     jr nz, .checkspeedup
+    ld a, $FF
+    ldh [hRequiresLineClear], a
     ld a, SFX_BELL
     call SFXEnqueue
     jr .checkspeedup
@@ -168,6 +170,8 @@ LevelUp::
     and a, [hl]
     cp a, 9
     jr nz, .checkspeedup
+    ld a, $FF
+    ldh [hRequiresLineClear], a
     ld a, SFX_BELL
     call SFXEnqueue
 

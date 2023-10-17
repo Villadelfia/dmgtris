@@ -572,6 +572,10 @@ sSFXBell::
 
     db REG_NR22_CH2_VOLEV, $08, REG_NR23_CH2_FRQLO, $97, REG_NR24_CH2_FRQHI, $87, $FE
 sSFXBellEnd::
+sSFXMove::
+    db REG_NR42_CH4_VOLEV, $21, REG_NR41_CH4_LENGT, $3F, REG_NR42_CH4_VOLEV, $21, REG_NR43_CH4_FQRND, $00
+    db REG_NR44_CH4_CNTRL, $80, $FE
+sSFXMoveEnd::
 
 
 SECTION "SFX Variables", HRAM
@@ -762,10 +766,19 @@ SFXEnqueue::
     ret
 
 :   cp a, SFX_BELL
-    ret nz
+    jr nz, :+
     ld a, LOW(sSFXBell)
     ldh [hPlayhead], a
     ld a, HIGH(sSFXBell)
+    ldh [hPlayhead+1], a
+    call SFXPlay
+    ret
+
+:   cp a, SFX_MOVE
+    ret nz
+    ld a, LOW(sSFXMove)
+    ldh [hPlayhead], a
+    ld a, HIGH(sSFXMove)
     ldh [hPlayhead+1], a
     call SFXPlay
     ret

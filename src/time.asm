@@ -6,6 +6,7 @@ INCLUDE "globals.asm"
 
 
 SECTION "Time Variables", HRAM
+hFrameCtr::  ds 1
 hEvenFrame:: ds 1
 
 
@@ -13,11 +14,13 @@ SECTION "Time Functions", ROM0
 TimeInit::
     xor a, a
     ldh [hEvenFrame], a
+    ldh [hFrameCtr], a
     ret
 
 HandleTimers::
-    ldh a, [hEvenFrame]
+    ldh a, [hFrameCtr]
     inc a
+    ldh [hFrameCtr], a
     and 1
     ldh [hEvenFrame], a
     ret

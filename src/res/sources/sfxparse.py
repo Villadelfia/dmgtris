@@ -159,7 +159,8 @@ sfx_names = [
     "sSFXIRS",
     "sSFXDrop",
     "sSFXLock",
-    "sSFXBell"
+    "sSFXBell",
+    "sSFXMove"
 ]
 
 def chunks(lst, n):

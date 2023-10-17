@@ -160,6 +160,32 @@ fetchPieceMode:
 spawnPieceMode:
     ; todo
 
+    ld a, [hUpState]
+    cp a, 1
+    jr nz, :+
+    ld a, MODE_FETCH_PIECE
+    ld [wMode], a
+    jp drawStaticInfo
+
+:   ld a, [hLeftState]
+    cp a, 1
+    jr z, :++
+    cp a, 12
+    jr nc, :+
+    ld a, [hRightState]
+    cp a, 1
+    jr z, :++
+    cp a, 12
+    jr nc, :+
+    jp drawStaticInfo
+:   ldh a, [hFrameCtr]
+    and %00000111
+    cp 4
+    jp nz, drawStaticInfo
+:   ld a, SFX_MOVE
+    call SFXEnqueue
+    jp drawStaticInfo
+
 
     ; Always draw the score, level, next piece, and held piece.
 drawStaticInfo:

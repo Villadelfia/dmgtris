@@ -140,6 +140,18 @@ fetchPieceMode:
     ld a, [wNextPiece]
     ld [wCurrentPiece], a
     call GetNextPiece
+
+    ; Check if IRS is charged.
+    ld a, [hAState]
+    ld b, a
+    ld a, [hBState]
+    or a, b
+    jr z, :+
+    ld a, SFX_IRS
+    call SFXEnqueue
+
+:   ld a, [wNextPiece]
+    call SFXEnqueue
     ld a, MODE_SPAWN_PIECE
     ld [wMode], a
     jp drawStaticInfo

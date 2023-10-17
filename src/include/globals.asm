@@ -104,6 +104,10 @@ DEF PIECE_L             EQU 4
 DEF PIECE_O             EQU 5
 DEF PIECE_T             EQU 6
 DEF PIECE_NONE          EQU 255
+DEF SFX_IRS             EQU 7
+DEF SFX_DROP            EQU 8
+DEF SFX_LOCK            EQU 9
+DEF SFX_BELL            EQU 10
 
 
 ENDC

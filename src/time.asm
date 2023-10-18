@@ -13,8 +13,11 @@ hEvenFrame:: ds 1
 SECTION "Time Functions", ROM0
 TimeInit::
     xor a, a
+    ldh [rTMA], a
     ldh [hEvenFrame], a
     ldh [hFrameCtr], a
+    ld a, TACF_262KHZ | TACF_START
+    ldh [rTAC], a
     ret
 
 HandleTimers::

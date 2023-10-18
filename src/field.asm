@@ -32,7 +32,7 @@ BlitField::
     ; Where to put it
     ld hl, FIELD_TOP_LEFT
     ; How much to increment hl after each row
-    ld bc, 32
+    ld bc, 32-10
 
     ; The first 14 rows can be blitted without checking for vram access.
     REPT 14
@@ -44,23 +44,29 @@ BlitField::
         add hl, bc
     ENDR
 
+:   ldh a, [rLY]
+    cp a, 0
+    jr nz, :-
+
     ; The last 6 rows need some care.
     REPT 6
-        REPT 2
-:           ldh a, [rSTAT]
-            and STATF_LCD
-            cp STATF_HBL
-            jr z, :-
-:           ldh a, [rSTAT]
-            and STATF_LCD
-            cp STATF_HBL
-            jr nz, :-
-            REPT 5
-                ld a, [de]
-                ld [hl+], a
-                inc de
-            ENDR
+        ; Wait until start of drawing, then insert 35 nops.
+:       ldh a, [rSTAT]
+        and a, 3
+        cp a, 3
+        jr nz, :-
+        REPT 35
+            nop
         ENDR
+
+        ; Blit a line.
+        REPT 10
+            ld a, [de]
+            ld [hl+], a
+            inc de
+        ENDR
+
+        ; Increment HL so that the next line can be blitted.
         add hl, bc
     ENDR
 

@@ -12,12 +12,21 @@ wStateEventHandler:: ds 2
 wStateVBlankHandler:: ds 2
 
 
+SECTION "Stack", WRAM0
+wStack:
+    ds STACK_SIZE
+wStackEnd:
+
+
 SECTION "Code Entry Point", ROM0
 Main::
     ; Turn off LCD during initialization.
     wait_vram
     xor a, a
     ldh [rLCDC], a
+
+    ; Stack
+    ld sp, wStackEnd
 
     ; We use a single set of tiles for the entire game, so we copy it at the start.
     ld de, Tiles
@@ -53,7 +62,13 @@ Main::
     ld a, TACF_262KHZ | TACF_START
 
     ; Zero out the ram where needed.
-    call InitializeVariables
+    call TimeInit
+    call IntrInit
+    call InputInit
+    call ScoreInit
+    call LevelInit
+    call FieldInit
+    call SFXInit
 
     ; Set up the interrupt handlers.
     call InitializeLCDCInterrupt
@@ -92,24 +107,6 @@ EventLoopPostVBlankHandler::
 
     ; Jump back to the start of the event loop.
     jr EventLoop
-
-
-
-; *****************************************************************************
-; *                                                                           *
-; *  Functions                                                                *
-; *                                                                           *
-; *****************************************************************************
-SECTION "Functions", ROM0
-InitializeVariables:
-    call TimeInit
-    call IntrInit
-    call InputInit
-    call ScoreInit
-    call LevelInit
-    call FieldInit
-    call SFXInit
-    ret
 
 
 ENDC

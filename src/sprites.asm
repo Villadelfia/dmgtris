@@ -49,7 +49,9 @@ OAMDMA::
         jr nz, :-
 
         ; Jump to the current state's vblank handler.
+        ld b, 0
         ldh a, [hGameState]
+        cp a, b
         jp nz, BlitField
         jp EventLoop
     ENDL

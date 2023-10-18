@@ -64,7 +64,9 @@ EventLoop::
     call HandleTimers
 
     ; Call the current state's event handler.
+    ld b, 0
     ldh a, [hGameState]
+    cp a, b
     jp nz, GamePlayEventLoopHandler
 EventLoopPostHandler::
 

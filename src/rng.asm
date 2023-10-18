@@ -12,7 +12,7 @@ wNextPiece::   ds 1
 
 
 section "RNG Functions", ROM0
-StartNewGame::
+RNGInit::
     ; Do some bit fuckery on the seed using the gameboy's free-running timers.
     ld hl, wRNGSeed
     ldh a, [rDIV]

@@ -17,8 +17,9 @@ INCLUDE "structs.asm"
 ; We don't wait for 2 because it's super short and impractical to do much of anything in.
 MACRO wait_vram
     ld hl, rSTAT
-:   bit 1, [hl]
-    jr nz, :-
+.wvr\@
+    bit 1, [hl]
+    jr nz, .wvr\@
 ENDM
 
 
@@ -26,17 +27,21 @@ ENDM
 ; We do this by checking for scanline 144.
 MACRO wait_vblank
     ld b, 144
-:   ldh a, [rLY]
+.wvb\@
+    ldh a, [rLY]
     cp a, b
-    jr nz, :-
+    jr nz, .wvb\@
 ENDM
 
 
 ; Waits for PPU mode to be at the end of mode 1.
 ; We do this by checking for scanline 0.
 MACRO wait_vblank_end
-:   ldh a, [rLY]
-    jr nz, :-
+    ld b, 0
+.wvbe\@
+    ldh a, [rLY]
+    cp a, b
+    jr nz, .wvbe\@
 ENDM
 
 

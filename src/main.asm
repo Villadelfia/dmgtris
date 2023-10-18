@@ -13,9 +13,9 @@ wStateVBlankHandler:: ds 2
 
 
 SECTION "Stack", WRAM0
-wStack:
+wStack::
     ds STACK_SIZE
-wStackEnd:
+wStackEnd::
 
 
 SECTION "Code Entry Point", ROM0
@@ -25,18 +25,12 @@ Main::
     xor a, a
     ldh [rLCDC], a
 
-    ; Stack
+    ; Set up stack
     ld sp, wStackEnd
 
     ; We use a single set of tiles for the entire game, so we copy it at the start.
     ld de, Tiles
     ld hl, _VRAM
-    ld bc, TilesEnd - Tiles
-    call UnsafeMemCopy
-
-    ; Also to the second bank of tile data.
-    ld de, Tiles
-    ld hl, _VRAM + $800
     ld bc, TilesEnd - Tiles
     call UnsafeMemCopy
 
@@ -92,10 +86,8 @@ EventLoopPostHandler::
     ld a, [wStateVBlankHandler + 1]
     ld h, a
     jp hl
-EventLoopPostVBlankHandler::
 
-    ; Jump back to the start of the event loop.
-    jr EventLoop
+    ; The VBlank Handler is expected to end with jp EventLoop.
 
 
 ENDC

@@ -13,7 +13,7 @@ hGameState:: ds 1
 
 SECTION "Stack", WRAM0
 wStack::
-    ds STACK_SIZE
+    ds STACK_SIZE + 1
 wStackEnd::
 
 
@@ -25,7 +25,7 @@ Main::
     ldh [rLCDC], a
 
     ; Set up stack
-    ld sp, wStackEnd
+    ld sp, wStackEnd-1
 
     ; We use a single set of tiles for the entire game, so we copy it at the start.
     ld de, Tiles

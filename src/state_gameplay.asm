@@ -166,6 +166,10 @@ spawnPieceMode:
     jr nz, :+
     ld e, 1
     call LevelUp
+    ld a, $10
+    ld hl, wScoreIncrement+1
+    ld [hl], a
+    call IncreaseScore
 
 :   ld a, [hUpState]
     cp a, 1

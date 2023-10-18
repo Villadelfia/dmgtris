@@ -8,6 +8,8 @@ INCLUDE "globals.asm"
 SECTION "Level Variables", WRAM0
 wCLevel:: ds 4
 wNLevel:: ds 6 ; The extra 2 bytes will be clobbered by the sprite drawing functions.
+wPrevHundreds:: ds 1
+
 
 SECTION "Critical Level Variables", HRAM
 hCurrentDAS:: ds 1
@@ -64,14 +66,9 @@ LevelUp::
     cp a, $09
     ret z
 
-    ; If we required a line clear, unset the flag and play the sfx.
-    ldh a, [hRequiresLineClear]
-    cp a, $FF
-    jr nz, .doit
-    ld a, SFX_LEVEL_UP
-    call SFXEnqueue
-    xor a, a
-    ldh [hRequiresLineClear], a
+    ; Save the current hundred digit.
+    ld a, [wCLevel+1]
+    ld [wPrevHundreds], a
 
     ; Increment LSD.
 .doit
@@ -119,6 +116,8 @@ LevelUp::
     ld [hl-], a
     ld [hl], a
     call DoSpeedUp
+    ld a, SFX_RANK_UP
+    call SFXEnqueue
     ret
 
 .checknlevel
@@ -149,7 +148,7 @@ LevelUp::
     ldh [hRequiresLineClear], a
     ld a, SFX_BELL
     call SFXEnqueue
-    jr .checkspeedup
+    jr .leveljinglemaybe
 
     ; Otherwise check the second digit of wCLevel.
 :   ld hl, wCLevel+1
@@ -180,20 +179,27 @@ LevelUp::
     ld a, [hl+]
     and a, [hl]
     cp a, 9
-    jr nz, .checkspeedup
+    jr nz, .leveljinglemaybe
     ld a, $FF
     ldh [hRequiresLineClear], a
     ld a, SFX_BELL
+    call SFXEnqueue
+
+.leveljinglemaybe
+    ld a, [wPrevHundreds]
+    ld b, a
+    ld a, [wCLevel+1]
+    cp a, b
+    jr z, .checkspeedup
+    ld a, SFX_LEVEL_UP
     call SFXEnqueue
 
 .checkspeedup
     ldh a, [hNextSpeedUp]
     and a, $F0
     jr z, :+
-    rrc a
-    rrc a
-    rrc a
-    rrc a
+    swap a
+    and a, $0F
     ld hl, wCLevel
     cp a, [hl]
     ret nc
@@ -209,10 +215,8 @@ LevelUp::
 :   ldh a, [hNextSpeedUp+1]
     and a, $F0
     jr z, :+
-    rrc a
-    rrc a
-    rrc a
-    rrc a
+    swap a
+    and a, $0F
     ld hl, wCLevel+2
     cp a, [hl]
     jr z, :+

@@ -1,3 +1,6 @@
 wCLevel 4 Hexadecimal
 hPlayQueue 4 Hexadecimal
 hPlayhead 4 Hexadecimal
+wScoreIncrementBCD 6 Hexadecimal
+wScoreIncrement 2 Hexadecimal
+wScore 6 Hexadecimal

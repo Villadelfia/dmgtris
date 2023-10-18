@@ -6,32 +6,37 @@ INCLUDE "hardware.inc"
 INCLUDE "structs.asm"
 
 
-; Waits for VRAM to be safe to access. (Includes hblank.)
+; PPU modes:
+; - 0: HBlank
+; - 1: VBlank
+; - 2: OAM Scan
+; - 3: Drawing
+
+
+; Waits for PPU mode to be 0 or 1.
+; We don't wait for 2 because it's super short and impractical to do much of anything in.
 MACRO wait_vram
-.waitvram\@
-    ldh a, [rSTAT]
-    and STATF_BUSY
-    jr nz, .waitvram\@
+    ld hl, rSTAT
+:   bit 1, [hl]
+    jr nz, :-
 ENDM
 
 
-; Waits for lcd to be in vblank.
+; Waits for PPU mode to be at the start of mode 1.
+; We do this by checking for scanline 144.
 MACRO wait_vblank
-.waitvb\@
-    ldh a, [rSTAT]
-    and STATF_LCD
-    cp STATF_VBL
-    jr nz, .waitvb\@
+    ld b, 144
+:   ldh a, [rLY]
+    cp a, b
+    jr nz, :-
 ENDM
 
 
-; Waits for lcd to not be in vblank.
+; Waits for PPU mode to be at the end of mode 1.
+; We do this by checking for scanline 0.
 MACRO wait_vblank_end
-.waitvbe\@
-    ldh a, [rSTAT]
-    and STATF_LCD
-    cp STATF_VBL
-    jr z, .waitvbe\@
+:   ldh a, [rLY]
+    jr nz, :-
 ENDM
 
 

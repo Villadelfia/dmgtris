@@ -49,25 +49,10 @@ Main::
     call ClearOAM
     call CopyOAMHandler
 
-    ; Set up the palettes.
-    ld a, PALETTE_REGULAR
-    set_bg_palette
-    set_obj0_palette
-    ld a, PALETTE_LIGHTER_1
-    set_obj1_palette
-
-    ; Get the timer going. It's used for RNG.
-    xor a, a
-    ldh [rTMA], a
-    ld a, TACF_262KHZ | TACF_START
-
     ; Zero out the ram where needed.
     call TimeInit
     call IntrInit
     call InputInit
-    call ScoreInit
-    call LevelInit
-    call FieldInit
     call SFXInit
 
     ; Set up the interrupt handlers.
@@ -93,8 +78,12 @@ EventLoop::
     jp hl
 EventLoopPostHandler::
 
-    ; Wait for vblank and update OAM.
-    wait_vblank
+    ; Wait for vblank.
+:   ldh a, [rLY]
+    cp a, 144
+    jr nz, :-
+
+    ; Do OAM DMA.
     call hOAMDMA
 
     ; Call the current state's vblank handler.

@@ -7,9 +7,8 @@ INCLUDE "res/tiles.inc"
 INCLUDE "res/gameplay_map.inc"
 
 
-SECTION "Globals", WRAM0
-wStateEventHandler:: ds 2
-wStateVBlankHandler:: ds 2
+SECTION "Globals", HRAM
+hGameState:: ds 1
 
 
 SECTION "Stack", WRAM0
@@ -65,11 +64,8 @@ EventLoop::
     call HandleTimers
 
     ; Call the current state's event handler.
-    ld a, [wStateEventHandler]
-    ld l, a
-    ld a, [wStateEventHandler + 1]
-    ld h, a
-    jp hl
+    ldh a, [hGameState]
+    jp nz, GamePlayEventLoopHandler
 EventLoopPostHandler::
 
     ; Wait for vblank.

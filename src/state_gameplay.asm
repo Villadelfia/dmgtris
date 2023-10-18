@@ -70,16 +70,8 @@ SwitchToGameplay::
     ld [wModeCounter], a
 
     ; Install the event loop handlers.
-    ld hl, GamePlayEventLoopHandler
-    ld a, l
-    ld [wStateEventHandler], a
-    ld a, h
-    ld [wStateEventHandler + 1], a
-    ld hl, BlitField
-    ld a, l
-    ld [wStateVBlankHandler], a
-    ld a, h
-    ld [wStateVBlankHandler + 1], a
+    ld a, 1
+    ldh [hGameState], a
 
     ; And turn the LCD back on before we start.
     ldh a, [rLCDC]

@@ -44,10 +44,17 @@ SwitchToGameplay::
     call ClearOAM
     call SetNumberSpritePositions
 
-    ; Initialize the RNG.
-    call StartNewGame
+    ; Set up the palettes.
+    ld a, PALETTE_REGULAR
+    set_bg_palette
+    set_obj0_palette
+    ld a, PALETTE_LIGHTER_1
+    set_obj1_palette
 
-    ; Initialize the score and level.
+    ; Initialize the RNG.
+    call RNGInit
+
+    ; Initialize the score, level and field.
     call ScoreInit
     call LevelInit
     call FieldInit
@@ -68,7 +75,7 @@ SwitchToGameplay::
     ld [wStateEventHandler], a
     ld a, h
     ld [wStateEventHandler + 1], a
-    ld hl, GamePlayEventLoopVBlankHandler
+    ld hl, BlitField
     ld a, l
     ld [wStateVBlankHandler], a
     ld a, h
@@ -213,9 +220,5 @@ drawStaticInfo:
 
     jp EventLoopPostHandler
 
-
-GamePlayEventLoopVBlankHandler::
-    call BlitField
-    jp EventLoopPostVBlankHandler
 
 ENDC

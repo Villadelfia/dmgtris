@@ -22,6 +22,8 @@ hCurrentPieceX: ds 1
 hCurrentPieceY: ds 1
 hCurrentPieceRotationState: ds 1
 hHeldPiece: ds 1
+hHoldSpent: ds 1
+hSkipJingle: ds 1
 
 
 SECTION "Gameplay Functions", ROM0
@@ -62,6 +64,8 @@ SwitchToGameplay::
     ; We don't start with a held piece.
     ld a, PIECE_NONE
     ldh [hHeldPiece], a
+    xor a, a
+    ldh [hHoldSpent], a
 
     ; Leady mode.
     ld a, MODE_LEADY
@@ -96,7 +100,8 @@ GamePlayEventLoopHandler::
     cp MODE_FETCH_PIECE
     jr z, fetchPieceMode
     cp MODE_SPAWN_PIECE
-    jr z, spawnPieceMode
+    jp z, spawnPieceMode
+
 
     ; Draw "READY" and wait a bit.
 leadyMode:
@@ -113,6 +118,7 @@ leadyMode:
     call UnsafeMemCopy
     jp drawStaticInfo
 
+
     ; Draw "GO" and wait a bit.
 goMode:
     ld a, [wModeCounter]
@@ -128,6 +134,7 @@ goMode:
     call UnsafeMemCopy
     jp drawStaticInfo
 
+
     ; Clear the field, ready for gameplay.
 postGoMode:
     ld a, MODE_FETCH_PIECE
@@ -135,31 +142,74 @@ postGoMode:
     call FieldClear
     jp drawStaticInfo
 
+
     ; Fetch the next piece.
 fetchPieceMode:
     ld a, [wNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
 
-    ; Check if IRS is charged.
+    ; A piece will spawn in the middle, at the top of the screen, not rotated by default.
+    ld a, 5
+    ldh [hCurrentPieceX], a
+    ld a, 3
+    ldh [hCurrentPieceY], a
+    xor a, a
+    ldh [hSkipJingle], a
+    ldh [hCurrentPieceRotationState], a
+    ldh [hHoldSpent], a
+
+    ; Check if IHS is requested.
+    ; Apply the hold if so.
+.checkIHS
+    ld a, [hSelectState]
+    cp a, 0
+    jr z, .checkIRSA
+    call DoHold
+    ; Holding does its own IRS check.
+    jr .checkJingle
+
+    ; Check if IRS is requested.
+    ; Apply the rotation if so.
+.checkIRSA
     ld a, [hAState]
-    ld b, a
-    ld a, [hBState]
-    or a, b
-    jr z, :+
+    cp a, 0
+    jr z, .checkIRSB
+    ld a, 1
+    ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
     call SFXEnqueue
 
-:   ld a, [wNextPiece]
+.checkIRSB
+    ld a, [hBState]
+    cp a, 0
+    jr z, .checkJingle
+    ld a, 3
+    ldh [hCurrentPieceRotationState], a
+    ld a, SFX_IRS
     call SFXEnqueue
+
+.checkJingle
+    ld a, [hSkipJingle]
+    cp a, 0
+    jr nz, .skipJingle
+.playNextJingle
+    ld a, [wNextPiece]
+    call SFXEnqueue
+.skipJingle
     ld a, MODE_SPAWN_PIECE
     ld [wMode], a
-    jp drawStaticInfo
+    ; State falls through to the next.
+
 
     ; Spawn the piece.
 spawnPieceMode:
-    ; todo
+    ; TODO: At this point all the info needed to spawn the piece is known.
+    ; We spawn the piece and then check if this causes a top out, and transition to the game over state if so.
+    ; This then immediately transitions into regular gameplay.
 
+    call ToShadowField
+    call FromShadowField
 
     ld a, [hEvenFrame]
     cp a, 0
@@ -176,7 +226,7 @@ spawnPieceMode:
     jr nz, :+
     ld a, MODE_FETCH_PIECE
     ld [wMode], a
-    jp drawStaticInfo
+    jr drawStaticInfo
 
 :   ld a, [hLeftState]
     cp a, 1
@@ -188,14 +238,20 @@ spawnPieceMode:
     jr z, :++
     cp a, 12
     jr nc, :+
-    jp drawStaticInfo
+    jr drawStaticInfo
 :   ldh a, [hFrameCtr]
     and %00000111
     cp 4
-    jp nz, drawStaticInfo
+    jr nz, drawStaticInfo
 :   ld a, SFX_MOVE
     call SFXEnqueue
-    jp drawStaticInfo
+    jr drawStaticInfo
+
+
+    ; This mode lasts for as long as the piece is in motion.
+    ; Field will let us know when it has locked in place.
+pieceInMotionMode:
+    ; TODO.
 
 
     ; Always draw the score, level, next piece, and held piece.
@@ -219,6 +275,58 @@ drawStaticInfo:
     call ApplyNumbers
 
     jp EventLoopPostHandler
+
+
+DoHold:
+    ; Mark hold as spent.
+    ld a, $FF
+    ldh [hHoldSpent], a
+
+    ; Check if IRS is requested.
+    ; Apply the rotation if so.
+.checkIRSHA
+    ld a, [hAState]
+    cp a, 0
+    jr z, .checkIRSHB
+    ld a, 1
+    ldh [hCurrentPieceRotationState], a
+    ld a, SFX_IRS
+    call SFXEnqueue
+
+.checkIRSHB
+    ld a, [hBState]
+    cp a, 0
+    jr z, .noRotation
+    ld a, 3
+    ldh [hCurrentPieceRotationState], a
+    ld a, SFX_IRS
+    call SFXEnqueue
+    jr .doHoldOperation
+
+.noRotation
+    ld a, 0
+    ldh [hCurrentPieceRotationState], a
+
+.doHoldOperation
+    ; If we're not holding a piece, hold the current piece and get a new one.
+    ldh a, [hHeldPiece]
+    cp a, PIECE_NONE
+    jr nz, :+
+    ldh a, [hCurrentPiece]
+    ldh [hHeldPiece], a
+    ld a, [wNextPiece]
+    ldh [hCurrentPiece], a
+    call GetNextPiece
+    ret
+
+:   ld b, a
+    ldh a, [hCurrentPiece]
+    ldh [hHeldPiece], a
+    ld a, b
+    ldh [hCurrentPiece], a
+    ld a, $FF
+    ldh [hSkipJingle], a
+    ret
 
 
 ENDC

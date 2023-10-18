@@ -39,12 +39,21 @@ SECTION "OAM DMA Code", ROM0
 OAMDMA::
     LOAD "OAM DMA", HRAM
     hOAMDMA::
+        ; Start OAM DMA transfer.
         ld a, HIGH(wShadowOAM)
         ldh [rDMA], a
+
+        ; Wait for it to complete...
         ld a, 40
 :       dec a
         jr nz, :-
-        ret
+
+        ; Jump to the current state's vblank handler.
+        ld a, [wStateVBlankHandler]
+        ld l, a
+        ld a, [wStateVBlankHandler + 1]
+        ld h, a
+        jp hl
     ENDL
 OAMDMAEnd::
 

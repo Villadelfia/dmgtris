@@ -73,19 +73,11 @@ EventLoop::
 EventLoopPostHandler::
 
     ; Wait for vblank.
-:   ldh a, [rLY]
-    cp a, 144
-    jr nz, :-
+    wait_vblank
 
     ; Do OAM DMA.
-    call hOAMDMA
-
-    ; Call the current state's vblank handler.
-    ld a, [wStateVBlankHandler]
-    ld l, a
-    ld a, [wStateVBlankHandler + 1]
-    ld h, a
-    jp hl
+    ; This will chain jump into the vblank handler.
+    jp hOAMDMA
 
     ; The VBlank Handler is expected to end with jp EventLoop.
 

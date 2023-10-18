@@ -4,7 +4,6 @@ DEF GAMEPLAY_MAP_INC EQU 1
 
 SECTION "Gameplay Tilemap", ROM0
 GameplayTilemap::
-
     DB $02,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $01,$03,$09,$01,$01,$01,$01,$01,$01,$09
     DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00

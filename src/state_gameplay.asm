@@ -160,10 +160,14 @@ fetchPieceMode:
 spawnPieceMode:
     ; todo
 
+
+    ld a, [hEvenFrame]
+    cp a, 0
+    jr nz, :+
     ld e, 1
     call LevelUp
 
-    ld a, [hUpState]
+:   ld a, [hUpState]
     cp a, 1
     jr nz, :+
     ld a, MODE_FETCH_PIECE

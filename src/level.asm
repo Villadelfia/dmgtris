@@ -64,7 +64,18 @@ LevelUp::
     cp a, $09
     ret z
 
+    ; If we required a line clear, unset the flag and play the sfx.
+    ldh a, [hRequiresLineClear]
+    cp a, $FF
+    jr nz, .doit
+    ld a, SFX_LEVEL_UP
+    call SFXEnqueue
+    xor a, a
+    ldh [hRequiresLineClear], a
+
     ; Increment LSD.
+.doit
+    ld hl, wCLevel+3
     ld a, [hl]
     add a, e
     ld [hl], a

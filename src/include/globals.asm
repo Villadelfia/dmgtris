@@ -119,6 +119,8 @@ DEF SFX_DROP            EQU 8
 DEF SFX_LOCK            EQU 9
 DEF SFX_BELL            EQU 10
 DEF SFX_MOVE            EQU 11
+DEF SFX_RANK_UP         EQU 12
+DEF SFX_LEVEL_UP        EQU 13
 DEF STACK_SIZE          EQU 64
 
 

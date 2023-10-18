@@ -6,29 +6,76 @@ INCLUDE "globals.asm"
 
 
 SECTION "Field Variables", WRAM0
-wField:: ds (10*21)
+wField:: ds (10*24)
+wShadowField:: ds (14*26)
 
 
 SECTION "Field Functions", ROM0
 FieldInit::
     ld hl, wField
-    ld bc, 10*21
+    ld bc, 10*24
     ld d, 1
+    call UnsafeMemSet
+    ld hl, wShadowField
+    ld bc, 14*26
+    ld d, $FF
     call UnsafeMemSet
     ret
 
 
 FieldClear::
     ld hl, wField
-    ld bc, 10*21
+    ld bc, 10*24
     ld d, TILE_FIELD_EMPTY
     call UnsafeMemSet
     ret
 
+ToShadowField::
+    ld hl, wField
+    ld de, wShadowField+2
+    ld c, 24
+.outer
+    ld b, 10
+.inner
+    ld a, [hl+]
+    ld [de], a
+    inc de
+    dec b
+    jr nz, .inner
+    inc de
+    inc de
+    inc de
+    inc de
+    dec c
+    jr nz, .outer
+    ret
+
+
+FromShadowField::
+    ld hl, wField
+    ld de, wShadowField+2
+    ld c, 24
+.outer
+    ld b, 10
+.inner
+    ld a, [de]
+    ld [hl+], a
+    inc de
+    dec b
+    jr nz, .inner
+    inc de
+    inc de
+    inc de
+    inc de
+    dec c
+    jr nz, .outer
+    ret
+
+
     ; This routine will copy wField onto the screen.
 BlitField::
     ; What to copy
-    ld de, wField + 10
+    ld de, wField + 40
     ; Where to put it
     ld hl, FIELD_TOP_LEFT
     ; How much to increment hl after each row

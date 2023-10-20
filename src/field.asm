@@ -361,6 +361,9 @@ CanPieceFit:
 
 
 TrySpawnPiece::
+    ; Always reset these for a new piece.
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
     ldh a, [hCurrentFramesPerGravityTick]
     ldh [hTicksUntilG], a
 
@@ -771,6 +774,9 @@ FieldProcess::
 
 
 .postmove
+    ; TODO: Do we need to reset the lock timer?
+    ; TODO: Do we need to decrement the lock timer?
+    ; TODO: What tile do we use to draw the piece?
 
 
     ; Draw the piece.
@@ -791,7 +797,6 @@ FieldProcess::
     pop hl
     pop de
     call DrawPiece
-
     ret
 
 ENDC

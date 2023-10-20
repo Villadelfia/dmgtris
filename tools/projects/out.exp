@@ -4,3 +4,7 @@ hPlayhead 4 Hexadecimal
 wScoreIncrementBCD 6 Hexadecimal
 wScoreIncrement 2 Hexadecimal
 wScore 6 Hexadecimal
+hPieceDataBase 2 Hexadecimal
+hPieceDataOffset 1 Hexadecimal
+hCurrentPiece 1 Hexadecimal
+hCurrentPieceY 1 Hexadecimal

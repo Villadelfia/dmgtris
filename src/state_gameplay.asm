@@ -10,6 +10,9 @@ DEF MODE_GO EQU 1
 DEF MODE_POSTGO EQU 2
 DEF MODE_FETCH_PIECE EQU 3
 DEF MODE_SPAWN_PIECE EQU 4
+DEF MODE_PIECE_IN_MOTION EQU 5
+DEF MODE_DELAY EQU 6
+DEF MODE_GAME_OVER EQU 7
 
 
 SECTION "Gameplay Variables", WRAM0
@@ -17,10 +20,10 @@ wMode: ds 1
 wModeCounter: ds 1
 
 SECTION "Critical Gameplay Variables", HRAM
-hCurrentPiece: ds 1
-hCurrentPieceX: ds 1
-hCurrentPieceY: ds 1
-hCurrentPieceRotationState: ds 1
+hCurrentPiece:: ds 1
+hCurrentPieceX:: ds 1
+hCurrentPieceY:: ds 1
+hCurrentPieceRotationState:: ds 1
 hHeldPiece: ds 1
 hHoldSpent: ds 1
 hSkipJingle: ds 1
@@ -101,6 +104,12 @@ GamePlayEventLoopHandler::
     jr z, fetchPieceMode
     cp MODE_SPAWN_PIECE
     jp z, spawnPieceMode
+    cp MODE_PIECE_IN_MOTION
+    jp z, pieceInMotionMode
+    cp MODE_DELAY
+    jp z, delayMode
+    cp MODE_GAME_OVER
+    jp z, gameOverMode
 
 
     ; Draw "READY" and wait a bit.
@@ -204,53 +213,28 @@ fetchPieceMode:
 
     ; Spawn the piece.
 spawnPieceMode:
-    ; TODO: At this point all the info needed to spawn the piece is known.
-    ; We spawn the piece and then check if this causes a top out, and transition to the game over state if so.
-    ; This then immediately transitions into regular gameplay.
-
-    call ToShadowField
-    call FromShadowField
-
-    ld a, [hEvenFrame]
-    cp a, 0
-    jr nz, :+
-    ld e, 1
-    call LevelUp
-    ld a, $10
-    ld hl, wScoreIncrement+1
-    ld [hl], a
-    call IncreaseScore
-
-:   ld a, [hUpState]
-    cp a, 1
-    jr nz, :+
-    ld a, MODE_FETCH_PIECE
+    call TrySpawnPiece
+    cp a, $FF
+    jr z, :+
+    ld a, MODE_GAME_OVER
     ld [wMode], a
     jr drawStaticInfo
-
-:   ld a, [hLeftState]
-    cp a, 1
-    jr z, :++
-    cp a, 12
-    jr nc, :+
-    ld a, [hRightState]
-    cp a, 1
-    jr z, :++
-    cp a, 12
-    jr nc, :+
-    jr drawStaticInfo
-:   ldh a, [hFrameCtr]
-    and %00000111
-    cp 4
-    jr nz, drawStaticInfo
-:   ld a, SFX_MOVE
-    call SFXEnqueue
-    jr drawStaticInfo
+:   ld a, MODE_PIECE_IN_MOTION
+    ld [wMode], a
 
 
     ; This mode lasts for as long as the piece is in motion.
     ; Field will let us know when it has locked in place.
 pieceInMotionMode:
+    call FieldProcess
+    jr drawStaticInfo
+
+
+delayMode:
+    ; TODO.
+
+
+gameOverMode:
     ; TODO.
 
 

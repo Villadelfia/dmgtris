@@ -42,7 +42,7 @@ GetInput::
     ; If so, save the new DAS charge.
     jr nc, :+
     ld a, b
-    ldh [hDASCharge], a
+    ;ldh [hDASCharge], a
 
     ; Check if the right state > DAS charge.
 :   ldh a, [hRightState]
@@ -52,7 +52,7 @@ GetInput::
     ; If so, save the new DAS charge.
     jr nc, :+
     ld a, b
-    ldh [hDASCharge], a
+    ;ldh [hDASCharge], a
 
     ; There's an overflow risk here if the DAS charge is 255.
 :   cp a, $FF

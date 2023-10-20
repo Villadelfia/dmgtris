@@ -53,7 +53,8 @@ TitleEventLoopHandler::
     ldh a, [hBState]
     or a, b
     or a, c
-    jp z, EventLoopPostHandler
+    cp a, 1
+    jp nz, EventLoopPostHandler
     call SwitchToGameplay
     jp EventLoopPostHandler
 

@@ -8,3 +8,4 @@ hPieceDataBase 2 Hexadecimal
 hPieceDataOffset 1 Hexadecimal
 hCurrentPiece 1 Hexadecimal
 hCurrentPieceY 1 Hexadecimal
+hUpState 1 Hexadecimal

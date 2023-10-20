@@ -248,7 +248,7 @@ pieceInMotionMode:
     ld [wMode], a
 
     ; Do we go into delay state?
-    ldh a, [hCurrentLockDelayRemaining]
+:   ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
     jr nz, :+
     ld a, MODE_DELAY

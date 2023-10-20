@@ -11,12 +11,14 @@ wShadowField:: ds (14*26)
 
 
 SECTION "Field High Variables", HRAM
-hPieceDataBase:: ds 2
-hPieceDataOffset:: ds 1
+hPieceDataBase: ds 2
+hPieceDataOffset: ds 1
 hCurrentLockDelayRemaining:: ds 1
-hTicksUntilG:: ds 1
-hWantX:: ds 1
-hWantRotation:: ds 1
+hWantedTile: ds 1
+hTicksUntilG: ds 1
+hWantX: ds 1
+hYPosAtStartOfFrame: ds 1
+hWantRotation: ds 1
 
 
 SECTION "Field Functions", ROM0
@@ -508,18 +510,8 @@ DrawPiece:
 FieldProcess::
     ; Wipe out the piece.
     ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hCurrentPieceX]
-    call XYToFieldPtr
-    ld d, h
-    ld e, l
-    call GetPieceData
-    ld b, TILE_FIELD_EMPTY
-    push hl
-    push de
-    pop hl
-    pop de
-    call DrawPiece
+    ldh [hYPosAtStartOfFrame], a
+    call FromShadowField
 
 
     ; Check if we're about to hold.
@@ -532,11 +524,19 @@ FieldProcess::
 
 
     ; If we press up, we want to do a sonic drop.
-    ldh a, [hUpState]
+:   ldh a, [hUpState]
     cp a, 1
     jr nz, :+
     ld b, 20
     jr .grav
+
+
+    ; If we press down, we want to do a soft drop.
+:   ldh a, [hDownState]
+    cp a, 0
+    jr z, :+
+    ld a, 1
+    ldh [hTicksUntilG], a
 
 
     ; Gravity?
@@ -791,13 +791,77 @@ FieldProcess::
 
 
 .postmove
-    ; TODO: Do we need to reset the lock timer?
-    ; TODO: Do we need to decrement the lock timer?
-    ; TODO: What tile do we use to draw the piece?
+    ; Are we grounded?
+    ldh a, [hCurrentPieceY]
+    inc a
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    call GetPieceData
+    call CanPieceFit
+    cp a, $FF
+    jr z, .notgrounded
+
+    ; We're grounded.
+    ; If the y position changed, play a sound.
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hYPosAtStartOfFrame]
+    cp a, b
+    jr z, :+
+    ld a, SFX_DROP
+    call SFXEnqueue
+    ; If the down button is held, lock.
+:   ldh a, [hDownState]
+    cp a, 0
+    jr z, :+
+    ld a, 1
+    ldh [hCurrentLockDelayRemaining], a
+:   ldh a, [hCurrentLockDelayRemaining]
+    dec a
+    ldh [hCurrentLockDelayRemaining], a
+    ; If we're out of lock delay, play a sound.
+    cp a, 0
+    jr nz, .draw
+    ld a, SFX_LOCK
+    call SFXEnqueue
+    jr .draw
+
+.notgrounded
+    ; Otherwise reset the lock delay.
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
 
 
     ; Draw the piece.
 .draw
+    ; If the lock delay is at the highest value, draw the piece normally.
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0
+    add a, b
+    ldh [hWantedTile], a
+    ldh a, [hCurrentLockDelay]
+    ld b, a
+    ldh a, [hCurrentLockDelayRemaining]
+    cp a, b
+    jr z, .drawpiece
+
+    ; If the lock delay is 0, draw the piece in the final color.
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0+7
+    add a, b
+    ldh [hWantedTile], a
+    ldh a, [hCurrentLockDelayRemaining]
+    cp a, 0
+    jr z, .drawpiece
+
+    ; Otherwise, look it up.
+    call GetTileShade
+
+    ; TODO: What tile do we use to draw the piece?
+.drawpiece
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
@@ -805,9 +869,7 @@ FieldProcess::
     ld d, h
     ld e, l
     call GetPieceData
-    ldh a, [hCurrentPiece]
-    ld b, TILE_PIECE_0
-    add a, b
+    ldh a, [hWantedTile]
     ld b, a
     push hl
     push de
@@ -815,5 +877,258 @@ FieldProcess::
     pop de
     call DrawPiece
     ret
+
+
+GetTileShade:
+    ; Possible values for tile delay:
+    ; 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 1
+    ; We don't need to handle the 1 case.
+    ld a, 0
+    ld b, a
+:   ldh a, [hCurrentLockDelay]
+    cp a, 30
+    jr z, .max30
+:   cp a, 25
+    jr z, .max25
+:   cp a, 20
+    jr z, .max20
+:   cp a, 18
+    jp z, .max18
+:   cp a, 16
+    jp z, .max16
+:   cp a, 14
+    jp z, .max14
+:   cp a, 12
+    jp z, .max12
+:   cp a, 10
+    jp z, .max10
+:   cp a, 8
+    jp z, .max8
+:   cp a, 6
+    jp z, .max6
+:   cp a, 4
+    jp z, .max4
+:   cp a, 2
+    jp z, .max2
+    ret
+.max30
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 4
+    ret c
+    cp a, 8
+    jp c, .s6
+    cp a, 12
+    jp c, .s5
+    cp a, 16
+    jp c, .s4
+    cp a, 20
+    jp c, .s3
+    cp a, 24
+    jp c, .s2
+    cp a, 28
+    jp c, .s1
+    jp .s0
+.max25
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 3
+    ret c
+    cp a, 6
+    jp c, .s6
+    cp a, 9
+    jp c, .s5
+    cp a, 12
+    jp c, .s4
+    cp a, 15
+    jp c, .s3
+    cp a, 18
+    jp c, .s2
+    cp a, 21
+    jp c, .s1
+    jp .s0
+.max20
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 2
+    ret c
+    cp a, 5
+    jp c, .s6
+    cp a, 7
+    jp c, .s5
+    cp a, 10
+    jp c, .s4
+    cp a, 12
+    jp c, .s3
+    cp a, 15
+    jp c, .s2
+    cp a, 17
+    jp c, .s1
+    jp .s0
+.max18
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 2
+    ret c
+    cp a, 4
+    jp c, .s6
+    cp a, 6
+    jp c, .s5
+    cp a, 9
+    jp c, .s4
+    cp a, 11
+    jp c, .s3
+    cp a, 13
+    jp c, .s2
+    cp a, 15
+    jp c, .s1
+    jp .s0
+.max16
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 2
+    ret c
+    cp a, 4
+    jp c, .s6
+    cp a, 6
+    jp c, .s5
+    cp a, 8
+    jp c, .s4
+    cp a, 10
+    jp c, .s3
+    cp a, 12
+    jp c, .s2
+    cp a, 14
+    jp c, .s1
+    jp .s0
+.max14
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 2
+    ret c
+    cp a, 4
+    jp c, .s6
+    cp a, 6
+    jp c, .s5
+    cp a, 7
+    jp c, .s4
+    cp a, 9
+    jp c, .s3
+    cp a, 11
+    jp c, .s2
+    cp a, 13
+    jp c, .s1
+    jp .s0
+.max12
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 1
+    ret c
+    cp a, 3
+    jp c, .s6
+    cp a, 4
+    jp c, .s5
+    cp a, 6
+    jp c, .s4
+    cp a, 7
+    jp c, .s3
+    cp a, 9
+    jp c, .s2
+    cp a, 10
+    jp c, .s1
+    jp .s0
+.max10
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 1
+    ret c
+    cp a, 2
+    jp c, .s6
+    cp a, 3
+    jp c, .s5
+    cp a, 5
+    jr c, .s4
+    cp a, 6
+    jr c, .s3
+    cp a, 7
+    jr c, .s2
+    cp a, 8
+    jr c, .s1
+    jr .s0
+.max8
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 1
+    ret c
+    cp a, 2
+    jr c, .s6
+    cp a, 3
+    jr c, .s5
+    cp a, 4
+    jr c, .s4
+    cp a, 5
+    jr c, .s3
+    cp a, 6
+    jr c, .s2
+    cp a, 7
+    jr c, .s1
+    jr .s0
+.max6
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 1
+    ret c
+    cp a, 2
+    jr c, .s5
+    cp a, 3
+    jr c, .s3
+    cp a, 4
+    jr c, .s2
+    cp a, 5
+    jr c, .s1
+    jr .s0
+.max4
+    ld a, [hCurrentLockDelayRemaining]
+    cp a, 1
+    ret c
+    cp a, 2
+    jr c, .s4
+    jr .s0
+.max2
+    ld a, [hCurrentLockDelayRemaining]
+    jr .s4
+.s0
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0
+    add a, b
+    ldh [hWantedTile], a
+    ret
+.s1
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0+(2*7)
+    add a, b
+    ldh [hWantedTile], a
+    ret
+.s2
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0+(3*7)
+    add a, b
+    ldh [hWantedTile], a
+    ret
+.s3
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0+(4*7)
+    add a, b
+    ldh [hWantedTile], a
+    ret
+.s4
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0+(5*7)
+    add a, b
+    ldh [hWantedTile], a
+    ret
+.s5
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0+(6*7)
+    add a, b
+    ldh [hWantedTile], a
+    ret
+.s6
+    ldh a, [hCurrentPiece]
+    ld b, TILE_PIECE_0+(7*7)
+    add a, b
+    ldh [hWantedTile], a
+    ret
+
 
 ENDC

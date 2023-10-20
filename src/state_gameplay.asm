@@ -255,7 +255,6 @@ pieceInMotionMode:
     ld [wMode], a
     ; No fall through this time.
 
-
 :   jr drawStaticInfo
 
 
@@ -264,7 +263,34 @@ delayMode:
 
 
 gameOverMode:
-    ; TODO.
+    ld de, sGameOver
+    ld hl, wField+(10*10)
+    ld bc, 10
+    call UnsafeMemCopy
+
+    ; Retry?
+    ldh a, [hAState]
+    cp a, 1
+    jr nz, :+
+    call RNGInit
+    call ScoreInit
+    call LevelInit
+    call FieldInit
+    ld a, PIECE_NONE
+    ldh [hHeldPiece], a
+    xor a, a
+    ldh [hHoldSpent], a
+    ld a, MODE_LEADY
+    ld [wMode], a
+    ld a, 90
+    ld [wModeCounter], a
+    jr drawStaticInfo
+
+    ; Quit
+:   ldh a, [hBState]
+    cp a, 1
+    jp z, $100
+    jr drawStaticInfo
 
 
     ; Always draw the score, level, next piece, and held piece.

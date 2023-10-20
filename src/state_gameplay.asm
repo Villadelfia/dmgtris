@@ -253,13 +253,22 @@ pieceInMotionMode:
     jr nz, :+
     ld a, MODE_DELAY
     ld [wMode], a
+    call ToShadowField
     ; No fall through this time.
 
 :   jr drawStaticInfo
 
 
 delayMode:
-    ; TODO.
+    call FieldDelay
+
+    ldh a, [hRemainingDelay]
+    cp a, 0
+    jr nz, :+
+    ld a, MODE_FETCH_PIECE
+    ld [wMode], a
+
+:   jr drawStaticInfo
 
 
 gameOverMode:
@@ -268,11 +277,11 @@ gameOverMode:
     ld bc, 10
     call UnsafeMemCopy
     ld de, sGameOver2
-    ld hl, wField+(11*10)
+    ld hl, wField+(12*10)
     ld bc, 10
     call UnsafeMemCopy
     ld de, sGameOver3
-    ld hl, wField+(12*10)
+    ld hl, wField+(14*10)
     ld bc, 10
     call UnsafeMemCopy
 

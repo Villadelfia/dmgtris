@@ -9,3 +9,5 @@ hPieceDataOffset 1 Hexadecimal
 hCurrentPiece 1 Hexadecimal
 hCurrentPieceY 1 Hexadecimal
 hUpState 1 Hexadecimal
+hActualG 1 Hexadecimal
+hClearedLines 4 Hexadecimal

@@ -68,6 +68,38 @@ sPieceYOffsets::    ; How to draw each piece. Y-offsets of the sprites.
 
 sSpeedCurve::         ; Speed curve of the game.
     dw $0000          ; Level 0000
+    db 1, 16          ; 1G every 16 frames
+    db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
+
+    dw $0015          ; Level 0015
+    db 1, 15          ; 1G every 15 frames
+    db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
+
+    dw $0030          ; Level 0030
+    db 1, 14          ; 1G every 14 frames
+    db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
+
+    dw $0040          ; Level 0040
+    db 1, 13          ; 1G every 13 frames
+    db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
+
+    dw $0050          ; Level 0050
+    db 1, 12          ; 1G every 12 frames
+    db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
+
+    dw $0060          ; Level 0060
+    db 1, 11          ; 1G every 11 frames
+    db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
+
+    dw $0070          ; Level 0070
+    db 1, 10          ; 1G every 10 frames
+    db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
+
+    dw $0080          ; Level 0080
+    db 1, 9           ; 1G every 9 frames
+    db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
+
+    dw $0090          ; Level 0090
     db 1, 8           ; 1G every 8 frames
     db 25, 14, 30, 40 ; ARE, DAS, LOCK, LINECLEAR
 

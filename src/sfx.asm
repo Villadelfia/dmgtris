@@ -1241,6 +1241,18 @@ SFXEnqueue::
     ret
 
 
+SFXKill::
+    ld a, $FF
+    ldh [hPlayQueue], a
+    ldh [hPlayQueue+1], a
+    ldh [hPlayQueue+2], a
+    ldh [hPlayQueue+3], a
+    xor a, a
+    ldh [hPlayhead], a
+    ldh [hPlayhead+1], a
+    ret
+
+
     ; This play routine must be called every frame.
 SFXPlay::
     ; Load the playhead position into HL.

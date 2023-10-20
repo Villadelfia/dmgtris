@@ -5,6 +5,11 @@ DEF FIELD_ASM EQU 1
 INCLUDE "globals.asm"
 
 
+DEF DELAY_STATE_DETERMINE_DELAY EQU 0
+DEF DELAY_STATE_LINE_CLEAR      EQU 1
+DEF DELAY_STATE_ARE             EQU 2
+
+
 SECTION "Field Variables", WRAM0
 wField:: ds (10*24)
 wShadowField:: ds (14*26)
@@ -14,11 +19,17 @@ SECTION "Field High Variables", HRAM
 hPieceDataBase: ds 2
 hPieceDataOffset: ds 1
 hCurrentLockDelayRemaining:: ds 1
+hDeepestY: ds 1
 hWantedTile: ds 1
+hWantedG: ds 1
+hActualG: ds 1
 hTicksUntilG: ds 1
 hWantX: ds 1
 hYPosAtStartOfFrame: ds 1
 hWantRotation: ds 1
+hRemainingDelay:: ds 1
+hDelayState: ds 1
+hClearedLines: ds 4
 
 
 SECTION "Field Functions", ROM0
@@ -42,7 +53,7 @@ FieldClear::
     ret
 
 
-ToShadowField:
+ToShadowField::
     ld hl, wField
     ld de, wShadowField+2
     ld c, 24
@@ -367,6 +378,10 @@ TrySpawnPiece::
     ldh [hCurrentLockDelayRemaining], a
     ldh a, [hCurrentFramesPerGravityTick]
     ldh [hTicksUntilG], a
+    ld a, $FF
+    ldh [hRemainingDelay], a
+    ld a, DELAY_STATE_DETERMINE_DELAY
+    ldh [hDelayState], a
 
     ; Copy the field to the shadow field.
     call ToShadowField
@@ -507,6 +522,58 @@ DrawPiece:
     ret
 
 
+FindMaxG:
+    ; Find the deepest the piece can go.
+    ; We cache this pointer, cause it otherwise takes too much time.
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    push hl
+    ld a, 2
+    ldh [hActualG], a
+.try
+    ld de, 28
+    pop hl
+    add hl, de
+    push hl
+    ld d, h
+    ld e, l
+    call GetPieceData
+    call CanPieceFit
+    cp a, $FF
+    jr nz, .foundmaybe
+    ldh a, [hActualG]
+    inc a
+    inc a
+    ldh [hActualG], a
+    jr .try
+
+.foundmaybe
+    ldh a, [hActualG]
+    dec a
+    ldh [hActualG], a
+    ld de, -14
+    pop hl
+    add hl, de
+    push hl
+    ld d, h
+    ld e, l
+    call GetPieceData
+    call CanPieceFit
+    cp a, $FF
+    jr nz, .found
+    pop hl
+    ret
+
+.found
+    pop hl
+    ldh a, [hActualG]
+    dec a
+    ldh [hActualG], a
+    ret
+
+
 FieldProcess::
     ; Wipe out the piece.
     ldh a, [hCurrentPieceY]
@@ -523,11 +590,21 @@ FieldProcess::
     ret nz
 
 
+    ; How deep can we go?
+:   call FindMaxG
+
     ; If we press up, we want to do a sonic drop.
-:   ldh a, [hUpState]
+    ldh a, [hUpState]
     cp a, 1
     jr nz, :+
-    ld b, 20
+    ld a, 20
+    ldh [hWantedG], a
+    ldh a, [hTicksUntilG]
+    dec a
+    ldh [hTicksUntilG], a
+    jr nz, .grav
+    ldh a, [hCurrentFramesPerGravityTick]
+    ldh [hTicksUntilG], a
     jr .grav
 
 
@@ -546,39 +623,30 @@ FieldProcess::
     jr nz, .nograv
     ldh a, [hCurrentFramesPerGravityTick]
     ldh [hTicksUntilG], a
-
-
-    ; Move the piece down, but first check if there's still sufficient "down" to go.
     ldh a, [hCurrentGravityPerTick]
-    ld b, a
+    ldh [hWantedG], a
+
+
 .grav
-:   ldh a, [hCurrentPieceY]
-    add a, b
-    cp a, 23
-    jr c, :+
-    dec b
-    jr z, .nograv
-    jr :-
-:   push bc
+    ldh a, [hWantedG]
+    ld b, a
+    ldh a, [hActualG]
+    cp a, b
+    jr c, .smallg
+
+
+.bigg
+    ldh a, [hWantedG]
+    ld b, a
     ldh a, [hCurrentPieceY]
     add a, b
+    ldh [hCurrentPieceY], a
+    jr .nograv
+
+
+.smallg
+    ldh a, [hActualG]
     ld b, a
-    ldh a, [hCurrentPieceX]
-    call XYToSFieldPtr
-    ld d, h
-    ld e, l
-    call GetPieceData
-    call CanPieceFit
-    cp a, $FF
-    jr z, .dolower
-    pop bc
-    dec b
-    jr z, .nograv
-    jr :-
-
-
-.dolower
-    pop bc
     ldh a, [hCurrentPieceY]
     add a, b
     ldh [hCurrentPieceY], a
@@ -811,6 +879,9 @@ FieldProcess::
     ldh a, [hYPosAtStartOfFrame]
     cp a, b
     jr z, :+
+    ldh a, [hDownState]
+    cp a, 0
+    jr nz, :+
     ld a, SFX_DROP
     call SFXEnqueue
     ; If the down button is held, lock.
@@ -837,8 +908,34 @@ FieldProcess::
 
     ; Draw the piece.
 .draw
+    ; If the gravity is <= 1G, draw a ghost piece.
+    ldh a, [hWantedG]
+    cp a, 1
+    jr nz, :+
+    ldh a, [hEvenFrame]
+    cp a, 1
+    jr nz, :+
+
+    ldh a, [hYPosAtStartOfFrame]
+    ld b, a
+    ldh a, [hActualG]
+    add a, b
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToFieldPtr
+    ld d, h
+    ld e, l
+    call GetPieceData
+    ld a, 0
+    ld b, a
+    push hl
+    push de
+    pop hl
+    pop de
+    call DrawPiece
+
     ; If the lock delay is at the highest value, draw the piece normally.
-    ldh a, [hCurrentPiece]
+:   ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b
     ldh [hWantedTile], a
@@ -1128,6 +1225,244 @@ GetTileShade:
     ld b, TILE_PIECE_0+(7*7)
     add a, b
     ldh [hWantedTile], a
+    ret
+
+
+FieldDelay::
+    ldh a, [hDelayState]
+    cp DELAY_STATE_DETERMINE_DELAY
+    jr z, .determine
+    cp DELAY_STATE_LINE_CLEAR
+    jr z, .lineclear
+    cp DELAY_STATE_ARE
+    jr z, .are
+
+.determine
+    call FindClearedLines
+    ldh a, [hClearedLines]
+    ld b, a
+    ldh a, [hClearedLines+1]
+    ld c, a
+    ldh a, [hClearedLines+2]
+    ld d, a
+    ldh a, [hClearedLines+3]
+    and a, b
+    and a, c
+    and a, d
+    cp a, $FF
+    jr z, .skip
+    ld a, DELAY_STATE_LINE_CLEAR
+    ldh [hDelayState], a
+    ldh a, [hCurrentLineClearDelay]
+    ldh [hRemainingDelay], a
+    call MarkClear
+    jr .lineclear
+.skip
+    ld a, DELAY_STATE_ARE
+    ldh [hDelayState], a
+    ldh a, [hCurrentARE]
+    ldh [hRemainingDelay], a
+    jr .are
+
+
+.lineclear
+    ldh a, [hRemainingDelay]
+    dec a
+    ldh [hRemainingDelay], a
+    cp a, 0
+    ret nz
+
+    call ClearLines
+    call SFXKill
+    ld a, SFX_DROP
+    call SFXEnqueue
+
+    ld a, DELAY_STATE_ARE
+    ldh [hDelayState], a
+    ldh a, [hCurrentARE]
+    ldh [hRemainingDelay], a
+
+.are
+    ldh a, [hRemainingDelay]
+    dec a
+    ldh [hRemainingDelay], a
+    cp a, 0
+    ret nz
+
+    ; If we're out of delay, spawn a new piece.
+    call SFXKill
+
+    ret
+
+
+AppendClearedLine:
+    ldh a, [hClearedLines+2]
+    ldh [hClearedLines+3], a
+    ldh a, [hClearedLines+1]
+    ldh [hClearedLines+2], a
+    ldh a, [hClearedLines]
+    ldh [hClearedLines+1], a
+    ld a, b
+    ldh [hClearedLines], a
+    ret
+
+
+FindClearedLines:
+    ld a, $FF
+    ld c, 0
+    ldh [hClearedLines], a
+    ldh [hClearedLines+1], a
+    ldh [hClearedLines+2], a
+    ldh [hClearedLines+3], a
+
+    DEF row = 23
+    REPT 24
+        ld hl, wShadowField+2+(row*14)
+        ld b, 11
+:       ld a, [hl+]
+        dec b
+        cp a, $FF
+        jr z, :+
+        cp a, TILE_FIELD_EMPTY
+        jr nz, :-
+:       xor a, a
+        cp a, b
+        jr nz, .next\@
+        ld b, 23-row
+        call AppendClearedLine
+        inc c
+        ld a, 4
+        cp a, c
+        ret z
+        DEF row -= 1
+.next\@
+    ENDR
+
+    ret
+
+
+MarkClear:
+    ld a, [hClearedLines]
+    cp a, $FF
+    ret z
+    ld hl, wField+(24*10)
+:   ld bc, -10
+    add hl, bc
+    dec a
+    cp a, $FF
+    jr nz, :-
+    ld bc, 10
+    ld d, TILE_CLEARING
+    call UnsafeMemSet
+
+    ld a, [hClearedLines+1]
+    cp a, $FF
+    ret z
+    ld hl, wField+(24*10)
+:   ld bc, -10
+    add hl, bc
+    dec a
+    cp a, $FF
+    jr nz, :-
+    ld bc, 10
+    ld d, TILE_CLEARING
+    call UnsafeMemSet
+
+    ld a, [hClearedLines+2]
+    cp a, $FF
+    ret z
+    ld hl, wField+(24*10)
+:   ld bc, -10
+    add hl, bc
+    dec a
+    cp a, $FF
+    jr nz, :-
+    ld bc, 10
+    ld d, TILE_CLEARING
+    call UnsafeMemSet
+
+    ld a, [hClearedLines+3]
+    cp a, $FF
+    ret z
+    ld hl, wField+(24*10)
+:   ld bc, -10
+    add hl, bc
+    dec a
+    cp a, $FF
+    jr nz, :-
+    ld bc, 10
+    ld d, TILE_CLEARING
+    call UnsafeMemSet
+    ret
+
+
+ClearLines:
+    ld de, 0
+
+    DEF row = 23
+    REPT 24
+        ; Check if the row begins with a clearing tile.
+        ld hl, wField+(row*10)
+        ld a, [hl]
+        cp a, TILE_CLEARING
+
+        ; If it does, increment the clearing counter, but skip this line.
+        jr nz, .clear\@
+        inc de
+        inc de
+        inc de
+        inc de
+        inc de
+        inc de
+        inc de
+        inc de
+        inc de
+        inc de
+        jr .r\@
+
+.clear\@
+        ; If there's 0 lines that need to be moved down, skip this line.
+        xor a, a
+        cp a, e
+        jr z, .r\@
+
+        ; Otherwise...
+        ld bc, wField+(row*10)
+        add hl, de
+:       ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+.r\@
+        DEF row -= 1
+    ENDR
+
     ret
 
 

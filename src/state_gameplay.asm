@@ -218,7 +218,7 @@ spawnPieceMode:
     jr z, :+
     ld a, MODE_GAME_OVER
     ld [wMode], a
-    jr drawStaticInfo
+    jp drawStaticInfo
 :   ld a, MODE_PIECE_IN_MOTION
     ld [wMode], a
 

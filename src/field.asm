@@ -11,7 +11,6 @@ wShadowField:: ds (14*26)
 
 
 SECTION "Field High Variables", HRAM
-hToppedOut:: ds 1
 hPieceDataBase:: ds 2
 hPieceDataOffset:: ds 1
 hCurrentLockDelayRemaining:: ds 1
@@ -370,10 +369,6 @@ TrySpawnPiece::
     ; Copy the field to the shadow field.
     call ToShadowField
 
-    ; Assume we're not topped out.
-    xor a, a
-    ldh [hToppedOut], a
-
     ; Point the piece data to the correct piece.
     call SetPieceData
     call SetPieceDataOffset
@@ -388,9 +383,31 @@ TrySpawnPiece::
     ld d, h
     ld e, l
     call GetPieceData
-    jp CanPieceFit
+    call CanPieceFit
+
     ; A will be $FF if the piece can fit.
-    ; We jump instead of return to save a few cycles.
+    cp a, $FF
+    ret z
+
+    ; Otherwise check the rotation, and if it's not zero, try to reset it.
+    ldh a, [hCurrentPieceRotationState]
+    cp a, 0
+    ret nz
+
+    ; Reset the rotation.
+    xor a, a
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    call GetPieceData
+    jp CanPieceFit
+
+
 
 
     ; Draws the piece onto the field.

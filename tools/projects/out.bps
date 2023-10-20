@@ -1,0 +1,1 @@
+type=instruction address=gameOverMode%20+%2079 end=gameOverMode%20+%2081 enabled=true suspend=true condition= message=

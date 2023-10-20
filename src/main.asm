@@ -5,6 +5,7 @@ DEF MAIN_ASM EQU 1
 INCLUDE "globals.asm"
 INCLUDE "res/tiles.inc"
 INCLUDE "res/gameplay_map.inc"
+INCLUDE "res/title_map.inc"
 
 
 SECTION "Globals", HRAM
@@ -33,13 +34,9 @@ Main::
     ld bc, TilesEnd - Tiles
     call UnsafeMemCopy
 
-    ; Make sure both sprites and bg use the same tile data.
-    ldh a, [rLCDC]
-    or LCDCF_BLK01
-    ldh [rLCDC], a
-
     ; Clear OAM.
     call ClearOAM
+    call SetNumberSpritePositions
     call CopyOAMHandler
 
     ; Zero out the ram where needed.
@@ -52,7 +49,7 @@ Main::
     call InitializeLCDCInterrupt
 
     ; Switch to gameplay state.
-    call SwitchToGameplay
+    call SwitchToTitle
 
 
 EventLoop::
@@ -68,6 +65,7 @@ EventLoop::
     ldh a, [hGameState]
     cp a, b
     jp nz, GamePlayEventLoopHandler
+    jp TitleEventLoopHandler
 EventLoopPostHandler::
 
     ; Wait for vblank.

@@ -81,8 +81,7 @@ SwitchToGameplay::
     ldh [hGameState], a
 
     ; And turn the LCD back on before we start.
-    ldh a, [rLCDC]
-    or LCDCF_ON | LCDCF_BGON | LCDCF_OBJON
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON | LCDCF_BLK01
     ldh [rLCDC], a
 
     ; Make sure the first game loop starts just like all the future ones.
@@ -306,8 +305,9 @@ gameOverMode:
     ; Quit
 :   ldh a, [hBState]
     cp a, 1
-    jp z, $100
-    jr drawStaticInfo
+    jr nz, :+
+    call SwitchToTitle
+    jp EventLoopPostHandler
 
 
     ; Always draw the score, level, next piece, and held piece.

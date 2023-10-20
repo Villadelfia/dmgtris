@@ -229,6 +229,50 @@ sSpeedCurve::         ; Speed curve of the game.
 
     dw $FFFF          ; End.
 
+
+sPieceFastRotationStates::
+    ; I
+    db 14, 1, 1, 1
+    db 2, 14, 14, 14
+    db 14, 1, 1, 1
+    db 2, 14, 14, 14
+
+    ; Z
+    db 14, 1, 14, 1
+    db 2, 13, 1, 13
+    db 14, 1, 14, 1
+    db 2, 13, 1, 13
+
+    ; S
+    db 15, 1, 12, 1
+    db 0, 14, 1, 14
+    db 15, 1, 12, 1
+    db 0, 14, 1, 14
+
+    ; J
+    db 14, 1, 1, 14
+    db 1, 1, 13, 14
+    db 14, 14, 1, 1
+    db 1, 14, 13, 1
+
+    ; L
+    db 14, 1, 1, 12
+    db 1, 14, 14, 1
+    db 16, 12, 1, 1
+    db 0, 1, 14, 14
+
+    ; O
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+
+    ; T
+    db 14, 1, 1, 13
+    db 1, 14, 1, 13
+    db 15, 13, 1, 1
+    db 1, 13, 1, 14
+
 sPieceRotationStates:: ; How each piece is rotated.
     ; I
     db %0000

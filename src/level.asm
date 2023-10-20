@@ -21,11 +21,14 @@ hCurrentFramesPerGravityTick:: ds 1
 hNextSpeedUp:: ds 2
 hSpeedCurvePtr:: ds 2
 hRequiresLineClear:: ds 1
+hLevel:: ds 2
 
 
 SECTION "Level Functions", ROM0
 LevelInit::
     xor a, a
+    ldh [hLevel], a
+    ldh [hLevel+1], a
     ld hl, wCLevel
     ld [hl+], a
     ld [hl+], a
@@ -65,6 +68,20 @@ LevelUp::
     ld c, [hl]
     cp a, $09
     ret z
+
+    ; Binary addition
+    ldh a, [hLevel]
+    ld l, a
+    ldh a, [hLevel+1]
+    ld h, a
+    ld a, e
+    add a, l
+    ld l, a
+    adc a, h
+    sub l
+    ldh [hLevel+1], a
+    ld l, a
+    ldh [hLevel], a
 
     ; Save the current hundred digit.
     ld a, [wCLevel+1]

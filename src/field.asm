@@ -17,6 +17,7 @@ wShadowField:: ds (14*26)
 
 SECTION "Field High Variables", HRAM
 hPieceDataBase: ds 2
+hPieceDataBaseFast: ds 2
 hPieceDataOffset: ds 1
 hCurrentLockDelayRemaining:: ds 1
 hDeepestY: ds 1
@@ -30,10 +31,14 @@ hWantRotation: ds 1
 hRemainingDelay:: ds 1
 hDelayState: ds 1
 hClearedLines: ds 4
+hLineClearCt: ds 1
+hComboCt: ds 1
 
 
 SECTION "Field Functions", ROM0
 FieldInit::
+    ld a, 1
+    ldh [hComboCt], a
     ld hl, wField
     ld bc, 10*24
     ld d, 1
@@ -157,6 +162,19 @@ SetPieceData:
     ldh [hPieceDataBase], a
     ld a, h
     ldh [hPieceDataBase+1], a
+
+    ldh a, [hCurrentPiece]
+    ld hl, sPieceFastRotationStates
+    ld de, 16
+:   cp a, 0
+    jr z, :+
+    add hl, de
+    dec a
+    jr :-
+:   ld a, l
+    ldh [hPieceDataBaseFast], a
+    ld a, h
+    ldh [hPieceDataBaseFast+1], a
     ret
 
 
@@ -214,6 +232,71 @@ GetPieceData:
     ld b, a
     add hl, bc
     ret
+
+
+GetPieceDataFast:
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hPieceDataOffset]
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    ret
+
+    ; Checks if the piece can fit at the current position, but fast.
+    ; HL should point to the piece's rotation state data.
+    ; DE should be pointing to the right place in the SHADOW field.
+CanPieceFitFast:
+    ld a, [hl+]
+    add a, e
+    ld e, a
+    adc a, d
+    sub e
+    ld d, a
+    ld a, [de]
+    cp a, TILE_FIELD_EMPTY
+    jr z, :+
+    xor a, a
+    ret
+:   ld a, [hl+]
+    add a, e
+    ld e, a
+    adc a, d
+    sub e
+    ld d, a
+    ld a, [de]
+    cp a, TILE_FIELD_EMPTY
+    jr z, :+
+    xor a, a
+    ret
+:   ld a, [hl+]
+    add a, e
+    ld e, a
+    adc a, d
+    sub e
+    ld d, a
+    ld a, [de]
+    cp a, TILE_FIELD_EMPTY
+    jr z, :+
+    xor a, a
+    ret
+:   ld a, [hl+]
+    add a, e
+    ld e, a
+    adc a, d
+    sub e
+    ld d, a
+    ld a, [de]
+    cp a, TILE_FIELD_EMPTY
+    jr z, :+
+    xor a, a
+    ret
+:   ld a, $FF
+    ret
+
 
     ; Checks if the piece can fit at the current position.
     ; HL should point to the piece's rotation state data.
@@ -530,41 +613,23 @@ FindMaxG:
     ldh a, [hCurrentPieceX]
     call XYToSFieldPtr
     push hl
-    ld a, 2
+    ld a, 1
     ldh [hActualG], a
 .try
-    ld de, 28
+    ld de, 14
     pop hl
     add hl, de
     push hl
     ld d, h
     ld e, l
-    call GetPieceData
-    call CanPieceFit
+    call GetPieceDataFast
+    call CanPieceFitFast
     cp a, $FF
-    jr nz, .foundmaybe
+    jr nz, .found
     ldh a, [hActualG]
-    inc a
     inc a
     ldh [hActualG], a
     jr .try
-
-.foundmaybe
-    ldh a, [hActualG]
-    dec a
-    ldh [hActualG], a
-    ld de, -14
-    pop hl
-    add hl, de
-    push hl
-    ld d, h
-    ld e, l
-    call GetPieceData
-    call CanPieceFit
-    cp a, $FF
-    jr nz, .found
-    pop hl
-    ret
 
 .found
     pop hl
@@ -1291,11 +1356,68 @@ FieldDelay::
 
     ; If we're out of delay, spawn a new piece.
     call SFXKill
+    ldh a, [hLineClearCt]
+    cp a, 0
+    jr nz, :+
+    ld a, 1
+    ldh [hComboCt], a
+    ldh a, [hRequiresLineClear]
+    cp a, $FF
+    ret z
+    ld e, 1
+    call LevelUp
+    ret
+
+:   ldh a, [hLineClearCt]
+    ld e, a
+    call LevelUp
+    ld c, a
+    ld b, a
+    ldh a, [hComboCt]
+    add b
+    add b
+    sub 2
+    ldh [hComboCt], a
+
+    ; Score the line clears.
+    xor a, a
+    ld b, a
+    ldh a, [hLevel]
+    ld l, a
+    ldh a, [hLevel+1]
+    ld h, a
+    add hl, bc
+    rrc h
+    rr l
+    rrc h
+    rr l
+    inc hl
+    ld b, h
+    ld c, l
+    ldh a, [hComboCt]
+:   add hl, bc
+    dec a
+    cp a, 0
+    jr nz, :-
+    ldh a, [hLineClearCt]
+:   add hl, bc
+    dec a
+    cp a, 0
+    jr nz, :-
+
+    ld a, l
+    ld [wScoreIncrement], a
+    ld a, h
+    ld [wScoreIncrement+1], a
+    call IncreaseScore
 
     ret
 
 
 AppendClearedLine:
+    ldh a, [hLineClearCt]
+    inc a
+    ldh [hLineClearCt], a
     ldh a, [hClearedLines+2]
     ldh [hClearedLines+3], a
     ldh a, [hClearedLines+1]
@@ -1308,6 +1430,8 @@ AppendClearedLine:
 
 
 FindClearedLines:
+    xor a, a
+    ldh [hLineClearCt], a
     ld a, $FF
     ld c, 0
     ldh [hClearedLines], a

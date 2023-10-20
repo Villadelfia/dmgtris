@@ -25,7 +25,7 @@ hCurrentPieceX:: ds 1
 hCurrentPieceY:: ds 1
 hCurrentPieceRotationState:: ds 1
 hHeldPiece: ds 1
-hHoldSpent: ds 1
+hHoldSpent:: ds 1
 hSkipJingle: ds 1
 
 
@@ -227,7 +227,31 @@ spawnPieceMode:
     ; Field will let us know when it has locked in place.
 pieceInMotionMode:
     call FieldProcess
-    jr drawStaticInfo
+
+    ; Do we hold?
+    ld a, [hSelectState]
+    cp a, 1
+    jr nz, :+
+    ld a, [hHoldSpent]
+    cp a, $FF
+    jr z, :+
+    ; Reset position and rotation.
+    ld a, 5
+    ldh [hCurrentPieceX], a
+    ld a, 3
+    ldh [hCurrentPieceY], a
+    xor a, a
+    ldh [hSkipJingle], a
+    ldh [hCurrentPieceRotationState], a
+    call DoHold
+    ld a, MODE_SPAWN_PIECE
+    ld [wMode], a
+
+    ; Do we go into delay state?
+    ; TODO
+
+
+:   jr drawStaticInfo
 
 
 delayMode:

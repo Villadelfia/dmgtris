@@ -501,20 +501,40 @@ FieldProcess::
     pop de
     call DrawPiece
 
+
+    ; Check if we're about to hold.
+    ld a, [hSelectState]
+    cp a, 1
+    jr nz, :+
+    ld a, [hHoldSpent]
+    cp a, $FF
+    ret nz
+
+
+    ; If we press up, we want to do a sonic drop.
+    ldh a, [hUpState]
+    cp a, 1
+    jr nz, :+
+    ld b, 20
+    jr .grav
+
+
     ; Gravity?
-    ldh a, [hTicksUntilG]
+:   ldh a, [hTicksUntilG]
     dec a
     ldh [hTicksUntilG], a
     jr nz, .nograv
     ldh a, [hCurrentFramesPerGravityTick]
     ldh [hTicksUntilG], a
 
+
     ; Move the piece down, but first check if there's still sufficient "down" to go.
     ldh a, [hCurrentGravityPerTick]
     ld b, a
+.grav
 :   ldh a, [hCurrentPieceY]
     add a, b
-    cp a, 22
+    cp a, 23
     jr c, :+
     dec b
     jr z, .nograv
@@ -536,17 +556,20 @@ FieldProcess::
     jr z, .nograv
     jr :-
 
+
 .dolower
     pop bc
     ldh a, [hCurrentPieceY]
     add a, b
     ldh [hCurrentPieceY], a
 
+
 .nograv
     ldh a, [hCurrentPieceX]
     ldh [hWantX], a
     ldh a, [hCurrentPieceRotationState]
     ldh [hWantRotation], a
+
 
     ; Want left?
 .wantleft
@@ -562,6 +585,7 @@ FieldProcess::
 :   ldh a, [hWantX]
     dec a
     ldh [hWantX], a
+
 
     ; Want right?
 .wantright
@@ -611,7 +635,7 @@ FieldProcess::
     ld b, a
     ldh a, [hCurrentPieceX]
     cp a, b
-    jr z, .postmove ; Neither move nor rotate.
+    jp z, .postmove ; Neither move nor rotate.
 
     ; Move only.
     ldh a, [hCurrentPieceY]
@@ -623,10 +647,11 @@ FieldProcess::
     call GetPieceData
     call CanPieceFit
     cp a, $FF
-    jr nz, .postmove
+    jp nz, .postmove
     ldh a, [hWantX]
     ldh [hCurrentPieceX], a
-    jr .postmove
+    jp .postmove
+
 
 .trymoverot
     ldh a, [hCurrentPieceY]
@@ -650,8 +675,95 @@ FieldProcess::
     pop bc
     call CanPieceFit
     cp a, $FF
+    jr nz, .maybekick
+    ldh a, [hWantX]
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    jp .postmove
+
+
+    ; Try kicks if the piece isn't I or O. And in the case of J L and T, only if the blocked side is the left or right.
+.maybekick
+    ld c, a
+    ldh a, [hCurrentPiece]
+    cp a, PIECE_I
+    jr z, .postmove
+    cp a, PIECE_O
+    jr z, .postmove
+    cp a, PIECE_S
+    jr z, .trykickright
+    cp a, PIECE_Z
+    jr z, .trykickright
+    ld a, c
+    cp a, 1
+    jr z, .postmove
+    cp a, 5
+    jr z, .postmove
+    cp a, 9
+    jr z, .postmove
+
+
+.trykickright
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hWantX]
+    inc a
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBase]
+    ld l, a
+    ldh a, [hPieceDataBase+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    rlc a
+    rlc a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFit
+    cp a, $FF
+    jr nz, .trykickleft
+    ldh a, [hWantX]
+    inc a
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    jr .postmove
+
+
+.trykickleft
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hWantX]
+    dec a
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBase]
+    ld l, a
+    ldh a, [hPieceDataBase+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    rlc a
+    rlc a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFit
+    cp a, $FF
     jr nz, .postmove
     ldh a, [hWantX]
+    dec a
     ldh [hCurrentPieceX], a
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a

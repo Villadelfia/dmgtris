@@ -163,6 +163,7 @@ sfx_names = [
     "sSFXMove",
     "sSFXRankUp",
     "sSFXLevelUp",
+    "sSFXIHS",
 ]
 
 def chunks(lst, n):

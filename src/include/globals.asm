@@ -121,6 +121,7 @@ DEF SFX_BELL            EQU 10
 DEF SFX_MOVE            EQU 11
 DEF SFX_RANK_UP         EQU 12
 DEF SFX_LEVEL_UP        EQU 13
+DEF SFX_IHS             EQU 14
 DEF STACK_SIZE          EQU 64
 
 

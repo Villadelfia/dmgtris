@@ -328,6 +328,8 @@ DoHold:
     ; Mark hold as spent.
     ld a, $FF
     ldh [hHoldSpent], a
+    ld a, SFX_IHS
+    call SFXEnqueue
 
     ; Check if IRS is requested.
     ; Apply the rotation if so.

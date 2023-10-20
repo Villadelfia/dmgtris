@@ -267,6 +267,14 @@ gameOverMode:
     ld hl, wField+(10*10)
     ld bc, 10
     call UnsafeMemCopy
+    ld de, sGameOver2
+    ld hl, wField+(11*10)
+    ld bc, 10
+    call UnsafeMemCopy
+    ld de, sGameOver3
+    ld hl, wField+(12*10)
+    ld bc, 10
+    call UnsafeMemCopy
 
     ; Retry?
     ldh a, [hAState]

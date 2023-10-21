@@ -10,6 +10,10 @@ The speed curve starts at 1/16G, so slightly faster than TGM, and goes smoothly 
 The game itself runs at a constant 60fps as well as at the traditional 20 row visible grid.
 
 
+## Playing
+You can build the game yourself, or use the binary in the root of this repository.
+
+
 ## Controls
 ### Menu
 - A/B/Start — Start the game
@@ -31,3 +35,20 @@ The game itself runs at a constant 60fps as well as at the traditional 20 row vi
 
 ## Building
 This game was created using Game Boy assembly using the RGBDS toolchain and GNU make.
+
+
+## License
+Copyright (C) 2023 - Randy Thiemann <randy.thiemann@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.

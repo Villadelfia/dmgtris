@@ -190,7 +190,7 @@ fetchPieceMode:
     ; Check if IHS is requested.
     ; Apply the hold if so.
 .checkIHS
-    ld a, [hSelectState]
+    ldh a, [hSelectState]
     cp a, 0
     jr z, .checkIRSA
     call DoHold
@@ -200,14 +200,18 @@ fetchPieceMode:
     ; Check if IRS is requested.
     ; Apply the rotation if so.
 .checkIRSA
-    ld a, [hSwapAB]
+    ldh a, [hSwapAB]
     cp a, 0
     jr z, .lda1
 .ldb1
-    ld a, [hBState]
+    ldh a, [hBState]
+    ld a, $FF
+    ldh [hBState], a
     jr .cp1
 .lda1
-    ld a, [hAState]
+    ldh a, [hAState]
+    ld a, $FF
+    ldh [hAState], a
 .cp1
     cp a, 0
     jr z, .checkIRSB
@@ -222,9 +226,13 @@ fetchPieceMode:
     jr z, .ldb2
 .lda2
     ld a, [hAState]
+    ld a, $FF
+    ldh [hAState], a
     jr .cp2
 .ldb2
-    ld a, [hBState]
+    ldh a, [hBState]
+    ld a, $FF
+    ldh [hBState], a
 .cp2
     cp a, 0
     jr z, .checkJingle
@@ -254,12 +262,7 @@ spawnPieceMode:
     ld a, MODE_PRE_GAME_OVER
     ld [wMode], a
     jp drawStaticInfo
-
-    ; If you IRS at the exact time the piece spawns, you can get double IRS, we fix this by always saying A and B were held for a long time.
-:   ld a, $FF
-    ldh [hAState], a
-    ldh [hBState], a
-    ld a, MODE_PIECE_IN_MOTION
+:   ld a, MODE_PIECE_IN_MOTION
     ld [wMode], a
 
 
@@ -468,14 +471,18 @@ DoHold:
     ; Check if IRS is requested.
     ; Apply the rotation if so.
 .checkIRSHA
-    ld a, [hSwapAB]
+    ldh a, [hSwapAB]
     cp a, 0
     jr z, .lda3
 .ldb3
-    ld a, [hBState]
+    ldh a, [hBState]
+    ld a, $FF
+    ldh [hBState], a
     jr .cp3
 .lda3
-    ld a, [hAState]
+    ldh a, [hAState]
+    ld a, $FF
+    ldh [hAState], a
 .cp3
     cp a, 0
     jr z, .checkIRSHB
@@ -485,14 +492,18 @@ DoHold:
     call SFXEnqueue
 
 .checkIRSHB
-    ld a, [hSwapAB]
+    ldh a, [hSwapAB]
     cp a, 0
     jr z, .ldb4
 .lda4
-    ld a, [hAState]
+    ldh a, [hAState]
+    ld a, $FF
+    ldh [hAState], a
     jr .cp4
 .ldb4
-    ld a, [hBState]
+    ldh a, [hBState]
+    ld a, $FF
+    ldh [hBState], a
 .cp4
     cp a, 0
     jr z, .noRotation

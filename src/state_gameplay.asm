@@ -481,14 +481,14 @@ DoHold:
 .ldb3
     ldh a, [hBState]
     cp a, 0
-    cp z, .checkIRSHB
+    jr z, .checkIRSHB
     ld a, $FF
     ldh [hBState], a
     jr .cp3
 .lda3
     ldh a, [hAState]
     cp a, 0
-    cp z, .checkIRSHB
+    jr z, .checkIRSHB
     ld a, $FF
     ldh [hAState], a
 .cp3

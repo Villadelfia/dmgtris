@@ -1022,7 +1022,6 @@ FieldProcess::
     ; Otherwise, look it up.
     call GetTileShade
 
-    ; TODO: What tile do we use to draw the piece?
 .drawpiece
     ldh a, [hCurrentPieceY]
     ld b, a
@@ -1524,7 +1523,7 @@ ClearLines:
     ld de, 0
 
     DEF row = 23
-    REPT 24
+    REPT 23
         ; Check if the row begins with a clearing tile.
         ld hl, wField+(row*10)
         ld a, [hl]
@@ -1587,6 +1586,16 @@ ClearLines:
         DEF row -= 1
     ENDR
 
+    ; Make sure there's no garbage in the top de lines.
+    ld hl, wField
+:   xor a, a
+    or a, d
+    or a, e
+    ret z
+    ld a, TILE_FIELD_EMPTY
+    ld [hl+], a
+    dec de
+    jr :-
     ret
 
 

@@ -973,7 +973,8 @@ FieldProcess::
     ldh a, [hDownState]
     cp a, 0
     jr nz, :+
-    ld a, SFX_DROP
+    call SFXKill
+    ld a, SFX_MOVE
     call SFXEnqueue
     ; If the down button is held, lock.
 :   ldh a, [hDownState]
@@ -987,6 +988,7 @@ FieldProcess::
     ; If we're out of lock delay, play a sound.
     cp a, 0
     jr nz, .draw
+    call SFXKill
     ld a, SFX_LOCK
     call SFXEnqueue
     jr .draw

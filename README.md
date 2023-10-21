@@ -23,7 +23,7 @@ Please do not try running it on older emulators such as VBA, since this game use
 - A/B/Start — Start the game
 - Left/Right — Switch A/B rotation direction
 - Up/Down — Select starting level
-- Select — Select amount of times a piece will be rerolled if it was given to you in the previous 4 pieces. TGM2 uses 6 for this value, TGM1 uses 4 for this value. You can set this to 0 (pure RNG except you'll never start with O, S, or Z), to 16 (F. Basically never get duplicates.)
+- Select — Select amount of times a piece will be rerolled if it was given to you in the previous 4 pieces. TGM2 uses 6 for this value, TGM1 uses 4 for this value. You can set this to 0 (pure RNG except you'll never start with O, S, or Z), to 15 (F. Basically never get duplicates.)
 
 ### Gameplay
 - A — Rotate 1

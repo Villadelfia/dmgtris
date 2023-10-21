@@ -263,6 +263,9 @@ fetchPieceMode:
     cp a, 0
     jr nz, .skipJingle
 .playNextJingle
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 1
+    jr nz, .skipJingle
     ldh a, [hNextPiece]
     call SFXEnqueue
 .skipJingle

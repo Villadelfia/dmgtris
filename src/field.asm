@@ -343,6 +343,7 @@ CanPieceFit:
     ENDR
 
     ; Row 2
+    inc b
     inc hl
     bit 3, [hl]
     jr z, :+
@@ -381,6 +382,7 @@ CanPieceFit:
     ENDR
 
     ; Row 3
+    inc b
     inc hl
     bit 3, [hl]
     jr z, :+
@@ -418,6 +420,7 @@ CanPieceFit:
     ENDR
 
     ; Row 4
+    inc b
     inc hl
     bit 3, [hl]
     jr z, :+
@@ -723,38 +726,7 @@ FieldProcess::
     ldh a, [hCurrentPieceRotationState]
     ldh [hWantRotation], a
 
-
-    ; Want left?
-.wantleft
-    ldh a, [hLeftState]
-    cp a, 1
-    jr z, :+
-    ld b, a
-    ldh a, [hCurrentDAS]
-    ld c, a
-    ld a, b
-    cp a, c
-    jr c, .wantright
-:   ldh a, [hWantX]
-    dec a
-    ldh [hWantX], a
-
-
-    ; Want right?
-.wantright
-    ldh a, [hRightState]
-    cp a, 1
-    jr z, :+
-    ld b, a
-    ldh a, [hCurrentDAS]
-    ld c, a
-    ld a, b
-    cp a, c
-    jr c, .wantrotccw
-:   ldh a, [hWantX]
-    inc a
-    ldh [hWantX], a
-
+    ; We check rotation first.
     ; Want rotate CCW?
 .wantrotccw
     ld a, [hSwapAB]
@@ -772,6 +744,7 @@ FieldProcess::
     inc a
     and a, $03
     ldh [hWantRotation], a
+    jr .tryrot
 
 
     ; Want rotate CW?
@@ -786,46 +759,18 @@ FieldProcess::
     ld a, [hAState]
 .cp2
     cp a, 1
-    jr nz, .moverotrequested
+    jp nz, .norot
     ldh a, [hWantRotation]
     dec a
     and a, $03
     ldh [hWantRotation], a
 
 
-    ; Do we need to try to move/rotate the piece?
-.moverotrequested
-    ldh a, [hWantRotation]
-    ld b, a
-    ldh a, [hCurrentPieceRotationState]
-    cp a, b
-    jr nz, .trymoverot ; Move and rotate.
-    ldh a, [hWantX]
+    ; Try the rotation.
+.tryrot
+    ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
-    cp a, b
-    jp z, .postmove ; Neither move nor rotate.
-
-    ; Move only.
-    ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hWantX]
-    call XYToSFieldPtr
-    ld d, h
-    ld e, l
-    call GetPieceData
-    call CanPieceFit
-    cp a, $FF
-    jp nz, .postmove
-    ldh a, [hWantX]
-    ldh [hCurrentPieceX], a
-    jp .postmove
-
-
-.trymoverot
-    ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hWantX]
     call XYToSFieldPtr
     ld d, h
     ld e, l
@@ -845,12 +790,10 @@ FieldProcess::
     call CanPieceFit
     cp a, $FF
     jr nz, .maybekick
-    ldh a, [hWantX]
-    ldh [hCurrentPieceX], a
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
-    jp .postmove
+    jp .norot
 
 
     ; Try kicks if the piece isn't I or O. And in the case of J L and T, only if the blocked side is the left or right.
@@ -858,26 +801,26 @@ FieldProcess::
     ld c, a
     ldh a, [hCurrentPiece]
     cp a, PIECE_I
-    jr z, .postmove
+    jr z, .norot
     cp a, PIECE_O
-    jr z, .postmove
+    jr z, .norot
     cp a, PIECE_S
     jr z, .trykickright
     cp a, PIECE_Z
     jr z, .trykickright
     ld a, c
     cp a, 1
-    jr z, .postmove
+    jr z, .norot
     cp a, 5
-    jr z, .postmove
+    jr z, .norot
     cp a, 9
-    jr z, .postmove
+    jr z, .norot
 
-
+    ; A step to the right.
 .trykickright
     ldh a, [hCurrentPieceY]
     ld b, a
-    ldh a, [hWantX]
+    ldh a, [hCurrentPieceX]
     inc a
     call XYToSFieldPtr
     ld d, h
@@ -898,19 +841,20 @@ FieldProcess::
     call CanPieceFit
     cp a, $FF
     jr nz, .trykickleft
-    ldh a, [hWantX]
+    ldh a, [hCurrentPieceX]
     inc a
     ldh [hCurrentPieceX], a
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
-    jr .postmove
+    jr .norot
 
 
+    ; And a step to the left.
 .trykickleft
     ldh a, [hCurrentPieceY]
     ld b, a
-    ldh a, [hWantX]
+    ldh a, [hCurrentPieceX]
     dec a
     call XYToSFieldPtr
     ld d, h
@@ -930,8 +874,8 @@ FieldProcess::
     pop bc
     call CanPieceFit
     cp a, $FF
-    jr nz, .postmove
-    ldh a, [hWantX]
+    jr nz, .norot
+    ldh a, [hCurrentPieceX]
     dec a
     ldh [hCurrentPieceX], a
     ldh a, [hWantRotation]
@@ -939,8 +883,57 @@ FieldProcess::
     call SetPieceDataOffset
 
 
-.postmove
+    ; Do we want to move left?
+.norot
+    ldh a, [hLeftState]
+    cp a, 1
+    jr z, :+
+    ld b, a
+    ldh a, [hCurrentDAS]
+    ld c, a
+    ld a, b
+    cp a, c
+    jr c, .wantright
+:   ldh a, [hWantX]
+    dec a
+    ldh [hWantX], a
+    jr .trymove
+
+
+    ; Want right?
+.wantright
+    ldh a, [hRightState]
+    cp a, 1
+    jr z, :+
+    ld b, a
+    ldh a, [hCurrentDAS]
+    ld c, a
+    ld a, b
+    cp a, c
+    jr c, .donemanipulating
+:   ldh a, [hWantX]
+    inc a
+    ldh [hWantX], a
+
+
+    ; Try the movement.
+.trymove
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hWantX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    call GetPieceData
+    call CanPieceFit
+    cp a, $FF
+    jr nz, .donemanipulating
+    ldh a, [hWantX]
+    ldh [hCurrentPieceX], a
+
+
     ; Are we grounded?
+.donemanipulating
     ldh a, [hCurrentPieceY]
     inc a
     ld b, a

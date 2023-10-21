@@ -63,8 +63,18 @@ SwitchToTitle::
 
 
 TitleEventLoopHandler::
+    ; Increment RNG leniency?
+    ldh a, [hSelectState]
+    cp a, 1
+    jr nz, :+
+    ldh a, [hRNGRerolls]
+    inc a
+    and a, $0F
+    ldh [hRNGRerolls], a
+    jp EventLoopPostHandler
+
     ; Start game?
-    ldh a, [hStartState]
+:   ldh a, [hStartState]
     ld b, a
     ldh a, [hAState]
     ld c, a
@@ -217,6 +227,12 @@ TitleVBlankHandler::
     ld a, TILE_0
     add a, b
     ld hl, TITLE_LEVEL+1
+    ld [hl], a
+
+    ; Draw RNG
+    ldh a, [hRNGRerolls]
+    add a, TILE_0
+    ld hl, TITLE_ROLLS
     ld [hl], a
 
     ; Draw A/B

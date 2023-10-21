@@ -65,6 +65,8 @@ Main::
     ldh [hStartSpeed], a
     ld a, h
     ldh [hStartSpeed+1], a
+    ld a, 6
+    ldh [hRNGRerolls], a
     call TimeInit
     call IntrInit
     call InputInit

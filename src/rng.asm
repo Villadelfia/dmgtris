@@ -26,6 +26,7 @@ SECTION "High RNG Variables", HRAM
 hRNGSeed:      ds 4
 hPieceHistory: ds 4
 hNextPiece::   ds 1
+hRNGRerolls::  ds 1
 
 
 section "RNG Functions", ROM0
@@ -71,9 +72,15 @@ RNGInit::
 
 
 GetNextPiece::
-    ld e, 7
+    ldh a, [hRNGRerolls]
+    cp a, 0
+    jr nz, :+
+    call NextPiece
+    jr .donerolling
+:   inc a
+    ld e, a
 :   dec e
-    jr z, :+
+    jr z, .donerolling
 
     call NextPiece
     ld hl, hPieceHistory
@@ -89,7 +96,8 @@ GetNextPiece::
     cp a, [hl]
     jr z, :-
 
-:   ldh [hNextPiece], a
+.donerolling
+    ldh [hNextPiece], a
     ld b, a
     ldh a, [hPieceHistory+2]
     ldh [hPieceHistory+3], a

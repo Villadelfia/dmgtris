@@ -63,6 +63,12 @@ SwitchToGameplay::
     ld bc, GameplayTilemapEnd - GameplayTilemap
     call UnsafeMemCopy
 
+    ; Place a tell on the screen for RNG rerolls.
+    ld hl, FIELD_RNGTELL
+    ldh a, [hRNGRerolls]
+    add a, TILE_0_FAINT
+    ld [hl], a
+
     ; Clear OAM.
     call ClearOAM
     call SetNumberSpritePositions

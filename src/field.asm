@@ -1367,7 +1367,9 @@ FieldDelay::
     call LevelUp
     ret
 
-:   ldh a, [hLineClearCt]
+:   xor a, a
+    ldh [hRequiresLineClear], a
+    ldh a, [hLineClearCt]
     ld e, a
     call LevelUp
     ld c, a

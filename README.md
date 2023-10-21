@@ -7,6 +7,8 @@ Scoring is somewhat like TGM1 within the bounds of what the Z80 CPU can calculat
 
 The speed curve starts at 1/16G, so slightly faster than TGM, and goes smoothly toward 20G at level 500. There is no speed drop at level 200, and the game doesn't end at level 999. 20G mode starts at TGM1 speeds, then transitions to TGM2 speeds, TGM3 speeds, and finally it goes beyond even shirase mode.
 
+The Randomizer uses a TGM2-style 4-history randomizer preloaded with SSZZ, and with 4 rerolls by default. This number can be changed and is shown at the top right of the playfield.
+
 The game itself runs at a constant 60fps as well as at the traditional 20 row visible grid.
 
 

@@ -488,6 +488,7 @@ pauseMode:
     ld de, sPause
     ld hl, wField+(4*10)
     ld bc, 200
+    call UnsafeMemCopy
     jr drawStaticInfo
 
 

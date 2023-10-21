@@ -485,8 +485,8 @@ TrySpawnPiece::
     ; Check if the piece can spawn.
     ld d, h
     ld e, l
-    call GetPieceData
-    call CanPieceFit
+    call GetPieceDataFast
+    call CanPieceFitFast
 
     ; A will be $FF if the piece can fit.
     cp a, $FF
@@ -507,8 +507,8 @@ TrySpawnPiece::
     call XYToSFieldPtr
     ld d, h
     ld e, l
-    call GetPieceData
-    jp CanPieceFit
+    call GetPieceDataFast
+    jp CanPieceFitFast
 
 
 
@@ -787,7 +787,7 @@ FieldProcess::
     ld b, a
     add hl, bc
     pop bc
-    call CanPieceFit
+    call CanPieceFit ; This does have to be the "slow" version.
     cp a, $FF
     jr nz, .maybekick
     ldh a, [hWantRotation]
@@ -825,9 +825,9 @@ FieldProcess::
     call XYToSFieldPtr
     ld d, h
     ld e, l
-    ldh a, [hPieceDataBase]
+    ldh a, [hPieceDataBaseFast]
     ld l, a
-    ldh a, [hPieceDataBase+1]
+    ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
     rlc a
@@ -838,7 +838,7 @@ FieldProcess::
     ld b, a
     add hl, bc
     pop bc
-    call CanPieceFit
+    call CanPieceFitFast
     cp a, $FF
     jr nz, .trykickleft
     ldh a, [hCurrentPieceX]
@@ -859,9 +859,9 @@ FieldProcess::
     call XYToSFieldPtr
     ld d, h
     ld e, l
-    ldh a, [hPieceDataBase]
+    ldh a, [hPieceDataBaseFast]
     ld l, a
-    ldh a, [hPieceDataBase+1]
+    ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
     rlc a
@@ -872,7 +872,7 @@ FieldProcess::
     ld b, a
     add hl, bc
     pop bc
-    call CanPieceFit
+    call CanPieceFitFast
     cp a, $FF
     jr nz, .norot
     ldh a, [hCurrentPieceX]
@@ -924,8 +924,8 @@ FieldProcess::
     call XYToSFieldPtr
     ld d, h
     ld e, l
-    call GetPieceData
-    call CanPieceFit
+    call GetPieceDataFast
+    call CanPieceFitFast
     cp a, $FF
     jr nz, .donemanipulating
     ldh a, [hWantX]
@@ -941,8 +941,8 @@ FieldProcess::
     call XYToSFieldPtr
     ld d, h
     ld e, l
-    call GetPieceData
-    call CanPieceFit
+    call GetPieceDataFast
+    call CanPieceFitFast
     cp a, $FF
     jr z, .notgrounded
 

@@ -146,7 +146,7 @@ leadyMode:
     ld a, 90
 :   ld [wModeCounter], a
     ld de, sLeady
-    ld hl, wField+(10*10)
+    ld hl, wField+(14*10)
     ld bc, 10
     call UnsafeMemCopy
     jp drawStaticInfo
@@ -162,7 +162,7 @@ goMode:
     xor a, a
 :   ld [wModeCounter], a
     ld de, sGo
-    ld hl, wField+(10*10)
+    ld hl, wField+(14*10)
     ld bc, 10
     call UnsafeMemCopy
     jp drawStaticInfo

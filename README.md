@@ -28,6 +28,7 @@ Please do not try running it on older emulators such as VBA, since this game use
 - A — Rotate 1
 - B — Rotate 2
 - Select — Hold
+- Start — Pause
 - Up — Sonic drop
 - Down — Soft drop/Lock
 - Left/Right — Move

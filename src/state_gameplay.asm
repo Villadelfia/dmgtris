@@ -31,11 +31,8 @@ DEF MODE_PIECE_IN_MOTION EQU 5
 DEF MODE_DELAY EQU 6
 DEF MODE_GAME_OVER EQU 7
 DEF MODE_PRE_GAME_OVER EQU 8
+DEF MODE_PAUSED EQU 9
 
-
-SECTION "Gameplay Variables", WRAM0
-wMode: ds 1
-wModeCounter: ds 1
 
 SECTION "Critical Gameplay Variables", HRAM
 hCurrentPiece:: ds 1
@@ -45,6 +42,9 @@ hCurrentPieceRotationState:: ds 1
 hHeldPiece: ds 1
 hHoldSpent:: ds 1
 hSkipJingle: ds 1
+hMode: ds 1
+hModeCounter: ds 1
+hPrePause: ds 1
 
 
 SECTION "Gameplay Functions", ROM0
@@ -90,9 +90,9 @@ SwitchToGameplay::
 
     ; Leady mode.
     ld a, MODE_LEADY
-    ld [wMode], a
-    ld a, 90
-    ld [wModeCounter], a
+    ldh [hMode], a
+    ld a, LEADY_GO_TIME
+    ldh [hModeCounter], a
 
     ; Install the event loop handlers.
     ld a, 1
@@ -110,7 +110,7 @@ SwitchToGameplay::
 
 GamePlayEventLoopHandler::
     ; What mode are we in?
-    ld a, [wMode]
+    ld a, [hMode]
     cp MODE_LEADY
     jr z, leadyMode
     cp MODE_GO
@@ -129,12 +129,14 @@ GamePlayEventLoopHandler::
     jp z, preGameOverMode
     cp MODE_GAME_OVER
     jp z, gameOverMode
+    cp MODE_PAUSED
+    jp z, pauseMode
 
 
     ; Draw "READY" and wait a bit.
 leadyMode:
-    ld a, [wModeCounter]
-    cp a, 90
+    ldh a, [hModeCounter]
+    cp a, LEADY_GO_TIME
     jr nz, :+
     call SFXKill
     ld a, SFX_READY_GO
@@ -142,9 +144,9 @@ leadyMode:
 :   dec a
     jr nz, :+
     ld a, MODE_GO
-    ld [wMode], a
-    ld a, 90
-:   ld [wModeCounter], a
+    ldh [hMode], a
+    ld a, LEADY_GO_TIME
+:   ldh [hModeCounter], a
     ld de, sLeady
     ld hl, wField+(14*10)
     ld bc, 10
@@ -154,13 +156,13 @@ leadyMode:
 
     ; Draw "GO" and wait a bit.
 goMode:
-    ld a, [wModeCounter]
+    ldh a, [hModeCounter]
     dec a
     jr nz, :+
     ld a, MODE_POSTGO
-    ld [wMode], a
+    ldh [hMode], a
     xor a, a
-:   ld [wModeCounter], a
+:   ldh [hModeCounter], a
     ld de, sGo
     ld hl, wField+(14*10)
     ld bc, 10
@@ -171,7 +173,7 @@ goMode:
     ; Clear the field, ready for gameplay.
 postGoMode:
     ld a, MODE_FETCH_PIECE
-    ld [wMode], a
+    ldh [hMode], a
     call FieldClear
     jp drawStaticInfo
 
@@ -259,7 +261,7 @@ fetchPieceMode:
     call SFXEnqueue
 .skipJingle
     ld a, MODE_SPAWN_PIECE
-    ld [wMode], a
+    ldh [hMode], a
     ; State falls through to the next.
 
 
@@ -269,16 +271,25 @@ spawnPieceMode:
     cp a, $FF
     jr z, :+
     ld a, MODE_PRE_GAME_OVER
-    ld [wMode], a
+    ldh [hMode], a
     jp drawStaticInfo
 :   ld a, MODE_PIECE_IN_MOTION
-    ld [wMode], a
+    ldh [hMode], a
 
 
     ; This mode lasts for as long as the piece is in motion.
     ; Field will let us know when it has locked in place.
 pieceInMotionMode:
-    call FieldProcess
+    ldh a, [hStartState]
+    cp a, 1
+    jr nz, :+
+    ldh a, [hMode]
+    ldh [hPrePause], a
+    ld a, MODE_PAUSED
+    ldh [hMode], a
+    jp drawStaticInfo
+
+:   call FieldProcess
 
     ; Do we hold?
     ld a, [hSelectState]
@@ -297,14 +308,14 @@ pieceInMotionMode:
     ldh [hCurrentPieceRotationState], a
     call DoHold
     ld a, MODE_SPAWN_PIECE
-    ld [wMode], a
+    ldh [hMode], a
 
     ; Do we go into delay state?
 :   ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
     jr nz, :+
     ld a, MODE_DELAY
-    ld [wMode], a
+    ldh [hMode], a
     call ToShadowField
     ; No fall through this time.
 
@@ -312,13 +323,22 @@ pieceInMotionMode:
 
 
 delayMode:
-    call FieldDelay
+    ldh a, [hStartState]
+    cp a, 1
+    jr nz, :+
+    ldh a, [hMode]
+    ldh [hPrePause], a
+    ld a, MODE_PAUSED
+    ldh [hMode], a
+    jp drawStaticInfo
+
+:   call FieldDelay
 
     ldh a, [hRemainingDelay]
     cp a, 0
     jr nz, :+
     ld a, MODE_FETCH_PIECE
-    ld [wMode], a
+    ldh [hMode], a
 
 :   jp drawStaticInfo
 
@@ -417,7 +437,7 @@ preGameOverMode:
 .skip7\@
     ENDR
     ld a, MODE_GAME_OVER
-    ld [wMode], a
+    ldh [hMode], a
 
 
 gameOverMode:
@@ -434,10 +454,10 @@ gameOverMode:
     xor a, a
     ldh [hHoldSpent], a
     ld a, MODE_LEADY
-    ld [wMode], a
-    ld a, 90
-    ld [wModeCounter], a
-    jr drawStaticInfo
+    ldh [hMode], a
+    ld a, LEADY_GO_TIME
+    ldh [hModeCounter], a
+    jp drawStaticInfo
 
     ; Quit
 :   ldh a, [hBState]
@@ -445,6 +465,61 @@ gameOverMode:
     jr nz, :+
     call SwitchToTitle
     jp EventLoopPostHandler
+
+
+pauseMode:
+    ldh a, [hStartState]
+    cp a, 1
+    jr nz, :+
+    ldh a, [hPrePause]
+    ldh [hMode], a
+    jp drawStaticInfo
+
+    ; Draw PAUSE all over the field, but not if we came from delay mode.
+:   ldh a, [hPrePause]
+    cp a, MODE_DELAY
+    jr z, drawStaticInfo
+    ld de, sPause
+    ld hl, wField+(4*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(6*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(8*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(10*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(12*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(14*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(16*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(18*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(20*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(22*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    jr drawStaticInfo
 
 
     ; Always draw the score, level, next piece, and held piece.

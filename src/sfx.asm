@@ -1242,6 +1242,20 @@ SFXEnqueue::
 
 
 SFXKill::
+    ; Kill all sound without pops.
+    ld a, %00111111
+    ldh [rNR11], a
+    ldh [rNR21], a
+    ld a, $FF
+    ldh [rNR31], a
+    ldh [rNR41], a
+    ld a, %01000000
+    ldh [rNR14], a
+    ldh [rNR24], a
+    ldh [rNR34], a
+    ldh [rNR44], a
+
+    ; Clear the queue.
     ld a, $FF
     ldh [hPlayQueue], a
     ldh [hPlayQueue+1], a

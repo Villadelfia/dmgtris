@@ -134,7 +134,12 @@ GamePlayEventLoopHandler::
     ; Draw "READY" and wait a bit.
 leadyMode:
     ld a, [wModeCounter]
-    dec a
+    cp a, 90
+    jr nz, :+
+    call SFXKill
+    ld a, SFX_READY_GO
+    call SFXEnqueue
+:   dec a
     jr nz, :+
     ld a, MODE_GO
     ld [wMode], a

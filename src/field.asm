@@ -991,7 +991,7 @@ FieldProcess::
     ld d, h
     ld e, l
     call GetPieceData
-    ld a, 0
+    ld a, TILE_GHOST
     ld b, a
     push hl
     push de

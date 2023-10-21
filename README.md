@@ -11,7 +11,11 @@ The game itself runs at a constant 60fps as well as at the traditional 20 row vi
 
 
 ## Playing
-You can build the game yourself, or use the binary in the root of this repository.
+You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/DMGTRIS.GB) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/DMGTRIS.GB).
+
+The game should run in any accurate emulator. For Windows or Linux using Wine [bgb](https://bgb.bircd.org/) is generally regarded as the best option. For macOS [SameBoy](https://sameboy.github.io/) comes recommended.
+
+Please do not try running it on older emulators such as VBA, since this game uses the semi-randomness of the initial game boy memory as one source of RNG entropy.
 
 
 ## Controls

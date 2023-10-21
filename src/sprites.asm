@@ -53,7 +53,7 @@ OAMDMA::
         ldh a, [hGameState]
         cp a, b
         jp nz, BlitField
-        jp EventLoop
+        jp TitleVBlankHandler
     ENDL
 OAMDMAEnd::
 

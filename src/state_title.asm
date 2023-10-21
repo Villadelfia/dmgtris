@@ -46,6 +46,7 @@ SwitchToTitle::
 
 
 TitleEventLoopHandler::
+    ; Start game?
     ldh a, [hStartState]
     ld b, a
     ldh a, [hAState]
@@ -54,9 +55,58 @@ TitleEventLoopHandler::
     or a, b
     or a, c
     cp a, 1
-    jp nz, EventLoopPostHandler
+    jr nz, :+
     call SwitchToGameplay
     jp EventLoopPostHandler
+
+    ; Toggle A/B?
+:   ldh a, [hLeftState]
+    ld b, a
+    ldh a, [hRightState]
+    or a, b
+    cp a, 1
+    jr nz, :+
+    ldh a, [hSwapAB]
+    cpl
+    ldh [hSwapAB], a
+    jp EventLoopPostHandler
+
+    ; Start level up?
+:   ldh a, [hUpState]
+    cp a, 1
+    jr nz, :+
+    ; TODO
+    jp EventLoopPostHandler
+
+    ; Start level down?
+:   ldh a, [hDownState]
+    cp a, 1
+    jr nz, :+
+    ; TODO
+:    jp EventLoopPostHandler
+
+
+TitleVBlankHandler::
+    ldh a, [hSwapAB]
+    cp a, 0
+    jr nz, :+
+    ld hl, TITLE_A
+    ld a, TILE_A
+    ld [hl+], a
+    inc hl
+    inc a
+    ld [hl], a
+    wait_vblank_end
+    jp EventLoop
+
+:   ld hl, TITLE_A
+    ld a, TILE_B
+    ld [hl+], a
+    inc hl
+    dec a
+    ld [hl], a
+    wait_vblank_end
+    jp EventLoop
 
 
 ENDC

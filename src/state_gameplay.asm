@@ -191,7 +191,7 @@ fetchPieceMode:
 .cp1
     cp a, 0
     jr z, .checkIRSB
-    ld a, 1
+    ld a, 3
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
     call SFXEnqueue
@@ -202,13 +202,13 @@ fetchPieceMode:
     jr z, .ldb2
 .lda2
     ld a, [hAState]
-    jr .cp1
+    jr .cp2
 .ldb2
     ld a, [hBState]
 .cp2
     cp a, 0
     jr z, .checkJingle
-    ld a, 3
+    ld a, 1
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
     call SFXEnqueue
@@ -359,19 +359,35 @@ DoHold:
     ; Check if IRS is requested.
     ; Apply the rotation if so.
 .checkIRSHA
+    ld a, [hSwapAB]
+    cp a, 0
+    jr z, .lda3
+.ldb3
+    ld a, [hBState]
+    jr .cp3
+.lda3
     ld a, [hAState]
+.cp3
     cp a, 0
     jr z, .checkIRSHB
-    ld a, 1
+    ld a, 3
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
     call SFXEnqueue
 
 .checkIRSHB
+    ld a, [hSwapAB]
+    cp a, 0
+    jr z, .ldb4
+.lda4
+    ld a, [hAState]
+    jr .cp4
+.ldb4
     ld a, [hBState]
+.cp4
     cp a, 0
     jr z, .noRotation
-    ld a, 3
+    ld a, 1
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
     call SFXEnqueue

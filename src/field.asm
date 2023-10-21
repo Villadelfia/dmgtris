@@ -512,7 +512,7 @@ TrySpawnPiece::
     ; Otherwise check the rotation, and if it's not zero, try to reset it.
     ldh a, [hCurrentPieceRotationState]
     cp a, 0
-    ret nz
+    ret z
 
     ; Reset the rotation.
     xor a, a

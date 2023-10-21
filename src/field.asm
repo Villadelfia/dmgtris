@@ -757,7 +757,15 @@ FieldProcess::
 
     ; Want rotate CCW?
 .wantrotccw
-    ldh a, [hAState]
+    ld a, [hSwapAB]
+    cp a, 0
+    jr z, .ldb1
+.lda1
+    ld a, [hAState]
+    jr .cp1
+.ldb1
+    ld a, [hBState]
+.cp1
     cp a, 1
     jr nz, .wantrotcw
     ldh a, [hWantRotation]
@@ -768,7 +776,15 @@ FieldProcess::
 
     ; Want rotate CW?
 .wantrotcw
-    ldh a, [hBState]
+    ld a, [hSwapAB]
+    cp a, 0
+    jr z, .lda2
+.ldb2
+    ld a, [hBState]
+    jr .cp2
+.lda2
+    ld a, [hAState]
+.cp2
     cp a, 1
     jr nz, .moverotrequested
     ldh a, [hWantRotation]

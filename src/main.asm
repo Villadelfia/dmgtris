@@ -10,6 +10,7 @@ INCLUDE "res/title_map.inc"
 
 SECTION "Globals", HRAM
 hGameState:: ds 1
+hSwapAB:: ds 1
 
 
 SECTION "Stack", WRAM0
@@ -40,6 +41,8 @@ Main::
     call CopyOAMHandler
 
     ; Zero out the ram where needed.
+    xor a, a
+    ldh [hSwapAB], a
     call TimeInit
     call IntrInit
     call InputInit

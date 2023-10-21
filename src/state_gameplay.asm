@@ -180,7 +180,15 @@ fetchPieceMode:
     ; Check if IRS is requested.
     ; Apply the rotation if so.
 .checkIRSA
+    ld a, [hSwapAB]
+    cp a, 0
+    jr z, .lda1
+.ldb1
+    ld a, [hBState]
+    jr .cp1
+.lda1
     ld a, [hAState]
+.cp1
     cp a, 0
     jr z, .checkIRSB
     ld a, 1
@@ -189,7 +197,15 @@ fetchPieceMode:
     call SFXEnqueue
 
 .checkIRSB
+    ld a, [hSwapAB]
+    cp a, 0
+    jr z, .ldb2
+.lda2
+    ld a, [hAState]
+    jr .cp1
+.ldb2
     ld a, [hBState]
+.cp2
     cp a, 0
     jr z, .checkJingle
     ld a, 3

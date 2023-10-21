@@ -110,7 +110,7 @@ SwitchToGameplay::
 
 GamePlayEventLoopHandler::
     ; What mode are we in?
-    ld a, [hMode]
+    ldh a, [hMode]
     cp MODE_LEADY
     jr z, leadyMode
     cp MODE_GO
@@ -230,11 +230,11 @@ fetchPieceMode:
     call SFXEnqueue
 
 .checkIRSB
-    ld a, [hSwapAB]
+    ldh a, [hSwapAB]
     cp a, 0
     jr z, .ldb2
 .lda2
-    ld a, [hAState]
+    ldh a, [hAState]
     cp a, 0
     jr z, .checkJingle
     ld a, $FF
@@ -253,7 +253,7 @@ fetchPieceMode:
     call SFXEnqueue
 
 .checkJingle
-    ld a, [hSkipJingle]
+    ldh a, [hSkipJingle]
     cp a, 0
     jr nz, .skipJingle
 .playNextJingle
@@ -292,10 +292,10 @@ pieceInMotionMode:
 :   call FieldProcess
 
     ; Do we hold?
-    ld a, [hSelectState]
+    ldh a, [hSelectState]
     cp a, 1
     jr nz, :+
-    ld a, [hHoldSpent]
+    ldh a, [hHoldSpent]
     cp a, $FF
     jr z, :+
     ; Reset position and rotation.

@@ -49,11 +49,11 @@ RNGInit::
 
     ; Initialize the next history.
     ld a, PIECE_Z
-    ld [hPieceHistory], a
-    ld [hPieceHistory+1], a
+    ldh [hPieceHistory], a
+    ldh [hPieceHistory+1], a
     ld a, PIECE_S
-    ld [hPieceHistory+2], a
-    ld [hPieceHistory+3], a
+    ldh [hPieceHistory+2], a
+    ldh [hPieceHistory+3], a
 
     ; Get the first piece and make sure it's not Z, S or O.
 :   call NextPiece

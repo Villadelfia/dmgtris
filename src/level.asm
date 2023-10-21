@@ -263,7 +263,7 @@ LevelUp::
 .leveljinglemaybe
     ldh a, [hPrevHundreds]
     ld b, a
-    ld a, [hCLevel+1]
+    ldh a, [hCLevel+1]
     cp a, b
     jr z, .checkspeedup
     ld a, SFX_LEVEL_UP

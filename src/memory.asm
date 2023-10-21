@@ -26,7 +26,7 @@ SECTION "Memory Functions", ROM0
 ; Copies data from de to hl, bc bytes
 UnsafeMemCopy::
     ld a, [de]
-    ld [hli], a
+    ld [hl+], a
     inc de
     dec bc
     ld a, b
@@ -39,7 +39,7 @@ UnsafeMemCopy::
 SafeMemCopy::
     wait_vram
     ld a, [de]
-    ld [hli], a
+    ld [hl+], a
     inc de
     dec bc
     ld a, b

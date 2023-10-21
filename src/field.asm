@@ -667,10 +667,10 @@ FieldProcess::
 
 
     ; Check if we're about to hold.
-    ld a, [hSelectState]
+    ldh a, [hSelectState]
     cp a, 1
     jr nz, :+
-    ld a, [hHoldSpent]
+    ldh a, [hHoldSpent]
     cp a, $FF
     ret nz
 
@@ -746,14 +746,14 @@ FieldProcess::
     ; We check rotation first.
     ; Want rotate CCW?
 .wantrotccw
-    ld a, [hSwapAB]
+    ldh a, [hSwapAB]
     cp a, 0
     jr z, .ldb1
 .lda1
-    ld a, [hAState]
+    ldh a, [hAState]
     jr .cp1
 .ldb1
-    ld a, [hBState]
+    ldh a, [hBState]
 .cp1
     cp a, 1
     jr nz, .wantrotcw
@@ -766,14 +766,14 @@ FieldProcess::
 
     ; Want rotate CW?
 .wantrotcw
-    ld a, [hSwapAB]
+    ldh a, [hSwapAB]
     cp a, 0
     jr z, .lda2
 .ldb2
-    ld a, [hBState]
+    ldh a, [hBState]
     jr .cp2
 .lda2
-    ld a, [hAState]
+    ldh a, [hAState]
 .cp2
     cp a, 1
     jp nz, .norot
@@ -1101,7 +1101,7 @@ GetTileShade:
     jp z, .max2
     ret
 .max30
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 4
     ret c
     cp a, 8
@@ -1118,7 +1118,7 @@ GetTileShade:
     jp c, .s1
     jp .s0
 .max25
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 3
     ret c
     cp a, 6
@@ -1135,7 +1135,7 @@ GetTileShade:
     jp c, .s1
     jp .s0
 .max20
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 2
     ret c
     cp a, 5
@@ -1152,7 +1152,7 @@ GetTileShade:
     jp c, .s1
     jp .s0
 .max18
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 2
     ret c
     cp a, 4
@@ -1169,7 +1169,7 @@ GetTileShade:
     jp c, .s1
     jp .s0
 .max16
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 2
     ret c
     cp a, 4
@@ -1186,7 +1186,7 @@ GetTileShade:
     jp c, .s1
     jp .s0
 .max14
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 2
     ret c
     cp a, 4
@@ -1203,7 +1203,7 @@ GetTileShade:
     jp c, .s1
     jp .s0
 .max12
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 1
     ret c
     cp a, 3
@@ -1220,7 +1220,7 @@ GetTileShade:
     jp c, .s1
     jp .s0
 .max10
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 1
     ret c
     cp a, 2
@@ -1237,7 +1237,7 @@ GetTileShade:
     jr c, .s1
     jr .s0
 .max8
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 1
     ret c
     cp a, 2
@@ -1254,7 +1254,7 @@ GetTileShade:
     jr c, .s1
     jr .s0
 .max6
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 1
     ret c
     cp a, 2
@@ -1267,14 +1267,13 @@ GetTileShade:
     jr c, .s1
     jr .s0
 .max4
-    ld a, [hCurrentLockDelayRemaining]
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 1
     ret c
     cp a, 2
     jr c, .s4
     jr .s0
 .max2
-    ld a, [hCurrentLockDelayRemaining]
     jr .s4
 .s0
     ldh a, [hCurrentPiece]
@@ -1495,7 +1494,7 @@ FindClearedLines:
 
 
 MarkClear:
-    ld a, [hClearedLines]
+    ldh a, [hClearedLines]
     cp a, $FF
     ret z
     ld hl, wField+(24*10)
@@ -1508,7 +1507,7 @@ MarkClear:
     ld d, TILE_CLEARING
     call UnsafeMemSet
 
-    ld a, [hClearedLines+1]
+    ldh a, [hClearedLines+1]
     cp a, $FF
     ret z
     ld hl, wField+(24*10)
@@ -1521,7 +1520,7 @@ MarkClear:
     ld d, TILE_CLEARING
     call UnsafeMemSet
 
-    ld a, [hClearedLines+2]
+    ldh a, [hClearedLines+2]
     cp a, $FF
     ret z
     ld hl, wField+(24*10)
@@ -1534,7 +1533,7 @@ MarkClear:
     ld d, TILE_CLEARING
     call UnsafeMemSet
 
-    ld a, [hClearedLines+3]
+    ldh a, [hClearedLines+3]
     cp a, $FF
     ret z
     ld hl, wField+(24*10)

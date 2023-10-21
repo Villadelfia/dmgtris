@@ -38,7 +38,33 @@ SwitchToTitle::
     ld bc, TitleScreenTilemapEnd - TitleScreenTilemap
     call UnsafeMemCopy
 
+    ; Little easter egg.
+    ldh a, [hInitialA]
+    cp a, $FF
+    jr nz, :+
+    ld de, sEaster0
+    ld hl, EASTER_0
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, sEaster1
+    ld hl, EASTER_1
+    ld bc, 5
+    call UnsafeMemCopy
+    jr .oam
+
+:   cp a, $11
+    jr nz, .oam
+    ld de, sEaster2
+    ld hl, EASTER_0
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, sEaster3
+    ld hl, EASTER_1
+    ld bc, 5
+    call UnsafeMemCopy
+
     ; Clear OAM.
+.oam
     call ClearOAM
     call SetNumberSpritePositions
 

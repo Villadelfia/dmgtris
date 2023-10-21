@@ -89,6 +89,10 @@ sPause::
     db " P A U S E"
     db "P A U S E "
     db " P A U S E"
+sEaster0:: db $D4, $D6, $D8, $DA, $DC
+sEaster1:: db $D5, $D7, $D9, $DB, $DD
+sEaster2:: db $DE, $E0, $D8, $DA, $DC
+sEaster3:: db $DF, $E1, $D9, $DB, $DD
 sPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
     db 0, 8, 16, 24 ; I
     db 0, 8, 8, 16  ; Z

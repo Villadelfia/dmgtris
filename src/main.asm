@@ -28,6 +28,7 @@ INCLUDE "res/title_map.inc"
 SECTION "High Globals", HRAM
 hGameState:: ds 1
 hSwapAB:: ds 1
+hInitialA:: ds 1
 
 
 SECTION "Stack", WRAM0
@@ -38,6 +39,9 @@ wStackEnd::
 
 SECTION "Code Entry Point", ROM0
 Main::
+    ; Load the initial A register. For reasons.
+    ldh [hInitialA], a
+
     ; Turn off LCD during initialization.
     wait_vram
     xor a, a

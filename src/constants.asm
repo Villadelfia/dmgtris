@@ -51,9 +51,6 @@ CHARMAP "#", 125
 SECTION "Static Data", ROM0
 sLeady::     db "  READY?  "
 sGo::        db "    GO    "
-sGameOver::  db "GAME OVER!"
-sGameOver2:: db " RETRY[A] "
-sGameOver3:: db " QUIT [B] "
 sPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
     db 0, 8, 16, 24 ; I
     db 0, 8, 8, 16  ; Z

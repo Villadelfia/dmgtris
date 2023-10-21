@@ -13,6 +13,7 @@ DEF MODE_SPAWN_PIECE EQU 4
 DEF MODE_PIECE_IN_MOTION EQU 5
 DEF MODE_DELAY EQU 6
 DEF MODE_GAME_OVER EQU 7
+DEF MODE_PRE_GAME_OVER EQU 8
 
 
 SECTION "Gameplay Variables", WRAM0
@@ -107,6 +108,8 @@ GamePlayEventLoopHandler::
     jp z, pieceInMotionMode
     cp MODE_DELAY
     jp z, delayMode
+    cp MODE_PRE_GAME_OVER
+    jp z, preGameOverMode
     cp MODE_GAME_OVER
     jp z, gameOverMode
 
@@ -231,10 +234,15 @@ spawnPieceMode:
     call TrySpawnPiece
     cp a, $FF
     jr z, :+
-    ld a, MODE_GAME_OVER
+    ld a, MODE_PRE_GAME_OVER
     ld [wMode], a
     jp drawStaticInfo
-:   ld a, MODE_PIECE_IN_MOTION
+
+    ; If you IRS at the exact time the piece spawns, you can get double IRS, we fix this by always saying A and B were held for a long time.
+:   ld a, $FF
+    ldh [hAState], a
+    ldh [hBState], a
+    ld a, MODE_PIECE_IN_MOTION
     ld [wMode], a
 
 
@@ -271,7 +279,7 @@ pieceInMotionMode:
     call ToShadowField
     ; No fall through this time.
 
-:   jr drawStaticInfo
+:   jp drawStaticInfo
 
 
 delayMode:
@@ -283,23 +291,107 @@ delayMode:
     ld a, MODE_FETCH_PIECE
     ld [wMode], a
 
-:   jr drawStaticInfo
+:   jp drawStaticInfo
+
+preGameOverMode:
+    ; Draw the field in grey.
+    ; Yes. This really unrolls the loop that many times.
+    ld hl, wField+(4*10)
+    REPT 60
+        ld a, [hl]
+        cp a, TILE_FIELD_EMPTY
+        jr nz, .notempty1\@
+        ld a, GAME_OVER_OTHER+1
+        ld [hl+], a
+        jr .skip1\@
+.notempty1\@
+        ld a, GAME_OVER_OTHER
+        ld [hl+], a
+.skip1\@
+    ENDR
+    DEF off = 0
+    REPT 10
+        ld a, [hl]
+        cp a, TILE_FIELD_EMPTY
+        jr nz, .notempty2\@
+        ld a, GAME_OVER_R10+10+off
+        ld [hl+], a
+        jr .skip2\@
+.notempty2\@
+        ld a, GAME_OVER_R10+off
+        ld [hl+], a
+.skip2\@
+        DEF off += 1
+    ENDR
+    REPT 10
+    ld a, [hl]
+    cp a, TILE_FIELD_EMPTY
+    jr nz, .notempty3\@
+    ld a, GAME_OVER_OTHER+1
+    ld [hl+], a
+    jr .skip3\@
+.notempty3\@
+    ld a, GAME_OVER_OTHER
+    ld [hl+], a
+.skip3\@
+    ENDR
+    DEF off = 0
+    REPT 10
+        ld a, [hl]
+        cp a, TILE_FIELD_EMPTY
+        jr nz, .notempty4\@
+        ld a, GAME_OVER_R12+10+off
+        ld [hl+], a
+        jr .skip4\@
+.notempty4\@
+        ld a, GAME_OVER_R12+off
+        ld [hl+], a
+.skip4\@
+        DEF off += 1
+    ENDR
+    REPT 10
+    ld a, [hl]
+    cp a, TILE_FIELD_EMPTY
+    jr nz, .notempty5\@
+    ld a, GAME_OVER_OTHER+1
+    ld [hl+], a
+    jr .skip5\@
+.notempty5\@
+    ld a, GAME_OVER_OTHER
+    ld [hl+], a
+.skip5\@
+    ENDR
+    DEF off = 0
+    REPT 10
+        ld a, [hl]
+        cp a, TILE_FIELD_EMPTY
+        jr nz, .notempty6\@
+        ld a, GAME_OVER_R14+10+off
+        ld [hl+], a
+        jr .skip6\@
+.notempty6\@
+        ld a, GAME_OVER_R14+off
+        ld [hl+], a
+.skip6\@
+        DEF off += 1
+    ENDR
+    REPT 90
+    ld a, [hl]
+    cp a, TILE_FIELD_EMPTY
+    jr nz, .notempty7\@
+    ld a, GAME_OVER_OTHER+1
+    ld [hl+], a
+    jr .skip7\@
+.notempty7\@
+    ld a, GAME_OVER_OTHER
+    ld [hl+], a
+.skip7\@
+    ENDR
+    ld a, MODE_GAME_OVER
+    ld [wMode], a
 
 
 gameOverMode:
-    ld de, sGameOver
-    ld hl, wField+(10*10)
-    ld bc, 10
-    call UnsafeMemCopy
-    ld de, sGameOver2
-    ld hl, wField+(12*10)
-    ld bc, 10
-    call UnsafeMemCopy
-    ld de, sGameOver3
-    ld hl, wField+(14*10)
-    ld bc, 10
-    call UnsafeMemCopy
-
     ; Retry?
     ldh a, [hAState]
     cp a, 1

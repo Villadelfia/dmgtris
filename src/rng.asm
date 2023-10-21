@@ -22,40 +22,38 @@ DEF RNG_ASM EQU 1
 INCLUDE "globals.asm"
 
 
-SECTION "RNG Variables", WRAM0
-wRNGSeed:      ds 4
-wPieceHistory: ds 4
-wNextPiece::   ds 1
+SECTION "High RNG Variables", HRAM
+hRNGSeed:      ds 4
+hPieceHistory: ds 4
+hNextPiece::   ds 1
 
 
 section "RNG Functions", ROM0
 RNGInit::
     ; Do some bit fuckery on the seed using the gameboy's free-running timers.
-    ld hl, wRNGSeed
     ldh a, [rDIV]
     xor a, [hl]
-    ld [hl+], a
+    ldh [hRNGSeed], a
 
     ldh a, [rTIMA]
     xor a, [hl]
-    ld [hl+], a
+    ldh [hRNGSeed+1], a
 
     ldh a, [rDIV]
     xor a, [hl]
-    ld [hl+], a
+    ldh [hRNGSeed+2], a
 
     ldh a, [rTIMA]
     xor a, [hl]
-    ld [hl], a
+    ldh [hRNGSeed+3], a
 
     ; Initialize the next history.
-    ld hl, wPieceHistory
     ld a, PIECE_Z
-    ld [hl+], a
-    ld [hl+], a
+    ld [hPieceHistory], a
+    ld [hPieceHistory+1], a
     ld a, PIECE_S
-    ld [hl+], a
-    ld [hl], a
+    ld [hPieceHistory+2], a
+    ld [hPieceHistory+3], a
 
     ; Get the first piece and make sure it's not Z, S or O.
 :   call NextPiece
@@ -67,10 +65,8 @@ RNGInit::
     jr z, :-
 
     ; Store it.
-    ld hl, wPieceHistory
-    ld [hl], a
-    ld hl, wNextPiece
-    ld [hl], a
+    ldh [hPieceHistory], a
+    ld [hNextPiece], a
     ret
 
 
@@ -80,7 +76,7 @@ GetNextPiece::
     jr z, :+
 
     call NextPiece
-    ld hl, wPieceHistory
+    ld hl, hPieceHistory
     cp a, [hl]
     jr z, :-
     inc hl
@@ -93,20 +89,16 @@ GetNextPiece::
     cp a, [hl]
     jr z, :-
 
-:   ld hl, wNextPiece
-    ld [hl], a
+:   ldh [hNextPiece], a
     ld b, a
-    ld hl, wPieceHistory+2
-    ld a, [hl+]
-    ld [hl], a
-    ld hl, wPieceHistory+1
-    ld a, [hl+]
-    ld [hl], a
-    ld hl, wPieceHistory
-    ld a, [hl+]
-    ld [hl-], a
+    ldh a, [hPieceHistory+2]
+    ldh [hPieceHistory+3], a
+    ldh a, [hPieceHistory+1]
+    ldh [hPieceHistory+2], a
+    ldh a, [hPieceHistory]
+    ldh [hPieceHistory+1], a
     ld a, b
-    ld [hl], a
+    ldh [hPieceHistory], a
     ret
 
 
@@ -120,7 +112,7 @@ NextPiece:
 
 NextByte:
     ; Load seed
-    ld hl,wRNGSeed+3
+    ld hl, hRNGSeed+3
     ld a, [hl-]
     ld b, a
     ld a, [hl-]

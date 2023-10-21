@@ -32,7 +32,7 @@ wField:: ds (10*24)
 wShadowField:: ds (14*26)
 
 
-SECTION "Field High Variables", HRAM
+SECTION "High Field Variables", HRAM
 hPieceDataBase: ds 2
 hPieceDataBaseFast: ds 2
 hPieceDataOffset: ds 1
@@ -1435,9 +1435,9 @@ FieldDelay::
     jr nz, :-
 
     ld a, l
-    ld [wScoreIncrement], a
+    ldh [hScoreIncrement], a
     ld a, h
-    ld [wScoreIncrement+1], a
+    ldh [hScoreIncrement+1], a
     call IncreaseScore
 
     ret

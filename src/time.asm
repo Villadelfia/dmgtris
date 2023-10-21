@@ -22,7 +22,7 @@ DEF TIME_ASM EQU 1
 INCLUDE "globals.asm"
 
 
-SECTION "Time Variables", HRAM
+SECTION "High Time Variables", HRAM
 hFrameCtr::  ds 1
 hEvenFrame:: ds 1
 

@@ -22,7 +22,7 @@ DEF INTERRUPTS_ASM EQU 1
 INCLUDE "globals.asm"
 
 
-SECTION "Interrupt Variables", HRAM
+SECTION "High Interrupt Variables", HRAM
 hLCDCCtr:: ds 1
 
 

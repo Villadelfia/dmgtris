@@ -22,54 +22,50 @@ DEF SCORE_ASM EQU 1
 INCLUDE "globals.asm"
 
 
-SECTION "Score Variables", WRAM0
-wScore:: ds 6
-wScoreIncrement:: ds 2
-wScoreIncrementBCD:: ds 6
-wScoreIncrementHead:: ds 1
+SECTION "Score Variables", HRAM
+hScore:: ds 6
+hScoreIncrement:: ds 2
+hScoreIncrementBCD:: ds 6
+hScoreIncrementHead:: ds 1
 
 
 SECTION "Score Functions", ROM0
 ScoreInit::
     xor a, a
-    ld hl, wScore
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
-    ld hl, wScoreIncrement
-    ld [hl+], a
-    ld [hl], a
+    ldh [hScore], a
+    ldh [hScore+1], a
+    ldh [hScore+2], a
+    ldh [hScore+3], a
+    ldh [hScore+4], a
+    ldh [hScore+5], a
+    ldh [hScoreIncrement], a
+    ldh [hScoreIncrement+1], a
     ld a, $FF
-    ld hl, wScoreIncrementBCD
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
+    ldh [hScoreIncrementBCD], a
+    ldh [hScoreIncrementBCD+1], a
+    ldh [hScoreIncrementBCD+2], a
+    ldh [hScoreIncrementBCD+3], a
+    ldh [hScoreIncrementBCD+4], a
+    ldh [hScoreIncrementBCD+5], a
     ret
 
     ; Increases the current score by the amount in wScoreIncrement.
 IncreaseScore::
     ; Wipe the old BCD score.
     ld a, $FF
-    ld hl, wScoreIncrementBCD
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
+    ldh [hScoreIncrementBCD], a
+    ldh [hScoreIncrementBCD+1], a
+    ldh [hScoreIncrementBCD+2], a
+    ldh [hScoreIncrementBCD+3], a
+    ldh [hScoreIncrementBCD+4], a
+    ldh [hScoreIncrementBCD+5], a
 
     ; First convert to BCD.
-    ld a, [wScoreIncrement]
+    ldh a, [hScoreIncrement]
     ld l, a
-    ld a, [wScoreIncrement+1]
+    ldh a, [hScoreIncrement+1]
     ld h, a
-    ld de, wScoreIncrementBCD
+    ld de, hScoreIncrementBCD
     ld bc, -10000
     call .doConvert
     ld bc, -1000
@@ -109,12 +105,12 @@ IncreaseScore::
     ret
 
 .postConvert
-    ld hl, wScoreIncrement
+    ld hl, hScoreIncrement
     xor a, a
     ld [hl+], a
     ld [hl], a
 
-    ld de, wScoreIncrementBCD+5
+    ld de, hScoreIncrementBCD+5
     ld b, 0
     ld a, $FF
 :   cp a, b
@@ -125,22 +121,22 @@ IncreaseScore::
 
 .preAddDigit
     ; B contains the amount of times we need to shift the BCD score to the right.
-    ld a, [wScoreIncrementBCD+4]
-    ld [wScoreIncrementBCD+5], a
-    ld a, [wScoreIncrementBCD+3]
-    ld [wScoreIncrementBCD+4], a
-    ld a, [wScoreIncrementBCD+2]
-    ld [wScoreIncrementBCD+3], a
-    ld a, [wScoreIncrementBCD+1]
-    ld [wScoreIncrementBCD+2], a
-    ld a, [wScoreIncrementBCD]
-    ld [wScoreIncrementBCD+1], a
+    ldh a, [hScoreIncrementBCD+4]
+    ldh [hScoreIncrementBCD+5], a
+    ldh a, [hScoreIncrementBCD+3]
+    ldh [hScoreIncrementBCD+4], a
+    ldh a, [hScoreIncrementBCD+2]
+    ldh [hScoreIncrementBCD+3], a
+    ldh a, [hScoreIncrementBCD+1]
+    ldh [hScoreIncrementBCD+2], a
+    ldh a, [hScoreIncrementBCD]
+    ldh [hScoreIncrementBCD+1], a
     xor a, a
-    ld [wScoreIncrementBCD], a
+    ldh [hScoreIncrementBCD], a
     dec b
     jr z, :-
-    ld hl, wScore+5
-    ld de, wScoreIncrementBCD+5
+    ld hl, hScore+5
+    ld de, hScoreIncrementBCD+5
 
     ; DE is now pointing to the last digit of the BCD score.
     ; HL points at the last digit of the displayed score.
@@ -182,13 +178,13 @@ IncreaseScore::
     jr nz, .addDigit
 
     ; Check if the score has rolled over.
-    ld a, [wScore]
+    ldh a, [hScore]
     cp a, $0A
     ret c
 
     ; If it has, reset the score.
     xor a, a
-    ld [wScore], a
+    ldh [hScore], a
     ld a, SFX_RANK_UP
     call SFXEnqueue
     ret

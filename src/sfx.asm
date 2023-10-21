@@ -1279,7 +1279,7 @@ sSFXReadyGo::
 sSFXReadyGoEnd::
 
 
-SECTION "SFX Variables", HRAM
+SECTION "High SFX Variables", HRAM
 hPlayhead:: ds 2
 hPlayQueue:: ds 4
 

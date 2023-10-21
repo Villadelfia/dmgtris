@@ -22,13 +22,7 @@ DEF LEVEL_ASM EQU 1
 INCLUDE "globals.asm"
 
 
-SECTION "Level Variables", WRAM0
-wCLevel:: ds 4
-wNLevel:: ds 6 ; The extra 2 bytes will be clobbered by the sprite drawing functions.
-wPrevHundreds:: ds 1
-
-
-SECTION "Critical Level Variables", HRAM
+SECTION "High Level Variables", HRAM
 hCurrentDAS:: ds 1
 hCurrentARE:: ds 1
 hCurrentLockDelay:: ds 1
@@ -40,6 +34,9 @@ hSpeedCurvePtr:: ds 2
 hStartSpeed:: ds 2
 hRequiresLineClear:: ds 1
 hLevel:: ds 2
+hCLevel:: ds 4
+hNLevel:: ds 6 ; The extra 2 bytes will be clobbered by the sprite drawing functions.
+hPrevHundreds:: ds 1
 
 
 SECTION "Level Functions", ROM0
@@ -47,19 +44,17 @@ LevelInit::
     xor a, a
     ldh [hLevel], a
     ldh [hLevel+1], a
-    ld hl, wCLevel
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
-    ld hl, wNLevel
-    ld [hl+], a
-    inc a
-    ld [hl+], a
-    dec a
-    ld [hl+], a
-    ld [hl], a
+    ldh [hCLevel], a
+    ldh [hCLevel+1], a
+    ldh [hCLevel+2], a
+    ldh [hCLevel+3], a
+    ldh [hNLevel], a
+    ldh [hNLevel+2], a ; Note +1 is inited later.
+    ldh [hNLevel+3], a
     ldh [hRequiresLineClear], a
+
+    ld a, 1
+    ldh [hNLevel+1], a
 
     ldh a, [hStartSpeed]
     ld l, a
@@ -70,19 +65,19 @@ LevelInit::
     ld a, [hl+]
     ld b, a
     and a, $0F
-    ld [wCLevel+3], a
+    ldh [hCLevel+3], a
     ld a, b
     swap a
     and a, $0F
-    ld [wCLevel+2], a
+    ldh [hCLevel+2], a
     ld a, [hl+]
     ld b, a
     and a, $0F
-    ld [wCLevel+1], a
+    ldh [hCLevel+1], a
     ld a, b
     swap a
     and a, $0F
-    ld [wCLevel], a
+    ldh [hCLevel], a
 
     ld a, l
     ldh [hSpeedCurvePtr], a
@@ -99,19 +94,19 @@ LevelInit::
     ld a, [hl+]
     ld b, a
     and a, $0F
-    ld [wNLevel+3], a
+    ldh [hNLevel+3], a
     ld a, b
     swap a
     and a, $0F
-    ld [wNLevel+2], a
+    ldh [hNLevel+2], a
     ld a, [hl+]
     ld b, a
     and a, $0F
-    ld [wNLevel+1], a
+    ldh [hNLevel+1], a
     ld a, b
     swap a
     and a, $0F
-    ld [wNLevel], a
+    ldh [hNLevel], a
 
     call DoSpeedUp
     ret
@@ -120,7 +115,7 @@ LevelInit::
     ; Levels may only increment by single digits.
 LevelUp::
     ; Return if we're maxed out.
-    ld hl, wCLevel
+    ld hl, hCLevel
     ld a, $09
     and a, [hl]
     inc hl
@@ -148,12 +143,12 @@ LevelUp::
     ldh [hLevel], a
 
     ; Save the current hundred digit.
-    ld a, [wCLevel+1]
-    ld [wPrevHundreds], a
+    ldh a, [hCLevel+1]
+    ldh [hPrevHundreds], a
 
     ; Increment LSD.
 .doit
-    ld hl, wCLevel+3
+    ld hl, hCLevel+3
     ld a, [hl]
     add a, e
     ld [hl], a
@@ -192,10 +187,10 @@ LevelUp::
 
     ; We're maxed out. Both levels should be set to 9999.
     ld a, 9
-    ld [hl-], a
-    ld [hl-], a
-    ld [hl-], a
-    ld [hl], a
+    ldh [hCLevel], a
+    ldh [hCLevel+1], a
+    ldh [hCLevel+2], a
+    ldh [hCLevel+3], a
     call DoSpeedUp
     ld a, SFX_RANK_UP
     call SFXEnqueue
@@ -203,7 +198,7 @@ LevelUp::
 
 .checknlevel
     ; Make wNLevel make sense.
-    ld hl, wCLevel
+    ld hl, hCLevel
     ld a, $09
     and a, [hl]
     inc hl
@@ -212,13 +207,12 @@ LevelUp::
     ; If wCLevel begins 99, wNLevel should be 9999.
     jr nz, :+
     ld a, 9
-    ld hl, wNLevel
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
+    ldh [hNLevel], a
+    ldh [hNLevel+1], a
+    ldh [hNLevel+2], a
+    ldh [hNLevel+3], a
     ; If the last two digits of wCLevel are 98, play the bell.
-    ld hl, wCLevel+2
+    ld hl, hCLevel+2
     ld a, [hl+]
     cp a, 9
     jr nz, .checkspeedup
@@ -232,31 +226,31 @@ LevelUp::
     jr .leveljinglemaybe
 
     ; Otherwise check the second digit of wCLevel.
-:   ld hl, wCLevel+1
+:   ld hl, hCLevel+1
     ld a, [hl]
     ; If it's 9, wNLevel should be y0xx. With y being the first digit of wCLevel+1
     cp a, 9
     jr nz, :+
-    ld hl, wNLevel+1
+    ld hl, hNLevel+1
     xor a, a
     ld [hl], a
-    ld hl, wCLevel
+    ld hl, hCLevel
     ld a, [hl]
     inc a
-    ld hl, wNLevel
+    ld hl, hNLevel
     ld [hl], a
     jr .bellmaybe
 
     ; Otherwise just set the second digit of wNLevel to the second digit of wCLevel + 1.
-:   ld hl, wCLevel+1
+:   ld hl, hCLevel+1
     ld a, [hl]
     inc a
-    ld hl, wNLevel+1
+    ld hl, hNLevel+1
     ld [hl], a
 
 .bellmaybe
     ; If the last two digits of wCLevel are 99, play the bell.
-    ld hl, wCLevel+2
+    ld hl, hCLevel+2
     ld a, [hl+]
     and a, [hl]
     cp a, 9
@@ -267,9 +261,9 @@ LevelUp::
     call SFXEnqueue
 
 .leveljinglemaybe
-    ld a, [wPrevHundreds]
+    ldh a, [hPrevHundreds]
     ld b, a
-    ld a, [wCLevel+1]
+    ld a, [hCLevel+1]
     cp a, b
     jr z, .checkspeedup
     ld a, SFX_LEVEL_UP
@@ -281,14 +275,14 @@ LevelUp::
     jr z, :+
     swap a
     and a, $0F
-    ld hl, wCLevel
+    ld hl, hCLevel
     cp a, [hl]
     ret nc
 
 :   ldh a, [hNextSpeedUp]
     and a, $0F
     jr z, :+
-    ld hl, wCLevel+1
+    ld hl, hCLevel+1
     cp a, [hl]
     jr z, :+
     ret nc
@@ -298,7 +292,7 @@ LevelUp::
     jr z, :+
     swap a
     and a, $0F
-    ld hl, wCLevel+2
+    ld hl, hCLevel+2
     cp a, [hl]
     jr z, :+
     ret nc
@@ -306,18 +300,10 @@ LevelUp::
 :   ldh a, [hNextSpeedUp+1]
     and a, $0F
     jr z, :+
-    ld hl, wCLevel+3
+    ld hl, hCLevel+3
     cp a, [hl]
     jr z, :+
     ret nc
-
-    ldh a, [hNextSpeedUp+0]
-    ldh a, [hNextSpeedUp+1]
-
-    ld a, [wCLevel+0]
-    ld a, [wCLevel+1]
-    ld a, [wCLevel+2]
-    ld a, [wCLevel+3]
 
 :   call DoSpeedUp
     ret

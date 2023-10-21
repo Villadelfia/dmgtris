@@ -34,7 +34,7 @@ DEF MODE_PRE_GAME_OVER EQU 8
 DEF MODE_PAUSED EQU 9
 
 
-SECTION "Critical Gameplay Variables", HRAM
+SECTION "High Gameplay Variables", HRAM
 hCurrentPiece:: ds 1
 hCurrentPieceX:: ds 1
 hCurrentPieceY:: ds 1
@@ -180,7 +180,7 @@ postGoMode:
 
     ; Fetch the next piece.
 fetchPieceMode:
-    ld a, [wNextPiece]
+    ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
 
@@ -257,7 +257,7 @@ fetchPieceMode:
     cp a, 0
     jr nz, .skipJingle
 .playNextJingle
-    ld a, [wNextPiece]
+    ldh a, [hNextPiece]
     call SFXEnqueue
 .skipJingle
     ld a, MODE_SPAWN_PIECE
@@ -462,7 +462,7 @@ gameOverMode:
     ; Quit
 :   ldh a, [hBState]
     cp a, 1
-    jr nz, :+
+    jp nz, drawStaticInfo
     call SwitchToTitle
     jp EventLoopPostHandler
 
@@ -524,22 +524,22 @@ pauseMode:
 
     ; Always draw the score, level, next piece, and held piece.
 drawStaticInfo:
-:   ld a, [wNextPiece]
+:   ldh a, [hNextPiece]
     call ApplyNext
 
     ldh a, [hHeldPiece]
     call ApplyHold
 
     ld hl, wSPRScore1
-    ld de, wScore
+    ld de, hScore
     call ApplyNumbers
 
     ld hl, wSPRCLevel1
-    ld de, wCLevel
+    ld de, hCLevel
     call ApplyNumbers
 
     ld hl, wSPRNLevel1
-    ld de, wNLevel
+    ld de, hNLevel
     call ApplyNumbers
 
     jp EventLoopPostHandler
@@ -612,7 +612,7 @@ DoHold:
     jr nz, :+
     ldh a, [hCurrentPiece]
     ldh [hHeldPiece], a
-    ld a, [wNextPiece]
+    ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
     ret

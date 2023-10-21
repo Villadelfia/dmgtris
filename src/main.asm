@@ -25,7 +25,7 @@ INCLUDE "res/gameplay_map.inc"
 INCLUDE "res/title_map.inc"
 
 
-SECTION "Globals", HRAM
+SECTION "High Globals", HRAM
 hGameState:: ds 1
 hSwapAB:: ds 1
 

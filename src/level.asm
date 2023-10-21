@@ -20,6 +20,7 @@ hCurrentGravityPerTick:: ds 1
 hCurrentFramesPerGravityTick:: ds 1
 hNextSpeedUp:: ds 2
 hSpeedCurvePtr:: ds 2
+hStartSpeed:: ds 2
 hRequiresLineClear:: ds 1
 hLevel:: ds 2
 
@@ -43,11 +44,57 @@ LevelInit::
     ld [hl], a
     ldh [hRequiresLineClear], a
 
-    ld hl, sSpeedCurve+2
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+
+    ; CLevel
+    ld a, [hl+]
+    ld b, a
+    and a, $0F
+    ld [wCLevel+3], a
+    ld a, b
+    swap a
+    and a, $0F
+    ld [wCLevel+2], a
+    ld a, [hl+]
+    ld b, a
+    and a, $0F
+    ld [wCLevel+1], a
+    ld a, b
+    swap a
+    and a, $0F
+    ld [wCLevel], a
+
     ld a, l
     ldh [hSpeedCurvePtr], a
     ld a, h
     ldh [hSpeedCurvePtr+1], a
+
+    ; Binary level.
+    ld a, [hl+]
+    ldh [hLevel], a
+    ld a, [hl+]
+    ldh [hLevel+1], a
+
+    ; NLevel
+    ld a, [hl+]
+    ld b, a
+    and a, $0F
+    ld [wNLevel+3], a
+    ld a, b
+    swap a
+    and a, $0F
+    ld [wNLevel+2], a
+    ld a, [hl+]
+    ld b, a
+    and a, $0F
+    ld [wNLevel+1], a
+    ld a, b
+    swap a
+    and a, $0F
+    ld [wNLevel], a
 
     call DoSpeedUp
     ret
@@ -265,6 +312,12 @@ DoSpeedUp:
     ld l, a
     ldh a, [hSpeedCurvePtr+1]
     ld h, a
+
+    ; There's 4 bytes we don't care about.
+    inc hl
+    inc hl
+    inc hl
+    inc hl
 
     ; Get all the new data.
     ld a, [hl+]

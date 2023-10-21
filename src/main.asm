@@ -43,6 +43,11 @@ Main::
     ; Zero out the ram where needed.
     xor a, a
     ldh [hSwapAB], a
+    ld hl, sSpeedCurve
+    ld a, l
+    ldh [hStartSpeed], a
+    ld a, h
+    ldh [hStartSpeed+1], a
     call TimeInit
     call IntrInit
     call InputInit

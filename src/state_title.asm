@@ -75,18 +75,134 @@ TitleEventLoopHandler::
 :   ldh a, [hUpState]
     cp a, 1
     jr nz, :+
-    ; TODO
+    jp IncrementLevel
     jp EventLoopPostHandler
 
     ; Start level down?
 :   ldh a, [hDownState]
     cp a, 1
     jr nz, :+
-    ; TODO
-:    jp EventLoopPostHandler
+    jp DecrementLevel
+:   jp EventLoopPostHandler
+
+
+DecrementLevel:
+    ; Decrement
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld bc, -12
+    add hl, bc
+    ld a, l
+    ldh [hStartSpeed], a
+    ld a, h
+    ldh [hStartSpeed+1], a
+    jp CheckLevelRange
+
+IncrementLevel:
+    ; Increment
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld bc, 12
+    add hl, bc
+    ld a, l
+    ldh [hStartSpeed], a
+    ld a, h
+    ldh [hStartSpeed+1], a
+    jp CheckLevelRange
+
+
+CheckLevelRange:
+    ; At end?
+    ld bc, sSpeedCurveEnd
+    ldh a, [hStartSpeed]
+    cp a, c
+    jr nz, .notatend
+    ldh a, [hStartSpeed+1]
+    cp a, b
+    jr nz, .notatend
+    ld hl, sSpeedCurve
+    ld a, l
+    ldh [hStartSpeed], a
+    ld a, h
+    ldh [hStartSpeed+1], a
+
+.notatend
+    ld bc, sSpeedCurve-12
+    ldh a, [hStartSpeed]
+    cp a, c
+    jr nz, .notatstart
+    ldh a, [hStartSpeed+1]
+    cp a, b
+    jr nz, .notatstart
+    ld hl, sSpeedCurveEnd-12
+    ld a, l
+    ldh [hStartSpeed], a
+    ld a, h
+    ldh [hStartSpeed+1], a
+
+.notatstart
+    jp EventLoopPostHandler
 
 
 TitleVBlankHandler::
+    ; Draw level.
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_LEVEL+2
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld a, [hl]
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_LEVEL+3
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    inc hl
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_LEVEL+0
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    inc hl
+    ld a, [hl]
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_LEVEL+1
+    ld [hl], a
+
+    ; Draw A/B
     ldh a, [hSwapAB]
     cp a, 0
     jr nz, :+

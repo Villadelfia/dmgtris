@@ -457,12 +457,12 @@ gameOverMode:
     ldh [hMode], a
     ld a, LEADY_GO_TIME
     ldh [hModeCounter], a
-    jp drawStaticInfo
+    jr drawStaticInfo
 
     ; Quit
 :   ldh a, [hBState]
     cp a, 1
-    jp nz, drawStaticInfo
+    jr nz, drawStaticInfo
     call SwitchToTitle
     jp EventLoopPostHandler
 
@@ -473,7 +473,7 @@ pauseMode:
     jr nz, :+
     ldh a, [hPrePause]
     ldh [hMode], a
-    jp drawStaticInfo
+    jr drawStaticInfo
 
     ; Draw PAUSE all over the field, but not if we came from delay mode.
 :   ldh a, [hPrePause]
@@ -481,44 +481,7 @@ pauseMode:
     jr z, drawStaticInfo
     ld de, sPause
     ld hl, wField+(4*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(6*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(8*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(10*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(12*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(14*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(16*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(18*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(20*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(22*10)
-    ld bc, 20
-    call UnsafeMemCopy
+    ld bc, 200
     jr drawStaticInfo
 
 

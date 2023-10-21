@@ -1226,7 +1226,7 @@ GetTileShade:
     cp a, 2
     jp c, .s6
     cp a, 3
-    jp c, .s5
+    jr c, .s5
     cp a, 5
     jr c, .s4
     cp a, 6

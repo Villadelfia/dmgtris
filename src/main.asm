@@ -100,7 +100,7 @@ EventLoopPostHandler::
     ; This will chain jump into the vblank handler.
     jp hOAMDMA
 
-    ; The VBlank Handler is expected to end with jp EventLoop.
+    ; The VBlank Handler is expected to end with jr EventLoop.
 
 
 ENDC

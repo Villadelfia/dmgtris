@@ -92,14 +92,14 @@ TitleEventLoopHandler::
 :   ldh a, [hUpState]
     cp a, 1
     jr nz, :+
-    jp IncrementLevel
+    jr IncrementLevel
     jp EventLoopPostHandler
 
     ; Start level down?
 :   ldh a, [hDownState]
     cp a, 1
     jr nz, :+
-    jp DecrementLevel
+    jr DecrementLevel
 :   jp EventLoopPostHandler
 
 
@@ -115,7 +115,7 @@ DecrementLevel:
     ldh [hStartSpeed], a
     ld a, h
     ldh [hStartSpeed+1], a
-    jp CheckLevelRange
+    jr CheckLevelRange
 
 IncrementLevel:
     ; Increment
@@ -129,7 +129,7 @@ IncrementLevel:
     ldh [hStartSpeed], a
     ld a, h
     ldh [hStartSpeed+1], a
-    jp CheckLevelRange
+    jr CheckLevelRange
 
 
 CheckLevelRange:

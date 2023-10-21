@@ -180,6 +180,7 @@ sfx_names = [
     "sSFXRankUp",
     "sSFXLevelUp",
     "sSFXIHS",
+    "sSFXReadyGo",
 ]
 
 def chunks(lst, n):
@@ -211,6 +212,10 @@ class DB:
             self.l.append(register_names[args[0]])
             self.l.append(f"${args[1]:02X}")
 
+    def trim(self):
+        while self.l[-1] == "$FF":
+            self.l.pop()
+
 for c, v in enumerate(register_names):
     if v != "REG_UNK":
         print(f"DEF {v} EQU ${c:02X}")
@@ -228,8 +233,9 @@ with open("sfx.vgm", "rb") as f:
     while len(data) > 0:
         if data.startswith(b'\x67\x66'):
             if len(db) > 0:
+                db.trim()
                 db.add(0xFE)
-                print(db)
+                print(db, end="")
                 print(f"{sfx_names[ctr-1]}End::")
             db = DB()
             print(f"{sfx_names[ctr]}::")
@@ -251,8 +257,9 @@ with open("sfx.vgm", "rb") as f:
             data = data[1:]
         elif data.startswith(b'\x66'):
             if len(db) > 0:
+                db.trim()
                 db.add(0xFE)
-                print(db)
+                print(db, end="")
             print(f"{sfx_names[ctr-1]}End::")
             break
         else:

@@ -205,16 +205,18 @@ fetchPieceMode:
     jr z, .lda1
 .ldb1
     ldh a, [hBState]
+    cp a, 0
+    jr z, .checkIRSB
     ld a, $FF
     ldh [hBState], a
     jr .cp1
 .lda1
     ldh a, [hAState]
+    cp a, 0
+    jr z, .checkIRSB
     ld a, $FF
     ldh [hAState], a
 .cp1
-    cp a, 0
-    jr z, .checkIRSB
     ld a, 3
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
@@ -226,16 +228,18 @@ fetchPieceMode:
     jr z, .ldb2
 .lda2
     ld a, [hAState]
+    cp a, 0
+    jr z, .checkJingle
     ld a, $FF
     ldh [hAState], a
     jr .cp2
 .ldb2
     ldh a, [hBState]
+    cp a, 0
+    jr z, .checkJingle
     ld a, $FF
     ldh [hBState], a
 .cp2
-    cp a, 0
-    jr z, .checkJingle
     ld a, 1
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
@@ -476,16 +480,18 @@ DoHold:
     jr z, .lda3
 .ldb3
     ldh a, [hBState]
+    cp a, 0
+    cp z, .checkIRSHB
     ld a, $FF
     ldh [hBState], a
     jr .cp3
 .lda3
     ldh a, [hAState]
+    cp a, 0
+    cp z, .checkIRSHB
     ld a, $FF
     ldh [hAState], a
 .cp3
-    cp a, 0
-    jr z, .checkIRSHB
     ld a, 3
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
@@ -497,16 +503,18 @@ DoHold:
     jr z, .ldb4
 .lda4
     ldh a, [hAState]
+    cp a, 0
+    jr z, .noRotation
     ld a, $FF
     ldh [hAState], a
     jr .cp4
 .ldb4
     ldh a, [hBState]
+    cp a, 0
+    jr z, .noRotation
     ld a, $FF
     ldh [hBState], a
 .cp4
-    cp a, 0
-    jr z, .noRotation
     ld a, 1
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS

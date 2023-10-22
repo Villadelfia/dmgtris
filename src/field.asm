@@ -52,6 +52,7 @@ hLineClearCt: ds 1
 hComboCt: ds 1
 hLockDelayForce: ds 1
 hHighestStack: ds 1
+hDownFrames: ds 1
 
 
 SECTION "Field Functions", ROM0
@@ -501,6 +502,7 @@ ForceSpawnPiece::
 TrySpawnPiece::
     ; Always reset these for a new piece.
     xor a, a
+    ldh [hDownFrames], a
     ldh [hLockDelayForce], a
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
@@ -756,6 +758,9 @@ FieldProcess::
 
     ; Sonic drop.
 .sonicdrop
+    ldh a, [hDownFrames]
+    add a, 10
+    ldh [hDownFrames], a
     ld a, 20
     ldh [hWantedG], a
     ldh a, [hTicksUntilG]
@@ -768,6 +773,9 @@ FieldProcess::
 
     ; Hard drop.
 .harddrop
+    ldh a, [hDownFrames]
+    add a, 10
+    ldh [hDownFrames], a
     ld a, 20
     ld b, a
     ldh a, [hActualG]
@@ -789,6 +797,9 @@ FieldProcess::
     ldh a, [hDownState]
     cp a, 0
     jr z, :+
+    ldh a, [hDownFrames]
+    inc a
+    ldh [hDownFrames], a
     ld a, 1
     ldh [hTicksUntilG], a
 
@@ -1695,6 +1706,26 @@ FieldDelay::
     ldh [hRequiresLineClear], a
     ldh a, [hLineClearCt]
     ld e, a
+    ldh a, [hSimulationMode]
+    cp a, MODE_TGM3
+    jr z, .modifylines
+    cp a, MODE_TGW3
+    jr z, .modifylines
+    jr .applylines
+.modifylines
+    ldh a, [hLineClearCt]
+    cp a, 1
+    jr z, .applylines
+    cp a, 2
+    jr z, .applylines
+    cp a, 3
+    jr z, .addone
+    inc a
+.addone
+    inc a
+    ld e, a
+    ldh [hLineClearCt], a
+.applylines
     call LevelUp
     ld c, a
     ld b, a
@@ -1717,6 +1748,11 @@ FieldDelay::
     rrc h
     rr l
     inc hl
+    ldh a, [hDownFrames]
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
     ld b, h
     ld c, l
     ldh a, [hComboCt]

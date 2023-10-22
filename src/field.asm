@@ -51,10 +51,13 @@ hClearedLines: ds 4
 hLineClearCt: ds 1
 hComboCt: ds 1
 hLockDelayForce: ds 1
+hHighestStack: ds 1
 
 
 SECTION "Field Functions", ROM0
 FieldInit::
+    ld a, 23
+    ldh [hHighestStack], a
     ld a, 1
     ldh [hComboCt], a
     ld hl, wField
@@ -654,6 +657,35 @@ FindMaxG:
     ld b, a
     ldh a, [hCurrentPieceX]
     call XYToSFieldPtr
+
+DEF EXPERIMENTAL_OPTIMIZATION EQU 1
+IF DEF(EXPERIMENTAL_OPTIMIZATION)
+    ; The stack height marker gives a lower bound to how far the piece can fall.
+    ldh a, [hHighestStack]
+    sub a, 4
+    ld b, a
+    ld a, [hCurrentPieceY]
+    cp a, b
+    jr nc, .unoptimized ; If our piece is already past that, we can't optimize.
+
+    ; But if we're NOT, that means we can assume a minimum fall distance!
+.optimized
+    ld c, a
+    ld a, b
+    sub a, c
+    inc a
+    ldh [hActualG], a
+    dec a
+    ld de, 14
+:   add hl, de
+    dec a
+    jr nz, :-
+    push hl
+    jr .try
+ENDC
+
+
+.unoptimized
     push hl
     ld a, 1
     ldh [hActualG], a
@@ -1301,10 +1333,19 @@ FieldProcess::
     ldh [hWantedTile], a
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
-    jr z, .drawpiece
+    jr nz, :+
+
+    ; Check if the stack usage went up.
+    ldh a, [hHighestStack]
+    ld b, a
+    ldh a, [hCurrentPieceY]
+    cp a, b
+    jr nc, .drawpiece
+    ldh [hHighestStack], a
+    jr .drawpiece
 
     ; Otherwise, look it up.
-    call GetTileShade
+:   call GetTileShade
 
 .drawpiece
     ldh a, [hCurrentPieceY]
@@ -1816,6 +1857,9 @@ ClearLines:
 
         ; If it does, increment the clearing counter, but skip this line.
         jr nz, .clear\@
+        ldh a, [hHighestStack]
+        inc a
+        ldh [hHighestStack], a
         inc de
         inc de
         inc de
@@ -1871,7 +1915,15 @@ ClearLines:
         DEF row -= 1
     ENDR
 
+    ; Check if the stack marker is out of bounds.
+    ldh a, [hHighestStack]
+    cp a, 23
+    jr c, .fixgarbo
+    ld a, 23
+    ldh [hHighestStack], a
+
     ; Make sure there's no garbage in the top de lines.
+.fixgarbo
     ld hl, wField
 :   xor a, a
     or a, d

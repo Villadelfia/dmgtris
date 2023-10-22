@@ -11,6 +11,13 @@ The Randomizer uses a TGM2-style 4-history randomizer preloaded with SSZZ, and w
 
 The game itself runs at a constant 60fps as well as at the traditional 20 row visible grid.
 
+There are five available game modes:
+- TGM1: 4 history, 4 rerolls, no sonic drop, never start with O, S or Z.
+- TGM2: 4 history, 6 rerolls, sonic drop, never start with O, S or Z.
+- TGM3: 6 history, 6 rerolls, sonic drop, never start with O, S or Z. (Note, not the actual 35-bag as used in TGM3, and floor kicks are not implemented (yet) either.)
+- HELL: No history, no rerolls, no sonic drop, never start with O, S or Z.
+- EASY: 6 history, 256 rerolls, sonic drop, never start with O, S or Z.
+
 
 ## Playing
 You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/DMGTRIS.GB) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/DMGTRIS.GB).
@@ -25,7 +32,7 @@ Please do not try running it on older emulators such as VBA, since this game use
 - A/B/Start — Start the game
 - Left/Right — Switch A/B rotation direction
 - Up/Down — Select starting level
-- Select — Select amount of times a piece will be rerolled if it was given to you in the previous 4 pieces. TGM2 uses 6 for this value, TGM1 uses 4 for this value. You can set this to 0 (pure RNG except you'll never start with O, S, or Z), to 15 (F. Basically never get duplicates.)
+- Select — Select game mode
 
 ### Gameplay
 - A — Rotate 1

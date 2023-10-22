@@ -24,9 +24,8 @@ INCLUDE "globals.asm"
 
 SECTION "High RNG Variables", HRAM
 hRNGSeed:      ds 4
-hPieceHistory: ds 4
+hPieceHistory: ds 6
 hNextPiece::   ds 1
-hRNGRerolls::  ds 1
 
 
 section "RNG Functions", ROM0
@@ -52,6 +51,8 @@ RNGInit::
     ld a, PIECE_Z
     ldh [hPieceHistory], a
     ldh [hPieceHistory+1], a
+    ldh [hPieceHistory+4], a
+    ldh [hPieceHistory+5], a
     ld a, PIECE_S
     ldh [hPieceHistory+2], a
     ldh [hPieceHistory+3], a
@@ -72,33 +73,73 @@ RNGInit::
 
 
 GetNextPiece::
-    ldh a, [hRNGRerolls]
-    cp a, 0
+:   ldh a, [hSimulationMode] ; Hell?
+    cp a, MODE_HELL
     jr nz, :+
     call NextPiece
     jr .donerolling
-:   inc a
+
+:   ldh a, [hSimulationMode] ; TGM1?
+    cp a, MODE_TGM1
+    jr nz, :+
+    ld a, 5
     ld e, a
-:   dec e
+    jr .rollloop
+
+:   ldh a, [hSimulationMode] ; EASY?
+    cp a, MODE_EASY
+    jr nz, :+
+    ld a, 0
+    ld e, a
+    jr .rollloop
+
+:   ld a, 7 ; TGM2/3.
+    ld e, a
+
+.rollloop
+    dec e
     jr z, .donerolling
 
     call NextPiece
     ld hl, hPieceHistory
     cp a, [hl]
-    jr z, :-
+    jr z, .rollloop
     inc hl
     cp a, [hl]
-    jr z, :-
+    jr z, .rollloop
     inc hl
     cp a, [hl]
-    jr z, :-
+    jr z, .rollloop
     inc hl
     cp a, [hl]
-    jr z, :-
+    jr z, .rollloop
+
+    ; Are we in TGM3 or EASY mode?
+    ld b, a
+    ldh a, [hSimulationMode]
+    cp a, MODE_TGM3
+    jr z, .6hist
+    cp a, MODE_EASY
+    jr z, .6hist
+    jr .donerolling ; If not, we're done rolling.
+
+    ; If we are, extend the history by 2.
+.6hist
+    ld a, b
+    inc hl
+    cp a, [hl]
+    jr z, .rollloop
+    inc hl
+    cp a, [hl]
+    jr z, .rollloop
 
 .donerolling
     ldh [hNextPiece], a
     ld b, a
+    ldh a, [hPieceHistory+4]
+    ldh [hPieceHistory+5], a
+    ldh a, [hPieceHistory+3]
+    ldh [hPieceHistory+4], a
     ldh a, [hPieceHistory+2]
     ldh [hPieceHistory+3], a
     ldh a, [hPieceHistory+1]

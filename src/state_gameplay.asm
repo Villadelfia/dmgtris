@@ -63,10 +63,13 @@ SwitchToGameplay::
     ld bc, GameplayTilemapEnd - GameplayTilemap
     call UnsafeMemCopy
 
-    ; Place a tell on the screen for RNG rerolls.
-    ld hl, FIELD_RNGTELL
-    ldh a, [hRNGRerolls]
-    add a, TILE_0_FAINT
+    ; Place a tell on the screen for mode.
+    ld hl, FIELD_MODE
+    ldh a, [hSimulationMode]
+    sla a
+    add a, TILE_MODE_FAINT_0
+    ld [hl+], a
+    inc a
     ld [hl], a
 
     ; Clear OAM.
@@ -352,6 +355,9 @@ delayMode:
 :   jp drawStaticInfo
 
 preGameOverMode:
+    ; Spawn the failed piece.
+    call ForceSpawnPiece
+
     ; Draw the field in grey.
     ; Yes. This really unrolls the loop that many times.
     ld hl, wField+(4*10)

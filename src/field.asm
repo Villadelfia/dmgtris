@@ -475,6 +475,25 @@ CanPieceFit:
     ret
 
 
+ForceSpawnPiece::
+    call SetPieceData
+    call SetPieceDataOffset
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToFieldPtr
+    ld d, h
+    ld e, l
+    call GetPieceData
+    ld a, GAME_OVER_OTHER
+    ld b, a
+    push hl
+    push de
+    pop hl
+    pop de
+    jp DrawPiece
+
+
 TrySpawnPiece::
     ; Always reset these for a new piece.
     ldh a, [hCurrentLockDelay]
@@ -678,7 +697,12 @@ FieldProcess::
     ; How deep can we go?
 :   call FindMaxG
 
-    ; If we press up, we want to do a sonic drop.
+    ; If we press up, we want to do a sonic drop, but not in TGM1 or HELL mode.
+    ldh a, [hSimulationMode]
+    cp a, MODE_TGM1
+    jr z, :+
+    cp a, MODE_HELL
+    jr z, :+
     ldh a, [hUpState]
     cp a, 1
     jr nz, :+

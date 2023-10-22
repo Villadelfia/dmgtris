@@ -29,6 +29,7 @@ SECTION "High Globals", HRAM
 hGameState:: ds 1
 hSwapAB:: ds 1
 hInitialA:: ds 1
+hSimulationMode:: ds 1
 
 
 SECTION "Stack", WRAM0
@@ -64,13 +65,13 @@ Main::
     ; Zero out the ram where needed.
     xor a, a
     ldh [hSwapAB], a
+    ld a, MODE_TGM2
+    ldh [hSimulationMode], a
     ld hl, sSpeedCurve
     ld a, l
     ldh [hStartSpeed], a
     ld a, h
     ldh [hStartSpeed+1], a
-    ld a, 6
-    ldh [hRNGRerolls], a
     call TimeInit
     call IntrInit
     call InputInit

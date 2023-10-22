@@ -164,6 +164,9 @@ DEF MODE_TGM2           EQU 1
 DEF MODE_TGM3           EQU 2
 DEF MODE_HELL           EQU 3
 DEF MODE_EASY           EQU 4
+DEF MODE_TGW2           EQU 5
+DEF MODE_TGW3           EQU 6
+DEF MODE_EAWY           EQU 7
 
 
 ENDC

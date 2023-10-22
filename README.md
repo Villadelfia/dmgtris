@@ -12,11 +12,14 @@ The Randomizer uses a TGM2-style 4-history randomizer preloaded with SSZZ, and w
 The game itself runs at a constant 60fps as well as at the traditional 20 row visible grid.
 
 There are five available game modes:
-- TGM1: 4 history, 4 rerolls, no sonic drop, never start with O, S or Z.
-- TGM2: 4 history, 6 rerolls, sonic drop, never start with O, S or Z.
-- TGM3: 6 history, 6 rerolls, sonic drop, never start with O, S or Z. (Note, not the actual 35-bag as used in TGM3, and floor kicks are not implemented (yet) either.)
-- HELL: No history, no rerolls, no sonic drop, never start with O, S or Z.
-- EASY: 6 history, 256 rerolls, sonic drop, never start with O, S or Z.
+- TGM1: 4 history w/ 4 rerolls, never start with O, S or Z.
+- TGM2: 4 history w/ 6 rerolls, never start with O, S or Z. Sonic drop.
+- TGM3: 4 history w/ 6 rerolls and drought protection, never start with O, S or Z. Sonic drop. Extra floor and wall kicks for I and T pieces.
+- HELL: Pure random piece generation.
+- EASY: 4 history w/ 256 rerolls, never start with O, S or Z. Sonic drop.
+- TGW2: TGM2 but with hard drop.
+- TGW3: TGM3 but with hard drop.
+- EAWY: EASY but with hard drop.
 
 
 ## Playing

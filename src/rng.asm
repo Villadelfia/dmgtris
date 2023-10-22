@@ -24,8 +24,15 @@ INCLUDE "globals.asm"
 
 SECTION "High RNG Variables", HRAM
 hRNGSeed:      ds 4
-hPieceHistory: ds 6
+hPieceHistory: ds 4
 hNextPiece::   ds 1
+
+
+SECTION "TGM3 RNG Variables", WRAM0
+wTGM3Bag:             ds 35
+wTGM3Droughts:        ds 7
+wTGM3GeneratedIdx:    ds 1
+wTGM3WorstDroughtIdx: ds 1
 
 
 section "RNG Functions", ROM0
@@ -47,18 +54,41 @@ RNGInit::
     xor a, [hl]
     ldh [hRNGSeed+3], a
 
-    ; Initialize the next history.
+    ; TGM3 vars
+    ld de, sTGM3Bag
+    ld hl, wTGM3Bag
+    ld bc, 35
+    call UnsafeMemCopy
+    ld de, sTGM3Droughts
+    ld hl, wTGM3Droughts
+    ld bc, 7
+    call UnsafeMemCopy
+
+    ; If we're in HELL mode, we don't care about anything but a random piece to start with.
+    ldh a, [hSimulationMode]
+    cp a, MODE_HELL
+    jr nz, .complexinit
+    call Next7Piece
+    ld [hNextPiece], a
+    ret
+
+    ; Otherwise do complex init.
+.complexinit
     ld a, PIECE_Z
     ldh [hPieceHistory], a
     ldh [hPieceHistory+1], a
-    ldh [hPieceHistory+4], a
-    ldh [hPieceHistory+5], a
+    ldh [hPieceHistory+2], a
+    ldh [hPieceHistory+3], a
+
+    ldh a, [hSimulationMode]
+    cp a, MODE_TGM1
+    jr z, :+
     ld a, PIECE_S
     ldh [hPieceHistory+2], a
     ldh [hPieceHistory+3], a
 
     ; Get the first piece and make sure it's not Z, S or O.
-:   call NextPiece
+:   call Next7Piece
     cp a, PIECE_Z
     jr z, :-
     cp a, PIECE_S
@@ -66,98 +96,295 @@ RNGInit::
     cp a, PIECE_O
     jr z, :-
 
-    ; Store it.
+    ; Save the generated piece and put it in the history.
     ldh [hPieceHistory], a
     ld [hNextPiece], a
     ret
 
 
-GetNextPiece::
-:   ldh a, [hSimulationMode] ; Hell?
-    cp a, MODE_HELL
-    jr nz, :+
-    call NextPiece
-    jr .donerolling
-
-:   ldh a, [hSimulationMode] ; TGM1?
-    cp a, MODE_TGM1
-    jr nz, :+
-    ld a, 5
-    ld e, a
-    jr .rollloop
-
-:   ldh a, [hSimulationMode] ; EASY?
-    cp a, MODE_EASY
-    jr nz, :+
-    ld a, 0
-    ld e, a
-    jr .rollloop
-
-:   ld a, 7 ; TGM2/3.
-    ld e, a
-
-.rollloop
-    dec e
-    jr z, .donerolling
-
-    call NextPiece
-    ld hl, hPieceHistory
-    cp a, [hl]
-    jr z, .rollloop
-    inc hl
-    cp a, [hl]
-    jr z, .rollloop
-    inc hl
-    cp a, [hl]
-    jr z, .rollloop
-    inc hl
-    cp a, [hl]
-    jr z, .rollloop
-
-    ; Are we in TGM3 or EASY mode?
-    ld b, a
-    ldh a, [hSimulationMode]
-    cp a, MODE_TGM3
-    jr z, .6hist
-    cp a, MODE_EASY
-    jr z, .6hist
-    jr .donerolling ; If not, we're done rolling.
-
-    ; If we are, extend the history by 2.
-.6hist
-    ld a, b
-    inc hl
-    cp a, [hl]
-    jr z, .rollloop
-    inc hl
-    cp a, [hl]
-    jr z, .rollloop
-
-.donerolling
+    ; Shift the generated piece into the history and save it.
+ShiftHistory:
     ldh [hNextPiece], a
-    ld b, a
-    ldh a, [hPieceHistory+4]
-    ldh [hPieceHistory+5], a
-    ldh a, [hPieceHistory+3]
-    ldh [hPieceHistory+4], a
     ldh a, [hPieceHistory+2]
     ldh [hPieceHistory+3], a
     ldh a, [hPieceHistory+1]
     ldh [hPieceHistory+2], a
     ldh a, [hPieceHistory]
     ldh [hPieceHistory+1], a
-    ld a, b
+    ldh a, [hNextPiece]
     ldh [hPieceHistory], a
     ret
 
 
-NextPiece:
-    call NextByte
+    ; A random piece. Get fucked.
+GetNextHellPiece:
+    call Next7Piece
+    ldh [hNextPiece], a
+    ret
+
+
+    ; 4 history, 4 rerolls.
+GetNextTGM1Piece:
+    ld a, 5
+    ld e, a
+
+:   dec e
+    jr z, :+
+
+    call Next7Piece
+    ld hl, hPieceHistory
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+
+:   jr ShiftHistory
+
+
+    ; 4 history, 6 rerolls.
+GetNextTGM2Piece:
+    ld a, 7
+    ld e, a
+
+:   dec e
+    jr z, :+
+
+    call Next7Piece
+    ld hl, hPieceHistory
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+
+:   jr ShiftHistory
+
+
+    ; 4 History, (basically) infinite rerolls.
+GetNextEasyPiece:
+    ld a, 0
+    ld e, a
+
+:   dec e
+    jr z, :+
+
+    call Next7Piece
+    ld hl, hPieceHistory
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+
+:   jr ShiftHistory
+
+
+    ; TGM3 mode... It's complex.
+GetNextTGM3Piece:
+    ld a, 7
+    ld e, a
+
+:   dec e
+    jr z, :+
+
+    ; Get a random index into the 35bag
+    call Next35Piece
+    ld [wTGM3GeneratedIdx], a
+
+    ; Fetch the piece from the 35bag.
+    ld c, a
+    xor a, a
+    ld b, a
+    ld hl, wTGM3Bag
+    add hl, bc
+    ld a, [hl]
+
+    ; Is it in the history?
+    ld hl, hPieceHistory
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+    inc hl
+    cp a, [hl]
+    jr z, :-
+
+    ; We have a piece. Save it.
+:   call ShiftHistory
+
+    ; Increment all drought counters.
+:   ld hl, wTGM3Droughts
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+
+    ; Set the drought of our most recently drawn piece to 0.
+:   ldh a, [hCurrentPiece]
+    ld c, a
+    xor a, a
+    ld b, a
+    ld hl, wTGM3Droughts
+    add hl, bc
+    ld [hl], a
+
+    ; We pick an arbitrary piece to have the worst drought.
+:   call Next7Piece
+    ld [wTGM3WorstDroughtIdx], a
+
+    ; And then save that drought in e.
+    ld c, a
+    xor a, a
+    ld b, a
+    ld hl, wTGM3Droughts
+    add hl, bc
+    ld e, [hl]
+
+    ; Is idx 0 worse?
+:   ld hl, wTGM3Droughts
+    ld a, [hl+]
+    cp a, e
+    jr z, :+    ; Same.
+    jr c, :+    ; Nope.
+    ld e, a
+    ld a, 0
+    ld [wTGM3WorstDroughtIdx], a
+
+    ; Is idx 1 worse?
+:   ld a, [hl+]
+    cp a, e
+    jr z, :+    ; Same.
+    jr c, :+    ; Nope.
+    ld e, a
+    ld a, 1
+    ld [wTGM3WorstDroughtIdx], a
+
+    ; Is idx 2 worse?
+:   ld a, [hl+]
+    cp a, e
+    jr z, :+    ; Same.
+    jr c, :+    ; Nope.
+    ld e, a
+    ld a, 2
+    ld [wTGM3WorstDroughtIdx], a
+
+    ; Is idx 3 worse?
+:   ld a, [hl+]
+    cp a, e
+    jr z, :+    ; Same.
+    jr c, :+    ; Nope.
+    ld e, a
+    ld a, 3
+    ld [wTGM3WorstDroughtIdx], a
+
+    ; Is idx 4 worse?
+:   ld a, [hl+]
+    cp a, e
+    jr z, :+    ; Same.
+    jr c, :+    ; Nope.
+    ld e, a
+    ld a, 4
+    ld [wTGM3WorstDroughtIdx], a
+
+    ; Is idx 5 worse?
+:   ld a, [hl+]
+    cp a, e
+    jr z, :+    ; Same.
+    jr c, :+    ; Nope.
+    ld e, a
+    ld a, 5
+    ld [wTGM3WorstDroughtIdx], a
+
+    ; Is idx 6 worse?
+:   ld a, [hl+]
+    cp a, e
+    jr z, :+    ; Same.
+    jr c, :+    ; Nope.
+    ld e, a
+    ld a, 6
+    ld [wTGM3WorstDroughtIdx], a
+
+    ; We now have the worst drought index as well as the slot in the bag that needs to be replaced.
+:   ld a, [wTGM3GeneratedIdx]
+    ld c, a
+    xor a, a
+    ld b, a
+    ld hl, wTGM3Bag
+    add hl, bc
+    ld a, [wTGM3WorstDroughtIdx]
+
+    ; Replace that slot.
+    ld [hl], a
+    ret
+
+
+GetNextPiece::
+    ldh a, [hSimulationMode]
+    cp a, MODE_HELL
+    jp z, GetNextHellPiece
+    cp a, MODE_TGM1
+    jp z, GetNextTGM1Piece
+    cp a, MODE_TGM2
+    jp z, GetNextTGM2Piece
+    cp a, MODE_TGW2
+    jp z, GetNextTGM2Piece
+    cp a, MODE_TGM3
+    jp z, GetNextTGM3Piece
+    cp a, MODE_TGW3
+    jp z, GetNextTGM3Piece
+    cp a, MODE_EASY
+    jp z, GetNextEasyPiece
+    cp a, MODE_EAWY
+    jp z, GetNextEasyPiece
+
+
+Next35Piece:
+:   call NextByte
+    and a, $3F
+    cp a, 35
+    jr nc, :-
+    ret
+
+
+Next7Piece:
+:   call NextByte
     and a, $07
     cp a, 7
-    ret nz
-    dec a
+    jr nc, :-
     ret
+
 
 NextByte:
     ; Load seed

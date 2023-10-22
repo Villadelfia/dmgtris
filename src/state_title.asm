@@ -95,7 +95,7 @@ TitleEventLoopHandler::
     jr nz, :+
     ldh a, [hSimulationMode]
     inc a
-    cp a, 5
+    cp a, 8
     jr nz, .write
     xor a, a
 .write

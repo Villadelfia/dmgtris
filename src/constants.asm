@@ -467,5 +467,17 @@ sPieceRotationStates:: ; How each piece is rotated.
     db %0100
     db %0000
 
+sTGM3Bag::
+    db 0, 0, 0, 0, 0
+    db 1, 1, 1, 1, 1
+    db 2, 2, 2, 2, 2
+    db 3, 3, 3, 3, 3
+    db 4, 4, 4, 4, 4
+    db 5, 5, 5, 5, 5
+    db 6, 6, 6, 6, 6
+
+sTGM3Droughts::
+    db 0, 0, 0, 0, 0, 0, 0
+
 
 ENDC

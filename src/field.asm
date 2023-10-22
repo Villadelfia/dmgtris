@@ -50,6 +50,7 @@ hDelayState: ds 1
 hClearedLines: ds 4
 hLineClearCt: ds 1
 hComboCt: ds 1
+hLockDelayForce: ds 1
 
 
 SECTION "Field Functions", ROM0
@@ -496,6 +497,8 @@ ForceSpawnPiece::
 
 TrySpawnPiece::
     ; Always reset these for a new piece.
+    xor a, a
+    ldh [hLockDelayForce], a
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
     ldh a, [hCurrentFramesPerGravityTick]
@@ -679,13 +682,15 @@ FindMaxG:
 
 
 FieldProcess::
+    ; **************************************************************
+    ; SETUP
     ; Wipe out the piece.
     ldh a, [hCurrentPieceY]
     ldh [hYPosAtStartOfFrame], a
     call FromShadowField
 
 
-    ; Check if we're about to hold.
+    ; Check if we're about to hold. Return if so.
     ldh a, [hSelectState]
     cp a, 1
     jr nz, :+
@@ -693,19 +698,32 @@ FieldProcess::
     cp a, $FF
     ret nz
 
-
     ; How deep can we go?
 :   call FindMaxG
 
-    ; If we press up, we want to do a sonic drop, but not in TGM1 or HELL mode.
-    ldh a, [hSimulationMode]
-    cp a, MODE_TGM1
-    jr z, :+
-    cp a, MODE_HELL
-    jr z, :+
+
+    ; **************************************************************
+    ; HANDLE UP
+    ; Is a hard/sonic drop requested?
     ldh a, [hUpState]
     cp a, 1
-    jr nz, :+
+    jr nz, .postdrop
+
+    ; What kind, if any?
+    ldh a, [hSimulationMode]
+    cp a, MODE_TGM1
+    jr z, .postdrop
+    cp a, MODE_HELL
+    jr z, .postdrop
+    cp a, MODE_TGW2
+    jr z, .harddrop
+    cp a, MODE_TGW3
+    jr z, .harddrop
+    cp a, MODE_EAWY
+    jr z, .harddrop
+
+    ; Sonic drop.
+.sonicdrop
     ld a, 20
     ldh [hWantedG], a
     ldh a, [hTicksUntilG]
@@ -716,14 +734,31 @@ FieldProcess::
     ldh [hTicksUntilG], a
     jr .grav
 
+    ; Hard drop.
+.harddrop
+    ld a, 20
+    ld b, a
+    ldh a, [hActualG]
+    cp a, b
+    jr nc, :+
+    ld b, a
+:   ldh a, [hCurrentPieceY]
+    add a, b
+    ldh [hCurrentPieceY], a
+    xor a, a
+    ldh [hCurrentLockDelayRemaining], a
+    call SFXKill
+    ld a, SFX_LOCK
+    call SFXEnqueue
+    jp .draw
 
     ; If we press down, we want to do a soft drop.
-:   ldh a, [hDownState]
+.postdrop
+    ldh a, [hDownState]
     cp a, 0
     jr z, :+
     ld a, 1
     ldh [hTicksUntilG], a
-
 
     ; Gravity?
 :   ldh a, [hTicksUntilG]
@@ -735,7 +770,7 @@ FieldProcess::
     ldh a, [hCurrentGravityPerTick]
     ldh [hWantedG], a
 
-
+    ; Can we drop the full requested distance?
 .grav
     ldh a, [hWantedG]
     ld b, a
@@ -743,7 +778,7 @@ FieldProcess::
     cp a, b
     jr c, .smallg
 
-
+    ; Yes. Do it.
 .bigg
     ldh a, [hWantedG]
     ld b, a
@@ -752,7 +787,7 @@ FieldProcess::
     ldh [hCurrentPieceY], a
     jr .nograv
 
-
+    ; No. Smaller distance.
 .smallg
     ldh a, [hActualG]
     ld b, a
@@ -760,14 +795,16 @@ FieldProcess::
     add a, b
     ldh [hCurrentPieceY], a
 
-
+    ; No gravity, or post gravity.
 .nograv
     ldh a, [hCurrentPieceX]
     ldh [hWantX], a
     ldh a, [hCurrentPieceRotationState]
     ldh [hWantRotation], a
 
-    ; We check rotation first.
+
+    ; **************************************************************
+    ; HANDLE ROTATION
     ; Want rotate CCW?
 .wantrotccw
     ldh a, [hSwapAB]
@@ -787,7 +824,6 @@ FieldProcess::
     ldh [hWantRotation], a
     jr .tryrot
 
-
     ; Want rotate CW?
 .wantrotcw
     ldh a, [hSwapAB]
@@ -805,7 +841,6 @@ FieldProcess::
     dec a
     and a, $03
     ldh [hWantRotation], a
-
 
     ; Try the rotation.
 .tryrot
@@ -836,26 +871,40 @@ FieldProcess::
     call SetPieceDataOffset
     jp .norot
 
-
     ; Try kicks if the piece isn't I or O. And in the case of J L and T, only if the blocked side is the left or right.
 .maybekick
     ld c, a
     ldh a, [hCurrentPiece]
-    cp a, PIECE_I
-    jr z, .norot
+    ; O pieces never kick, obviously.
     cp a, PIECE_O
-    jr z, .norot
+    jp z, .norot
+
+    ; S/Z always kick.
     cp a, PIECE_S
     jr z, .trykickright
     cp a, PIECE_Z
     jr z, .trykickright
-    ld a, c
+
+    ; I piece only kicks in TGM3/TGW3/EASY/EAWY
+    cp a, PIECE_I
+    jr nz, :+
+    ldh a, [hSimulationMode]
+    cp a, MODE_TGM1
+    jp z, .norot
+    cp a, MODE_TGM2
+    jp z, .norot
+    cp a, MODE_HELL
+    jp z, .norot
+    jr .trykickright
+
+    ; T/L/J only kick if not through the middle axis.
+:   ld a, c
     cp a, 1
-    jr z, .norot
+    jr z, .maybetgm3rot
     cp a, 5
-    jr z, .norot
+    jr z, .maybetgm3rot
     cp a, 9
-    jr z, .norot
+    jr z, .maybetgm3rot
 
     ; A step to the right.
 .trykickright
@@ -888,8 +937,7 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
-    jr .norot
-
+    jp .norot
 
     ; And a step to the left.
 .trykickleft
@@ -915,15 +963,185 @@ FieldProcess::
     pop bc
     call CanPieceFitFast
     cp a, $FF
-    jr nz, .norot
+    jr nz, .maybetgm3rot
     ldh a, [hCurrentPieceX]
     dec a
     ldh [hCurrentPieceX], a
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
+    jp .norot
+
+    ; In TGM3, TGW3, EASY, and EAWY modes, there are a few other kicks possible.
+.maybetgm3rot
+    ldh a, [hSimulationMode]
+    cp a, MODE_TGM1
+    jp z, .norot
+    cp a, MODE_TGM2
+    jp z, .norot
+    cp a, MODE_HELL
+    jp z, .norot
+
+    ; In the case of a T piece, try the space above.
+.checkt
+    ldh a, [hCurrentPiece]
+    cp a, PIECE_T
+    jr nz, .checki
+
+    ldh a, [hCurrentPieceY]
+    dec a
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    rlc a
+    rlc a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFitFast
+    cp a, $FF
+    jp nz, .norot
+    ldh a, [hCurrentPieceY]
+    dec a
+    ldh [hCurrentPieceY], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ld a, $FF
+    ldh [hLockDelayForce], a
+    jp .norot
+
+    ; In the case of an I piece...
+.checki
+    ldh a, [hCurrentPiece]
+    cp a, PIECE_I
+    jp nz, .norot
+
+    ; Are we grounded?
+    ; If not, we can only kick right twice.
+    ldh a, [hActualG]
+    cp a, 0
+    jr nz, .tryiright2
+
+    ; Try up once.
+.tryiup1
+    ldh a, [hCurrentPieceY]
+    dec a
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    rlc a
+    rlc a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFitFast
+    cp a, $FF
+    jr nz, .tryiup2
+    ldh a, [hCurrentPieceY]
+    dec a
+    ldh [hCurrentPieceY], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ld a, $FF
+    ldh [hLockDelayForce], a
+    jr .norot
+
+    ; Try up twice.
+.tryiup2
+    ldh a, [hCurrentPieceY]
+    dec a
+    dec a
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    rlc a
+    rlc a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFitFast
+    cp a, $FF
+    jr nz, .tryiright2
+    ldh a, [hCurrentPieceY]
+    dec a
+    dec a
+    ldh [hCurrentPieceY], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ld a, $FF
+    ldh [hLockDelayForce], a
+    jr .norot
+
+    ; Try right twice.
+.tryiright2
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    inc a
+    inc a
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    rlc a
+    rlc a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFitFast
+    cp a, $FF
+    jr nz, .norot
+    ldh a, [hCurrentPieceX]
+    inc a
+    inc a
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
 
 
+    ; **************************************************************
+    ; HANDLE MOVEMENT
     ; Do we want to move left?
 .norot
     ldh a, [hLeftState]
@@ -940,8 +1158,7 @@ FieldProcess::
     ldh [hWantX], a
     jr .trymove
 
-
-    ; Want right?
+    ; Do we want to move right?
 .wantright
     ldh a, [hRightState]
     cp a, 1
@@ -955,7 +1172,6 @@ FieldProcess::
 :   ldh a, [hWantX]
     inc a
     ldh [hWantX], a
-
 
     ; Try the movement.
 .trymove
@@ -973,6 +1189,8 @@ FieldProcess::
     ldh [hCurrentPieceX], a
 
 
+    ; **************************************************************
+    ; HANDLE LOCKING
     ; Are we grounded?
 .donemanipulating
     ldh a, [hCurrentPieceY]
@@ -1011,18 +1229,32 @@ FieldProcess::
     ldh [hCurrentLockDelayRemaining], a
     ; If we're out of lock delay, play a sound.
     cp a, 0
-    jr nz, .draw
+    jr nz, .forcelockmaybe
     call SFXKill
     ld a, SFX_LOCK
     call SFXEnqueue
     jr .draw
 
+    ; TGM3 sometimes forces a piece to immediately lock.
+.forcelockmaybe
+    ldh a, [hLockDelayForce]
+    cp a, $FF
+    jr nz, .draw
+    xor a, a
+    ldh [hCurrentLockDelayRemaining], a
+    call SFXKill
+    ld a, SFX_LOCK
+    call SFXEnqueue
+    jr .draw
+
+    ; If we weren't grounded, reset the lock delay.
 .notgrounded
-    ; Otherwise reset the lock delay.
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
 
 
+    ; **************************************************************
+    ; HANDLE DRAWING
     ; Draw the piece.
 .draw
     ; If the gravity is <= 1G, draw a ghost piece.

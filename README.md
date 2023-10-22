@@ -55,6 +55,20 @@ Please do not try running it on older emulators such as VBA, since this game use
 This game was created using Game Boy assembly using the RGBDS toolchain and GNU make.
 
 
+## Issues
+- In very rare cases the frame time in TGM3 and TGW3 modes can be exceeded due to the way the RNG for those modes works. When this happens, the screen will appear slightly glitched for 1 frame but no frame drops will occur. This issues is fundamentally impossible to completely avoid though more optimization may cause it to occur less frequently.
+- In frames where both rotation and translation happens at the same time, the ghost piece may be drawn one space too high or too low. Fixing this would require calculating the distance-to-stack twice and that wouldn't be possible on the original game boy. This issue is only a visual glitch and only for one frame sometimes. It will not be fixed.
+
+
+## Future Goals
+- Improve main menu.
+- Add 20G mode.
+- Multiplayer.
+- Multiplayer with items.
+- Colorization.
+- Three previews for TGM3 modes.
+- ...
+
 ## License
 Copyright (C) 2023 - Randy Thiemann <randy.thiemann@gmail.com>
 

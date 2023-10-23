@@ -64,8 +64,12 @@ RNGInit::
     ld bc, 7
     call UnsafeMemCopy
 
-    ; Start with a random piece held.
-    call Next7Piece
+    ; Start with a random non-S/Z piece held.
+:   call Next7Piece
+    cp a, PIECE_Z
+    jr z, :-
+    cp a, PIECE_S
+    jr z, :-
     ldh [hHeldPiece], a
 
     ; If we're in HELL mode, we don't care about anything but a random piece to start with.

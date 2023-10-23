@@ -24,7 +24,9 @@ INCLUDE "globals.asm"
 
 DEF DELAY_STATE_DETERMINE_DELAY EQU 0
 DEF DELAY_STATE_LINE_CLEAR      EQU 1
-DEF DELAY_STATE_ARE             EQU 2
+DEF DELAY_STATE_LINE_PRE_CLEAR  EQU 2
+DEF DELAY_STATE_ARE             EQU 3
+DEF DELAY_STATE_PRE_ARE         EQU 4
 
 
 SECTION "Field Variables", WRAM0
@@ -531,9 +533,6 @@ TrySpawnPiece::
     ld a, DELAY_STATE_DETERMINE_DELAY
     ld [wDelayState], a
 
-    ; Copy the field to the shadow field.
-    call ToShadowField
-
     ; Point the piece data to the correct piece.
     call SetPieceData
     call SetPieceDataOffset
@@ -750,19 +749,10 @@ FieldProcess::
 .firstframe
     ldh a, [hStalePiece]
     cp a, 0
-    jr nz, .secondframe
-    ld a, 1
-    ldh [hStalePiece], a
-    jp .skipmovement
-
-.secondframe
-    ; Is this the first input frame?
-    cp a, 1
     jr nz, .handleselect
     ld a, $FF
     ldh [hStalePiece], a
-    xor a, a
-    ldh [hLockDelayForce], a
+    jp .skipmovement
 
 
     ; **************************************************************
@@ -843,6 +833,11 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
     jp .norot
 
     ; Try kicks if the piece isn't I or O. And in the case of J L and T, only if the blocked side is the left or right.
@@ -865,12 +860,15 @@ FieldProcess::
     ld a, [wRotModeState]
     cp a, ROT_MODE_ARSTI
     jp nz, .norot
+    ldh a, [hWantRotation]
+    bit 0, a
+    jp nz, .checki
     jr .trykickright
 
     ; T/L/J only kick if not through the middle axis.
 :   ld a, c
     cp a, 1
-    jr z, .maybetgm3rot
+    jp z, .maybetgm3rot
     cp a, 5
     jr z, .maybetgm3rot
     cp a, 9
@@ -907,6 +905,11 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
     jp .norot
 
     ; And a step to the left.
@@ -940,6 +943,11 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
     jp .norot
 
     ; In TGM3, TGW3, EASY, and EAWY modes, there are a few other kicks possible.
@@ -983,7 +991,15 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
-    ld a, $FF
+    ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
+    cp a, 0
+    jr nz, :+
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
+:   cp a, 1                  ; Or to 2 if it's 1.
+    jp nz, .norot
+    inc a
     ldh [hLockDelayForce], a
     jp .norot
 
@@ -993,11 +1009,16 @@ FieldProcess::
     cp a, PIECE_I
     jp nz, .norot
 
-    ; Are we grounded?
-    ; If not, we can only kick right twice.
+    ; What direction do we want to end up?
+    ldh a, [hWantRotation]
+    bit 0, a
+    jp z, .tryiright2   ; Flat? Sideways kicks are fine.
+                        ; Upright? Only up kicks.
+
+    ; Are we grounded? Don't kick if we aren't.
     ldh a, [hActualG]
     cp a, 0
-    jr nz, .tryiright2
+    jp nz, .norot
 
     ; Try up once.
 .tryiup1
@@ -1030,9 +1051,17 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
-    ld a, $FF
+    ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
+    cp a, 0
+    jr nz, :+
+    inc a
     ldh [hLockDelayForce], a
-    jr .norot
+    jp .norot
+:   cp a, 1                  ; Or to 2 if it's 1.
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
 
     ; Try up twice.
 .tryiup2
@@ -1059,7 +1088,7 @@ FieldProcess::
     pop bc
     call CanPieceFitFast
     cp a, $FF
-    jr nz, .tryiright2
+    jr nz, .norot
     ldh a, [hCurrentPieceY]
     dec a
     dec a
@@ -1067,9 +1096,17 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
-    ld a, $FF
+    ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
+    cp a, 0
+    jr nz, :+
+    inc a
     ldh [hLockDelayForce], a
-    jr .norot
+    jp .norot
+:   cp a, 1                  ; Or to 2 if it's 1.
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
 
     ; Try right twice.
 .tryiright2
@@ -1104,6 +1141,11 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
 
 
     ; **************************************************************
@@ -1324,7 +1366,7 @@ FieldProcess::
     ; TGM3 sometimes forces a piece to immediately lock.
 .checkfortgm3lockexception
     ldh a, [hLockDelayForce]
-    cp a, $FF
+    cp a, 2
     jr nz, .draw ; It's not forced, so go to drawing.
     xor a, a ; It is forced, so force it!
     ldh [hCurrentLockDelayRemaining], a
@@ -1346,6 +1388,11 @@ FieldProcess::
     ; HANDLE DRAWING
     ; Draw the piece.
 .draw
+    ; If the piece is locked, skip the ghost piece.
+    ldh a, [hCurrentLockDelayRemaining]
+    cp a, 0
+    jr z, :+
+
     ; If the gravity is <= 1G, draw a ghost piece.
     ldh a, [hWantedG]
     cp a, 1
@@ -1678,15 +1725,24 @@ FieldDelay::
     ld a, [wDelayState]
     cp DELAY_STATE_DETERMINE_DELAY
     jr z, .determine
+    cp DELAY_STATE_LINE_PRE_CLEAR
+    jr z, .prelineclear
     cp DELAY_STATE_LINE_CLEAR
-    jr z, .lineclear
-    cp DELAY_STATE_ARE
-    jr z, .are
+    jp z, .lineclear
+    cp DELAY_STATE_PRE_ARE
+    jp z, .preare
+    jp .are
+
 
     ; Check if there were line clears.
     ; If so, we need to do a line clear delay.
     ; Otherwise, we skip to ARE delay.
 .determine
+    ; Increment bravo by 4.
+    ldh a, [hBravo]
+    add a, 4
+    ldh [hBravo], a
+    call ToShadowField
     call FindClearedLines
     ldh a, [hClearedLines]
     ld b, a
@@ -1700,71 +1756,33 @@ FieldDelay::
     and a, d
     cp a, $FF
     jr z, .skip ; If there were no line clears, skip to ARE delay.
-    ld a, DELAY_STATE_LINE_CLEAR ; Otherwise, do a line clear delay.
+    ld a, DELAY_STATE_LINE_PRE_CLEAR ; Otherwise, do a line clear delay.
     ld [wDelayState], a
     ldh a, [hCurrentLineClearDelay]
     ldh [hRemainingDelay], a
     call MarkClear
-    jr .lineclear
+    jp .prelineclear
 .skip
-    ld a, DELAY_STATE_ARE ; If there were no line clears, do an ARE delay.
+    ld a, DELAY_STATE_PRE_ARE ; If there were no line clears, do an ARE delay.
     ld [wDelayState], a
     ldh a, [hCurrentARE]
     ldh [hRemainingDelay], a
-    jr .are
+    jp .preare
 
 
-    ; Line clear delay.
-    ; Count doen the delay. If we're out of delay, clear the lines and go to ARE.
-.lineclear
-    ldh a, [hRemainingDelay]
-    dec a
-    ldh [hRemainingDelay], a
-    cp a, 0
-    ret nz
-
-    call ClearLines
-    call SFXKill
-    ld a, SFX_DROP
-    call SFXEnqueue
-
-    ld a, DELAY_STATE_ARE
+    ; Pre-line clear delay.
+    ; If we had line clears, immediately hand out the score and the levels.
+.prelineclear:
+    ld a, DELAY_STATE_LINE_CLEAR
     ld [wDelayState], a
-    ldh a, [hCurrentARE]
-    ldh [hRemainingDelay], a
 
-    ; ARE delay.
-    ; Count down the delay. If it hits 0, award levels and score if necessary, then end the delay phase.
-.are
-    ldh a, [hRemainingDelay]
-    dec a
-    ldh [hRemainingDelay], a
-    cp a, 0
-    ret nz
-
-    ; Increment bravo by 4.
-    ldh a, [hBravo]
-    add a, 4
-    ldh [hBravo], a
-
-    ; Check if there were any line clears.
-    call SFXKill
     ldh a, [hLineClearCt]
     cp a, 0
-    jr nz, :+ ; If there were, award levels and score.
-    ld a, 1 ; Otherwise, increment the level counter by one if it's not at a breakpoint, and end the delay phase.
-    ldh [hComboCt], a
-    ldh a, [hRequiresLineClear]
-    cp a, $FF
-    ret z
-    ld e, 1
-    call LevelUp
-    ret
+    jr z, .lineclear ; If not, just skip the phase.
 
     ; There were line clears! Clear the level counter breakpoint.
-:   xor a, a
+    xor a, a
     ldh [hRequiresLineClear], a
-
 
     ; Decrement bravo by 10 for each line clear.
     ldh a, [hLineClearCt]
@@ -1774,7 +1792,6 @@ FieldDelay::
     dec b
     jr nz, :-
     ldh [hBravo], a
-
 
     ; Check if we are in a TGM3 mode and thus need to handle line counts of 3 and 4 differently.
     ldh a, [hLineClearCt]
@@ -1867,6 +1884,65 @@ FieldDelay::
     ldh [hScoreIncrement+1], a
     call IncreaseScore
 
+
+    ; Line clear delay.
+    ; Count doen the delay. If we're out of delay, clear the lines and go to ARE.
+.lineclear
+    ldh a, [hRemainingDelay]
+    dec a
+    ldh [hRemainingDelay], a
+    cp a, 0
+    ret nz
+
+    call ClearLines
+    call SFXKill
+    ld a, SFX_DROP
+    call SFXEnqueue
+
+    ldh a, [hCurrentARE]
+    ldh [hRemainingDelay], a
+
+
+    ; Pre-ARE delay.
+.preare:
+    ld a, DELAY_STATE_ARE
+    ld [wDelayState], a
+
+    ; Copy over the newly cleaned field.
+    call ToShadowField
+
+    ; Don't do anything if there were line clears
+    ldh a, [hLineClearCt]
+    cp a, 0
+    jr nz, .are
+
+    ; Otherwise, increment the level counter by one if it's not at a breakpoint.
+    ld a, 1
+    ldh [hComboCt], a
+    ldh a, [hRequiresLineClear]
+    cp a, $FF
+    jr z, .are
+    ld e, 1
+    call LevelUp
+
+
+    ; ARE delay.
+    ; Count down the delay. If it hits 0, award levels and score if necessary, then end the delay phase.
+.are
+    ldh a, [hRemainingDelay]
+    dec a
+    ldh [hRemainingDelay], a
+    cp a, 0
+    ret nz
+
+    ; Cycle the RNG.
+    ldh a, [hNextPiece]
+    ldh [hCurrentPiece], a
+    call GetNextPiece
+
+
+    ; Kill the sound for the next piece.
+    call SFXKill
     ret
 
 

@@ -22,16 +22,16 @@ DEF STATE_GAMEPLAY_ASM EQU 1
 INCLUDE "globals.asm"
 
 
-DEF MODE_LEADY EQU 0
-DEF MODE_GO EQU 1
-DEF MODE_POSTGO EQU 2
-DEF MODE_FETCH_PIECE EQU 3
-DEF MODE_SPAWN_PIECE EQU 4
-DEF MODE_PIECE_IN_MOTION EQU 5
-DEF MODE_DELAY EQU 6
-DEF MODE_GAME_OVER EQU 7
-DEF MODE_PRE_GAME_OVER EQU 8
-DEF MODE_PAUSED EQU 9
+DEF MODE_LEADY              EQU 0
+DEF MODE_GO                 EQU 1
+DEF MODE_POSTGO             EQU 2
+DEF MODE_PREFETCHED_PIECE   EQU 4
+DEF MODE_SPAWN_PIECE        EQU 5
+DEF MODE_PIECE_IN_MOTION    EQU 6
+DEF MODE_DELAY              EQU 7
+DEF MODE_GAME_OVER          EQU 8
+DEF MODE_PRE_GAME_OVER      EQU 9
+DEF MODE_PAUSED             EQU 10
 
 
 SECTION "High Gameplay Variables", HRAM
@@ -133,8 +133,8 @@ GamePlayEventLoopHandler::
     jr z, goMode
     cp MODE_POSTGO
     jr z, postGoMode
-    cp MODE_FETCH_PIECE
-    jr z, fetchPieceMode
+    cp MODE_PREFETCHED_PIECE
+    jr z, prefetchedPieceMode
     cp MODE_SPAWN_PIECE
     jp z, spawnPieceMode
     cp MODE_PIECE_IN_MOTION
@@ -186,20 +186,20 @@ goMode:
     jp drawStaticInfo
 
 
-    ; Clear the field, ready for gameplay.
+    ; Clear the field, fetch the piece, ready for gameplay.
 postGoMode:
-    ld a, MODE_FETCH_PIECE
+    ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
     call FieldClear
+    call ToShadowField
+    ldh a, [hNextPiece]
+    ldh [hCurrentPiece], a
+    call GetNextPiece
     jp drawStaticInfo
 
 
     ; Fetch the next piece.
-fetchPieceMode:
-    ldh a, [hNextPiece]
-    ldh [hCurrentPiece], a
-    call GetNextPiece
-
+prefetchedPieceMode:
     ; A piece will spawn in the middle, at the top of the screen, not rotated by default.
     ld a, 5
     ldh [hCurrentPieceX], a
@@ -336,7 +336,6 @@ pieceInMotionMode:
     jr nz, :+
     ld a, MODE_DELAY
     ldh [hMode], a
-    call ToShadowField
     ; No fall through this time.
 
 :   jp drawStaticInfo
@@ -358,7 +357,7 @@ delayMode:
     ldh a, [hRemainingDelay]
     cp a, 0
     jr nz, :+
-    ld a, MODE_FETCH_PIECE
+    ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
 
 :   jp drawStaticInfo

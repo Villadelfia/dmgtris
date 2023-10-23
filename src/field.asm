@@ -53,6 +53,7 @@ hComboCt: ds 1
 hLockDelayForce: ds 1
 hHighestStack: ds 1
 hDownFrames: ds 1
+hStalePiece: ds 1
 
 
 SECTION "Field Functions", ROM0
@@ -502,6 +503,7 @@ ForceSpawnPiece::
 TrySpawnPiece::
     ; Always reset these for a new piece.
     xor a, a
+    ldh [hStalePiece], a
     ldh [hDownFrames], a
     ldh [hLockDelayForce], a
     ldh a, [hCurrentLockDelay]
@@ -660,7 +662,7 @@ FindMaxG:
     ldh a, [hCurrentPieceX]
     call XYToSFieldPtr
 
-DEF EXPERIMENTAL_OPTIMIZATION EQU 1
+;DEF EXPERIMENTAL_OPTIMIZATION EQU 1
 IF DEF(EXPERIMENTAL_OPTIMIZATION)
     ; The stack height marker gives a lower bound to how far the piece can fall.
     ldh a, [hHighestStack]
@@ -685,7 +687,6 @@ IF DEF(EXPERIMENTAL_OPTIMIZATION)
     push hl
     jr .try
 ENDC
-
 
 .unoptimized
     push hl
@@ -723,127 +724,29 @@ FieldProcess::
     ldh [hYPosAtStartOfFrame], a
     call FromShadowField
 
-
-    ; Check if we're about to hold. Return if so.
-    ldh a, [hSelectState]
-    cp a, 1
-    jr nz, :+
-    ldh a, [hHoldSpent]
-    cp a, $FF
-    ret nz
-
-    ; How deep can we go?
-:   call FindMaxG
-
-
-    ; **************************************************************
-    ; HANDLE UP
-    ; Is a hard/sonic drop requested?
-    ldh a, [hUpState]
-    cp a, 1
-    jr nz, .postdrop
-
-    ; What kind, if any?
-    ldh a, [hSimulationMode]
-    cp a, MODE_TGM1
-    jr z, .postdrop
-    cp a, MODE_HELL
-    jr z, .postdrop
-    cp a, MODE_TGW2
-    jr z, .harddrop
-    cp a, MODE_TGW3
-    jr z, .harddrop
-    cp a, MODE_EAWY
-    jr z, .harddrop
-
-    ; Sonic drop.
-.sonicdrop
-    ldh a, [hDownFrames]
-    add a, 10
-    ldh [hDownFrames], a
-    ld a, 20
-    ldh [hWantedG], a
-    ldh a, [hTicksUntilG]
-    dec a
-    ldh [hTicksUntilG], a
-    jr nz, .grav
-    ldh a, [hCurrentFramesPerGravityTick]
-    ldh [hTicksUntilG], a
-    jr .grav
-
-    ; Hard drop.
-.harddrop
-    ldh a, [hDownFrames]
-    add a, 10
-    ldh [hDownFrames], a
-    ld a, 20
-    ld b, a
-    ldh a, [hActualG]
-    cp a, b
-    jr nc, :+
-    ld b, a
-:   ldh a, [hCurrentPieceY]
-    add a, b
-    ldh [hCurrentPieceY], a
-    xor a, a
-    ldh [hCurrentLockDelayRemaining], a
-    call SFXKill
-    ld a, SFX_LOCK
-    call SFXEnqueue
-    jp .draw
-
-    ; If we press down, we want to do a soft drop.
-.postdrop
-    ldh a, [hDownState]
-    cp a, 0
-    jr z, :+
-    ldh a, [hDownFrames]
-    inc a
-    ldh [hDownFrames], a
-    ld a, 1
-    ldh [hTicksUntilG], a
-
-    ; Gravity?
-:   ldh a, [hTicksUntilG]
-    dec a
-    ldh [hTicksUntilG], a
-    jr nz, .nograv
-    ldh a, [hCurrentFramesPerGravityTick]
-    ldh [hTicksUntilG], a
-    ldh a, [hCurrentGravityPerTick]
-    ldh [hWantedG], a
-
-    ; Can we drop the full requested distance?
-.grav
-    ldh a, [hWantedG]
-    ld b, a
-    ldh a, [hActualG]
-    cp a, b
-    jr c, .smallg
-
-    ; Yes. Do it.
-.bigg
-    ldh a, [hWantedG]
-    ld b, a
-    ldh a, [hCurrentPieceY]
-    add a, b
-    ldh [hCurrentPieceY], a
-    jr .nograv
-
-    ; No. Smaller distance.
-.smallg
-    ldh a, [hActualG]
-    ld b, a
-    ldh a, [hCurrentPieceY]
-    add a, b
-    ldh [hCurrentPieceY], a
-
-    ; No gravity, or post gravity.
-.nograv
+    ; Cleanup from last frame.
     ldh a, [hCurrentPieceX]
     ldh [hWantX], a
     ldh a, [hCurrentPieceRotationState]
     ldh [hWantRotation], a
+
+    ; Is this the first frame of the piece?
+    ldh a, [hStalePiece]
+    cp a, 0
+    ld a, $FF
+    ldh [hStalePiece], a
+    jp z, .skipmovement
+
+
+    ; **************************************************************
+    ; HANDLE SELECT
+    ; Check if we're about to hold. Return if so.
+    ldh a, [hSelectState]
+    cp a, 1
+    jr nz, .wantrotccw
+    ldh a, [hHoldSpent]
+    cp a, $FF
+    ret nz
 
 
     ; **************************************************************
@@ -1233,9 +1136,121 @@ FieldProcess::
 
 
     ; **************************************************************
+    ; HANDLE MAXIMUM FALL
+    ; This little maneuver is going to cost us 51 years.
+.skipmovement
+.donemanipulating
+:   call FindMaxG
+
+
+    ; **************************************************************
+    ; HANDLE UP
+    ; Is a hard/sonic drop requested?
+    ldh a, [hUpState]
+    cp a, 0
+    jr z, .postdrop
+
+    ; What kind, if any?
+    ldh a, [hSimulationMode]
+    cp a, MODE_TGM1
+    jr z, .postdrop
+    cp a, MODE_HELL
+    jr z, .postdrop
+    cp a, MODE_TGW2
+    jr z, .harddrop
+    cp a, MODE_TGW3
+    jr z, .harddrop
+    cp a, MODE_EAWY
+    jr z, .harddrop
+
+    ; Sonic drop.
+.sonicdrop
+    ldh a, [hDownFrames]
+    add a, 10
+    ldh [hDownFrames], a
+    ld a, 20
+    ldh [hWantedG], a
+    ldh a, [hTicksUntilG]
+    dec a
+    ldh [hTicksUntilG], a
+    jr nz, .grav
+    ldh a, [hCurrentFramesPerGravityTick]
+    ldh [hTicksUntilG], a
+    jr .grav
+
+    ; Hard drop.
+.harddrop
+    ldh a, [hDownFrames]
+    add a, 10
+    ldh [hDownFrames], a
+    ld a, 20
+    ld b, a
+    ldh a, [hActualG]
+    cp a, b
+    jr nc, :+
+    ld b, a
+:   ldh a, [hCurrentPieceY]
+    add a, b
+    ldh [hCurrentPieceY], a
+    xor a, a
+    ldh [hCurrentLockDelayRemaining], a
+    call SFXKill
+    ld a, SFX_LOCK
+    call SFXEnqueue
+    jp .draw
+
+    ; If we press down, we want to do a soft drop.
+.postdrop
+    ldh a, [hDownState]
+    cp a, 0
+    jr z, :+
+    ldh a, [hDownFrames]
+    inc a
+    ldh [hDownFrames], a
+    ld a, 1
+    ldh [hTicksUntilG], a
+
+    ; Gravity?
+:   ldh a, [hTicksUntilG]
+    dec a
+    ldh [hTicksUntilG], a
+    jr nz, .nograv
+    ldh a, [hCurrentFramesPerGravityTick]
+    ldh [hTicksUntilG], a
+    ldh a, [hCurrentGravityPerTick]
+    ldh [hWantedG], a
+
+    ; Can we drop the full requested distance?
+.grav
+    ldh a, [hWantedG]
+    ld b, a
+    ldh a, [hActualG]
+    cp a, b
+    jr c, .smallg
+
+    ; Yes. Do it.
+.bigg
+    ldh a, [hWantedG]
+    ld b, a
+    ldh a, [hCurrentPieceY]
+    add a, b
+    ldh [hCurrentPieceY], a
+    jr .postgrav
+
+    ; No. Smaller distance.
+.smallg
+    ldh a, [hActualG]
+    ld b, a
+    ldh a, [hCurrentPieceY]
+    add a, b
+    ldh [hCurrentPieceY], a
+
+
+    ; **************************************************************
     ; HANDLE LOCKING
     ; Are we grounded?
-.donemanipulating
+.postgrav
+.nograv
     ldh a, [hCurrentPieceY]
     inc a
     ld b, a
@@ -1249,42 +1264,57 @@ FieldProcess::
     jr z, .notgrounded
 
     ; We're grounded.
-    ; If the y position changed, play a sound.
+.grounded
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hYPosAtStartOfFrame]
     cp a, b
-    jr z, :+
+    jr z, .postcheckforfirmdropsound ; Never play the sound if we didn't change rows.
     ldh a, [hDownState]
     cp a, 0
-    jr nz, :+
+    jr nz, .postcheckforfirmdropsound ; Don't play the sound if we're holding down.
+
+    ; Play the firm drop sound.
+.playfirmdropsound
     call SFXKill
     ld a, SFX_MOVE
     call SFXEnqueue
+
     ; If the down button is held, lock.
-:   ldh a, [hDownState]
+.postcheckforfirmdropsound
+    ldh a, [hDownState]
     cp a, 0
-    jr z, :+
-    ld a, 1
+    jr z, .dontforcelock
+
+    ; Set the lock delay to 0 and save it.
+.forcelock
+    ld a, 0
     ldh [hCurrentLockDelayRemaining], a
-:   ldh a, [hCurrentLockDelayRemaining]
+    jr .checklockdelay
+
+    ; Load the lock delay.
+    ; Decrement it by one and save it.
+.dontforcelock
+    ldh a, [hCurrentLockDelayRemaining]
     dec a
     ldh [hCurrentLockDelayRemaining], a
-    ; If we're out of lock delay, play a sound.
+
+    ; Are we out of lock delay?
+.checklockdelay
     cp a, 0
-    jr nz, .forcelockmaybe
-    call SFXKill
-    ld a, SFX_LOCK
-    call SFXEnqueue
-    jr .draw
+    jr nz, .checkfortgm3lockexception ; If not, check if the TGM3 exception applies.
+    jr .dolock ; Otherwise, lock!
 
     ; TGM3 sometimes forces a piece to immediately lock.
-.forcelockmaybe
+.checkfortgm3lockexception
     ldh a, [hLockDelayForce]
     cp a, $FF
-    jr nz, .draw
-    xor a, a
+    jr nz, .draw ; It's not forced, so go to drawing.
+    xor a, a ; It is forced, so force it!
     ldh [hCurrentLockDelayRemaining], a
+
+    ; Play the locking sound and draw the piece.
+.dolock
     call SFXKill
     ld a, SFX_LOCK
     call SFXEnqueue

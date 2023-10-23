@@ -582,6 +582,7 @@ DoHold:
     ldh [hCurrentPieceRotationState], a
 
 .doHoldOperation
+    ldh a, [hHeldPiece]
     ld b, a
     ldh a, [hCurrentPiece]
     ldh [hHeldPiece], a

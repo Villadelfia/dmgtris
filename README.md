@@ -1,17 +1,21 @@
 # DMGTRIS
-This is a block stacking game for the game boy using the TGM2 era ARS rotation rules (no floor kicks, but with sonic drop) for the original black and white game boy written in assembly.
+DMGTRIS is a block stacking game for the original game boy written in assembly.
 
-It supports TLS (until 1G), IRS, IHS, ARE, Lock Delay, and other such buzz words.
+The game is heavily inspired by the TGM series of games and has the following features:
+- TLS (ghost piece) until 1G speeds.
+- IRS (initial rotation system).
+- IHS (initial hold system) as well as holds.
+- Faithful implementations of concepts such are lock delay, piece spawn delay and DAS.
+- Several RNG options available. You can choose between pure RNG, 4 history with 4 retries, 4 history with 6 retries, 4 history with infinite retries, or a 35bag with 4 history and 6 retries with drought prevention.
+- A choice between sonic drop (pressing up grounds the piece but does not lock it),  hard drop (pressing up locks the piece), or neither (pressing up does nothing at all.)
+- A choice between traditional ARS for rotation, or TGM3 era ARS with extra kicks.
+- Scoring is a hybrid between TGM1 and TGM2.
+- A speed curve reminiscent of TGM, starting slightly faster and skipping the awkward speed reset. The game continues infinitely... But so does the speed increase.
+- A rock solid 60FPS with a traditional 20x10 grid.
 
-Scoring is somewhat like TGM1 within the bounds of what the Z80 CPU can calculate quickly enough.
 
-The speed curve starts at 1/16G, so slightly faster than TGM, and goes smoothly toward 20G at level 500. There is no speed drop at level 200, and the game doesn't end at level 999. 20G mode starts at TGM1 speeds, then transitions to TGM2 speeds, TGM3 speeds, and finally it goes beyond even shirase mode.
-
-The Randomizer uses a TGM2-style 4-history randomizer preloaded with SSZZ, and with 4 rerolls by default. This number can be changed and is shown at the top right of the playfield.
-
-The game itself runs at a constant 60fps as well as at the traditional 20 row visible grid.
-
-There are five available game modes:
+## Modes
+There are eight available game modes:
 - TGM1: 4 history w/ 4 rerolls, never start with O, S or Z.
 - TGM2: 4 history w/ 6 rerolls, never start with O, S or Z. Sonic drop.
 - TGM3: 4 history w/ 6 rerolls and drought protection, never start with O, S or Z. Sonic drop. Extra floor and wall kicks for I and T pieces.
@@ -20,6 +24,26 @@ There are five available game modes:
 - TGW2: TGM2 but with hard drop.
 - TGW3: TGM3 but with hard drop.
 - EAWY: EASY but with hard drop.
+
+
+## Scoring
+After each piece is dropped, a check is made:
+
+### No line clear
+Combo is reset to 1 and no points are awarded.
+
+### Lines were cleared
+Lines = Lines cleared. In TGM3 modes, 3 lines are worth 4, and 4 lines are worth 6.
+
+Level = The level before the lines were cleared.
+
+Soft = Amount of frames the down button was held during this piece + 10 if the piece was sonic or hard dropped.
+
+Combo = Old combo + (2 x Lines) - 2
+
+ScoreIncrement = ((Level + Lines) >> 4 + 1 + Soft) x Combo x Lines.
+
+ScoreIncrement points are then awarded.
 
 
 ## Playing
@@ -42,7 +66,7 @@ Please do not try running it on older emulators such as VBA, since this game use
 - B — Rotate 2
 - Select — Hold
 - Start — Pause
-- Up — Sonic drop
+- Up — Sonic/Hard drop
 - Down — Soft drop/Lock
 - Left/Right — Move
 
@@ -52,22 +76,20 @@ Please do not try running it on older emulators such as VBA, since this game use
 
 
 ## Building
-This game was created using Game Boy assembly using the RGBDS toolchain and GNU make.
+The game can be built using gnu make and the RGBDS toolchain.
 
 
 ## Issues
 - In very rare cases the frame time in TGM3 and TGW3 modes can be exceeded due to the way the RNG for those modes works. When this happens, the screen will appear slightly glitched for 1 frame but no frame drops will occur. This issues is fundamentally impossible to completely avoid though more optimization may cause it to occur less frequently.
-- In frames where both rotation and translation happens at the same time, the ghost piece may be drawn one space too high or too low. Fixing this would require calculating the distance-to-stack twice and that wouldn't be possible on the original game boy. This issue is only a visual glitch and only for one frame sometimes. It will not be fixed.
 
 
 ## Future Goals
 - Improve main menu.
-- Add 20G mode.
-- Multiplayer.
+- Decouple rotation rules, rng rules, and speed curve from each other.
 - Multiplayer with items.
 - Colorization.
-- Three previews for TGM3 modes.
 - ...
+
 
 ## License
 Copyright (C) 2023 - Randy Thiemann <randy.thiemann@gmail.com>

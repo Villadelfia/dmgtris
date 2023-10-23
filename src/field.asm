@@ -747,16 +747,28 @@ FieldProcess::
     ldh [hWantRotation], a
 
     ; Is this the first frame of the piece?
+.firstframe
     ldh a, [hStalePiece]
     cp a, 0
+    jr nz, .secondframe
+    ld a, 1
+    ldh [hStalePiece], a
+    jp .skipmovement
+
+.secondframe
+    ; Is this the first input frame?
+    cp a, 1
+    jr nz, .handleselect
     ld a, $FF
     ldh [hStalePiece], a
-    jp z, .skipmovement
+    xor a, a
+    ldh [hLockDelayForce], a
 
 
     ; **************************************************************
     ; HANDLE SELECT
     ; Check if we're about to hold. Return if so.
+.handleselect
     ldh a, [hSelectState]
     cp a, 1
     jr nz, .wantrotccw
@@ -1290,8 +1302,10 @@ FieldProcess::
     cp a, 0
     jr nz, .postcheckforfirmdropsound ; Don't play the sound if we're holding down.
 
-    ; Play the firm drop sound.
+    ; Play the firm drop sound, and also reset the lock delay since the piece stepped down.
 .playfirmdropsound
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
     call SFXKill
     ld a, SFX_MOVE
     call SFXEnqueue

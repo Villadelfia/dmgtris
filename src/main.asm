@@ -27,10 +27,15 @@ INCLUDE "res/title_map.inc"
 
 SECTION "High Globals", HRAM
 hGameState:: ds 1
-hSwapAB:: ds 1
-hSimulationMode:: ds 1
+
 
 SECTION "Globals", WRAM0
+wSwapABState:: ds 1
+wRNGModeState:: ds 1
+wRotModeState:: ds 1
+wDropModeState:: ds 1
+wSpeedCurveState:: ds 1
+wAlways20GState:: ds 1
 wInitialA:: ds 1
 wInitialB:: ds 1
 wInitialC:: ds 1
@@ -41,9 +46,13 @@ wInitialL:: ds 1
 
 
 SECTION "Persistent Globals", SRAM
-rMagic:: ds 3
-rSwapAB:: ds 1
-rSimulationMode:: ds 1
+rMagic:: ds 4
+rSwapABState:: ds 1
+rRNGModeState:: ds 1
+rRotModeState:: ds 1
+rDropModeState:: ds 1
+rSpeedCurveState:: ds 1
+rAlways20GState:: ds 1
 
 
 SECTION "Stack", WRAM0
@@ -95,35 +104,70 @@ Main::
 
     ; Check for save data.
     ld a, [rMagic]
-    cp a, "T"
-    jr nz, .nosavedata
-    ld a, [rMagic+1]
-    cp a, "G"
+    cp a, "D"
     jr nz, .nosavedata
     ld a, [rMagic+1]
     cp a, "M"
     jr nz, .nosavedata
+    ld a, [rMagic+2]
+    cp a, "G"
+    jr nz, .nosavedata
+    ld a, [rMagic+3]
+    cp a, "0"
+    jr nz, .nosavedata
 
 .savedata
-    ld a, [rSwapAB]
-    ldh [hSwapAB], a
-    ld a, [rSimulationMode]
-    ldh [hSimulationMode], a
+    ld a, [rSwapABState]
+    ld [wSwapABState], a
+    ld a, [rRNGModeState]
+    ld [wRNGModeState], a
+    ld a, [rRotModeState]
+    ld [wRotModeState], a
+    ld a, [rDropModeState]
+    ld [wDropModeState], a
+    ld a, [rSpeedCurveState]
+    ld [wSpeedCurveState], a
+    ld a, [rAlways20GState]
+    ld [wAlways20GState], a
     jr .otherinit
 
 .nosavedata
-    ld a, "T"
+    ld a, "D"
     ld [rMagic], a
-    ld a, "G"
-    ld [rMagic+1], a
     ld a, "M"
+    ld [rMagic+1], a
+    ld a, "G"
     ld [rMagic+2], a
-    xor a, a
-    ldh [hSwapAB], a
-    ld [rSwapAB], a
-    ld a, MODE_TGM2
-    ldh [hSimulationMode], a
-    ld [rSimulationMode], a
+    ld a, "0"
+    ld [rMagic+3], a
+
+    ld a, BUTTON_MODE_NORM
+    ld [rSwapABState], a
+    ld [wSwapABState], a
+
+    ld a, RNG_MODE_TGM3
+    ld [rRNGModeState], a
+    ld [wRNGModeState], a
+
+    ld a, RNG_MODE_TGM3
+    ld [rRNGModeState], a
+    ld [wRNGModeState], a
+
+    ld a, ROT_MODE_ARSTI
+    ld [rRotModeState], a
+    ld [wRotModeState], a
+
+    ld a, DROP_MODE_SONIC
+    ld [rDropModeState], a
+    ld [wDropModeState], a
+
+    ld a, SCURVE_DMGT
+    ld [rSpeedCurveState], a
+    ld [wSpeedCurveState], a
+
+    ld a, HIG_MODE_OFF
+    ld [rAlways20GState], a
+    ld [wAlways20GState], a
 
 .otherinit
     ld hl, sSpeedCurve

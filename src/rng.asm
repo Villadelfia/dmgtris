@@ -69,8 +69,8 @@ RNGInit::
     ldh [hHeldPiece], a
 
     ; If we're in HELL mode, we don't care about anything but a random piece to start with.
-    ldh a, [hSimulationMode]
-    cp a, MODE_HELL
+    ld a, [wRNGModeState]
+    cp a, RNG_MODE_HELL
     jr nz, .complexinit
     call Next7Piece
     ld [hNextPiece], a
@@ -84,8 +84,8 @@ RNGInit::
     ldh [hPieceHistory+2], a
     ldh [hPieceHistory+3], a
 
-    ldh a, [hSimulationMode]
-    cp a, MODE_TGM1
+    ld a, [wRNGModeState]
+    cp a, RNG_MODE_TGM1
     jr z, :+
     ld a, PIECE_S
     ldh [hPieceHistory+2], a
@@ -177,29 +177,14 @@ GetNextTGM2Piece:
 :   jr ShiftHistory
 
 
-    ; 4 History, (basically) infinite rerolls.
-GetNextEasyPiece:
-    ld a, 0
-    ld e, a
-
-:   dec e
-    jr z, :+
-
+    ; 1 history, 1 reroll.
+GetNextNesPiece:
     call Next7Piece
     ld hl, hPieceHistory
     cp a, [hl]
-    jr z, :-
-    inc hl
-    cp a, [hl]
-    jr z, :-
-    inc hl
-    cp a, [hl]
-    jr z, :-
-    inc hl
-    cp a, [hl]
-    jr z, :-
-
-:   jr ShiftHistory
+    jr nz, ShiftHistory
+    call Next7Piece
+    jr nz, ShiftHistory
 
 
     ; TGM3 mode... It's complex.
@@ -355,23 +340,17 @@ GetNextTGM3Piece:
 
 
 GetNextPiece::
-    ldh a, [hSimulationMode]
-    cp a, MODE_HELL
+    ld a, [wRNGModeState]
+    cp a, RNG_MODE_HELL
     jp z, GetNextHellPiece
-    cp a, MODE_TGM1
+    cp a, RNG_MODE_TGM1
     jp z, GetNextTGM1Piece
-    cp a, MODE_TGM2
+    cp a, RNG_MODE_TGM2
     jp z, GetNextTGM2Piece
-    cp a, MODE_TGW2
-    jp z, GetNextTGM2Piece
-    cp a, MODE_TGM3
+    cp a, RNG_MODE_TGM3
     jp z, GetNextTGM3Piece
-    cp a, MODE_TGW3
-    jp z, GetNextTGM3Piece
-    cp a, MODE_EASY
-    jp z, GetNextEasyPiece
-    cp a, MODE_EAWY
-    jp z, GetNextEasyPiece
+    cp a, RNG_MODE_NES
+    jp z, GetNextNesPiece
 
 
 Next35Piece:

@@ -6,7 +6,7 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - IRS (initial rotation system).
 - IHS (initial hold system) as well as holds.
 - Faithful implementations of concepts such are lock delay, piece spawn delay and DAS.
-- Several RNG options available. You can choose between pure RNG, 4 history with 4 retries, 4 history with 6 retries, 4 history with infinite retries, or a 35bag with 4 history and 6 retries with drought prevention.
+- Several RNG options available. You can choose between pure RNG, 4 history with 4 retries, 4 history with 6 retries, 4 history with infinite retries, a 35bag with 4 history and 6 retries with drought prevention, NES style RNG, or pure RNG.
 - A choice between sonic drop (pressing up grounds the piece but does not lock it),  hard drop (pressing up locks the piece), or neither (pressing up does nothing at all.)
 - A choice between traditional ARS for rotation, or TGM3 era ARS with extra kicks.
 - Scoring is a hybrid between TGM1 and TGM2.
@@ -14,16 +14,34 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - A rock solid 60FPS with a traditional 20x10 grid.
 
 
-## Modes
-There are eight available game modes:
-- TGM1: 4 history w/ 4 rerolls, never start with O, S or Z.
-- TGM2: 4 history w/ 6 rerolls, never start with O, S or Z. Sonic drop.
-- TGM3: 4 history w/ 6 rerolls and drought protection, never start with O, S or Z. Sonic drop. Extra floor and wall kicks for I and T pieces.
-- HELL: Pure random piece generation.
-- EASY: 4 history w/ 256 rerolls, never start with O, S or Z. Sonic drop.
-- TGW2: TGM2 but with hard drop.
-- TGW3: TGM3 but with hard drop.
-- EAWY: EASY but with hard drop.
+## Options
+### Buttons
+Switch between whether A or B rotates clockwise and vice versa.
+
+### RNG Mode
+Choose between a few randomizer options:
+- TGM1: 4 history, 4 rerolls.
+- TGM2: 4 history, 6 rerolls.
+- TGM3: The TGM3 RNG system.
+- HELL: Pure Random.
+- NES: Reroll once if you get the same piece as the previous one.
+
+### Rot Mode
+Select the rotation rules:
+- ARS1: Classic ARS from TGM1 and TGM2.
+- ARS2: ARS from TGM3.
+
+### Drop Mode
+Select whether up performs a sonic drop, a hard drop, or nothing at all.
+
+### Speed Curve
+Check back later! For now you're stuck with the default.
+
+### Always 20G
+Whether you want instant-drop gravity to be active at any level.
+
+### Start Level
+Choose any of the speed breakpoints to start the game at.
 
 
 ## Scoring
@@ -59,9 +77,8 @@ Please do not try running it on older emulators such as VBA, since this game use
 ## Controls
 ### Menu
 - A/B/Start — Start the game
-- Left/Right — Switch A/B rotation direction
-- Up/Down — Select starting level
-- Select — Select game mode
+- Up/Down — Change which option is selected
+- Left/Right — Change the value of the option
 
 ### Gameplay
 - A — Rotate 1
@@ -86,8 +103,6 @@ The game can be built using gnu make and the RGBDS toolchain.
 
 
 ## Future Goals
-- Improve main menu.
-- Decouple rotation rules, rng rules, and speed curve from each other.
 - Multiplayer with items.
 - Colorization.
 - ...

@@ -22,6 +22,10 @@ DEF STATE_TITLE_ASM EQU 1
 INCLUDE "globals.asm"
 
 
+SECTION "Title Variables", WRAM0
+wSelected:     ds 1
+
+
 SECTION "Title Functions", ROM0
 SwitchToTitle::
     ; Turn the screen off if it's on.
@@ -77,6 +81,7 @@ SwitchToTitle::
     ; Install the event loop handlers.
     ld a, 0
     ldh [hGameState], a
+    ld [wSelected], a
 
     ; And turn the LCD back on before we start.
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
@@ -89,22 +94,9 @@ SwitchToTitle::
 
 
 TitleEventLoopHandler::
-    ; Increment mode?
-    ldh a, [hSelectState]
-    cp a, 1
-    jr nz, :+
-    ldh a, [hSimulationMode]
-    inc a
-    cp a, 8
-    jr nz, .write
-    xor a, a
-.write
-    ldh [hSimulationMode], a
-    ld [rSimulationMode], a
-    jp EventLoopPostHandler
-
     ; Start game?
-:   ldh a, [hStartState]
+.abstart
+    ldh a, [hStartState]
     ld b, a
     ldh a, [hAState]
     ld c, a
@@ -112,37 +104,149 @@ TitleEventLoopHandler::
     or a, b
     or a, c
     cp a, 1
-    jr nz, :+
+    jr nz, .up
     call SwitchToGameplay
     jp EventLoopPostHandler
 
-    ; Toggle A/B?
-:   ldh a, [hLeftState]
-    ld b, a
+    ; Change menu selection?
+.up
+    ldh a, [hUpState]
+    cp a, 1
+    jr nz, .down
+    ld a, [wSelected]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wSelected], a
+    jp EventLoopPostHandler
+:   ld a, TITLE_OPTIONS-1
+    ld [wSelected], a
+    jp EventLoopPostHandler
+
+.down
+    ldh a, [hDownState]
+    cp a, 1
+    jr nz, .left
+    ld a, [wSelected]
+    cp a, TITLE_OPTIONS-1
+    jr z, :+
+    inc a
+    ld [wSelected], a
+    jp EventLoopPostHandler
+:   xor a, a
+    ld [wSelected], a
+    jp EventLoopPostHandler
+
+.left
+    ldh a, [hLeftState]
+    cp a, 1
+    jr nz, .right
+    jp DecrementOption
+
+.right
     ldh a, [hRightState]
-    or a, b
     cp a, 1
-    jr nz, :+
-    ldh a, [hSwapAB]
-    cpl
-    ldh [hSwapAB], a
-    ld [rSwapAB], a
+    jr nz, .done
+    jp IncrementOption
+
+.done
     jp EventLoopPostHandler
 
-    ; Start level up?
-:   ldh a, [hUpState]
-    cp a, 1
-    jr nz, :+
-    jr IncrementLevel
+DecrementOption:
+.opt0
+    ld a, [wSelected]
+    cp a, 0
+    jr nz, .opt1
+    ld a, [wSwapABState]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wSwapABState], a
+    ld [rSwapABState], a
+    jp EventLoopPostHandler
+:   ld a, BUTTON_MODE_COUNT-1
+    ld [wSwapABState], a
+    ld [rSwapABState], a
     jp EventLoopPostHandler
 
-    ; Start level down?
-:   ldh a, [hDownState]
+.opt1
     cp a, 1
-    jr nz, :+
+    jr nz, .opt2
+    ld a, [wRNGModeState]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wRNGModeState], a
+    ld [rRNGModeState], a
+    jp EventLoopPostHandler
+:   ld a, RNG_MODE_COUNT-1
+    ld [wRNGModeState], a
+    ld [rRNGModeState], a
+    jp EventLoopPostHandler
+
+.opt2
+    cp a, 2
+    jr nz, .opt3
+    ld a, [wRotModeState]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wRotModeState], a
+    ld [rRotModeState], a
+    jp EventLoopPostHandler
+:   ld a, ROT_MODE_COUNT-1
+    ld [wRotModeState], a
+    ld [rRotModeState], a
+    jp EventLoopPostHandler
+
+.opt3
+    cp a, 3
+    jr nz, .opt4
+    ld a, [wDropModeState]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wDropModeState], a
+    ld [rDropModeState], a
+    jp EventLoopPostHandler
+:   ld a, DROP_MODE_COUNT-1
+    ld [wDropModeState], a
+    ld [rDropModeState], a
+    jp EventLoopPostHandler
+
+.opt4
+    cp a, 4
+    jr nz, .opt5
+    ld a, [wSpeedCurveState]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wSpeedCurveState], a
+    ld [rSpeedCurveState], a
+    jp EventLoopPostHandler
+:   ld a, SCURVE_COUNT-1
+    ld [wSpeedCurveState], a
+    ld [rSpeedCurveState], a
+    jp EventLoopPostHandler
+
+.opt5
+    cp a, 5
+    jr nz, .opt6
+    ld a, [wAlways20GState]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wAlways20GState], a
+    ld [rAlways20GState], a
+    jp EventLoopPostHandler
+:   ld a, HIG_MODE_COUNT-1
+    ld [wAlways20GState], a
+    ld [rAlways20GState], a
+    jp EventLoopPostHandler
+
+.opt6
     jr DecrementLevel
-:   jp EventLoopPostHandler
-
+    jp EventLoopPostHandler
 
 DecrementLevel:
     ; Decrement
@@ -156,7 +260,104 @@ DecrementLevel:
     ldh [hStartSpeed], a
     ld a, h
     ldh [hStartSpeed+1], a
-    jr CheckLevelRange
+    jp CheckLevelRange
+
+
+IncrementOption:
+.opt0
+    ld a, [wSelected]
+    cp a, 0
+    jr nz, .opt1
+    ld a, [wSwapABState]
+    cp a, BUTTON_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wSwapABState], a
+    ld [rSwapABState], a
+    jp EventLoopPostHandler
+:   xor a, a
+    ld [wSwapABState], a
+    ld [rSwapABState], a
+    jp EventLoopPostHandler
+
+.opt1
+    cp a, 1
+    jr nz, .opt2
+    ld a, [wRNGModeState]
+    cp a, RNG_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wRNGModeState], a
+    ld [rRNGModeState], a
+    jp EventLoopPostHandler
+:   xor a, a
+    ld [wRNGModeState], a
+    ld [rRNGModeState], a
+    jp EventLoopPostHandler
+
+.opt2
+    cp a, 2
+    jr nz, .opt3
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wRotModeState], a
+    ld [rRotModeState], a
+    jp EventLoopPostHandler
+:   xor a, a
+    ld [wRotModeState], a
+    ld [rRotModeState], a
+    jp EventLoopPostHandler
+
+.opt3
+    cp a, 3
+    jr nz, .opt4
+    ld a, [wDropModeState]
+    cp a, DROP_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wDropModeState], a
+    ld [rDropModeState], a
+    jp EventLoopPostHandler
+:   xor a, a
+    ld [wDropModeState], a
+    ld [rDropModeState], a
+    jp EventLoopPostHandler
+
+.opt4
+    cp a, 4
+    jr nz, .opt5
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wSpeedCurveState], a
+    ld [rSpeedCurveState], a
+    jp EventLoopPostHandler
+:   xor a, a
+    ld [wSpeedCurveState], a
+    ld [rSpeedCurveState], a
+    jp EventLoopPostHandler
+
+.opt5
+    cp a, 5
+    jr nz, .opt6
+    ld a, [wAlways20GState]
+    cp a, HIG_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wAlways20GState], a
+    ld [rAlways20GState], a
+    jp EventLoopPostHandler
+:   xor a, a
+    ld [wAlways20GState], a
+    ld [rAlways20GState], a
+    jp EventLoopPostHandler
+
+.opt6
+    jr IncrementLevel
+    jp EventLoopPostHandler
 
 IncrementLevel:
     ; Increment
@@ -171,7 +372,6 @@ IncrementLevel:
     ld a, h
     ldh [hStartSpeed+1], a
     jr CheckLevelRange
-
 
 CheckLevelRange:
     ; At end?
@@ -207,88 +407,188 @@ CheckLevelRange:
 
 
 TitleVBlankHandler::
-    ; Draw level.
-    ldh a, [hStartSpeed]
-    ld l, a
-    ldh a, [hStartSpeed+1]
-    ld h, a
-    ld a, [hl]
-    swap a
-    and a, $0F
-    ld b, a
-    ld a, TILE_0
-    add a, b
-    ld hl, TITLE_LEVEL+2
+    ld a, TILE_UNSELECTED
+    ld hl, TITLE_OPTION_0
+    ld [hl], a
+    ld hl, TITLE_OPTION_1
+    ld [hl], a
+    ld hl, TITLE_OPTION_2
+    ld [hl], a
+    ld hl, TITLE_OPTION_3
+    ld [hl], a
+    ld hl, TITLE_OPTION_4
+    ld [hl], a
+    ld hl, TITLE_OPTION_5
+    ld [hl], a
+    ld hl, TITLE_OPTION_6
     ld [hl], a
 
-    ldh a, [hStartSpeed]
-    ld l, a
-    ldh a, [hStartSpeed+1]
-    ld h, a
-    ld a, [hl]
-    and a, $0F
-    ld b, a
-    ld a, TILE_0
-    add a, b
-    ld hl, TITLE_LEVEL+3
-    ld [hl], a
-
-    ldh a, [hStartSpeed]
-    ld l, a
-    ldh a, [hStartSpeed+1]
-    ld h, a
-    inc hl
-    ld a, [hl]
-    swap a
-    and a, $0F
-    ld b, a
-    ld a, TILE_0
-    add a, b
-    ld hl, TITLE_LEVEL+0
-    ld [hl], a
-
-    ldh a, [hStartSpeed]
-    ld l, a
-    ldh a, [hStartSpeed+1]
-    ld h, a
-    inc hl
-    ld a, [hl]
-    and a, $0F
-    ld b, a
-    ld a, TILE_0
-    add a, b
-    ld hl, TITLE_LEVEL+1
-    ld [hl], a
-
-    ; Draw Mode
-    ld hl, TITLE_MODE
-    ldh a, [hSimulationMode]
-    sla a
-    add a, TILE_MODE_0
-    ld [hl+], a
-    inc a
-    ld [hl], a
-
-    ; Draw A/B
-    ldh a, [hSwapAB]
+    ld a, [wSelected]
+    ld hl, TITLE_OPTION_0
     cp a, 0
-    jr nz, :+
-    ld hl, TITLE_A
-    ld a, TILE_A
-    ld [hl+], a
-    inc hl
-    inc a
-    ld [hl], a
-    wait_vblank_end
-    jp EventLoop
+    jr z, :+
+    ld hl, TITLE_OPTION_1
+    cp a, 1
+    jr z, :+
+    ld hl, TITLE_OPTION_2
+    cp a, 2
+    jr z, :+
+    ld hl, TITLE_OPTION_3
+    cp a, 3
+    jr z, :+
+    ld hl, TITLE_OPTION_4
+    cp a, 4
+    jr z, :+
+    ld hl, TITLE_OPTION_5
+    cp a, 5
+    jr z, :+
+    ld hl, TITLE_OPTION_6
 
-:   ld hl, TITLE_A
-    ld a, TILE_B
-    ld [hl+], a
-    inc hl
-    dec a
+:   ld a, TILE_SELECTED
     ld [hl], a
-    wait_vblank_end
+
+    ; Draw option 0.
+    xor a, a
+    ld b, a
+    ld a, [wSwapABState]
+    rlc a
+    rlc a
+    ld c, a
+    ld hl, sOption0
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_OPTION_0+TITLE_OPTION_OFFSET
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Draw option 1.
+    xor a, a
+    ld b, a
+    ld a, [wRNGModeState]
+    rlc a
+    rlc a
+    ld c, a
+    ld hl, sOption1
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_OPTION_1+TITLE_OPTION_OFFSET
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Draw option 2.
+    xor a, a
+    ld b, a
+    ld a, [rRotModeState]
+    rlc a
+    rlc a
+    ld c, a
+    ld hl, sOption2
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_OPTION_2+TITLE_OPTION_OFFSET
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Draw option 3.
+    xor a, a
+    ld b, a
+    ld a, [rDropModeState]
+    rlc a
+    rlc a
+    ld c, a
+    ld hl, sOption3
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_OPTION_3+TITLE_OPTION_OFFSET
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Draw option 5.
+    xor a, a
+    ld b, a
+    ld a, [wSpeedCurveState]
+    rlc a
+    rlc a
+    ld c, a
+    ld hl, sOption4
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_OPTION_4+TITLE_OPTION_OFFSET
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Draw option 5.
+    xor a, a
+    ld b, a
+    ld a, [wAlways20GState]
+    rlc a
+    rlc a
+    ld c, a
+    ld hl, sOption5
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_OPTION_5+TITLE_OPTION_OFFSET
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Draw option 6.
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_OPTION_6+TITLE_OPTION_OFFSET+2
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld a, [hl]
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_OPTION_6+TITLE_OPTION_OFFSET+3
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    inc hl
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_OPTION_6+TITLE_OPTION_OFFSET+0
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    inc hl
+    ld a, [hl]
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_OPTION_6+TITLE_OPTION_OFFSET+1
+    ld [hl], a
     jp EventLoop
 
 

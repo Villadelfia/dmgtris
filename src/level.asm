@@ -345,6 +345,15 @@ DoSpeedUp:
     ldh [hSpeedCurvePtr], a
     ld a, h
     ldh [hSpeedCurvePtr+1], a
+
+    ; Do we want to force 20G?
+    ld a, [wAlways20GState]
+    cp a, 0
+    ret z
+    ld a, 20
+    ldh [hCurrentGravityPerTick], a
+    ld a, 1
+    ldh [hCurrentFramesPerGravityTick], a
     ret
 
 

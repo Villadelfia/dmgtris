@@ -63,13 +63,22 @@ SwitchToGameplay::
     ld bc, GameplayTilemapEnd - GameplayTilemap
     call UnsafeMemCopy
 
-    ; Place a tell on the screen for mode.
-    ld hl, FIELD_MODE
-    ldh a, [hSimulationMode]
-    sla a
-    add a, TILE_MODE_FAINT_0
-    ld [hl+], a
-    inc a
+    ; Place a tell on the screen for modes.
+    ld hl, FIELD_RNG
+    ld a, [wRNGModeState]
+    add a, TILE_RNG_MODE_BASE
+    ld [hl], a
+    ld hl, FIELD_ROT
+    ld a, [wRotModeState]
+    add a, TILE_ROT_MODE_BASE
+    ld [hl], a
+    ld hl, FIELD_DROP
+    ld a, [wDropModeState]
+    add a, TILE_DROP_MODE_BASE
+    ld [hl], a
+    ld hl, FIELD_HIG
+    ld a, [wAlways20GState]
+    add a, TILE_HIG_MODE_BASE
     ld [hl], a
 
     ; Clear OAM.
@@ -214,7 +223,7 @@ fetchPieceMode:
     ; Check if IRS is requested.
     ; Apply the rotation if so.
 .checkIRSA
-    ldh a, [hSwapAB]
+    ld a, [wSwapABState]
     cp a, 0
     jr z, .lda1
 .ldb1
@@ -237,7 +246,7 @@ fetchPieceMode:
     call SFXEnqueue
 
 .checkIRSB
-    ldh a, [hSwapAB]
+    ld a, [wSwapABState]
     cp a, 0
     jr z, .ldb2
 .lda2
@@ -530,7 +539,7 @@ DoHold:
     ; Check if IRS is requested.
     ; Apply the rotation if so.
 .checkIRSHA
-    ldh a, [hSwapAB]
+    ld a, [wSwapABState]
     cp a, 0
     jr z, .lda3
 .ldb3
@@ -554,7 +563,7 @@ DoHold:
     jr .doHoldOperation
 
 .checkIRSHB
-    ldh a, [hSwapAB]
+    ld a, [wSwapABState]
     cp a, 0
     jr z, .ldb4
 .lda4

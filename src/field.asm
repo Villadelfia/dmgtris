@@ -781,7 +781,7 @@ FieldProcess::
     ; HANDLE ROTATION
     ; Want rotate CCW?
 .wantrotccw
-    ldh a, [hSwapAB]
+    ld a, [wSwapABState]
     cp a, 0
     jr z, .ldb1
 .lda1
@@ -800,7 +800,7 @@ FieldProcess::
 
     ; Want rotate CW?
 .wantrotcw
-    ldh a, [hSwapAB]
+    ld a, [wSwapABState]
     cp a, 0
     jr z, .lda2
 .ldb2
@@ -862,13 +862,9 @@ FieldProcess::
     ; I piece only kicks in TGM3/TGW3/EASY/EAWY
     cp a, PIECE_I
     jr nz, :+
-    ldh a, [hSimulationMode]
-    cp a, MODE_TGM1
-    jp z, .norot
-    cp a, MODE_TGM2
-    jp z, .norot
-    cp a, MODE_HELL
-    jp z, .norot
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_ARSTI
+    jp nz, .norot
     jr .trykickright
 
     ; T/L/J only kick if not through the middle axis.
@@ -948,13 +944,9 @@ FieldProcess::
 
     ; In TGM3, TGW3, EASY, and EAWY modes, there are a few other kicks possible.
 .maybetgm3rot
-    ldh a, [hSimulationMode]
-    cp a, MODE_TGM1
-    jp z, .norot
-    cp a, MODE_TGM2
-    jp z, .norot
-    cp a, MODE_HELL
-    jp z, .norot
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_ARSTI
+    jp nz, .norot
 
     ; In the case of a T piece, try the space above.
 .checkt
@@ -1179,16 +1171,10 @@ FieldProcess::
     jr z, .postdrop
 
     ; What kind, if any?
-    ldh a, [hSimulationMode]
-    cp a, MODE_TGM1
+    ld a, [wDropModeState]
+    cp a, DROP_MODE_NONE
     jr z, .postdrop
-    cp a, MODE_HELL
-    jr z, .postdrop
-    cp a, MODE_TGW2
-    jr z, .harddrop
-    cp a, MODE_TGW3
-    jr z, .harddrop
-    cp a, MODE_EAWY
+    cp a, DROP_MODE_HARD
     jr z, .harddrop
 
     ; Sonic drop.
@@ -1793,10 +1779,8 @@ FieldDelay::
     ; Check if we are in a TGM3 mode and thus need to handle line counts of 3 and 4 differently.
     ldh a, [hLineClearCt]
     ld e, a
-    ldh a, [hSimulationMode]
-    cp a, MODE_TGM3
-    jr z, .modifylines
-    cp a, MODE_TGW3
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_ARSTI
     jr z, .modifylines
     jr .applylines
 .modifylines

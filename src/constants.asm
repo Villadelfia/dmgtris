@@ -89,10 +89,31 @@ sPause::
     db " P A U S E"
     db "P A U S E "
     db " P A U S E"
-sEaster0:: db $D4, $D6, $D8, $DA, $DC
-sEaster1:: db $D5, $D7, $D9, $DB, $DD
-sEaster2:: db $DE, $E0, $D8, $DA, $DC
-sEaster3:: db $DF, $E1, $D9, $DB, $DD
+sOption0::
+    db "NORM"
+    db " INV"
+sOption1::
+    db "TGM1"
+    db "TGM2"
+    db "TGM3"
+    db "HELL"
+    db " NES"
+sOption2::
+    db "ARS1"
+    db "ARS2"
+sOption3::
+    db "SNIC"
+    db "HARD"
+    db "NONE"
+sOption4::
+    db "DMGT"
+sOption5::
+    db "  NO"
+    db " YES"
+sEaster0:: db $C4, $C6, $C8, $CA, $CC
+sEaster1:: db $C5, $C7, $C9, $CB, $CD
+sEaster2:: db $CE, $D0, $C8, $CA, $CC
+sEaster3:: db $CF, $D1, $C9, $CB, $CD
 sPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
     db 0, 8, 16, 24 ; I
     db 0, 8, 8, 16  ; Z

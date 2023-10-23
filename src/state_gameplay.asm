@@ -107,7 +107,7 @@ SwitchToGameplay::
     ; Leady mode.
     ld a, MODE_LEADY
     ldh [hMode], a
-    ld a, LEADY_GO_TIME
+    ld a, LEADY_TIME
     ldh [hModeCounter], a
 
     ; Install the event loop handlers.
@@ -152,16 +152,17 @@ GamePlayEventLoopHandler::
     ; Draw "READY" and wait a bit.
 leadyMode:
     ldh a, [hModeCounter]
-    cp a, LEADY_GO_TIME
+    cp a, LEADY_TIME
     jr nz, :+
     call SFXKill
     ld a, SFX_READY_GO
     call SFXEnqueue
+    ldh a, [hModeCounter]
 :   dec a
     jr nz, :+
     ld a, MODE_GO
     ldh [hMode], a
-    ld a, LEADY_GO_TIME
+    ld a, GO_TIME
 :   ldh [hModeCounter], a
     ld de, sLeady
     ld hl, wField+(14*10)
@@ -476,7 +477,7 @@ gameOverMode:
     ldh [hHoldSpent], a
     ld a, MODE_LEADY
     ldh [hMode], a
-    ld a, LEADY_GO_TIME
+    ld a, LEADY_TIME
     ldh [hModeCounter], a
     jr drawStaticInfo
 

@@ -555,6 +555,7 @@ DoHold:
     ldh [hCurrentPieceRotationState], a
     ld a, SFX_IRS
     call SFXEnqueue
+    jr .doHoldOperation
 
 .checkIRSHB
     ldh a, [hSwapAB]

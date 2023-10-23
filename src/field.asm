@@ -29,7 +29,9 @@ DEF DELAY_STATE_ARE             EQU 2
 
 SECTION "Field Variables", WRAM0
 wField:: ds (10*24)
+wBackupField:: ds (10*24)
 wShadowField:: ds (14*26)
+wDelayState: ds 1
 
 
 SECTION "High Field Variables", HRAM
@@ -46,7 +48,6 @@ hWantX: ds 1
 hYPosAtStartOfFrame: ds 1
 hWantRotation: ds 1
 hRemainingDelay:: ds 1
-hDelayState: ds 1
 hClearedLines: ds 4
 hLineClearCt: ds 1
 hComboCt: ds 1
@@ -54,10 +55,13 @@ hLockDelayForce: ds 1
 hHighestStack: ds 1
 hDownFrames: ds 1
 hStalePiece: ds 1
+hBravo: ds 1
 
 
 SECTION "Field Functions", ROM0
 FieldInit::
+    xor a, a
+    ldh [hBravo], a
     ld a, 23
     ldh [hHighestStack], a
     ld a, 1
@@ -513,7 +517,7 @@ TrySpawnPiece::
     ld a, $FF
     ldh [hRemainingDelay], a
     ld a, DELAY_STATE_DETERMINE_DELAY
-    ldh [hDelayState], a
+    ld [wDelayState], a
 
     ; Copy the field to the shadow field.
     call ToShadowField
@@ -1658,7 +1662,8 @@ GetTileShade:
 
 
 FieldDelay::
-    ldh a, [hDelayState]
+    ; Switch on the delay state.
+    ld a, [wDelayState]
     cp DELAY_STATE_DETERMINE_DELAY
     jr z, .determine
     cp DELAY_STATE_LINE_CLEAR
@@ -1666,6 +1671,9 @@ FieldDelay::
     cp DELAY_STATE_ARE
     jr z, .are
 
+    ; Check if there were line clears.
+    ; If so, we need to do a line clear delay.
+    ; Otherwise, we skip to ARE delay.
 .determine
     call FindClearedLines
     ldh a, [hClearedLines]
@@ -1679,21 +1687,23 @@ FieldDelay::
     and a, c
     and a, d
     cp a, $FF
-    jr z, .skip
-    ld a, DELAY_STATE_LINE_CLEAR
-    ldh [hDelayState], a
+    jr z, .skip ; If there were no line clears, skip to ARE delay.
+    ld a, DELAY_STATE_LINE_CLEAR ; Otherwise, do a line clear delay.
+    ld [wDelayState], a
     ldh a, [hCurrentLineClearDelay]
     ldh [hRemainingDelay], a
     call MarkClear
     jr .lineclear
 .skip
-    ld a, DELAY_STATE_ARE
-    ldh [hDelayState], a
+    ld a, DELAY_STATE_ARE ; If there were no line clears, do an ARE delay.
+    ld [wDelayState], a
     ldh a, [hCurrentARE]
     ldh [hRemainingDelay], a
     jr .are
 
 
+    ; Line clear delay.
+    ; Count doen the delay. If we're out of delay, clear the lines and go to ARE.
 .lineclear
     ldh a, [hRemainingDelay]
     dec a
@@ -1707,10 +1717,12 @@ FieldDelay::
     call SFXEnqueue
 
     ld a, DELAY_STATE_ARE
-    ldh [hDelayState], a
+    ld [wDelayState], a
     ldh a, [hCurrentARE]
     ldh [hRemainingDelay], a
 
+    ; ARE delay.
+    ; Count down the delay. If it hits 0, award levels and score if necessary, then end the delay phase.
 .are
     ldh a, [hRemainingDelay]
     dec a
@@ -1718,12 +1730,17 @@ FieldDelay::
     cp a, 0
     ret nz
 
-    ; If we're out of delay, spawn a new piece.
+    ; Increment bravo by 4.
+    ldh a, [hBravo]
+    add a, 4
+    ldh [hBravo], a
+
+    ; Check if there were any line clears.
     call SFXKill
     ldh a, [hLineClearCt]
     cp a, 0
-    jr nz, :+
-    ld a, 1
+    jr nz, :+ ; If there were, award levels and score.
+    ld a, 1 ; Otherwise, increment the level counter by one if it's not at a breakpoint, and end the delay phase.
     ldh [hComboCt], a
     ldh a, [hRequiresLineClear]
     cp a, $FF
@@ -1732,8 +1749,22 @@ FieldDelay::
     call LevelUp
     ret
 
+    ; There were line clears! Clear the level counter breakpoint.
 :   xor a, a
     ldh [hRequiresLineClear], a
+
+
+    ; Decrement bravo by 10 for each line clear.
+    ldh a, [hLineClearCt]
+    ld b, a
+    ldh a, [hBravo]
+:   sub a, 10
+    dec b
+    jr nz, :-
+    ldh [hBravo], a
+
+
+    ; Check if we are in a TGM3 mode and thus need to handle line counts of 3 and 4 differently.
     ldh a, [hLineClearCt]
     ld e, a
     ldh a, [hSimulationMode]
@@ -1755,47 +1786,71 @@ FieldDelay::
     inc a
     ld e, a
     ldh [hLineClearCt], a
+
+    ; Increment the level counter by the amount of lines.
 .applylines
     call LevelUp
-    ld c, a
+
+    ; Update the combo counter.
     ld b, a
-    ldh a, [hComboCt]
-    add b
-    add b
-    sub 2
+    ldh a, [hComboCt] ; Old combo count.
+    add b             ; + lines
+    add b             ; + lines
+    sub 2             ; - 2
     ldh [hComboCt], a
 
     ; Score the line clears.
-    xor a, a
-    ld b, a
+    ; Get the new level.
     ldh a, [hLevel]
     ld l, a
     ldh a, [hLevel+1]
     ld h, a
-    add hl, bc
+
+    ; Divide by 4.
     rrc h
     rr l
     rrc h
     rr l
+
+    ; Add 1.
     inc hl
+
+    ; Add soft drop points.
     ldh a, [hDownFrames]
     ld c, a
     xor a, a
     ld b, a
     add hl, bc
+
+    ; Copy the running total.
     ld b, h
     ld c, l
-    ldh a, [hComboCt]
-:   add hl, bc
-    dec a
+
+    ; Get a multiplier consisting of...
+    xor a, a
+    ld d, a
+
+    ldh a, [hBravo]       ; 4 if the field is empty and...
     cp a, 0
-    jr nz, :-
-    ldh a, [hLineClearCt]
+    jr nz, :+
+    ld a, 4
+    ld d, a
+
+:   ldh a, [hLineClearCt] ; The number of lines cleared and...
+    add a, d
+    ld d, a
+
+    ldh a, [hComboCt]     ; The combo count.
+    dec a
+    add a, d
+
+    ; Multiply the running total by the multiplier.
 :   add hl, bc
     dec a
     cp a, 0
     jr nz, :-
 
+    ; And apply the score.
     ld a, l
     ldh [hScoreIncrement], a
     ld a, h

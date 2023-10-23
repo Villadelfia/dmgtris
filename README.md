@@ -41,7 +41,9 @@ Soft = Amount of frames the down button was held during this piece + 10 if the p
 
 Combo = Old combo + (2 x Lines) - 2
 
-ScoreIncrement = ((Level + Lines) >> 4 + 1 + Soft) x Combo x Lines.
+Bravo = 1 if the field isn't empty, 4 if it is.
+
+ScoreIncrement = ((Level + Lines) >> 4 + 1 + Soft) x Combo x Lines x Bravo.
 
 ScoreIncrement points are then awarded.
 

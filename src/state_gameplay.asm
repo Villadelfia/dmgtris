@@ -39,7 +39,7 @@ hCurrentPiece:: ds 1
 hCurrentPieceX:: ds 1
 hCurrentPieceY:: ds 1
 hCurrentPieceRotationState:: ds 1
-hHeldPiece: ds 1
+hHeldPiece:: ds 1
 hHoldSpent:: ds 1
 hSkipJingle: ds 1
 hMode: ds 1
@@ -91,9 +91,7 @@ SwitchToGameplay::
     call LevelInit
     call FieldInit
 
-    ; We don't start with a held piece.
-    ld a, PIECE_NONE
-    ldh [hHeldPiece], a
+    ; We don't start with hold spent.
     xor a, a
     ldh [hHoldSpent], a
 
@@ -464,8 +462,6 @@ gameOverMode:
     call ScoreInit
     call LevelInit
     call FieldInit
-    ld a, PIECE_NONE
-    ldh [hHeldPiece], a
     xor a, a
     ldh [hHoldSpent], a
     ld a, MODE_LEADY
@@ -586,18 +582,7 @@ DoHold:
     ldh [hCurrentPieceRotationState], a
 
 .doHoldOperation
-    ; If we're not holding a piece, hold the current piece and get a new one.
-    ldh a, [hHeldPiece]
-    cp a, PIECE_NONE
-    jr nz, :+
-    ldh a, [hCurrentPiece]
-    ldh [hHeldPiece], a
-    ldh a, [hNextPiece]
-    ldh [hCurrentPiece], a
-    call GetNextPiece
-    ret
-
-:   ld b, a
+    ld b, a
     ldh a, [hCurrentPiece]
     ldh [hHeldPiece], a
     ld a, b

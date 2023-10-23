@@ -64,6 +64,10 @@ RNGInit::
     ld bc, 7
     call UnsafeMemCopy
 
+    ; Start with a random piece held.
+    call Next7Piece
+    ldh [hHeldPiece], a
+
     ; If we're in HELL mode, we don't care about anything but a random piece to start with.
     ldh a, [hSimulationMode]
     cp a, MODE_HELL

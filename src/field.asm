@@ -73,16 +73,28 @@ FieldInit::
     ld hl, wShadowField
     ld bc, 14*26
     ld d, $FF
-    call UnsafeMemSet
-    ret
+    jp UnsafeMemSet
 
 
 FieldClear::
     ld hl, wField
     ld bc, 10*24
     ld d, TILE_FIELD_EMPTY
-    call UnsafeMemSet
-    ret
+    jp UnsafeMemSet
+
+
+ToBackupField::
+    ld hl, wBackupField
+    ld de, wField
+    ld bc, 10*24
+    jp UnsafeMemCopy
+
+
+FromBackupField::
+    ld hl, wField
+    ld de, wBackupField
+    ld bc, 10*24
+    jp UnsafeMemCopy
 
 
 ToShadowField::

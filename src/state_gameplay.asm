@@ -293,6 +293,7 @@ pieceInMotionMode:
     ldh a, [hStartState]
     cp a, 1
     jr nz, :+
+    call ToBackupField
     ldh a, [hMode]
     ldh [hPrePause], a
     ld a, MODE_PAUSED
@@ -336,6 +337,7 @@ delayMode:
     ldh a, [hStartState]
     cp a, 1
     jr nz, :+
+    call ToBackupField
     ldh a, [hMode]
     ldh [hPrePause], a
     ld a, MODE_PAUSED
@@ -482,15 +484,13 @@ pauseMode:
     ldh a, [hStartState]
     cp a, 1
     jr nz, :+
+    call FromBackupField
     ldh a, [hPrePause]
     ldh [hMode], a
     jr drawStaticInfo
 
-    ; Draw PAUSE all over the field, but not if we came from delay mode.
-:   ldh a, [hPrePause]
-    cp a, MODE_DELAY
-    jr z, drawStaticInfo
-    ld de, sPause
+    ; Draw PAUSE all over the field.
+:   ld de, sPause
     ld hl, wField+(4*10)
     ld bc, 200
     call UnsafeMemCopy

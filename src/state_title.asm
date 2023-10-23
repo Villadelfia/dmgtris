@@ -39,7 +39,7 @@ SwitchToTitle::
     call UnsafeMemCopy
 
     ; Little easter egg.
-    ldh a, [hInitialA]
+    ld a, [wInitialA]
     cp a, $FF
     jr nz, :+
     ld de, sEaster0

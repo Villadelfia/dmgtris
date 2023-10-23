@@ -100,6 +100,7 @@ TitleEventLoopHandler::
     xor a, a
 .write
     ldh [hSimulationMode], a
+    ld [rSimulationMode], a
     jp EventLoopPostHandler
 
     ; Start game?
@@ -125,6 +126,7 @@ TitleEventLoopHandler::
     ldh a, [hSwapAB]
     cpl
     ldh [hSwapAB], a
+    ld [rSwapAB], a
     jp EventLoopPostHandler
 
     ; Start level up?

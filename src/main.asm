@@ -40,6 +40,12 @@ wInitialH:: ds 1
 wInitialL:: ds 1
 
 
+SECTION "Persistent Globals", SRAM
+rMagic:: ds 3
+rSwapAB:: ds 1
+rSimulationMode:: ds 1
+
+
 SECTION "Stack", WRAM0
 wStack::
     ds STACK_SIZE + 1
@@ -82,11 +88,44 @@ Main::
     call SetNumberSpritePositions
     call CopyOAMHandler
 
-    ; Zero out the ram where needed.
+    ; Enable RAM. (Not actually needed since we don't ACTUALLY use an MBC, but without this emulators shit the bed.)
+    ld hl, rRAMG
+    ld a, CART_SRAM_ENABLE
+    ld [hl], a
+
+    ; Check for save data.
+    ld a, [rMagic]
+    cp a, "T"
+    jr nz, .nosavedata
+    ld a, [rMagic+1]
+    cp a, "G"
+    jr nz, .nosavedata
+    ld a, [rMagic+1]
+    cp a, "M"
+    jr nz, .nosavedata
+
+.savedata
+    ld a, [rSwapAB]
+    ldh [hSwapAB], a
+    ld a, [rSimulationMode]
+    ldh [hSimulationMode], a
+    jr .otherinit
+
+.nosavedata
+    ld a, "T"
+    ld [rMagic], a
+    ld a, "G"
+    ld [rMagic+1], a
+    ld a, "M"
+    ld [rMagic+2], a
     xor a, a
     ldh [hSwapAB], a
+    ld [rSwapAB], a
     ld a, MODE_TGM2
     ldh [hSimulationMode], a
+    ld [rSimulationMode], a
+
+.otherinit
     ld hl, sSpeedCurve
     ld a, l
     ldh [hStartSpeed], a

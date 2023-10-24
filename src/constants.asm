@@ -110,10 +110,14 @@ sOption4::
 sOption5::
     db "  NO"
     db " YES"
-sEaster0:: db $C4, $C6, $C8, $CA, $CC
-sEaster1:: db $C5, $C7, $C9, $CB, $CD
-sEaster2:: db $CE, $D0, $C8, $CA, $CC
-sEaster3:: db $CF, $D1, $C9, $CB, $CD
+sEasterM0:: db $C4, $C6, $C8, $CA, $CC ; MGB
+sEasterM1:: db $C5, $C7, $C9, $CB, $CD
+sEasterC0:: db $CE, $D0, $C8, $CA, $CC, $72, $74, $76, $78, $7A, $D6, $D7 ; CGB
+sEasterC1:: db $CF, $D1, $C9, $CB, $CD
+sEasterA0:: db $D2, $D4, $C8, $CA, $CC, $72, $74, $76, $78, $7A, $D6, $D7 ; AGB
+sEasterA1:: db $D3, $D5, $C9, $CB, $CD
+sEasterS0:: db $F6, $F8, $C8, $CA, $CC ; SGB
+sEasterS1:: db $F7, $F9, $C9, $CB, $CD
 sPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
     db 0, 8, 16, 24 ; I
     db 0, 8, 8, 16  ; Z

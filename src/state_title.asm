@@ -42,30 +42,63 @@ SwitchToTitle::
     ld bc, TitleScreenTilemapEnd - TitleScreenTilemap
     call UnsafeMemCopy
 
-    ; Little easter egg.
-    ld a, [wInitialA]
-    cp a, $FF
-    jr nz, :+
-    ld de, sEaster0
+    ; Title screen easter egg.
+    ld a, [wInitialC]
+    cp a, $14
+    jr nz, .notsgb
+    ld de, sEasterS0
     ld hl, EASTER_0
     ld bc, 5
     call UnsafeMemCopy
-    ld de, sEaster1
+    ld de, sEasterS1
     ld hl, EASTER_1
     ld bc, 5
     call UnsafeMemCopy
     jr .oam
 
-:   cp a, $11
-    jr nz, .oam
-    ld de, sEaster2
+.notsgb
+    ld a, [wInitialA]
+    cp a, $FF
+    jr nz, .notmgb
+    ld de, sEasterM0
     ld hl, EASTER_0
     ld bc, 5
     call UnsafeMemCopy
-    ld de, sEaster3
+    ld de, sEasterM1
     ld hl, EASTER_1
     ld bc, 5
     call UnsafeMemCopy
+    jr .oam
+
+.notmgb
+    ld a, [wInitialA]
+    cp a, $11
+    jr nz, .noegg
+
+    ld a, [wInitialB]
+    bit 0, a
+    jr nz, .agb
+    ld de, sEasterC0
+    ld hl, EASTER_0
+    ld bc, 12
+    call UnsafeMemCopy
+    ld de, sEasterC1
+    ld hl, EASTER_1
+    ld bc, 5
+    call UnsafeMemCopy
+    jr .oam
+
+.agb
+    ld de, sEasterA0
+    ld hl, EASTER_0
+    ld bc, 12
+    call UnsafeMemCopy
+    ld de, sEasterA1
+    ld hl, EASTER_1
+    ld bc, 5
+    call UnsafeMemCopy
+    jr .oam
+.noegg
 
     ; Clear OAM.
 .oam

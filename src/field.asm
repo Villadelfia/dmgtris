@@ -1348,6 +1348,13 @@ FieldProcess::
     ldh a, [hDownState]
     cp a, 0
     jr z, .dontforcelock
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 20
+    jr nz, .forcelock
+    ldh a, [hDownState]
+    cp a, 1
+    jr nz, .dontforcelock
+
 
     ; Set the lock delay to 0 and save it.
 .forcelock
@@ -1396,16 +1403,20 @@ FieldProcess::
     ; If the piece is locked, skip the ghost piece.
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
-    jr z, :+
+    jr z, .postghost
 
     ; If the gravity is <= 1G, draw a ghost piece.
     ldh a, [hWantedG]
     cp a, 1
-    jr nz, :+
+    jr nz, .postghost
+    ld a, [wInitialA]
+    cp a, $11
+    jr z, .ghost
     ldh a, [hEvenFrame]
     cp a, 1
     jr nz, :+
 
+.ghost
     ldh a, [hYPosAtStartOfFrame]
     ld b, a
     ldh a, [hActualG]
@@ -1425,7 +1436,8 @@ FieldProcess::
     call DrawPiece
 
     ; If the lock delay is at the highest value, draw the piece normally.
-:   ldh a, [hCurrentPiece]
+.postghost
+    ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b
     ldh [hWantedTile], a

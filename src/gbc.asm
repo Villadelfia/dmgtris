@@ -64,7 +64,7 @@ ToATTR::
     ldh [rHDMA3], a
     ld a, LOW($9800)
     ldh [rHDMA4], a
-    ld a, 39
+    ld a, 40
     ldh [rHDMA5], a
     ld a, 0
     ldh [rVBK], a
@@ -83,7 +83,7 @@ ToVRAM::
     ldh [rHDMA3], a
     ld a, LOW($9800)
     ldh [rHDMA4], a
-    ld a, 39
+    ld a, 40
     ldh [rHDMA5], a
 
 
@@ -734,9 +734,38 @@ GBCGameplayProcess::
     cp a, $11
     ret nz
 
+    ; 20G?
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 20
+    jr nz, :+
+
+    ld a, $00
+    ld d, a
+    ld hl, wShadowTileAttrs
+    ld bc, 32-12
+
+    ld a, 21
+    ld [wOuterReps], a
+.outer0
+    ld a, 12
+    ld [wInnerReps], a
+.inner0
+    ld [hl], d
+    inc hl
+    ld a, [wInnerReps]
+    dec a
+    ld [wInnerReps], a
+    jr nz, .inner0
+
+    add hl, bc
+    ld a, [wOuterReps]
+    dec a
+    ld [wOuterReps], a
+    jr nz, .outer0
+
 
     ; What to copy
-    ld de, wField + 40
+:   ld de, wField + 40
     ; Where to put it
     ld hl, wShadowTilemap + 1
     ; How much to increment hl after each row

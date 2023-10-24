@@ -12,6 +12,7 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - Scoring is a hybrid between TGM1 and TGM2.
 - A speed curve reminiscent of TGM, starting slightly faster and skipping the awkward speed reset. The game continues infinitely... But so does the speed increase.
 - A rock solid 60FPS with a traditional 20x10 grid.
+- Game boy color mode.
 
 
 ## Options
@@ -35,7 +36,9 @@ Select the rotation rules:
 Select whether up performs a sonic drop, a hard drop, or nothing at all.
 
 ### Speed Curve
-Select between several speed curves including the DMGTRIS default speed curve, TGM1, 2, and 3, as well as DEATH and SHIRASE mode. Note that all modes use the same scoring and they are all infinite.
+Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all.
+
+Note that all modes use the same scoring and they are all infinite.
 
 ### Always 20G
 Whether you want instant-drop gravity to be active at any level.
@@ -96,10 +99,6 @@ Please do not try running it on older emulators such as VBA, since this game use
 
 ## Building
 The game can be built using gnu make and the RGBDS toolchain.
-
-
-## Issues
-- In very rare cases the frame time in TGM3 and TGW3 modes can be exceeded due to the way the RNG for those modes works. When this happens, the screen will appear slightly glitched for 1 frame but no frame drops will occur. This issues is fundamentally impossible to completely avoid though more optimization may cause it to occur less frequently.
 
 
 ## License

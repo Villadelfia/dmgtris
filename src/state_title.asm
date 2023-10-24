@@ -441,10 +441,6 @@ GetEnd:
     jr nz, :+
     ld bc, sTGM1SpeedCurveEnd
     ret
-:   cp a, SCURVE_TGM2
-    jr nz, :+
-    ld bc, sTGM2SpeedCurveEnd
-    ret
 :   cp a, SCURVE_TGM3
     jr nz, :+
     ld bc, sTGM3SpeedCurveEnd
@@ -453,7 +449,11 @@ GetEnd:
     jr nz, :+
     ld bc, sDEATSpeedCurveEnd
     ret
-:   ld bc, sSHIRSpeedCurveEnd
+:   cp a, SCURVE_SHIR
+    jr nz, :+
+    ld bc, sSHIRSpeedCurveEnd
+    ret
+:   ld bc, sCHILSpeedCurveEnd
     ret
 
 GetStart:
@@ -466,19 +466,19 @@ GetStart:
     jr nz, :+
     ld hl, sTGM1SpeedCurve
     ret
-:   cp a, SCURVE_TGM2
-    jr nz, :+
-    ld hl, sTGM2SpeedCurve
-    ret
 :   cp a, SCURVE_TGM3
     jr nz, :+
-    ld hl, sTGM2SpeedCurve
+    ld hl, sTGM3SpeedCurve
     ret
 :   cp a, SCURVE_DEAT
     jr nz, :+
     ld hl, sDEATSpeedCurve
     ret
-:   ld hl, sSHIRSpeedCurve
+:   cp a, SCURVE_SHIR
+    jr nz, :+
+    ld hl, sSHIRSpeedCurve
+    ret
+:   ld hl, sCHILSpeedCurve
     ret
 
 CheckLevelRange:

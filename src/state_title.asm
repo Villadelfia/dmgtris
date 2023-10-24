@@ -114,6 +114,9 @@ SwitchToTitle::
     ; GBC init
     call GBCTitleInit
 
+    ; Make sure the speed curve is aimed at the right place.
+    call InitSpeedCurve
+
     ; Install the event loop handlers.
     ld a, 0
     ldh [hGameState], a
@@ -261,10 +264,12 @@ DecrementOption:
     dec a
     ld [wSpeedCurveState], a
     ld [rSpeedCurveState], a
+    call InitSpeedCurve
     jp EventLoopPostHandler
 :   ld a, SCURVE_COUNT-1
     ld [wSpeedCurveState], a
     ld [rSpeedCurveState], a
+    call InitSpeedCurve
     jp EventLoopPostHandler
 
 .opt5
@@ -372,10 +377,12 @@ IncrementOption:
     inc a
     ld [wSpeedCurveState], a
     ld [rSpeedCurveState], a
+    call InitSpeedCurve
     jp EventLoopPostHandler
 :   xor a, a
     ld [wSpeedCurveState], a
     ld [rSpeedCurveState], a
+    call InitSpeedCurve
     jp EventLoopPostHandler
 
 .opt5
@@ -411,30 +418,96 @@ IncrementLevel:
     ldh [hStartSpeed+1], a
     jr CheckLevelRange
 
+InitSpeedCurve:
+    ld a, [wSpeedCurveState]
+    cp a, 0
+    jr nz, :+
+    ld hl, sSpeedCurve
+    jr .set
+:   cp a, 1
+    jr nz, :+
+    ld hl, sTGM1SpeedCurve
+    jr .set
+:   cp a, 2
+    jr nz, :+
+    ld hl, sDEATSpeedCurve
+    jr .set
+:   ld hl, sSHIRSpeedCurve
+
+.set
+    ld a, l
+    ldh [hStartSpeed], a
+    ld a, h
+    ldh [hStartSpeed+1], a
+    ret
+
+
+
+GetEnd:
+    ld a, [wSpeedCurveState]
+    cp a, 0
+    jr nz, :+
+    ld bc, sSpeedCurveEnd
+    ret
+:   cp a, 1
+    jr nz, :+
+    ld bc, sTGM1SpeedCurveEnd
+    ret
+:   cp a, 2
+    jr nz, :+
+    ld bc, sDEATSpeedCurveEnd
+    ret
+:   ld bc, sSHIRSpeedCurveEnd
+    ret
+
+GetStart:
+    ld a, [wSpeedCurveState]
+    cp a, 0
+    jr nz, :+
+    ld hl, sSpeedCurve
+    ret
+:   cp a, 1
+    jr nz, :+
+    ld hl, sTGM1SpeedCurve
+    ret
+:   cp a, 2
+    jr nz, :+
+    ld hl, sDEATSpeedCurve
+    ret
+:   ld hl, sSHIRSpeedCurve
+    ret
+
 CheckLevelRange:
     ; At end?
-    ld bc, sSpeedCurveEnd
+    call GetEnd
     ldh a, [hStartSpeed]
     cp a, c
     jr nz, .notatend
     ldh a, [hStartSpeed+1]
     cp a, b
     jr nz, .notatend
-    ld hl, sSpeedCurve
+    call GetStart
     ld a, l
     ldh [hStartSpeed], a
     ld a, h
     ldh [hStartSpeed+1], a
 
 .notatend
-    ld bc, sSpeedCurve-12
+    ld de, -12
+
+    call GetStart
+    add hl, de
     ldh a, [hStartSpeed]
-    cp a, c
+    cp a, l
     jr nz, .notatstart
     ldh a, [hStartSpeed+1]
-    cp a, b
+    cp a, h
     jr nz, .notatstart
-    ld hl, sSpeedCurveEnd-12
+
+    call GetEnd
+    ld h, b
+    ld l, c
+    add hl, de
     ld a, l
     ldh [hStartSpeed], a
     ld a, h

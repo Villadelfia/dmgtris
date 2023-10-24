@@ -187,7 +187,6 @@ sfx_names = [
     "sSFXLevelLock",
     "sSFXLevelUp",
     "sSFXRankUp",
-    "sSFXIHS",
     "sSFXReadyGo",
 ]
 

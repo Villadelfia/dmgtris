@@ -41,10 +41,10 @@ hCurrentPieceY:: ds 1
 hCurrentPieceRotationState:: ds 1
 hHeldPiece:: ds 1
 hHoldSpent:: ds 1
-hSkipJingle: ds 1
 hMode: ds 1
 hModeCounter: ds 1
 hPrePause: ds 1
+hRequestedJingle: ds 1
 
 
 SECTION "Gameplay Functions", ROM0
@@ -158,7 +158,7 @@ leadyMode:
     cp a, LEADY_TIME
     jr nz, :+
     call SFXKill
-    ld a, SFX_READY_GO
+    ld a, SFX_READYGO
     call SFXEnqueue
     ldh a, [hModeCounter]
 :   dec a
@@ -205,12 +205,13 @@ postGoMode:
     ; Fetch the next piece.
 prefetchedPieceMode:
     ; A piece will spawn in the middle, at the top of the screen, not rotated by default.
+    ld a, $FF
+    ldh [hRequestedJingle], a
     ld a, 5
     ldh [hCurrentPieceX], a
     ld a, 3
     ldh [hCurrentPieceY], a
     xor a, a
-    ldh [hSkipJingle], a
     ldh [hCurrentPieceRotationState], a
     ldh [hHoldSpent], a
 
@@ -219,10 +220,14 @@ prefetchedPieceMode:
 .checkIHS
     ldh a, [hSelectState]
     cp a, 0
-    jr z, .checkIRSA
+    jr z, .loaddefaultjingle
     call DoHold
-    ; Holding does its own IRS check.
-    jr .checkJingle
+    jr .postjingle
+
+    ; Enqueue the jingle.
+.loaddefaultjingle
+    ldh a, [hNextPiece]
+    ldh [hRequestedJingle], a
 
     ; Check if IRS is requested.
     ; Apply the rotation if so.
@@ -246,8 +251,12 @@ prefetchedPieceMode:
 .cp1
     ld a, 3
     ldh [hCurrentPieceRotationState], a
+    ldh a, [hNextPiece]
+    ld b, a
     ld a, SFX_IRS
-    call SFXEnqueue
+    or a, b
+    ldh [hRequestedJingle], a
+    jr .postjingle
 
 .checkIRSB
     ld a, [wSwapABState]
@@ -256,33 +265,27 @@ prefetchedPieceMode:
 .lda2
     ldh a, [hAState]
     cp a, 0
-    jr z, .checkJingle
+    jr z, .postjingle
     ld a, $FF
     ldh [hAState], a
     jr .cp2
 .ldb2
     ldh a, [hBState]
     cp a, 0
-    jr z, .checkJingle
+    jr z, .postjingle
     ld a, $FF
     ldh [hBState], a
 .cp2
     ld a, 1
     ldh [hCurrentPieceRotationState], a
-    ld a, SFX_IRS
-    call SFXEnqueue
-
-.checkJingle
-    ldh a, [hSkipJingle]
-    cp a, 0
-    jr nz, .skipJingle
-.playNextJingle
-    ldh a, [hCurrentGravityPerTick]
-    cp a, 1
-    jr nz, .skipJingle
     ldh a, [hNextPiece]
-    call SFXEnqueue
-.skipJingle
+    ld b, a
+    ld a, SFX_IRS
+    or a, b
+    ldh [hRequestedJingle], a
+    jr .postjingle
+
+.postjingle
     ld a, MODE_SPAWN_PIECE
     ldh [hMode], a
     ; State falls through to the next.
@@ -298,6 +301,15 @@ spawnPieceMode:
     jp drawStaticInfo
 :   ld a, MODE_PIECE_IN_MOTION
     ldh [hMode], a
+
+    ; Play the next jingle... maybe!
+    ldh a, [hHoldSpent]
+    cp a, $FF
+    jr z, pieceInMotionMode
+    ldh a, [hRequestedJingle]
+    cp a, $FF
+    jr z, pieceInMotionMode
+    call SFXEnqueue
 
 
     ; This mode lasts for as long as the piece is in motion.
@@ -327,8 +339,6 @@ pieceInMotionMode:
     ldh [hCurrentPieceX], a
     ld a, 3
     ldh [hCurrentPieceY], a
-    xor a, a
-    ldh [hSkipJingle], a
     ldh [hCurrentPieceRotationState], a
     call DoHold
     ld a, MODE_SPAWN_PIECE
@@ -538,8 +548,6 @@ DoHold:
     ; Mark hold as spent.
     ld a, $FF
     ldh [hHoldSpent], a
-    ld a, SFX_IHS
-    call SFXEnqueue
 
     ; Check if IRS is requested.
     ; Apply the rotation if so.
@@ -563,7 +571,8 @@ DoHold:
 .cp3
     ld a, 3
     ldh [hCurrentPieceRotationState], a
-    ld a, SFX_IRS
+    call SFXKill
+    ld a, SFX_IRS | SFX_IHS
     call SFXEnqueue
     jr .doHoldOperation
 
@@ -587,11 +596,15 @@ DoHold:
 .cp4
     ld a, 1
     ldh [hCurrentPieceRotationState], a
-    ld a, SFX_IRS
+    call SFXKill
+    ld a, SFX_IRS | SFX_IHS
     call SFXEnqueue
     jr .doHoldOperation
 
 .noRotation
+    call SFXKill
+    ld a, SFX_IHS
+    call SFXEnqueue
     ld a, 0
     ldh [hCurrentPieceRotationState], a
 
@@ -602,8 +615,6 @@ DoHold:
     ldh [hHeldPiece], a
     ld a, b
     ldh [hCurrentPiece], a
-    ld a, $FF
-    ldh [hSkipJingle], a
     ret
 
 

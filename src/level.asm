@@ -192,7 +192,7 @@ LevelUp::
     ldh [hCLevel+2], a
     ldh [hCLevel+3], a
     call DoSpeedUp
-    ld a, SFX_RANK_UP
+    ld a, SFX_RANKUP
     call SFXEnqueue
     ret
 
@@ -221,7 +221,7 @@ LevelUp::
     jr nz, .checkspeedup
     ld a, $FF
     ldh [hRequiresLineClear], a
-    ld a, SFX_BELL
+    ld a, SFX_LEVELLOCK
     call SFXEnqueue
     jr .leveljinglemaybe
 
@@ -257,7 +257,7 @@ LevelUp::
     jr nz, .leveljinglemaybe
     ld a, $FF
     ldh [hRequiresLineClear], a
-    ld a, SFX_BELL
+    ld a, SFX_LEVELLOCK
     call SFXEnqueue
 
 .leveljinglemaybe
@@ -266,7 +266,7 @@ LevelUp::
     ldh a, [hCLevel+1]
     cp a, b
     jr z, .checkspeedup
-    ld a, SFX_LEVEL_UP
+    ld a, SFX_LEVELUP
     call SFXEnqueue
 
 .checkspeedup

@@ -1255,6 +1255,9 @@ FieldProcess::
     ldh [hCurrentPieceY], a
     xor a, a
     ldh [hCurrentLockDelayRemaining], a
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 1
+    jp nz, .draw
     call SFXKill
     ld a, SFX_LOCK
     call SFXEnqueue
@@ -1339,8 +1342,11 @@ FieldProcess::
 .playfirmdropsound
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 1
+    jr nz, .postcheckforfirmdropsound
     call SFXKill
-    ld a, SFX_MOVE
+    ld a, SFX_LAND
     call SFXEnqueue
 
     ; If the down button is held, lock.
@@ -1385,6 +1391,9 @@ FieldProcess::
 
     ; Play the locking sound and draw the piece.
 .dolock
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 1
+    jr nz, .draw
     call SFXKill
     ld a, SFX_LOCK
     call SFXEnqueue
@@ -1915,11 +1924,14 @@ FieldDelay::
     ret nz
 
     call ClearLines
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 1
+    jr nz, :+
     call SFXKill
-    ld a, SFX_DROP
+    ld a, SFX_LINE_CLEAR
     call SFXEnqueue
 
-    ldh a, [hCurrentARE]
+:   ldh a, [hCurrentARE]
     ldh [hRemainingDelay], a
 
 

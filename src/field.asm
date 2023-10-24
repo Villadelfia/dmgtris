@@ -1738,10 +1738,19 @@ FieldDelay::
     ; If so, we need to do a line clear delay.
     ; Otherwise, we skip to ARE delay.
 .determine
+    ; Add one level if we're not at a breakpoint.
+    ldh a, [hRequiresLineClear]
+    cp a, $FF
+    jr z, .are
+    ld e, 1
+    call LevelUp
+
     ; Increment bravo by 4.
     ldh a, [hBravo]
     add a, 4
     ldh [hBravo], a
+
+    ; Are there line clears?
     call ToShadowField
     call FindClearedLines
     ldh a, [hClearedLines]
@@ -1755,8 +1764,8 @@ FieldDelay::
     and a, c
     and a, d
     cp a, $FF
-    jr z, .skip ; If there were no line clears, skip to ARE delay.
-    ld a, DELAY_STATE_LINE_PRE_CLEAR ; Otherwise, do a line clear delay.
+    jr z, .skip
+    ld a, DELAY_STATE_LINE_PRE_CLEAR ; If there were line clears, do a line clear delay, then an ARE delay.
     ld [wDelayState], a
     ldh a, [hCurrentLineClearDelay]
     ldh [hRemainingDelay], a
@@ -1917,15 +1926,9 @@ FieldDelay::
     cp a, 0
     jr nz, .are
 
-    ; Otherwise, increment the level counter by one if it's not at a breakpoint.
+    ; Otherwise, reset the combo.
     ld a, 1
     ldh [hComboCt], a
-    ldh a, [hRequiresLineClear]
-    cp a, $FF
-    jr z, .are
-    ld e, 1
-    call LevelUp
-
 
     ; ARE delay.
     ; Count down the delay. If it hits 0, award levels and score if necessary, then end the delay phase.

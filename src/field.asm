@@ -1808,9 +1808,9 @@ FieldDelay::
     ld h, a
 
     ; Divide by 4.
-    rrc h
+    sra h
     rr l
-    rrc h
+    sra h
     rr l
 
     ; Add 1.

@@ -277,6 +277,7 @@ LevelUp::
     and a, $0F
     ld hl, hCLevel
     cp a, [hl]
+    jr z, :+
     ret nc
 
 :   ldh a, [hNextSpeedUp]

@@ -225,7 +225,7 @@ sSpeedCurve::           ; Speed curve of the game.
     db 20, 1             ; 20G
     db 20, 8, 30, 24     ; ARE, DAS, LOCK, LINECLEAR
 
-    dw $0900, 900, $0900 ; Level 0900
+    dw $0900, 900, $1000 ; Level 0900
     db 20, 1             ; 20G
     db 16, 6, 25, 16     ; ARE, DAS, LOCK, LINECLEAR
 

@@ -738,8 +738,11 @@ GBCGameplayProcess::
     ldh a, [hCurrentGravityPerTick]
     cp a, 20
     jr nz, :+
-
     ld a, $00
+    jr .colorfield
+:   ld a, $03
+
+.colorfield
     ld d, a
     ld hl, wShadowTileAttrs
     ld bc, 32-12

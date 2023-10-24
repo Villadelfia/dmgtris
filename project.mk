@@ -1,13 +1,29 @@
-PADVALUE := 0xFF
-VERSION := 0
+# ROM Version
+VERSION := 0x01
+
+# 4 Character Game ID
 GAMEID := DTGM
+
+# ROM Title (14 chars max)
 TITLE := DMGTRIS
+
+# "Licensee" code (2 chars)
 LICENSEE := NR
-OLDLIC := 0x33
-MBC := 0x03
-SRAMSIZE := 0x02
-ROMNAME := out
-ROMEXT  := gb
+
+# Output options
+ROMNAME := DMGTRIS
+ROMEXT  := GBC
+
+# Extra assembler flags
+# Do not insert nop after halt
 ASFLAGS += -h
-LDFLAGS += -d
+# Do optimize ld to ldh
+ASFLAGS += -l
+
+# Extra linker flags
+# Tiny Rom
 LDFLAGS += -t
+
+# Extra fix flags
+# SEt as gbc compatible
+FIXFLAGS += -c

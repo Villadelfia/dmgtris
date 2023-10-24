@@ -143,6 +143,11 @@ FromShadowField:
 
     ; This routine will copy wField onto the screen.
 BlitField::
+    ; Hold on, are we on a gbc?
+    ld a, [wInitialA]
+    cp a, $11
+    jp z, GBCBlitField
+
     ; What to copy
     ld de, wField + 40
     ; Where to put it

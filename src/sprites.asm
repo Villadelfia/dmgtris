@@ -101,6 +101,12 @@ ClearOAM::
 SECTION "Domain Specific Functions", ROM0
 ; Index of next piece in A.
 ApplyNext::
+    ; Correct color
+    ld [wSPRNext1+3], a
+    ld [wSPRNext2+3], a
+    ld [wSPRNext3+3], a
+    ld [wSPRNext4+3], a
+
     ; Correct tile
     add a, TILE_PIECE_0
     ld [wSPRNext1+2], a
@@ -167,6 +173,12 @@ ApplyHold::
     ret
 
 .doApplyHold
+    ; Correct color
+    ld [wSPRHold1+3], a
+    ld [wSPRHold2+3], a
+    ld [wSPRHold3+3], a
+    ld [wSPRHold4+3], a
+
     ; Correct tile
     add a, TILE_PIECE_0
     ld [wSPRHold1+2], a
@@ -277,7 +289,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -289,7 +301,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -301,7 +313,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -313,7 +325,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -325,7 +337,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -336,7 +348,7 @@ SetNumberSpritePositions::
     ld [hl], a
     inc hl
     inc hl
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
 
     ld a, LEVEL_BASE_X
@@ -347,7 +359,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -359,7 +371,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -371,7 +383,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -382,7 +394,7 @@ SetNumberSpritePositions::
     ld [hl], a
     inc hl
     inc hl
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
 
     ld a, LEVEL_BASE_X
@@ -393,7 +405,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -405,7 +417,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -417,7 +429,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ld a, b
     add a, 8
@@ -428,7 +440,7 @@ SetNumberSpritePositions::
     ld [hl], a
     inc hl
     inc hl
-    ld a, OAMF_PAL1
+    ld a, OAMF_PAL1 | $07
     ld [hl], a
     ret
 

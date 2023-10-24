@@ -110,6 +110,9 @@ SwitchToGameplay::
     ld a, LEADY_TIME
     ldh [hModeCounter], a
 
+    ; GBC init
+    call GBCGameplayInit
+
     ; Install the event loop handlers.
     ld a, 1
     ldh [hGameState], a
@@ -525,6 +528,8 @@ drawStaticInfo:
     ld hl, wSPRNLevel1
     ld de, hNLevel
     call ApplyNumbers
+
+    call GBCGameplayProcess
 
     jp EventLoopPostHandler
 

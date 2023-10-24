@@ -78,6 +78,9 @@ SwitchToTitle::
     set_obj0_palette
     set_obj1_palette
 
+    ; GBC init
+    call GBCTitleInit
+
     ; Install the event loop handlers.
     ld a, 0
     ldh [hGameState], a

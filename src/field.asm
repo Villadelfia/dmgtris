@@ -1940,7 +1940,7 @@ FieldDelay::
     call LevelUp
 
     ; Cycle the RNG.
-    ldh a, [hNextPiece]
+:   ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
 

@@ -1819,6 +1819,7 @@ FieldDelay::
     call LevelUp
 
     ; Update the combo counter.
+    ldh a, [hLineClearCt]
     ld b, a
     ldh a, [hComboCt] ; Old combo count.
     add b             ; + lines

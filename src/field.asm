@@ -1738,13 +1738,6 @@ FieldDelay::
     ; If so, we need to do a line clear delay.
     ; Otherwise, we skip to ARE delay.
 .determine
-    ; Add one level if we're not at a breakpoint.
-    ldh a, [hRequiresLineClear]
-    cp a, $FF
-    jr z, .are
-    ld e, 1
-    call LevelUp
-
     ; Increment bravo by 4.
     ldh a, [hBravo]
     add a, 4
@@ -1938,6 +1931,13 @@ FieldDelay::
     ldh [hRemainingDelay], a
     cp a, 0
     ret nz
+
+    ; Add one level if we're not at a breakpoint.
+    ldh a, [hRequiresLineClear]
+    cp a, $FF
+    jr z, :+
+    ld e, 1
+    call LevelUp
 
     ; Cycle the RNG.
     ldh a, [hNextPiece]

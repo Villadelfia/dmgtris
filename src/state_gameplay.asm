@@ -492,12 +492,12 @@ gameOverMode:
     ldh [hMode], a
     ld a, LEADY_TIME
     ldh [hModeCounter], a
-    jr drawStaticInfo
+    jp drawStaticInfo
 
     ; Quit
 :   ldh a, [hBState]
     cp a, 1
-    jr nz, drawStaticInfo
+    jp nz, drawStaticInfo
     call SwitchToTitle
     jp EventLoopPostHandler
 
@@ -514,7 +514,43 @@ pauseMode:
     ; Draw PAUSE all over the field.
 :   ld de, sPause
     ld hl, wField+(4*10)
-    ld bc, 200
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(6*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(8*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(10*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(12*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(14*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(16*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(18*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(20*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(22*10)
+    ld bc, 20
     call UnsafeMemCopy
     jr drawStaticInfo
 

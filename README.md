@@ -7,7 +7,7 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - IHS (initial hold system) as well as holds.
 - Faithful implementations of concepts such are lock delay, piece spawn delay and DAS.
 - Several RNG options available. You can choose between pure RNG, 4 history with 4 retries, 4 history with 6 retries, 4 history with infinite retries, a 35bag with 4 history and 6 retries with drought prevention, NES style RNG, or pure RNG.
-- A choice between sonic drop (pressing up grounds the piece but does not lock it),  hard drop (pressing up locks the piece), or neither (pressing up does nothing at all.)
+- A choice between sonic drop (pressing up grounds the piece but does not lock it), hard drop (pressing up locks the piece), or neither (pressing up does nothing at all.)
 - A choice between traditional ARS for rotation, or TGM3 era ARS with extra kicks.
 - Scoring is a hybrid between TGM1 and TGM2.
 - A speed curve reminiscent of TGM, starting slightly faster and skipping the awkward speed reset. The game continues infinitely... But so does the speed increase.
@@ -35,7 +35,7 @@ Select the rotation rules:
 Select whether up performs a sonic drop, a hard drop, or nothing at all.
 
 ### Speed Curve
-Check back later! For now you're stuck with the default.
+Select between several speed curves including the DMGTRIS default speed curve, TGM1, 2, and 3, as well as DEATH and SHIRASE mode. Note that all modes use the same scoring and they are all infinite.
 
 ### Always 20G
 Whether you want instant-drop gravity to be active at any level.
@@ -51,7 +51,7 @@ After each piece is dropped, a check is made:
 Combo is reset to 1 and no points are awarded.
 
 ### Lines were cleared
-Lines = Lines cleared. In TGM3 modes, 3 lines are worth 4, and 4 lines are worth 6.
+Lines = Lines cleared.
 
 Level = The level before the lines were cleared.
 
@@ -100,11 +100,6 @@ The game can be built using gnu make and the RGBDS toolchain.
 
 ## Issues
 - In very rare cases the frame time in TGM3 and TGW3 modes can be exceeded due to the way the RNG for those modes works. When this happens, the screen will appear slightly glitched for 1 frame but no frame drops will occur. This issues is fundamentally impossible to completely avoid though more optimization may cause it to occur less frequently.
-
-
-## Future Goals
-- Implement better sound engine.
-- Add more speed curves.
 
 
 ## License

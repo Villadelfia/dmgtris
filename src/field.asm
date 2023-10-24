@@ -1821,27 +1821,6 @@ FieldDelay::
     jr nz, :-
     ldh [hBravo], a
 
-    ; Check if we are in a TGM3 mode and thus need to handle line counts of 3 and 4 differently.
-    ldh a, [hLineClearCt]
-    ld e, a
-    ld a, [wRotModeState]
-    cp a, ROT_MODE_ARSTI
-    jr z, .modifylines
-    jr .applylines
-.modifylines
-    ldh a, [hLineClearCt]
-    cp a, 1
-    jr z, .applylines
-    cp a, 2
-    jr z, .applylines
-    cp a, 3
-    jr z, .addone
-    inc a
-.addone
-    inc a
-    ld e, a
-    ldh [hLineClearCt], a
-
     ; Increment the level counter by the amount of lines.
 .applylines
     call LevelUp

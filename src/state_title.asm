@@ -416,23 +416,11 @@ IncrementLevel:
     ldh [hStartSpeed], a
     ld a, h
     ldh [hStartSpeed+1], a
-    jr CheckLevelRange
+    jp CheckLevelRange
 
 InitSpeedCurve:
     ld a, [wSpeedCurveState]
-    cp a, 0
-    jr nz, :+
-    ld hl, sSpeedCurve
-    jr .set
-:   cp a, 1
-    jr nz, :+
-    ld hl, sTGM1SpeedCurve
-    jr .set
-:   cp a, 2
-    jr nz, :+
-    ld hl, sDEATSpeedCurve
-    jr .set
-:   ld hl, sSHIRSpeedCurve
+    call GetStart
 
 .set
     ld a, l
@@ -445,15 +433,23 @@ InitSpeedCurve:
 
 GetEnd:
     ld a, [wSpeedCurveState]
-    cp a, 0
+    cp a, SCURVE_DMGT
     jr nz, :+
     ld bc, sSpeedCurveEnd
     ret
-:   cp a, 1
+:   cp a, SCURVE_TGM1
     jr nz, :+
     ld bc, sTGM1SpeedCurveEnd
     ret
-:   cp a, 2
+:   cp a, SCURVE_TGM2
+    jr nz, :+
+    ld bc, sTGM2SpeedCurveEnd
+    ret
+:   cp a, SCURVE_TGM3
+    jr nz, :+
+    ld bc, sTGM3SpeedCurveEnd
+    ret
+:   cp a, SCURVE_DEAT
     jr nz, :+
     ld bc, sDEATSpeedCurveEnd
     ret
@@ -462,15 +458,23 @@ GetEnd:
 
 GetStart:
     ld a, [wSpeedCurveState]
-    cp a, 0
+    cp a, SCURVE_DMGT
     jr nz, :+
     ld hl, sSpeedCurve
     ret
-:   cp a, 1
+:   cp a, SCURVE_TGM1
     jr nz, :+
     ld hl, sTGM1SpeedCurve
     ret
-:   cp a, 2
+:   cp a, SCURVE_TGM2
+    jr nz, :+
+    ld hl, sTGM2SpeedCurve
+    ret
+:   cp a, SCURVE_TGM3
+    jr nz, :+
+    ld hl, sTGM2SpeedCurve
+    ret
+:   cp a, SCURVE_DEAT
     jr nz, :+
     ld hl, sDEATSpeedCurve
     ret

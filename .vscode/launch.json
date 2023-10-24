@@ -8,8 +8,7 @@
             "type": "emulicious-debugger",
             "request": "launch",
             "name": "Launch in Emulicious",
-            "emuliciousPath": "${workspaceFolder}\\tools",
-            "program": "${workspaceFolder}\\bin\\out.gb",
+            "program": "${workspaceFolder}\\bin\\DMGTRIS.gbc",
             "port": 58870,
             "stopOnEntry": false,
             "preLaunchTask": "buildrom"

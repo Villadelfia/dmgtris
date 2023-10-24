@@ -1823,6 +1823,8 @@ FieldDelay::
 
     ; Increment the level counter by the amount of lines.
 .applylines
+    ldh a, [hLineClearCt]
+    ld e, a
     call LevelUp
 
     ; Update the combo counter.

@@ -575,8 +575,8 @@ TitleVBlankHandler::
     xor a, a
     ld b, a
     ld a, [wSwapABState]
-    rlc a
-    rlc a
+    sla a
+    sla a
     ld c, a
     ld hl, sOption0
     add hl, bc
@@ -590,8 +590,8 @@ TitleVBlankHandler::
     xor a, a
     ld b, a
     ld a, [wRNGModeState]
-    rlc a
-    rlc a
+    sla a
+    sla a
     ld c, a
     ld hl, sOption1
     add hl, bc
@@ -605,8 +605,8 @@ TitleVBlankHandler::
     xor a, a
     ld b, a
     ld a, [rRotModeState]
-    rlc a
-    rlc a
+    sla a
+    sla a
     ld c, a
     ld hl, sOption2
     add hl, bc
@@ -620,8 +620,8 @@ TitleVBlankHandler::
     xor a, a
     ld b, a
     ld a, [rDropModeState]
-    rlc a
-    rlc a
+    sla a
+    sla a
     ld c, a
     ld hl, sOption3
     add hl, bc
@@ -635,8 +635,8 @@ TitleVBlankHandler::
     xor a, a
     ld b, a
     ld a, [wSpeedCurveState]
-    rlc a
-    rlc a
+    sla a
+    sla a
     ld c, a
     ld hl, sOption4
     add hl, bc
@@ -650,8 +650,8 @@ TitleVBlankHandler::
     xor a, a
     ld b, a
     ld a, [wAlways20GState]
-    rlc a
-    rlc a
+    sla a
+    sla a
     ld c, a
     ld hl, sOption5
     add hl, bc

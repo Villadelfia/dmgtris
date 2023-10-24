@@ -224,8 +224,8 @@ SetPieceData:
 
 SetPieceDataOffset:
     ldh a, [hCurrentPieceRotationState]
-    rlc a
-    rlc a
+    sla a
+    sla a
     ldh [hPieceDataOffset], a
     ret
 
@@ -796,8 +796,8 @@ FieldProcess::
     ldh a, [hPieceDataBase+1]
     ld h, a
     ldh a, [hWantRotation]
-    rlc a
-    rlc a
+    sla a
+    sla a
     push bc
     ld c, a
     xor a, a
@@ -865,8 +865,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    rlc a
-    rlc a
+    sla a
+    sla a
     push bc
     ld c, a
     xor a, a
@@ -903,8 +903,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    rlc a
-    rlc a
+    sla a
+    sla a
     push bc
     ld c, a
     xor a, a
@@ -951,8 +951,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    rlc a
-    rlc a
+    sla a
+    sla a
     push bc
     ld c, a
     xor a, a
@@ -1011,8 +1011,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    rlc a
-    rlc a
+    sla a
+    sla a
     push bc
     ld c, a
     xor a, a
@@ -1055,8 +1055,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    rlc a
-    rlc a
+    sla a
+    sla a
     push bc
     ld c, a
     xor a, a
@@ -1100,8 +1100,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    rlc a
-    rlc a
+    sla a
+    sla a
     push bc
     ld c, a
     xor a, a
@@ -1808,9 +1808,9 @@ FieldDelay::
     ld h, a
 
     ; Divide by 4.
-    sra h
+    srl h
     rr l
-    sra h
+    srl h
     rr l
 
     ; Add 1.

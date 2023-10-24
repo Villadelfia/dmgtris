@@ -103,9 +103,8 @@ The game can be built using gnu make and the RGBDS toolchain.
 
 
 ## Future Goals
-- Multiplayer with items.
-- Colorization.
-- ...
+- Implement better sound engine.
+- Add more speed curves.
 
 
 ## License

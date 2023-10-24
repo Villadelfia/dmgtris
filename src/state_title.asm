@@ -23,7 +23,7 @@ INCLUDE "globals.asm"
 
 
 SECTION "Title Variables", WRAM0
-wSelected:     ds 1
+wSelected:: ds 1
 
 
 SECTION "Title Functions", ROM0
@@ -79,23 +79,23 @@ SwitchToTitle::
     bit 0, a
     jr nz, .agb
     ld de, sEasterC0
-    ld hl, EASTER_0
+    ld hl, EASTER_0-1
     ld bc, 12
     call UnsafeMemCopy
     ld de, sEasterC1
-    ld hl, EASTER_1
-    ld bc, 5
+    ld hl, EASTER_1-1
+    ld bc, 12
     call UnsafeMemCopy
     jr .oam
 
 .agb
     ld de, sEasterA0
-    ld hl, EASTER_0
+    ld hl, EASTER_0-1
     ld bc, 12
     call UnsafeMemCopy
     ld de, sEasterA1
-    ld hl, EASTER_1
-    ld bc, 5
+    ld hl, EASTER_1-1
+    ld bc, 12
     call UnsafeMemCopy
     jr .oam
 .noegg
@@ -130,6 +130,8 @@ SwitchToTitle::
 
 
 TitleEventLoopHandler::
+    call GBCTitleProcess
+
     ; Start game?
 .abstart
     ldh a, [hStartState]
@@ -443,6 +445,8 @@ CheckLevelRange:
 
 
 TitleVBlankHandler::
+    call ToATTR
+
     ld a, TILE_UNSELECTED
     ld hl, TITLE_OPTION_0
     ld [hl], a

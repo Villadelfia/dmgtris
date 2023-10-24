@@ -44,11 +44,33 @@ wShadowTileAttrs:: ds 32*32
 SECTION "GBC Variables", WRAM0
 wOuterReps:: ds 1
 wInnerReps:: ds 1
-
-
+wTitlePal:: ds 1
 
 
 SECTION "GBC Functions", ROM0
+ToATTR::
+    ld a, [wInitialA]
+    cp a, $11
+    ret nz
+
+    ; Bank 1
+    ld a, 1
+    ldh [rVBK], a
+    ld a, HIGH(wShadowTileAttrs)
+    ldh [rHDMA1], a
+    ld a, LOW(wShadowTileAttrs)
+    ldh [rHDMA2], a
+    ld a, HIGH($9800)
+    ldh [rHDMA3], a
+    ld a, LOW($9800)
+    ldh [rHDMA4], a
+    ld a, 39
+    ldh [rHDMA5], a
+    ld a, 0
+    ldh [rVBK], a
+    ret
+
+
 ToVRAM::
     ; Bank 1
     ld a, 1
@@ -65,7 +87,7 @@ ToVRAM::
     ldh [rHDMA5], a
 
 
-    ; Bank 1
+    ; Bank 0
     ld a, 0
     ldh [rVBK], a
     ld a, HIGH(wShadowTilemap)
@@ -78,8 +100,292 @@ ToVRAM::
     ldh [rHDMA4], a
     ld a, 39 | $80
     ldh [rHDMA5], a
+    jp EventLoop
 
-GBCPalettes::
+
+GBCTitleInit::
+    ld a, [wInitialA]
+    cp a, $11
+    ret nz
+    ld a, BCPSF_AUTOINC
+    ldh [rBCPS], a
+    ldh [rOCPS], a
+
+    ; Pal 0 (red, I)
+    ld bc, %0000000000000000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R1
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R2
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R3
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+
+    ; Pal 1 (green, Z)
+    ld bc, %0000000000000000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, G1
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, G2
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, G3
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+
+    ; Pal 2 (purple, S)
+    ld bc, %0000000000000000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R1 | B1
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R2 | B2
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R3 | B3
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+
+    ; Pal 3 (blue, J)
+    ld bc, %0000000000000000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, B1
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, B2
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, B3
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+
+    ; Pal 4 (orange, L)
+    ld bc, %0000000000000000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R1 | G0
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R2 | G1
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R3 | G2
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+
+    ; Pal 5 (yellow, O)
+    ld bc, %0000000000000000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R1 | G1
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R2 | G2
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, R3 | G3
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+
+    ; Pal 6 (cyan, T)
+    ld bc, %0000000000000000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, B1 | G1
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, B2 | G2
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, B3 | G3
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+
+    ; Pal 7 (grayscale, inverted)
+    ld bc, %0000000000000000
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, %0010000100001000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, %0100001000010000
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld bc, %0111111111111111
+    ld a, c
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rBCPD], a
+    ldh [rOCPD], a
+
+    ; Copy the tilemap to shadow.
+    ld de, $9800
+    ld hl, wShadowTilemap
+    ld bc, 32*32
+    call UnsafeMemCopy
+
+    ; Set attrs to pal 7 and copy to shadow.
+    ld a, 1
+    ldh [rVBK], a
+    ld d, $03
+    ld hl, $9800
+    ld bc, 32
+    call UnsafeMemSet
+    ld d, $01
+    ld bc, (5*32)
+    call UnsafeMemSet
+    ld d, $07
+    ld bc, (14*32)
+    call UnsafeMemSet
+    ld de, $9800
+    ld hl, wShadowTileAttrs
+    ld bc, 32*32
+    call UnsafeMemCopy
+
+    ; Reset back to bank 0.
+    xor a, a
+    ldh [rVBK], a
+
+    ; Save the current title palette.
+    ld a, $07
+    ld [wTitlePal], a
+    ret
+
+
+GBCGameplayInit::
     ld a, [wInitialA]
     cp a, $11
     ret nz
@@ -317,78 +623,6 @@ GBCPalettes::
     ld a, b
     ldh [rBCPD], a
     ldh [rOCPD], a
-    ret
-
-
-GBCTitleInit::
-    ld a, [wInitialA]
-    cp a, $11
-    ret nz
-    ld a, BCPSF_AUTOINC | (7*8)
-    ldh [rBCPS], a
-    ldh [rOCPS], a
-
-    ; Pal 7 (grayscale, inverted)
-    ld bc, %0000000000000000
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0010000100001000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0100001000010000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0111111111111111
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Copy the tilemap to shadow.
-    ld de, $9800
-    ld hl, wShadowTilemap
-    ld bc, 32*32
-    call UnsafeMemCopy
-
-    ; Copy set attrs to pal 7 and copy to shadow.
-    ld a, 1
-    ldh [rVBK], a
-    ld d, $07
-    ld hl, $9800
-    ld bc, (32*32)
-    call UnsafeMemSet
-    ld de, $9800
-    ld hl, wShadowTileAttrs
-    ld bc, 32*32
-    call UnsafeMemCopy
-
-    ; Reset back to bank 0.
-    xor a, a
-    ldh [rVBK], a
-    ret
-
-
-GBCGameplayInit::
-    ld a, [wInitialA]
-    cp a, $11
-    ret nz
-    ld a, BCPSF_AUTOINC | (7*8)
-    ldh [rBCPS], a
-    ldh [rOCPS], a
 
     ; Pal 7 (grayscale)
     ld bc, %0111111111111111
@@ -441,6 +675,57 @@ GBCGameplayInit::
     ; Reset back to bank 0.
     xor a, a
     ldh [rVBK], a
+    ret
+
+
+GBCTitleProcess::
+    ld a, [wInitialA]
+    cp a, $11
+    ret nz
+
+    ; Wipe the palettes.
+    ld d, $03
+    ld hl, wShadowTileAttrs
+    ld bc, 32
+    call UnsafeMemSet
+    ld d, $07
+    ld hl, wShadowTileAttrs+32
+    ld bc, (19*32)
+    call UnsafeMemSet
+
+    ; Palette for the title?
+    ldh a, [hFrameCtr]
+    and $0F
+    cp a, $01
+    jr nz, .noinc
+    ld a, [wTitlePal]
+    inc a
+    cp a, $07
+    jr c, .nores
+    ld a, $00
+.nores
+    ld [wTitlePal], a
+.noinc
+
+    ; Set the palette for the title.
+    ld a, [wTitlePal]
+    ld d, a
+    ld hl, wShadowTileAttrs + (2*32)
+    ld bc, (4*32)
+    call UnsafeMemSet
+
+    ; And the selected row.
+    ld a, [wSelected]
+    inc a
+    ld hl, wShadowTileAttrs + (5*32)
+    ld bc, 64
+:   add hl, bc
+    dec a
+    jr nz, :-
+    ld a, 3
+    ld d, a
+    ld bc, 32
+    call UnsafeMemSet
     ret
 
 
@@ -544,15 +829,11 @@ GBCGameplayProcess::
     dec a
     ld [wOuterReps], a
     jr nz, .outer2
-
-
     ret
 
 
-
 GBCBlitField::
-    call ToVRAM
-    jp EventLoop
+    jp ToVRAM
 
 
 ENDC

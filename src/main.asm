@@ -93,7 +93,6 @@ Main::
     ld a, KEY1F_PREPARE
     ldh [rKEY1], a
     stop
-    call GBCPalettes
 .notgbc
 
     ; We use a single set of tiles for the entire game, so we copy it at the start.

@@ -9,6 +9,7 @@
             "request": "launch",
             "name": "Launch in Emulicious",
             "program": "${workspaceFolder}\\bin\\DMGTRIS.gbc",
+            "emuliciousPath": "K:\\TGM\\dmgtris\\tools",
             "port": 58870,
             "stopOnEntry": false,
             "preLaunchTask": "buildrom"

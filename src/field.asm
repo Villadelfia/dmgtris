@@ -54,8 +54,8 @@ hClearedLines: ds 4
 hLineClearCt: ds 1
 hComboCt: ds 1
 hLockDelayForce: ds 1
-hHighestStack: ds 1
 hDownFrames: ds 1
+hAwardDownBonus: ds 1
 hStalePiece: ds 1
 hBravo: ds 1
 
@@ -64,8 +64,6 @@ SECTION "Field Functions", ROM0
 FieldInit::
     xor a, a
     ldh [hBravo], a
-    ld a, 23
-    ldh [hHighestStack], a
     ld a, 1
     ldh [hComboCt], a
     ld hl, wField
@@ -528,6 +526,7 @@ TrySpawnPiece::
     xor a, a
     ldh [hStalePiece], a
     ldh [hDownFrames], a
+    ldh [hAwardDownBonus], a
     ldh [hLockDelayForce], a
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
@@ -682,33 +681,6 @@ FindMaxG:
     ldh a, [hCurrentPieceX]
     call XYToSFieldPtr
 
-;DEF EXPERIMENTAL_OPTIMIZATION EQU 1
-IF DEF(EXPERIMENTAL_OPTIMIZATION)
-    ; The stack height marker gives a lower bound to how far the piece can fall.
-    ldh a, [hHighestStack]
-    sub a, 4
-    ld b, a
-    ld a, [hCurrentPieceY]
-    cp a, b
-    jr nc, .unoptimized ; If our piece is already past that, we can't optimize.
-
-    ; But if we're NOT, that means we can assume a minimum fall distance!
-.optimized
-    ld c, a
-    ld a, b
-    sub a, c
-    inc a
-    ldh [hActualG], a
-    dec a
-    ld de, 14
-:   add hl, de
-    dec a
-    jr nz, :-
-    push hl
-    jr .try
-ENDC
-
-.unoptimized
     push hl
     ld a, 1
     ldh [hActualG], a
@@ -1212,7 +1184,10 @@ FieldProcess::
 
     ; **************************************************************
     ; HANDLE UP
-    ; Is a hard/sonic drop requested?
+    ; Is a hard/sonic drop requested? Skip if in 20G mode.
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 20
+    jr z, .postdrop
     ldh a, [hUpState]
     cp a, 0
     jr z, .postdrop
@@ -1226,9 +1201,8 @@ FieldProcess::
 
     ; Sonic drop.
 .sonicdrop
-    ldh a, [hDownFrames]
-    add a, 10
-    ldh [hDownFrames], a
+    ld a, $FF
+    ldh [hAwardDownBonus], a
     ld a, 20
     ldh [hWantedG], a
     ldh a, [hTicksUntilG]
@@ -1241,9 +1215,8 @@ FieldProcess::
 
     ; Hard drop.
 .harddrop
-    ldh a, [hDownFrames]
-    add a, 10
-    ldh [hDownFrames], a
+    ld a, $FF
+    ldh [hAwardDownBonus], a
     ld a, 20
     ld b, a
     ldh a, [hActualG]
@@ -1423,7 +1396,7 @@ FieldProcess::
     jr z, .ghost
     ldh a, [hEvenFrame]
     cp a, 1
-    jr nz, :+
+    jr nz, .postghost
 
 .ghost
     ldh a, [hYPosAtStartOfFrame]
@@ -1444,8 +1417,8 @@ FieldProcess::
     pop de
     call DrawPiece
 
-    ; If the lock delay is at the highest value, draw the piece normally.
 .postghost
+    ; If the lock delay is at the highest value, draw the piece normally.
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b
@@ -1463,19 +1436,10 @@ FieldProcess::
     ldh [hWantedTile], a
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
-    jr nz, :+
-
-    ; Check if the stack usage went up.
-    ldh a, [hHighestStack]
-    ld b, a
-    ldh a, [hCurrentPieceY]
-    cp a, b
-    jr nc, .drawpiece
-    ldh [hHighestStack], a
-    jr .drawpiece
+    jr z, .drawpiece
 
     ; Otherwise, look it up.
-:   call GetTileShade
+    call GetTileShade
 
 .drawpiece
     ldh a, [hCurrentPieceY]
@@ -1857,37 +1821,64 @@ FieldDelay::
     ld c, a
     xor a, a
     ld b, a
+
+    ; Lock bonus?
+    ldh a, [hAwardDownBonus]
+    cp a, $FF
+    jr nz, .premultiplier
+    ld a, 10
+    add a, c
+    ld c, a
+
+    ; Final total pre-multipliers.
+.premultiplier
     add hl, bc
 
-    ; Copy the running total.
+    ; Copy the running total for multiplication.
     ld b, h
     ld c, l
 
-    ; Get a multiplier consisting of...
-    xor a, a
-    ld d, a
-
-    ldh a, [hBravo]       ; 4 if the field is empty and...
+    ; Do we have a bravo? x4 if so.
+.bravo
+    ldh a, [hBravo]
     cp a, 0
-    jr nz, :+
-    ld a, 4
-    ld d, a
+    jr nz, .lineclears
+    add hl, bc
+    add hl, bc
+    add hl, bc
+    ld b, h
+    ld c, l
 
-:   ldh a, [hLineClearCt] ; The number of lines cleared and...
-    add a, d
-    ld d, a
-
-    ldh a, [hComboCt]     ; The combo count.
+    ; x line clears
+.lineclears
+    ldh a, [hLineClearCt]
     dec a
-    add a, d
-
-    ; Multiply the running total by the multiplier.
+    jr z, .combo
 :   add hl, bc
     dec a
-    cp a, 0
     jr nz, :-
+    ld b, h
+    ld c, l
+
+    ; x combo
+.combo
+    ldh a, [hComboCt]
+    dec a
+    jr z, .applyscore
+:   add hl, bc
+    jr c, .forcemax
+    dec a
+    jr nz, :-
+    jr .applyscore
+
+    ; Overflow = 65535
+.forcemax
+    ld a, $FF
+    ld h, a
+    ld l, a
 
     ; And apply the score.
+.applyscore
     ld a, l
     ldh [hScoreIncrement], a
     ld a, h
@@ -2078,9 +2069,6 @@ ClearLines:
 
         ; If it does, increment the clearing counter, but skip this line.
         jr nz, .clear\@
-        ldh a, [hHighestStack]
-        inc a
-        ldh [hHighestStack], a
         inc de
         inc de
         inc de
@@ -2135,13 +2123,6 @@ ClearLines:
 .r\@
         DEF row -= 1
     ENDR
-
-    ; Check if the stack marker is out of bounds.
-    ldh a, [hHighestStack]
-    cp a, 23
-    jr c, .fixgarbo
-    ld a, 23
-    ldh [hHighestStack], a
 
     ; Make sure there's no garbage in the top de lines.
 .fixgarbo

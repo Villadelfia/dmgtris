@@ -114,9 +114,6 @@ SwitchToTitle::
     ; GBC init
     call GBCTitleInit
 
-    ; Make sure the speed curve is aimed at the right place.
-    call InitSpeedCurve
-
     ; Install the event loop handlers.
     ld a, 0
     ldh [hGameState], a
@@ -301,8 +298,10 @@ DecrementLevel:
     add hl, bc
     ld a, l
     ldh [hStartSpeed], a
+    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
+    ld [rSelectedStartLevel+1], a
     jp CheckLevelRange
 
 
@@ -414,8 +413,10 @@ IncrementLevel:
     add hl, bc
     ld a, l
     ldh [hStartSpeed], a
+    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
+    ld [rSelectedStartLevel+1], a
     jp CheckLevelRange
 
 InitSpeedCurve:
@@ -425,8 +426,10 @@ InitSpeedCurve:
 .set
     ld a, l
     ldh [hStartSpeed], a
+    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
+    ld [rSelectedStartLevel+1], a
     ret
 
 
@@ -492,8 +495,10 @@ CheckLevelRange:
     jr nz, .notatend
     call GetStart
     ld a, l
+    ld [rSelectedStartLevel], a
     ldh [hStartSpeed], a
     ld a, h
+    ld [rSelectedStartLevel+1], a
     ldh [hStartSpeed+1], a
 
 .notatend
@@ -513,8 +518,10 @@ CheckLevelRange:
     ld l, c
     add hl, de
     ld a, l
+    ld [rSelectedStartLevel], a
     ldh [hStartSpeed], a
     ld a, h
+    ld [rSelectedStartLevel+1], a
     ldh [hStartSpeed+1], a
 
 .notatstart

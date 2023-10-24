@@ -460,7 +460,7 @@ GBCGameplayInit::
     ldh [rOCPD], a
 
     ; Pal 2 (purple, S)
-    ld bc, R3 | B3
+    ld bc, R2 | B3
     ld a, c
     ldh [rBCPD], a
     ldh [rOCPD], a
@@ -468,7 +468,7 @@ GBCGameplayInit::
     ldh [rBCPD], a
     ldh [rOCPD], a
 
-    ld bc, R2 | B2
+    ld bc, R1 | B2
     ld a, c
     ldh [rBCPD], a
     ldh [rOCPD], a
@@ -476,7 +476,7 @@ GBCGameplayInit::
     ldh [rBCPD], a
     ldh [rOCPD], a
 
-    ld bc, R1 | B1
+    ld bc, R0 | B1
     ld a, c
     ldh [rBCPD], a
     ldh [rOCPD], a
@@ -734,16 +734,44 @@ GBCGameplayProcess::
     cp a, $11
     ret nz
 
-    ; 20G?
+    ; Color based on mode.
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_DMGT
+    ld a, $03 ;Blue
+    jr z, .higoverride
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_TGM1
+    ld a, $05 ;Yellow
+    jr z, .higoverride
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_TGM3
+    ld a, $04 ;Orange
+    jr z, .higoverride
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_DEAT
+    ld a, $06 ;Cyan
+    jr z, .higoverride
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    ld a, $00 ;Red
+    jr z, .colorfield ;Always red
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_CHIL
+    ld a, $01 ;Green
+    jr z, .higoverride
+
+    ; Are we 20G?
+.higoverride
+    ld d, a
     ldh a, [hCurrentGravityPerTick]
     cp a, 20
-    jr nz, :+
+    jr nz, .colorfield
+
+    ; Strobe the frame.
     ld a, $00
-    jr .colorfield
-:   ld a, $03
+    ld d, a
 
 .colorfield
-    ld d, a
     ld hl, wShadowTileAttrs
     ld bc, 32-12
 
@@ -861,6 +889,45 @@ GBCGameplayProcess::
     dec a
     ld [wOuterReps], a
     jr nz, .outer2
+
+    ; Maybe flash numbers.
+    ldh a, [hCurrentGravityPerTick]
+    cp a, 20
+    jr nz, .black
+
+    ld hl, hFrameCtr
+    bit 1, [hl]
+    jr z, .lighter
+
+.darker
+    ld a, OCPSF_AUTOINC | (7*8)+(3*2)
+    ldh [rOCPS], a
+    ld bc, R2 | G2
+    wait_vram
+    ld a, c
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rOCPD], a
+    ret
+
+.lighter
+    ld a, OCPSF_AUTOINC | (7*8)+(3*2)
+    ldh [rOCPS], a
+    ld bc, R3 | G3
+    wait_vram
+    ld a, c
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rOCPD], a
+    ret
+
+.black
+    ld a, OCPSF_AUTOINC | (7*8)+(3*2)
+    ldh [rOCPS], a
+    xor a, a
+    wait_vram
+    ldh [rOCPD], a
+    ldh [rOCPD], a
     ret
 
 

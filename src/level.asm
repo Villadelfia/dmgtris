@@ -137,9 +137,9 @@ LevelUp::
     add a, l
     ld l, a
     adc a, h
-    sub l
+    sub a, l
     ldh [hLevel+1], a
-    ld l, a
+    ld a, l
     ldh [hLevel], a
 
     ; Save the current hundred digit.
@@ -191,6 +191,11 @@ LevelUp::
     ldh [hCLevel+1], a
     ldh [hCLevel+2], a
     ldh [hCLevel+3], a
+    ld hl, 9999
+    ld a, l
+    ldh [hLevel], a
+    ld a, h
+    ldh [hLevel+1], a
     call DoSpeedUp
     ld a, SFX_RANKUP
     call SFXEnqueue

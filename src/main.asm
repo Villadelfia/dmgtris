@@ -53,6 +53,7 @@ rRotModeState:: ds 1
 rDropModeState:: ds 1
 rSpeedCurveState:: ds 1
 rAlways20GState:: ds 1
+rSelectedStartLevel:: ds 2
 
 
 SECTION "Stack", WRAM0
@@ -122,7 +123,7 @@ Main::
     cp a, "G"
     jr nz, .nosavedata
     ld a, [rMagic+3]
-    cp a, "0"
+    cp a, "1"
     jr nz, .nosavedata
 
 .savedata
@@ -138,6 +139,10 @@ Main::
     ld [wSpeedCurveState], a
     ld a, [rAlways20GState]
     ld [wAlways20GState], a
+    ld a, [rSelectedStartLevel]
+    ldh [hStartSpeed], a
+    ld a, [rSelectedStartLevel+1]
+    ldh [hStartSpeed+1], a
     jr .otherinit
 
 .nosavedata
@@ -147,7 +152,7 @@ Main::
     ld [rMagic+1], a
     ld a, "G"
     ld [rMagic+2], a
-    ld a, "0"
+    ld a, "1"
     ld [rMagic+3], a
 
     ld a, BUTTON_MODE_NORM
@@ -178,12 +183,15 @@ Main::
     ld [rAlways20GState], a
     ld [wAlways20GState], a
 
-.otherinit
     ld hl, sSpeedCurve
     ld a, l
     ldh [hStartSpeed], a
+    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
+    ld [rSelectedStartLevel+1], a
+
+.otherinit
     call TimeInit
     call IntrInit
     call InputInit

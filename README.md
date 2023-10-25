@@ -15,7 +15,7 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - Game boy color mode.
 
 ## Playing
-Try the game online [here](https://villadelfia.org/dmgtris/). Controls are arrow keys, Z, X, and Enter. The online version has no sound though, so the better thing would be to run it in an emulator locally.
+Try the game online [here](https://villadelfia.org/dmgtris/). Controls are arrow keys, Z, X, Space, and Enter. The online version has no sound though, so the better thing would be to run it in an emulator locally.
 
 You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/bin/DMGTRIS.GBC) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/bin/DMGTRIS.GBC).
 

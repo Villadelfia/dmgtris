@@ -123,6 +123,11 @@ SwitchToTitle::
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
     ldh [rLCDC], a
 
+    ; Music start
+    call SFXKill
+    ld a, MUSIC_MENU
+    call SFXEnqueue
+
     ; Make sure the first game loop starts just like all the future ones.
     wait_vblank
     wait_vblank_end
@@ -178,12 +183,24 @@ TitleEventLoopHandler::
 .left
     ldh a, [hLeftState]
     cp a, 1
+    jp z, DecrementOption
+    cp a, 16
+    jr c, .right
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
     jr nz, .right
     jp DecrementOption
 
 .right
     ldh a, [hRightState]
     cp a, 1
+    jp z, IncrementOption
+    cp a, 16
+    jr c, .done
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
     jr nz, .done
     jp IncrementOption
 

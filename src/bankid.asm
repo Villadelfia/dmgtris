@@ -37,5 +37,11 @@ SECTION "Bank ID 2", ROMX[$4000], BANK[2]
     ENDR
     db $02
 
+SECTION "Bank ID 3", ROMX[$4000], BANK[3]
+    REPT 7
+        rst $00
+    ENDR
+    db $03
+
 
 ENDC

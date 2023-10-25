@@ -121,6 +121,9 @@ SwitchToGameplay::
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON | LCDCF_BLK01
     ldh [rLCDC], a
 
+    ; Music end
+    call SFXKill
+
     ; Make sure the first game loop starts just like all the future ones.
     wait_vblank
     wait_vblank_end

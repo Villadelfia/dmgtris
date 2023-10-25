@@ -92,6 +92,7 @@ ScoreIncrement points are then awarded.
 - Up — Sonic/Hard drop
 - Down — Soft drop/Lock
 - Left/Right — Move
+- A+B+Select — Bail to main menu if paused
 
 ### Game Over
 - A — Restart immediately

@@ -1184,6 +1184,10 @@ FieldProcess::
 
     ; **************************************************************
     ; HANDLE UP
+    ; Assume 1G or lower.
+    ld a, 1
+    ldh [hWantedG], a
+
     ; Is a hard/sonic drop requested? Skip if in 20G mode.
     ldh a, [hCurrentGravityPerTick]
     cp a, 20

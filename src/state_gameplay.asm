@@ -506,7 +506,21 @@ gameOverMode:
 
 
 pauseMode:
-    ldh a, [hStartState]
+    ; Quick reset.
+    ldh a, [hAState]
+    cp a, 0
+    jr z, :+
+    ldh a, [hBState]
+    cp a, 0
+    jr z, :+
+    ldh a, [hSelectState]
+    cp a, 0
+    jr z, :+
+    call SwitchToTitle
+    jp EventLoopPostHandler
+
+    ; Unpause
+:   ldh a, [hStartState]
     cp a, 1
     jr nz, :+
     call FromBackupField

@@ -754,7 +754,7 @@ GBCGameplayProcess::
     ld a, [wSpeedCurveState]
     cp a, SCURVE_SHIR
     ld a, $00 ;Red
-    jr z, .colorfield ;Always red
+    jr z, .higoverride ;Always red
     ld a, [wSpeedCurveState]
     cp a, SCURVE_CHIL
     ld a, $01 ;Green
@@ -896,13 +896,13 @@ GBCGameplayProcess::
     jr nz, .black
 
     ld hl, hFrameCtr
-    bit 1, [hl]
+    bit 4, [hl]
     jr z, .lighter
 
 .darker
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    ld bc, R2 | G2
+    ld bc, R1 | G1
     wait_vram
     ld a, c
     ldh [rOCPD], a
@@ -913,7 +913,7 @@ GBCGameplayProcess::
 .lighter
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    ld bc, R3 | G3
+    ld bc, R2 | G2
     wait_vram
     ld a, c
     ldh [rOCPD], a

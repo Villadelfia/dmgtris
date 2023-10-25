@@ -123,7 +123,7 @@ Main::
     cp a, "G"
     jr nz, .nosavedata
     ld a, [rMagic+3]
-    cp a, "1"
+    cp a, "2"
     jr nz, .nosavedata
 
 .savedata
@@ -152,7 +152,7 @@ Main::
     ld [rMagic+1], a
     ld a, "G"
     ld [rMagic+2], a
-    ld a, "1"
+    ld a, "2"
     ld [rMagic+3], a
 
     ld a, BUTTON_MODE_NORM

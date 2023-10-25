@@ -14,16 +14,17 @@ LICENSEE := NR
 ROMNAME := DMGTRIS
 ROMEXT  := GBC
 
+# Mapper
+MAPPER := 0x03
+
 # Extra assembler flags
 # Do not insert nop after halt
 ASFLAGS += -h
-# Do optimize ld to ldh
-ASFLAGS += -l
 
 # Extra linker flags
 # Tiny Rom
 LDFLAGS += -t
 
 # Extra fix flags
-# SEt as gbc compatible
+# Set as gbc compatible
 FIXFLAGS += -c

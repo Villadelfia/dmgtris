@@ -43,7 +43,7 @@ INCDIRS  = src/ src/include/
 WARNINGS = all extra
 ASFLAGS  = -p 0xFF $(addprefix -i,$(INCDIRS)) $(addprefix -W,$(WARNINGS))
 LDFLAGS  = -p 0xFF
-FIXFLAGS = -p 0xFF -l 0x33 -m 0x03 -r 0x02 -v -i $(GAMEID) -k $(LICENSEE) -t $(TITLE) -n $(VERSION)
+FIXFLAGS = -p 0xFF -l 0x33 -r 0x02 -v -i $(GAMEID) -k $(LICENSEE) -t $(TITLE) -n $(VERSION) -m $(MAPPER)
 
 # The list of "root" ASM files that RGBASM will be invoked on
 SRCS = $(wildcard src/*.asm)

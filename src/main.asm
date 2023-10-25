@@ -45,17 +45,6 @@ wInitialH:: ds 1
 wInitialL:: ds 1
 
 
-SECTION "Persistent Globals", SRAM
-rMagic:: ds 4
-rSwapABState:: ds 1
-rRNGModeState:: ds 1
-rRotModeState:: ds 1
-rDropModeState:: ds 1
-rSpeedCurveState:: ds 1
-rAlways20GState:: ds 1
-rSelectedStartLevel:: ds 2
-
-
 SECTION "Stack", WRAM0
 wStack::
     ds STACK_SIZE + 1
@@ -95,6 +84,13 @@ Main::
     ldh [rKEY1], a
     stop
 .notgbc
+    ; Initialize the mapper.
+    ld a, CART_SRAM_ENABLE
+    ld [rRAMG], a
+    xor a, a
+    ld [rRAMB], a
+    ld a, BANK("Static Data")
+    ld [rROMB0], a
 
     ; We use a single set of tiles for the entire game, so we copy it at the start.
     ld de, Tiles
@@ -107,91 +103,8 @@ Main::
     call SetNumberSpritePositions
     call CopyOAMHandler
 
-    ; Enable RAM. (Not actually needed since we don't ACTUALLY use an MBC, but without this emulators shit the bed.)
-    ld hl, rRAMG
-    ld a, CART_SRAM_ENABLE
-    ld [hl], a
-
-    ; Check for save data.
-    ld a, [rMagic]
-    cp a, "D"
-    jr nz, .nosavedata
-    ld a, [rMagic+1]
-    cp a, "M"
-    jr nz, .nosavedata
-    ld a, [rMagic+2]
-    cp a, "G"
-    jr nz, .nosavedata
-    ld a, [rMagic+3]
-    cp a, "2"
-    jr nz, .nosavedata
-
-.savedata
-    ld a, [rSwapABState]
-    ld [wSwapABState], a
-    ld a, [rRNGModeState]
-    ld [wRNGModeState], a
-    ld a, [rRotModeState]
-    ld [wRotModeState], a
-    ld a, [rDropModeState]
-    ld [wDropModeState], a
-    ld a, [rSpeedCurveState]
-    ld [wSpeedCurveState], a
-    ld a, [rAlways20GState]
-    ld [wAlways20GState], a
-    ld a, [rSelectedStartLevel]
-    ldh [hStartSpeed], a
-    ld a, [rSelectedStartLevel+1]
-    ldh [hStartSpeed+1], a
-    jr .otherinit
-
-.nosavedata
-    ld a, "D"
-    ld [rMagic], a
-    ld a, "M"
-    ld [rMagic+1], a
-    ld a, "G"
-    ld [rMagic+2], a
-    ld a, "2"
-    ld [rMagic+3], a
-
-    ld a, BUTTON_MODE_NORM
-    ld [rSwapABState], a
-    ld [wSwapABState], a
-
-    ld a, RNG_MODE_TGM3
-    ld [rRNGModeState], a
-    ld [wRNGModeState], a
-
-    ld a, RNG_MODE_TGM3
-    ld [rRNGModeState], a
-    ld [wRNGModeState], a
-
-    ld a, ROT_MODE_ARSTI
-    ld [rRotModeState], a
-    ld [wRotModeState], a
-
-    ld a, DROP_MODE_SONIC
-    ld [rDropModeState], a
-    ld [wDropModeState], a
-
-    ld a, SCURVE_DMGT
-    ld [rSpeedCurveState], a
-    ld [wSpeedCurveState], a
-
-    ld a, HIG_MODE_OFF
-    ld [rAlways20GState], a
-    ld [wAlways20GState], a
-
-    ld hl, sSpeedCurve
-    ld a, l
-    ldh [hStartSpeed], a
-    ld [rSelectedStartLevel], a
-    ld a, h
-    ldh [hStartSpeed+1], a
-    ld [rSelectedStartLevel+1], a
-
-.otherinit
+    ; Other initialization.
+    call RestoreSRAM
     call TimeInit
     call IntrInit
     call InputInit

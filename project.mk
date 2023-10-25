@@ -15,15 +15,11 @@ ROMNAME := DMGTRIS
 ROMEXT  := GBC
 
 # Mapper
-MAPPER := 0x03
+MAPPER := 0x1B
 
 # Extra assembler flags
 # Do not insert nop after halt
 ASFLAGS += -h
-
-# Extra linker flags
-# Tiny Rom
-LDFLAGS += -t
 
 # Extra fix flags
 # Set as gbc compatible

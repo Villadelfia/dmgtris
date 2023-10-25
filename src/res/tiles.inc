@@ -18,7 +18,7 @@
 IF !DEF(TILES_INC)
 DEF TILES_INC EQU 1
 
-SECTION "Tile data", ROM0
+SECTION "Tile data", ROMX, BANK[1]
 Tiles::
     DB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
     DB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF

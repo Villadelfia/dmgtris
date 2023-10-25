@@ -19,7 +19,7 @@ IF !DEF(GAMEPLAY_MAP_INC)
 DEF GAMEPLAY_MAP_INC EQU 1
 
 
-SECTION "Gameplay Tilemap", ROM0
+SECTION "Gameplay Tilemap", ROMX, BANK[1]
 GameplayTilemap::
     DB $02,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $01,$03,$09,$01,$01,$01,$01,$01,$01,$09

@@ -65,7 +65,7 @@ CHARMAP "|", 126
 CHARMAP "#", 125
 
 
-SECTION "Static Data", ROM0
+SECTION "Static Data", ROMX, BANK[1]
 sLeady::     db "  READY?  "
 sGo::        db "    GO    "
 sPause::

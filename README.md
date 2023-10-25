@@ -70,7 +70,7 @@ ScoreIncrement points are then awarded.
 
 
 ## Playing
-You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/DMGTRIS.GBC) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/DMGTRIS.GBC).
+You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/bin/DMGTRIS.GBC) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/bin/DMGTRIS.GBC).
 
 The game should run in any accurate emulator. For Windows or Linux using Wine [bgb](https://bgb.bircd.org/) is generally regarded as the best option. For macOS [SameBoy](https://sameboy.github.io/) comes recommended.
 

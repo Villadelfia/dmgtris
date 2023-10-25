@@ -43,7 +43,7 @@ INCDIRS  = src/ src/include/
 WARNINGS = all extra
 ASFLAGS  = -p 0xFF $(addprefix -i,$(INCDIRS)) $(addprefix -W,$(WARNINGS))
 LDFLAGS  = -p 0xFF
-FIXFLAGS = -p 0xFF -l 0x33 -r 0x02 -v -i $(GAMEID) -k $(LICENSEE) -t $(TITLE) -n $(VERSION) -m $(MAPPER)
+FIXFLAGS = -p 0xFF -l 0x33 -r 0x04 -v -i $(GAMEID) -k $(LICENSEE) -t $(TITLE) -n $(VERSION) -m $(MAPPER)
 
 # The list of "root" ASM files that RGBASM will be invoked on
 SRCS = $(wildcard src/*.asm)
@@ -52,11 +52,7 @@ SRCS = $(wildcard src/*.asm)
 # Use this to override the above
 include project.mk
 
-################################################
-#                                              #
-#                    TARGETS                   #
-#                                              #
-################################################
+
 
 # `all` (Default target): build the ROM
 all: $(ROM)
@@ -77,52 +73,12 @@ rebuild:
 	$(MAKE) all
 .PHONY: rebuild
 
-################################################
-#                                              #
-#                RESOURCE FILES                #
-#                                              #
-################################################
 
-# By default, asset recipes convert files in `res/` into other files in `res/`
-# This line causes assets not found in `res/` to be also looked for in `src/res/`
-# "Source" assets can thus be safely stored there without `make clean` removing them
-VPATH := src
-
-res/%.1bpp: res/%.png
-	@$(MKDIR_P) $(@D)
-	$(RGBGFX) -d 1 -o $@ $<
-
-# Define how to compress files using the PackBits16 codec
-# Compressor script requires Python 3
-res/%.pb16: res/% src/tools/pb16.py
-	@$(MKDIR_P) $(@D)
-	$(PY) src/tools/pb16.py $< res/$*.pb16
-
-res/%.pb16.size: res/%
-	@$(MKDIR_P) $(@D)
-	$(call filesize,$<,16) > res/$*.pb16.size
-
-# Define how to compress files using the PackBits8 codec
-# Compressor script requires Python 3
-res/%.pb8: res/% src/tools/pb8.py
-	@$(MKDIR_P) $(@D)
-	$(PY) src/tools/pb8.py $< res/$*.pb8
-
-res/%.pb8.size: res/%
-	@$(MKDIR_P) $(@D)
-	$(call filesize,$<,8) > res/$*.pb8.size
-
-###############################################
-#                                             #
-#                 COMPILATION                 #
-#                                             #
-###############################################
 
 # How to build a ROM
 $(BINDIR)/%.$(ROMEXT) $(BINDIR)/%.sym $(BINDIR)/%.map: $(patsubst src/%.asm,$(OBJDIR)/%.o,$(SRCS))
 	@$(MKDIR_P) $(@D)
-	$(RGBASM) $(ASFLAGS) -o $(OBJDIR)/build_date.o src/res/build_date.asm
-	$(RGBLINK) $(LDFLAGS) -m $(BINDIR)/$*.map -n $(BINDIR)/$*.sym -o $(BINDIR)/$*.$(ROMEXT) $^ $(OBJDIR)/build_date.o \
+	$(RGBLINK) $(LDFLAGS) -m $(BINDIR)/$*.map -n $(BINDIR)/$*.sym -o $(BINDIR)/$*.$(ROMEXT) $^ \
 	&& $(RGBFIX) -v $(FIXFLAGS) $(BINDIR)/$*.$(ROMEXT)
 
 # `.mk` files are auto-generated dependency lists of the "root" ASM files, to save a lot of hassle.

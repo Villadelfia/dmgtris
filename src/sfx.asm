@@ -61,7 +61,7 @@ DEF REG_WAVE_PATTERN_E EQU $3E
 DEF REG_WAVE_PATTERN_F EQU $3F
 
 
-SECTION "SFX Data", ROM0
+SECTION "SFX Data", ROMX, BANK[2]
 sSFXPieceI::
     db REG_NR12_CH1_VOLEV, $00, REG_NR14_CH1_FRQHI, $80, REG_NR22_CH2_VOLEV, $00, REG_NR24_CH2_FRQHI, $80
     db REG_NR32_CH3_VOLUM, $00, REG_NR34_CH3_FRQHI, $80, REG_NR42_CH4_VOLEV, $00, REG_NR44_CH4_CNTRL, $80
@@ -2431,6 +2431,12 @@ SFXKill::
 
     ; This play routine must be called every frame.
 SFXPlay::
+    ; Bank to SFX bank.
+    ld a, [rBANKID]
+    ld e, a
+    ld a, BANK("SFX Data")
+    ld [rROMB0], a
+
     ; Load the playhead position into HL.
     ldh a, [hPlayhead]
     ld l, a
@@ -2439,7 +2445,10 @@ SFXPlay::
 
     ; Nothing to do if it's a null ptr.
     or a, l
-    ret z
+    jr nz, .getRegister
+    ld a, e
+    ld [rROMB0], a
+    ret
 
     ; Otherwise, get the register to write to.
 .getRegister
@@ -2449,6 +2458,8 @@ SFXPlay::
     ; If it's $FE, then we're done. Check if there's more for us in the queue.
     cp a, $FE
     jr nz, :+
+    ld a, e
+    ld [rROMB0], a
     call SFXProcessQueue
     ret
 
@@ -2473,6 +2484,8 @@ SFXPlay::
     ldh [hPlayhead], a
     ld a, h
     ldh [hPlayhead+1], a
+    ld a, e
+    ld [rROMB0], a
     ret
 
 

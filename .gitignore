@@ -1,8 +1,9 @@
-/bin/
 /obj/
 /dep/
 /res/
 /tools/**
 /src/res/sources/*.z80
 /src/res/sources/*.inc
-DMGTRIS.sav
+/bin/*.map
+/bin/*.sym
+/bin/*.sav

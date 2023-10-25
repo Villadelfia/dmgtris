@@ -59,6 +59,10 @@ ENDC
     IF !DEF(HARDWARE_INC)
 DEF HARDWARE_INC EQU 1
 
+
+; Uncomment this line to build a rom with the registers scrambled for the analogue pocket.
+;DEF BUILD_POCKET EQU 1
+
 ; Usage: rev_Check_hardware_inc <min_ver>
 ; Examples: rev_Check_hardware_inc 4.1.2
 ;           rev_Check_hardware_inc 4.1 (equivalent to 4.1.0)
@@ -534,8 +538,30 @@ DEF AUDENA_OFF   EQU %00000000  ; sets all audio regs to 0!
 ; -- LCDC ($FF40)
 ; -- LCD Control (R/W)
 ; --
+if def(BUILD_POCKET)
+DEF rLCDC EQU $FF4E
+else
 DEF rLCDC EQU $FF40
+endc
 
+if def(BUILD_POCKET)
+DEF LCDCF_OFF     EQU %00000000 ; LCD Control Operation
+DEF LCDCF_ON      EQU %00000001 ; LCD Control Operation
+DEF LCDCF_WIN9800 EQU %00000000 ; Window Tile Map Display Select
+DEF LCDCF_WIN9C00 EQU %00000010 ; Window Tile Map Display Select
+DEF LCDCF_WINOFF  EQU %00000000 ; Window Display
+DEF LCDCF_WINON   EQU %00000100 ; Window Display
+DEF LCDCF_BLK21   EQU %00000000 ; BG & Window Tile Data Select
+DEF LCDCF_BLK01   EQU %00001000 ; BG & Window Tile Data Select
+DEF LCDCF_BG9800  EQU %00000000 ; BG Tile Map Display Select
+DEF LCDCF_BG9C00  EQU %00010000 ; BG Tile Map Display Select
+DEF LCDCF_OBJ8    EQU %00000000 ; OBJ Construction
+DEF LCDCF_OBJ16   EQU %00100000 ; OBJ Construction
+DEF LCDCF_OBJOFF  EQU %00000000 ; OBJ Display
+DEF LCDCF_OBJON   EQU %01000000 ; OBJ Display
+DEF LCDCF_BGOFF   EQU %00000000 ; BG Display
+DEF LCDCF_BGON    EQU %10000000 ; BG Display
+else
 DEF LCDCF_OFF     EQU %00000000 ; LCD Control Operation
 DEF LCDCF_ON      EQU %10000000 ; LCD Control Operation
 DEF LCDCF_WIN9800 EQU %00000000 ; Window Tile Map Display Select
@@ -552,7 +578,18 @@ DEF LCDCF_OBJOFF  EQU %00000000 ; OBJ Display
 DEF LCDCF_OBJON   EQU %00000010 ; OBJ Display
 DEF LCDCF_BGOFF   EQU %00000000 ; BG Display
 DEF LCDCF_BGON    EQU %00000001 ; BG Display
+endc
 
+if def(BUILD_POCKET)
+DEF LCDCB_ON      EQU 0 ; LCD Control Operation
+DEF LCDCB_WIN9C00 EQU 1 ; Window Tile Map Display Select
+DEF LCDCB_WINON   EQU 2 ; Window Display
+DEF LCDCB_BLKS    EQU 3 ; BG & Window Tile Data Select
+DEF LCDCB_BG9C00  EQU 4 ; BG Tile Map Display Select
+DEF LCDCB_OBJ16   EQU 5 ; OBJ Construction
+DEF LCDCB_OBJON   EQU 6; OBJ Display
+DEF LCDCB_BGON    EQU 7 ; BG Display
+else
 DEF LCDCB_ON      EQU 7 ; LCD Control Operation
 DEF LCDCB_WIN9C00 EQU 6 ; Window Tile Map Display Select
 DEF LCDCB_WINON   EQU 5 ; Window Display
@@ -561,6 +598,7 @@ DEF LCDCB_BG9C00  EQU 3 ; BG Tile Map Display Select
 DEF LCDCB_OBJ16   EQU 2 ; OBJ Construction
 DEF LCDCB_OBJON   EQU 1 ; OBJ Display
 DEF LCDCB_BGON    EQU 0 ; BG Display
+endc
 ; "Window Character Data Select" follows BG
 
 
@@ -570,6 +608,18 @@ DEF LCDCB_BGON    EQU 0 ; BG Display
 ; --
 DEF rSTAT EQU $FF41
 
+if def(BUILD_POCKET)
+DEF STATF_LYC     EQU  %00000010 ; LYC=LY Coincidence (Selectable)
+DEF STATF_MODE10  EQU  %00000100 ; Mode 10
+DEF STATF_MODE01  EQU  %00001000 ; Mode 01 (V-Blank)
+DEF STATF_MODE00  EQU  %00010000 ; Mode 00 (H-Blank)
+DEF STATF_LYCF    EQU  %00100000 ; Coincidence Flag
+DEF STATF_HBL     EQU  %00000000 ; H-Blank
+DEF STATF_VBL     EQU  %10000000 ; V-Blank
+DEF STATF_OAM     EQU  %01000000 ; OAM-RAM is used by system
+DEF STATF_LCD     EQU  %11000000 ; Both OAM and VRAM used by system
+DEF STATF_BUSY    EQU  %01000000 ; When set, VRAM access is unsafe
+else
 DEF STATF_LYC     EQU  %01000000 ; LYC=LY Coincidence (Selectable)
 DEF STATF_MODE10  EQU  %00100000 ; Mode 10
 DEF STATF_MODE01  EQU  %00010000 ; Mode 01 (V-Blank)
@@ -580,13 +630,23 @@ DEF STATF_VBL     EQU  %00000001 ; V-Blank
 DEF STATF_OAM     EQU  %00000010 ; OAM-RAM is used by system
 DEF STATF_LCD     EQU  %00000011 ; Both OAM and VRAM used by system
 DEF STATF_BUSY    EQU  %00000010 ; When set, VRAM access is unsafe
+endc
 
+if def(BUILD_POCKET)
+DEF STATB_LYC     EQU  1
+DEF STATB_MODE10  EQU  2
+DEF STATB_MODE01  EQU  3
+DEF STATB_MODE00  EQU  4
+DEF STATB_LYCF    EQU  5
+DEF STATB_BUSY    EQU  6
+else
 DEF STATB_LYC     EQU  6
 DEF STATB_MODE10  EQU  5
 DEF STATB_MODE01  EQU  4
 DEF STATB_MODE00  EQU  3
 DEF STATB_LYCF    EQU  2
 DEF STATB_BUSY    EQU  1
+endc
 
 ; --
 ; -- SCY ($FF42)

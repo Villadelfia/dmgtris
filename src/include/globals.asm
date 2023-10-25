@@ -35,7 +35,7 @@ INCLUDE "structs.asm"
 MACRO wait_vram
     ld hl, rSTAT
 .wvr\@
-    bit 1, [hl]
+    bit STATB_BUSY, [hl]
     jr nz, .wvr\@
 ENDM
 

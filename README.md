@@ -14,6 +14,15 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - A rock solid 60FPS with a traditional 20x10 grid.
 - Game boy color mode.
 
+## Playing
+Try the game online [here](https://villadelfia.org/dmgtris/). Controls are arrow keys, Z, X, and Enter. The online version has no sound though, so the better thing would be to run it in an emulator locally.
+
+You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/bin/DMGTRIS.GBC) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/bin/DMGTRIS.GBC).
+
+The game should run in any accurate emulator. For Windows or Linux using Wine [bgb](https://bgb.bircd.org/) is generally regarded as the best option. For macOS [SameBoy](https://sameboy.github.io/) comes recommended.
+
+Please do not try running it on older emulators such as VBA, since this game uses the semi-randomness of the initial game boy memory as one source of RNG entropy.
+
 
 ## Options
 ### Buttons
@@ -67,14 +76,6 @@ Bravo = 1 if the field isn't empty, 4 if it is.
 ScoreIncrement = ((Level + Lines) >> 4 + 1 + Soft) x Combo x Lines x Bravo.
 
 ScoreIncrement points are then awarded.
-
-
-## Playing
-You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/bin/DMGTRIS.GBC) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/bin/DMGTRIS.GBC).
-
-The game should run in any accurate emulator. For Windows or Linux using Wine [bgb](https://bgb.bircd.org/) is generally regarded as the best option. For macOS [SameBoy](https://sameboy.github.io/) comes recommended.
-
-Please do not try running it on older emulators such as VBA, since this game uses the semi-randomness of the initial game boy memory as one source of RNG entropy.
 
 
 ## Controls

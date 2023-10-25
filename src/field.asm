@@ -1791,15 +1791,6 @@ FieldDelay::
     ld e, a
     call LevelUp
 
-    ; Update the combo counter.
-    ldh a, [hLineClearCt]
-    ld b, a
-    ldh a, [hComboCt] ; Old combo count.
-    add b             ; + lines
-    add b             ; + lines
-    sub 2             ; - 2
-    ldh [hComboCt], a
-
     ; Score the line clears.
     ; Get the new level.
     ldh a, [hLevel]
@@ -1844,8 +1835,11 @@ FieldDelay::
     cp a, 0
     jr nz, .lineclears
     add hl, bc
+    jr c, .forcemax
     add hl, bc
+    jr c, .forcemax
     add hl, bc
+    jr c, .forcemax
     ld b, h
     ld c, l
 
@@ -1855,6 +1849,7 @@ FieldDelay::
     dec a
     jr z, .combo
 :   add hl, bc
+    jr c, .forcemax
     dec a
     jr nz, :-
     ld b, h
@@ -1885,9 +1880,18 @@ FieldDelay::
     ldh [hScoreIncrement+1], a
     call IncreaseScore
 
+    ; Update the combo counter.
+    ldh a, [hLineClearCt]
+    ld b, a
+    ldh a, [hComboCt] ; Old combo count.
+    add b             ; + lines
+    add b             ; + lines
+    sub 2             ; - 2
+    ldh [hComboCt], a
+
 
     ; Line clear delay.
-    ; Count doen the delay. If we're out of delay, clear the lines and go to ARE.
+    ; Count down the delay. If we're out of delay, clear the lines and go to ARE.
 .lineclear
     ldh a, [hRemainingDelay]
     dec a

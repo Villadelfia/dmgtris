@@ -97,8 +97,13 @@ Please do not try running it on older emulators such as VBA, since this game use
 - B — Go back to title
 
 
-## Building
+## Building and Development
 The game can be built using gnu make and the RGBDS toolchain.
+
+A few guidelines are in effect:
+- If you add a bank, please add a section to `bankid.asm` and follow the existing format.
+- If your code breaks existing save data, please update `SAVE_MAGIC_X` in `globals.asm`. This only needs to be done if existing save data would be completely incompatible.
+- If you wish to save integer ID's they can be added to SRAM in `InitializeSRAM` and `RestoreSRAM`. However if you're saving a memory address, you should use `PartiallyInitializeSRAM` rather than `InitializeSRAM` so that it gets invalidated on every build.
 
 
 ## License

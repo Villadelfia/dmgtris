@@ -15,27 +15,32 @@
 ; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-IF !DEF(BANKID_ASM)
-DEF BANKID_ASM EQU 1
+IF !DEF(BANKING_ASM)
+DEF BANKING_ASM EQU 1
 
 
-SECTION "Bank ID 0", ROM0[$0]
-    REPT 7
-        rst $00
-    ENDR
-    db $00
+INCLUDE "globals.asm"
 
-SECTION "Bank ID 1", ROMX[$4000], BANK[1]
-    REPT 7
-        rst $00
-    ENDR
-    db $01
 
-SECTION "Bank ID 2", ROMX[$4000], BANK[2]
-    REPT 7
-        rst $00
-    ENDR
-    db $02
+SECTION "High Banking Variables", HRAM
+hBankBackup: ds 1
+
+; 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, and 0x38
+SECTION "Switch Bank", ROM0[$08]
+    ; Saves the current bank and switches to the bank in b.
+RSTSwitchBank::
+    ld a, [rBANKID]
+    ldh [hBankBackup], a
+    ld a, b
+    ld [rROMB0], a
+    ret
+
+SECTION "Restore Bank", ROM0[$18]
+    ; Restore the bank previously saved. The current one is not saved.
+RSTRestoreBank::
+    ld a, [hBankBackup]
+    ld [rROMB0], a
+    ret
 
 
 ENDC

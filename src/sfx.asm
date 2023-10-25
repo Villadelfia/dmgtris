@@ -2432,10 +2432,8 @@ SFXKill::
     ; This play routine must be called every frame.
 SFXPlay::
     ; Bank to SFX bank.
-    ld a, [rBANKID]
-    ld e, a
-    ld a, BANK("SFX Data")
-    ld [rROMB0], a
+    ld b, BANK("SFX Data")
+    rst RSTSwitchBank
 
     ; Load the playhead position into HL.
     ldh a, [hPlayhead]
@@ -2446,8 +2444,7 @@ SFXPlay::
     ; Nothing to do if it's a null ptr.
     or a, l
     jr nz, .getRegister
-    ld a, e
-    ld [rROMB0], a
+    rst RSTRestoreBank
     ret
 
     ; Otherwise, get the register to write to.
@@ -2458,8 +2455,7 @@ SFXPlay::
     ; If it's $FE, then we're done. Check if there's more for us in the queue.
     cp a, $FE
     jr nz, :+
-    ld a, e
-    ld [rROMB0], a
+    rst RSTRestoreBank
     call SFXProcessQueue
     ret
 
@@ -2484,8 +2480,7 @@ SFXPlay::
     ldh [hPlayhead], a
     ld a, h
     ldh [hPlayhead+1], a
-    ld a, e
-    ld [rROMB0], a
+    rst RSTRestoreBank
     ret
 
 

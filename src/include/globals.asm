@@ -215,7 +215,7 @@ DEF FIELD_TOP_LEFT      EQU $9800+1
 DEF EASTER_0            EQU $9845
 DEF EASTER_1            EQU $9865
 
-DEF rBANKID             EQU $4000
+DEF rBANKID             EQU $4007
 
 
 ENDC

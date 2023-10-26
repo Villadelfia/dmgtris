@@ -666,6 +666,11 @@ TitleVBlankHandler::
     call UnsafeMemCopy
 
     ; Draw option 5.
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_DEAT
+    jr z, .disabled
+    cp a, SCURVE_SHIR
+    jr z, .disabled
     xor a, a
     ld b, a
     ld a, [wAlways20GState]
@@ -679,8 +684,15 @@ TitleVBlankHandler::
     ld hl, TITLE_OPTION_5+TITLE_OPTION_OFFSET
     ld bc, 4
     call UnsafeMemCopy
+    jr .opt6
+.disabled
+    ld de, sDisabled
+    ld hl, TITLE_OPTION_5+TITLE_OPTION_OFFSET
+    ld bc, 4
+    call UnsafeMemCopy
 
     ; Draw option 6.
+.opt6
     ldh a, [hStartSpeed]
     ld l, a
     ldh a, [hStartSpeed+1]

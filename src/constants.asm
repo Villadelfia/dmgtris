@@ -101,14 +101,18 @@ sOption4::
 sOption5::
     db "  NO"
     db " YES"
-sEasterM0:: db $C4, $C6, $C8, $CA, $CC ; MGB
+sDisabled::
+    db "----"
+
+sEasterM0:: db $C4, $C6, $C8, $CA, $CC
 sEasterM1:: db $C5, $C7, $C9, $CB, $CD
-sEasterC0:: db $CE, $D0, $C8, $CA, $CC, $72, $74, $76, $78, $7A, $D6, $D7 ; CGB
+sEasterC0:: db $CE, $D0, $C8, $CA, $CC, $72, $74, $76, $78, $7A, $D6, $D7
 sEasterC1:: db $CF, $D1, $C9, $CB, $CD, $73, $75, $77, $79, $7B, $01, $01
-sEasterA0:: db $D2, $D4, $C8, $CA, $CC, $72, $74, $76, $78, $7A, $D6, $D7 ; AGB
+sEasterA0:: db $D2, $D4, $C8, $CA, $CC, $72, $74, $76, $78, $7A, $D6, $D7
 sEasterA1:: db $D3, $D5, $C9, $CB, $CD, $73, $75, $77, $79, $7B, $01, $01
-sEasterS0:: db $F6, $F8, $C8, $CA, $CC ; SGB
+sEasterS0:: db $F6, $F8, $C8, $CA, $CC
 sEasterS1:: db $F7, $F9, $C9, $CB, $CD
+
 sPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
     db 0, 8, 16, 24 ; I
     db 0, 8, 8, 16  ; Z
@@ -129,19 +133,23 @@ sPieceYOffsets::    ; How to draw each piece. Y-offsets of the sprites.
 
 sTGM1SpeedCurve::
     dw $0000, 0, $0100
-    db 1, 64
+    db 1, 4
     db 30, 16, 30, 41
 
     dw $0030, 30, $0100
-    db 1, 42
+    db 1, 6
     db 30, 16, 30, 41
 
     dw $0035, 35, $0100
-    db 1, 32
+    db 1, 8
     db 30, 16, 30, 41
 
     dw $0040, 40, $0100
-    db 1, 25
+    db 1, 10
+    db 30, 16, 30, 41
+
+    dw $0050, 50, $0100
+    db 1, 12
     db 30, 16, 30, 41
 
     dw $0060, 60, $0100
@@ -149,71 +157,99 @@ sTGM1SpeedCurve::
     db 30, 16, 30, 41
 
     dw $0070, 70, $0100
-    db 1, 8
+    db 1, 32
     db 30, 16, 30, 41
 
     dw $0080, 80, $0100
-    db 1, 5
+    db 1, 48
     db 30, 16, 30, 41
 
-    dw $0100, 100, $0200
-    db 1, 3
-    db 30, 16, 30, 41
-
-    dw $0160, 160, $0200
-    db 1, 2
-    db 30, 16, 30, 41
-
-    dw $0200, 200, $0300
+    dw $0090, 90, $0100
     db 1, 64
     db 30, 16, 30, 41
 
-    dw $0220, 220, $0300
-    db 1, 8
+    dw $0100, 100, $0200
+    db 1, 80
     db 30, 16, 30, 41
 
-    dw $0230, 230, $0300
+    dw $0120, 120, $0200
+    db 1, 96
+    db 30, 16, 30, 41
+
+    dw $0140, 140, $0200
+    db 1, 112
+    db 30, 16, 30, 41
+
+    dw $0160, 160, $0200
+    db 1, 128
+    db 30, 16, 30, 41
+
+    dw $0170, 170, $0200
+    db 1, 144
+    db 30, 16, 30, 41
+
+    dw $0200, 200, $0300
     db 1, 4
     db 30, 16, 30, 41
 
+    dw $0220, 220, $0300
+    db 1, 32
+    db 30, 16, 30, 41
+
+    dw $0230, 230, $0300
+    db 1, 64
+    db 30, 16, 30, 41
+
     dw $0233, 233, $0300
-    db 1, 3
+    db 1, 96
     db 30, 16, 30, 41
 
     dw $0236, 236, $0300
-    db 1, 2
+    db 1, 128
+    db 30, 16, 30, 41
+
+    dw $0239, 239, $0300
+    db 1, 160
+    db 30, 16, 30, 41
+
+    dw $0243, 243, $0300
+    db 1, 192
+    db 30, 16, 30, 41
+
+    dw $0247, 239, $0300
+    db 1, 224
     db 30, 16, 30, 41
 
     dw $0251, 251, $0300
-    db 1, 1
+    db 1, $FF
     db 30, 16, 30, 41
 
     dw $0300, 300, $0400
-    db 2, 1
+    db 2, $FF
     db 30, 16, 30, 41
 
     dw $0330, 330, $0400
-    db 3, 1
+    db 3, $FF
     db 30, 16, 30, 41
 
     dw $0360, 360, $0400
-    db 4, 1
+    db 4, $FF
     db 30, 16, 30, 41
 
     dw $0400, 400, $0500
-    db 5, 1
+    db 5, $FF
     db 30, 16, 30, 41
 
     dw $0420, 420, $0500
-    db 4, 1
+    db 4, $FF
     db 30, 16, 30, 41
 
     dw $0450, 450, $0500
-    db 3, 1
+    db 3, $FF
     db 30, 16, 30, 41
 
     dw $0500, 500, $0600
-    db 20, 1
+    db 20, $FF
     db 30, 16, 30, 41
 
 sTGM1SpeedCurveEnd::
@@ -222,91 +258,91 @@ sTGM1SpeedCurveEnd::
 
 sCHILSpeedCurve::
     dw $0000, 0, $0100
-    db 1, 48
-    db 10, 16, 25, 17
-
-    dw $0100, 100, $0200
-    db 1, 43
-    db 10, 16, 25, 17
-
-    dw $0200, 200, $0300
-    db 1, 38
-    db 10, 16, 25, 17
-
-    dw $0300, 300, $0400
-    db 1, 33
-    db 10, 16, 25, 17
-
-    dw $0400, 400, $0500
-    db 1, 28
-    db 10, 16, 25, 17
-
-    dw $0500, 500, $0600
-    db 1, 23
-    db 10, 16, 25, 17
-
-    dw $0600, 600, $0700
-    db 1, 18
-    db 10, 16, 25, 17
-
-    dw $0700, 700, $0800
-    db 1, 13
-    db 10, 16, 25, 17
-
-    dw $0800, 800, $0900
-    db 1, 8
-    db 10, 16, 25, 17
-
-    dw $0900, 900, $1000
-    db 1, 6
-    db 10, 16, 25, 17
-
-    dw $1000, 1000, $1100
     db 1, 5
     db 10, 16, 25, 17
 
+    dw $0100, 100, $0200
+    db 1, 6
+    db 10, 16, 25, 17
+
+    dw $0200, 200, $0300
+    db 1, 7
+    db 10, 16, 25, 17
+
+    dw $0300, 300, $0400
+    db 1, 8
+    db 10, 16, 25, 17
+
+    dw $0400, 400, $0500
+    db 1, 9
+    db 10, 16, 25, 17
+
+    dw $0500, 500, $0600
+    db 1, 11
+    db 10, 16, 25, 17
+
+    dw $0600, 600, $0700
+    db 1, 14
+    db 10, 16, 25, 17
+
+    dw $0700, 700, $0800
+    db 1, 20
+    db 10, 16, 25, 17
+
+    dw $0800, 800, $0900
+    db 1, 32
+    db 10, 16, 25, 17
+
+    dw $0900, 900, $1000
+    db 1, 43
+    db 10, 16, 25, 17
+
+    dw $1000, 1000, $1100
+    db 1, 51
+    db 10, 16, 25, 17
+
     dw $1300, 1300, $1400
-    db 1, 4
+    db 1, 64
     db 10, 16, 25, 17
 
     dw $1600, 1600, $1700
-    db 1, 3
+    db 1, 85
     db 10, 16, 25, 17
 
     dw $1900, 1900, $2000
-    db 1, 2
+    db 1, 128
     db 10, 16, 25, 17
 
     dw $2900, 2900, $3000
-    db 1, 1
+    db 1, $FF
     db 10, 16, 25, 17
 
     dw $3333, 3333, $3400
-    db 2, 1
+    db 2, $FF
     db 10, 12, 25, 17
 
     dw $4444, 4444, $4500
-    db 3, 1
+    db 3, $FF
     db 10, 12, 25, 17
 
     dw $5555, 5555, $5600
-    db 4, 1
+    db 4, $FF
     db 10, 12, 25, 17
 
     dw $6666, 6666, $6700
-    db 5, 1
+    db 5, $FF
     db 10, 12, 25, 17
 
     dw $7777, 7777, $7800
-    db 20, 1
+    db 20, $FF
     db 10, 8, 25, 17
 
     dw $8888, 8888, $8900
-    db 20, 1
+    db 20, $FF
     db 10, 6, 18, 17
 
     dw $9999, 9999, $9999
-    db 20, 1
+    db 20, $FF
     db 5, 6, 14, 10
 
 sCHILSpeedCurveEnd::
@@ -315,19 +351,23 @@ sCHILSpeedCurveEnd::
 
 sTGM3SpeedCurve::
     dw $0000, 0, $0100
-    db 1, 64
+    db 1, 4
     db 27, 16, 30, 40
 
     dw $0030, 30, $0100
-    db 1, 42
+    db 1, 6
     db 27, 16, 30, 40
 
     dw $0035, 35, $0100
-    db 1, 32
+    db 1, 8
     db 27, 16, 30, 40
 
     dw $0040, 40, $0100
-    db 1, 25
+    db 1, 10
+    db 27, 16, 30, 40
+
+    dw $0050, 50, $0100
+    db 1, 12
     db 27, 16, 30, 40
 
     dw $0060, 60, $0100
@@ -335,99 +375,127 @@ sTGM3SpeedCurve::
     db 27, 16, 30, 40
 
     dw $0070, 70, $0100
-    db 1, 8
+    db 1, 32
     db 27, 16, 30, 40
 
     dw $0080, 80, $0100
-    db 1, 5
+    db 1, 48
     db 27, 16, 30, 40
 
-    dw $0100, 100, $0200
-    db 1, 3
-    db 27, 16, 30, 40
-
-    dw $0160, 160, $0200
-    db 1, 2
-    db 27, 16, 30, 40
-
-    dw $0200, 200, $0300
+    dw $0090, 90, $0100
     db 1, 64
     db 27, 16, 30, 40
 
-    dw $0220, 220, $0300
-    db 1, 8
+    dw $0100, 100, $0200
+    db 1, 80
     db 27, 16, 30, 40
 
-    dw $0230, 230, $0300
+    dw $0120, 120, $0200
+    db 1, 96
+    db 27, 16, 30, 40
+
+    dw $0140, 140, $0200
+    db 1, 112
+    db 27, 16, 30, 40
+
+    dw $0160, 160, $0200
+    db 1, 128
+    db 27, 16, 30, 40
+
+    dw $0170, 170, $0200
+    db 1, 144
+    db 27, 16, 30, 40
+
+    dw $0200, 200, $0300
     db 1, 4
     db 27, 16, 30, 40
 
+    dw $0220, 220, $0300
+    db 1, 32
+    db 27, 16, 30, 40
+
+    dw $0230, 230, $0300
+    db 1, 64
+    db 27, 16, 30, 40
+
     dw $0233, 233, $0300
-    db 1, 3
+    db 1, 96
     db 27, 16, 30, 40
 
     dw $0236, 236, $0300
-    db 1, 2
+    db 1, 128
+    db 27, 16, 30, 40
+
+    dw $0239, 239, $0300
+    db 1, 160
+    db 27, 16, 30, 40
+
+    dw $0243, 243, $0300
+    db 1, 192
+    db 27, 16, 30, 40
+
+    dw $0247, 239, $0300
+    db 1, 224
     db 27, 16, 30, 40
 
     dw $0251, 251, $0300
-    db 1, 1
+    db 1, $FF
     db 27, 16, 30, 40
 
     dw $0300, 300, $0400
-    db 2, 1
+    db 2, $FF
     db 27, 16, 30, 40
 
     dw $0330, 330, $0400
-    db 3, 1
+    db 3, $FF
     db 27, 16, 30, 40
 
     dw $0360, 360, $0400
-    db 4, 1
+    db 4, $FF
     db 27, 16, 30, 40
 
     dw $0400, 400, $0500
-    db 5, 1
+    db 5, $FF
     db 27, 16, 30, 40
 
     dw $0420, 420, $0500
-    db 4, 1
+    db 4, $FF
     db 27, 16, 30, 40
 
     dw $0450, 450, $0500
-    db 3, 1
+    db 3, $FF
     db 27, 16, 30, 40
 
     dw $0500, 500, $0600
-    db 20, 1
-    db 27, 10, 30, 25
+    db 20, $FF
+    db 27, 16, 30, 40
 
     dw $0600, 600, $0700
-    db 20, 1
+    db 20, $FF
     db 27, 10, 30, 7
 
     dw $0700, 700, $0800
-    db 20, 1
+    db 20, $FF
     db 18, 10, 30, 7
 
     dw $0800, 800, $0900
-    db 20, 1
+    db 20, $FF
     db 14, 10, 30, 1
 
     dw $0900, 900, $1000
-    db 20, 1
+    db 20, $FF
     db 14, 8, 18, 1
 
     dw $1000, 1000, $1100
-    db 20, 1
+    db 20, $FF
     db 8, 8, 18, 6
 
     dw $1100, 1000, $1200
-    db 20, 1
+    db 20, $FF
     db 7, 8, 14, 6
 
     dw $1200, 1000, $1300
-    db 20, 1
+    db 20, $FF
     db 6, 8, 14, 6
 
 sTGM3SpeedCurveEnd::
@@ -435,27 +503,27 @@ sTGM3SpeedCurveEnd::
 
 sDEATSpeedCurve::
     dw $0000, 0, $0100
-    db 20, 1
+    db 20, $FF
     db 18, 12, 30, 12
 
     dw $0100, 0, $0200
-    db 20, 1
+    db 20, $FF
     db 14, 12, 25, 1
 
     dw $0200, 0, $0300
-    db 20, 1
+    db 20, $FF
     db 14, 11, 20, 1
 
     dw $0300, 0, $0400
-    db 20, 1
+    db 20, $FF
     db 8, 10, 18, 6
 
     dw $0400, 0, $0500
-    db 20, 1
+    db 20, $FF
     db 7, 8, 14, 5
 
     dw $0500, 0, $0600
-    db 20, 1
+    db 20, $FF
     db 6, 8, 14, 4
 
 sDEATSpeedCurveEnd::
@@ -463,31 +531,31 @@ sDEATSpeedCurveEnd::
 
 sSHIRSpeedCurve::
     dw $0000, 0, $0100
-    db 20, 1
+    db 20, $FF
     db 12, 10, 18, 6
 
     dw $0100, 100, $0200
-    db 20, 1
+    db 20, $FF
     db 12, 8, 18, 5
 
     dw $0200, 200, $0300
-    db 20, 1
+    db 20, $FF
     db 12, 8, 16, 4
 
     dw $0300, 300, $0400
-    db 20, 1
+    db 20, $FF
     db 6, 8, 14, 4
 
     dw $0500, 500, $0600
-    db 20, 1
+    db 20, $FF
     db 6, 6, 12, 2
 
     dw $1100, 1100, $1200
-    db 20, 1
+    db 20, $FF
     db 6, 6, 10, 2
 
     dw $1200, 1200, $1300
-    db 20, 1
+    db 20, $FF
     db 6, 6, 8, 2
 
 sSHIRSpeedCurveEnd::
@@ -495,164 +563,164 @@ sSHIRSpeedCurveEnd::
 
 sSpeedCurve::           ; Speed curve of the game.
     dw $0000, 0, $0100  ; Level 0000
-    db 1, 16            ; 1G every 16 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 16
+    db 25, 14, 30, 40
 
     dw $0015, 15, $0100 ; Level 0015
-    db 1, 15            ; 1G every 15 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 17
+    db 25, 14, 30, 40
 
     dw $0030, 30, $0100 ; Level 0030
-    db 1, 14            ; 1G every 14 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 18
+    db 25, 14, 30, 40
 
     dw $0040, 40, $0100 ; Level 0040
-    db 1, 13            ; 1G every 13 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 20
+    db 25, 14, 30, 40
 
     dw $0050, 50, $0100 ; Level 0050
-    db 1, 12            ; 1G every 12 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 21
+    db 25, 14, 30, 40
 
     dw $0060, 60, $0100 ; Level 0060
-    db 1, 11            ; 1G every 11 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 23
+    db 25, 14, 30, 40
 
     dw $0070, 70, $0100 ; Level 0070
-    db 1, 10            ; 1G every 10 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 26
+    db 25, 14, 30, 40
 
     dw $0080, 80, $0100 ; Level 0080
-    db 1, 9             ; 1G every 9 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 28
+    db 25, 14, 30, 40
 
     dw $0090, 90, $0100 ; Level 0090
-    db 1, 8             ; 1G every 8 frames
-    db 25, 14, 30, 40   ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 32
+    db 25, 14, 30, 40
 
     dw $0100, 100, $0200 ; Level 0100
-    db 1, 7              ; 1G every 7 frames
-    db 25, 14, 30, 40    ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 37
+    db 25, 14, 30, 40
 
     dw $0150, 150, $0200 ; Level 0150
-    db 1, 6              ; 1G every 6 frames
-    db 25, 14, 30, 40    ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 43
+    db 25, 14, 30, 40
 
     dw $0200, 200, $0300 ; Level 0200
-    db 1, 5              ; 1G every 5 frames
-    db 25, 14, 30, 40    ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 51
+    db 25, 14, 30, 40
 
     dw $0225, 225, $0300 ; Level 0225
-    db 1, 4              ; 1G every 4 frames
-    db 25, 14, 30, 40    ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 64
+    db 25, 14, 30, 40
 
     dw $0250, 250, $0300 ; Level 0250
-    db 1, 3              ; 1G every 3 frames
-    db 25, 14, 30, 40    ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 85
+    db 25, 14, 30, 40
 
     dw $0275, 275, $0300 ; Level 0275
-    db 1, 2              ; 1G every 2 frames
-    db 25, 14, 30, 40    ; ARE, DAS, LOCK, LINECLEAR
+    db 1, 128
+    db 25, 14, 30, 40
 
     dw $0300, 300, $0400 ; Level 0300
-    db 1, 1              ; 1G
-    db 25, 14, 30, 32    ; ARE, DAS, LOCK, LINECLEAR
+    db 1, $FF
+    db 25, 14, 30, 32
 
     dw $0350, 350, $0350 ; Level 0350
-    db 2, 1              ; 2G
-    db 25, 14, 30, 32    ; ARE, DAS, LOCK, LINECLEAR
+    db 2, $FF
+    db 25, 14, 30, 32
 
     dw $0400, 400, $0400 ; Level 0400
-    db 3, 1              ; 3G
-    db 25, 14, 30, 32    ; ARE, DAS, LOCK, LINECLEAR
+    db 3, $FF
+    db 25, 14, 30, 32
 
     dw $0450, 450, $0500 ; Level 0450
-    db 4, 1              ; 4G
-    db 25, 14, 30, 32    ; ARE, DAS, LOCK, LINECLEAR
+    db 4, $FF
+    db 25, 14, 30, 32
 
     dw $0475, 475, $0500 ; Level 0475
-    db 5, 1              ; 5G
-    db 25, 14, 30, 32    ; ARE, DAS, LOCK, LINECLEAR
+    db 5, $FF
+    db 25, 14, 30, 32
 
     dw $0500, 500, $0600 ; Level 0500
-    db 20, 1             ; 20G
-    db 25, 14, 30, 24    ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 25, 14, 30, 24
 
     dw $0600, 600, $0700 ; Level 0600
-    db 20, 1             ; 20G
-    db 25, 8, 30, 24     ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 25, 8, 30, 24
 
     dw $0700, 700, $0800 ; Level 0700
-    db 20, 1             ; 20G
-    db 20, 8, 30, 24     ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 20, 8, 30, 24
 
     dw $0900, 900, $1000 ; Level 0900
-    db 20, 1             ; 20G
-    db 16, 6, 25, 16     ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 16, 6, 25, 16
 
     dw $1100, 1100, $1200 ; Level 1100
-    db 20, 1              ; 20G
-    db 12, 6, 25, 16      ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 12, 6, 25, 16
 
     dw $1200, 1200, $1300 ; Level 1200
-    db 20, 1              ; 20G
-    db 12, 6, 25, 8       ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 12, 6, 25, 8
 
     dw $1300, 1300, $1400 ; Level 1300
-    db 20, 1              ; 20G
-    db 10, 6, 20, 7       ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 10, 6, 20, 7
 
     dw $1400, 1400, $1500 ; Level 1400
-    db 20, 1              ; 20G
-    db 10, 6, 18, 6       ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 10, 6, 18, 6
 
     dw $1500, 1500, $1600 ; Level 1500
-    db 20, 1              ; 20G
-    db 8, 4, 16, 5        ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 8, 4, 16, 5
 
     dw $1600, 1600, $1700 ; Level 1600
-    db 20, 1              ; 20G
-    db 8, 4, 14, 4        ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 8, 4, 14, 4
 
     dw $1700, 1700, $1800 ; Level 1700
-    db 20, 1              ; 20G
-    db 6, 4, 12, 3        ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 6, 4, 12, 3
 
     dw $1800, 1800, $1900 ; Level 1800
-    db 20, 1              ; 20G
-    db 6, 4, 10, 3        ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 6, 4, 10, 3
 
     dw $1900, 1900, $2000 ; Level 1900
-    db 20, 1              ; 20G
-    db 4, 4, 8, 3         ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 4, 4, 8, 3
 
     dw $2000, 2000, $2100 ; Level 2000
-    db 20, 1              ; 20G
-    db 4, 3, 8, 3         ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 4, 3, 8, 3
 
     dw $2500, 2500, $2600 ; Level 2500
-    db 20, 1              ; 20G
-    db 2, 1, 8, 2         ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 2, 1, 8, 2
 
     dw $3000, 3000, $3100 ; Level 3000
-    db 20, 1              ; 20G
-    db 1, 1, 8, 1         ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 1, 1, 8, 1
 
     dw $4000, 4000, $4100 ; Level 4000
-    db 20, 1              ; 20G
-    db 1, 1, 6, 1         ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 1, 1, 6, 1
 
     dw $5000, 5000, $5100 ; Level 5000
-    db 20, 1              ; 20G
-    db 1, 1, 4, 1         ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 1, 1, 4, 1
 
     dw $6666, 6666, $6700 ; Level 6666
-    db 20, 1              ; 20G
-    db 1, 1, 2, 1         ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 1, 1, 2, 1
 
     dw $9999, 9999, $9999 ; Level 9999
-    db 20, 1              ; 20G
-    db 1, 1, 1, 1         ; ARE, DAS, LOCK, LINECLEAR
+    db 20, $FF
+    db 1, 1, 1, 1
 
 sSpeedCurveEnd::
     dw $FFFF          ; End.

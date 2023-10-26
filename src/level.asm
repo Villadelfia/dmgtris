@@ -27,8 +27,8 @@ hCurrentDAS:: ds 1
 hCurrentARE:: ds 1
 hCurrentLockDelay:: ds 1
 hCurrentLineClearDelay:: ds 1
-hCurrentGravityPerTick:: ds 1
-hCurrentFramesPerGravityTick:: ds 1
+hCurrentIntegerGravity:: ds 1
+hCurrentFractionalGravity:: ds 1
 hNextSpeedUp:: ds 2
 hSpeedCurvePtr:: ds 2
 hStartSpeed:: ds 2
@@ -330,9 +330,9 @@ DoSpeedUp:
 
     ; Get all the new data.
     ld a, [hl+]
-    ldh [hCurrentGravityPerTick], a
+    ldh [hCurrentIntegerGravity], a
     ld a, [hl+]
-    ldh [hCurrentFramesPerGravityTick], a
+    ldh [hCurrentFractionalGravity], a
     ld a, [hl+]
     ldh [hCurrentARE], a
     ld a, [hl+]
@@ -357,9 +357,9 @@ DoSpeedUp:
     cp a, 0
     ret z
     ld a, 20
-    ldh [hCurrentGravityPerTick], a
-    ld a, 1
-    ldh [hCurrentFramesPerGravityTick], a
+    ldh [hCurrentIntegerGravity], a
+    ld a, $FF
+    ldh [hCurrentFractionalGravity], a
     ret
 
 

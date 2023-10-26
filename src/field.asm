@@ -45,7 +45,7 @@ hDeepestY: ds 1
 hWantedTile: ds 1
 hWantedG: ds 1
 hActualG: ds 1
-hTicksUntilG: ds 1
+hGravityCtr: ds 1
 hWantX: ds 1
 hYPosAtStartOfFrame: ds 1
 hWantRotation: ds 1
@@ -532,8 +532,8 @@ TrySpawnPiece::
     ldh [hShouldLockIfGrounded], a
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
-    ldh a, [hCurrentFramesPerGravityTick]
-    ldh [hTicksUntilG], a
+    ld a, 1
+    ldh [hGravityCtr], a
     ld a, $FF
     ldh [hRemainingDelay], a
     ld a, DELAY_STATE_DETERMINE_DELAY
@@ -1194,7 +1194,7 @@ FieldProcess::
     ldh [hWantedG], a
 
     ; Is a hard/sonic drop requested? Skip if in 20G mode.
-    ldh a, [hCurrentGravityPerTick]
+    ldh a, [hCurrentIntegerGravity]
     cp a, 20
     jr z, .postdrop
     ldh a, [hUpState]
@@ -1221,12 +1221,14 @@ FieldProcess::
     ldh [hAwardDownBonus], a
     ld a, 20
     ldh [hWantedG], a
-    ldh a, [hTicksUntilG]
-    dec a
-    ldh [hTicksUntilG], a
-    jr nz, .grav
-    ldh a, [hCurrentFramesPerGravityTick]
-    ldh [hTicksUntilG], a
+    ldh a, [hCurrentFractionalGravity]
+    ld b, a
+    ldh a, [hGravityCtr]
+    add a, b
+    ldh [hGravityCtr], a
+    jr c, .grav
+    ld a, 1
+    ldh [hGravityCtr], a
     ld a, [wDropModeState]
     cp a, DROP_MODE_SNIC
     jr z, .grav
@@ -1249,7 +1251,7 @@ FieldProcess::
     ldh [hCurrentPieceY], a
     xor a, a
     ldh [hCurrentLockDelayRemaining], a
-    ldh a, [hCurrentGravityPerTick]
+    ldh a, [hCurrentIntegerGravity]
     cp a, 1
     jp nz, .draw
     call SFXKill
@@ -1265,8 +1267,8 @@ FieldProcess::
     ldh a, [hDownFrames]
     inc a
     ldh [hDownFrames], a
-    ld a, 1
-    ldh [hTicksUntilG], a
+    ld a, $FF
+    ldh [hGravityCtr], a
     ld a, [wDropModeState]
     cp a, DROP_MODE_HARD
     jr nz, :+
@@ -1274,13 +1276,13 @@ FieldProcess::
     ldh [hShouldLockIfGrounded], a
 
     ; Gravity?
-:   ldh a, [hTicksUntilG]
-    dec a
-    ldh [hTicksUntilG], a
-    jr nz, .nograv
-    ldh a, [hCurrentFramesPerGravityTick]
-    ldh [hTicksUntilG], a
-    ldh a, [hCurrentGravityPerTick]
+:   ldh a, [hCurrentFractionalGravity]
+    ld b, a
+    ldh a, [hGravityCtr]
+    add a, b
+    ldh [hGravityCtr], a
+    jr nc, .nograv
+    ldh a, [hCurrentIntegerGravity]
     ldh [hWantedG], a
 
     ; Can we drop the full requested distance?
@@ -1341,7 +1343,7 @@ FieldProcess::
 .playfirmdropsound
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
-    ldh a, [hCurrentGravityPerTick]
+    ldh a, [hCurrentIntegerGravity]
     cp a, 1
     jr nz, .postcheckforfirmdropsound
     call SFXKill
@@ -1363,7 +1365,7 @@ FieldProcess::
     jr .dontforcelock
 
     ; Lock on down in modes <20G.
-:   ldh a, [hCurrentGravityPerTick]
+:   ldh a, [hCurrentIntegerGravity]
     cp a, 20
     jr nz, .forcelock
 
@@ -1427,7 +1429,7 @@ FieldProcess::
 
     ; Play the locking sound and draw the piece.
 .dolock
-    ldh a, [hCurrentGravityPerTick]
+    ldh a, [hCurrentIntegerGravity]
     cp a, 1
     jr nz, .draw
     call SFXKill
@@ -1965,7 +1967,7 @@ FieldDelay::
     ret nz
 
     call ClearLines
-    ldh a, [hCurrentGravityPerTick]
+    ldh a, [hCurrentIntegerGravity]
     cp a, 1
     jr nz, :+
     call SFXKill

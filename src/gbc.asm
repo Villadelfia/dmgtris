@@ -484,7 +484,7 @@ GBCGameplayInit::
     ldh [rBCPD], a
     ldh [rOCPD], a
 
-    ld bc, R0 | B0
+    ld bc, B0 | %0000000000000010
     ld a, c
     ldh [rBCPD], a
     ldh [rOCPD], a
@@ -763,7 +763,7 @@ GBCGameplayProcess::
     ; Are we 20G?
 .higoverride
     ld d, a
-    ldh a, [hCurrentGravityPerTick]
+    ldh a, [hCurrentIntegerGravity]
     cp a, 20
     jr nz, .colorfield
 
@@ -891,7 +891,7 @@ GBCGameplayProcess::
     jr nz, .outer2
 
     ; Maybe flash numbers.
-    ldh a, [hCurrentGravityPerTick]
+    ldh a, [hCurrentIntegerGravity]
     cp a, 20
     jr nz, .black
 

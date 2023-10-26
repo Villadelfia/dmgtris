@@ -313,7 +313,7 @@ DecrementLevel:
     ld l, a
     ldh a, [hStartSpeed+1]
     ld h, a
-    ld bc, -12
+    ld bc, -SCURVE_ENTRY_SIZE
     add hl, bc
     ld a, l
     ldh [hStartSpeed], a
@@ -428,7 +428,7 @@ IncrementLevel:
     ld l, a
     ldh a, [hStartSpeed+1]
     ld h, a
-    ld bc, 12
+    ld bc, SCURVE_ENTRY_SIZE
     add hl, bc
     ld a, l
     ldh [hStartSpeed], a
@@ -457,7 +457,7 @@ GetEnd:
     ld a, [wSpeedCurveState]
     cp a, SCURVE_DMGT
     jr nz, :+
-    ld bc, sSpeedCurveEnd
+    ld bc, sDMGTSpeedCurveEnd
     ret
 :   cp a, SCURVE_TGM1
     jr nz, :+
@@ -482,7 +482,7 @@ GetStart:
     ld a, [wSpeedCurveState]
     cp a, SCURVE_DMGT
     jr nz, :+
-    ld hl, sSpeedCurve
+    ld hl, sDMGTSpeedCurve
     ret
 :   cp a, SCURVE_TGM1
     jr nz, :+
@@ -521,7 +521,7 @@ CheckLevelRange:
     ldh [hStartSpeed+1], a
 
 .notatend
-    ld de, -12
+    ld de, -SCURVE_ENTRY_SIZE
 
     call GetStart
     add hl, de

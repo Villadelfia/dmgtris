@@ -30,25 +30,42 @@ wSPRNext1:: ds 4
 wSPRNext2:: ds 4
 wSPRNext3:: ds 4
 wSPRNext4:: ds 4
+wUnused0:: ds 4
+wUnused1:: ds 4
 wSPRHold1:: ds 4
 wSPRHold2:: ds 4
 wSPRHold3:: ds 4
 wSPRHold4:: ds 4
+wUnused2:: ds 4
+wUnused3:: ds 4
 wSPRScore1:: ds 4
 wSPRScore2:: ds 4
 wSPRScore3:: ds 4
 wSPRScore4:: ds 4
 wSPRScore5:: ds 4
 wSPRScore6:: ds 4
+wUnused4:: ds 4
+wUnused5:: ds 4
 wSPRCLevel1:: ds 4
 wSPRCLevel2:: ds 4
 wSPRCLevel3:: ds 4
 wSPRCLevel4:: ds 4
+wUnused6:: ds 4
+wUnused7:: ds 4
 wSPRNLevel1:: ds 4
 wSPRNLevel2:: ds 4
 wSPRNLevel3:: ds 4
 wSPRNLevel4:: ds 4
-wSPRUnused:: ds (16 * 4)
+wUnused8:: ds 4
+wUnused9:: ds 4
+wUnusedA:: ds 4
+wUnusedB:: ds 4
+wUnusedC:: ds 4
+wUnusedD:: ds 4
+wSPRModeRNG:: ds 4
+wSPRModeRot:: ds 4
+wSPRModeDrop:: ds 4
+wSPRModeHiG:: ds 4
 ENDU
 
 
@@ -95,6 +112,49 @@ ClearOAM::
 
 
 SECTION "Domain Specific Functions", ROM0
+ApplyTells::
+    ld a, TELLS_BASE_Y
+    ld [wSPRModeRNG], a
+    add a, TELLS_Y_DIST
+    ld [wSPRModeRot], a
+    add a, TELLS_Y_DIST
+    ld [wSPRModeDrop], a
+    add a, TELLS_Y_DIST
+    ld [wSPRModeHiG], a
+
+    ld a, TELLS_BASE_X
+    ld [wSPRModeRNG+1], a
+    ld [wSPRModeRot+1], a
+    ld [wSPRModeDrop+1], a
+    ld [wSPRModeHiG+1], a
+
+    ld a, [wRNGModeState]
+    add a, TILE_RNG_MODE_BASE
+    ld [wSPRModeRNG+2], a
+
+    ld a, [wRotModeState]
+    add a, TILE_ROT_MODE_BASE
+    ld [wSPRModeRot+2], a
+
+    ld a, [wDropModeState]
+    add a, TILE_DROP_MODE_BASE
+    ld [wSPRModeDrop+2], a
+
+    ld a, [wAlways20GState]
+    add a, TILE_HIG_MODE_BASE
+    ld [wSPRModeHiG+2], a
+
+    ld a, 1
+    ld [wSPRModeRNG+3], a
+    ld a, 3
+    ld [wSPRModeRot+3], a
+    ld a, 4
+    ld [wSPRModeDrop+3], a
+    ld a, 0
+    ld [wSPRModeHiG+3], a
+    ret
+
+
 ; Index of next piece in A.
 ApplyNext::
     ; Correct color
@@ -105,11 +165,13 @@ ApplyNext::
 
     ; Correct tile
     add a, TILE_PIECE_0
+    add a, 7
     ld [wSPRNext1+2], a
     ld [wSPRNext2+2], a
     ld [wSPRNext3+2], a
     ld [wSPRNext4+2], a
     sub a, TILE_PIECE_0
+    sub a, 7
 
     ; X positions
     ld hl, sPieceXOffsets
@@ -176,6 +238,28 @@ ApplyHold::
     ld [wSPRHold4+3], a
 
     ; Correct tile
+    ld b, a
+    ld a, [wInitialA]
+    cp a, $11
+    ld a, b
+    jr z, .show
+    ldh a, [hEvenFrame]
+    cp a, 0
+    ld a, b
+    jr z, .show
+
+
+.hide
+    ld b, a
+    ld a, TILE_BLANK
+    ld [wSPRHold1+2], a
+    ld [wSPRHold2+2], a
+    ld [wSPRHold3+2], a
+    ld [wSPRHold4+2], a
+    ld a, b
+    jr .x
+
+.show
     add a, TILE_PIECE_0
     ld [wSPRHold1+2], a
     ld [wSPRHold2+2], a
@@ -184,6 +268,7 @@ ApplyHold::
     sub a, TILE_PIECE_0
 
     ; X positions
+.x
     ld hl, sPieceXOffsets
     ld de, sPieceYOffsets
     cp 0

@@ -25,6 +25,7 @@ INCLUDE "globals.asm"
 SECTION "High Level Variables", HRAM
 hCurrentDAS:: ds 1
 hCurrentARE:: ds 1
+hCurrentLineARE:: ds 1
 hCurrentLockDelay:: ds 1
 hCurrentLineClearDelay:: ds 1
 hCurrentIntegerGravity:: ds 1
@@ -335,6 +336,8 @@ DoSpeedUp:
     ldh [hCurrentFractionalGravity], a
     ld a, [hl+]
     ldh [hCurrentARE], a
+    ld a, [hl+]
+    ldh [hCurrentLineARE], a
     ld a, [hl+]
     ldh [hCurrentDAS], a
     ld a, [hl+]

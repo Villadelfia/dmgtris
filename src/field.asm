@@ -1527,36 +1527,14 @@ FieldProcess::
 
 
 GetTileShade:
-    ; Possible values for tile delay:
-    ; 30, 25, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 1
-    ; We don't need to handle the 1 case.
-    ld a, 0
-    ld b, a
-:   ldh a, [hCurrentLockDelay]
+    ldh a, [hCurrentLockDelay]
     cp a, 30
-    jr z, .max30
-:   cp a, 25
-    jr z, .max25
-:   cp a, 20
-    jr z, .max20
-:   cp a, 18
-    jp z, .max18
-:   cp a, 16
-    jp z, .max16
-:   cp a, 14
-    jp z, .max14
-:   cp a, 12
-    jp z, .max12
-:   cp a, 10
-    jp z, .max10
-:   cp a, 8
-    jp z, .max8
-:   cp a, 6
-    jp z, .max6
-:   cp a, 4
-    jp z, .max4
-:   cp a, 2
-    jp z, .max2
+    jr nc, .max30
+    cp a, 20
+    jr nc, .max20
+    cp a, 10
+    jr nc, .max10
+    jr .max0
     ret
 .max30
     ldh a, [hCurrentLockDelayRemaining]
@@ -1565,136 +1543,34 @@ GetTileShade:
     cp a, 8
     jp c, .s6
     cp a, 12
-    jp c, .s5
+    jr c, .s5
     cp a, 16
-    jp c, .s4
+    jr c, .s4
     cp a, 20
-    jp c, .s3
+    jr c, .s3
     cp a, 24
-    jp c, .s2
+    jr c, .s2
     cp a, 28
-    jp c, .s1
-    jp .s0
-.max25
-    ldh a, [hCurrentLockDelayRemaining]
-    cp a, 3
-    ret c
-    cp a, 6
-    jp c, .s6
-    cp a, 9
-    jp c, .s5
-    cp a, 12
-    jp c, .s4
-    cp a, 15
-    jp c, .s3
-    cp a, 18
-    jp c, .s2
-    cp a, 21
-    jp c, .s1
-    jp .s0
+    jr c, .s1
+    jr .s0
 .max20
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 2
     ret c
     cp a, 5
-    jp c, .s6
+    jr c, .s6
     cp a, 7
-    jp c, .s5
-    cp a, 10
-    jp c, .s4
-    cp a, 12
-    jp c, .s3
-    cp a, 15
-    jp c, .s2
-    cp a, 17
-    jp c, .s1
-    jp .s0
-.max18
-    ldh a, [hCurrentLockDelayRemaining]
-    cp a, 2
-    ret c
-    cp a, 4
-    jp c, .s6
-    cp a, 6
-    jp c, .s5
-    cp a, 9
-    jp c, .s4
-    cp a, 11
-    jp c, .s3
-    cp a, 13
-    jp c, .s2
-    cp a, 15
-    jp c, .s1
-    jp .s0
-.max16
-    ldh a, [hCurrentLockDelayRemaining]
-    cp a, 2
-    ret c
-    cp a, 4
-    jp c, .s6
-    cp a, 6
-    jp c, .s5
-    cp a, 8
-    jp c, .s4
-    cp a, 10
-    jp c, .s3
-    cp a, 12
-    jp c, .s2
-    cp a, 14
-    jp c, .s1
-    jp .s0
-.max14
-    ldh a, [hCurrentLockDelayRemaining]
-    cp a, 2
-    ret c
-    cp a, 4
-    jp c, .s6
-    cp a, 6
-    jp c, .s5
-    cp a, 7
-    jp c, .s4
-    cp a, 9
-    jp c, .s3
-    cp a, 11
-    jp c, .s2
-    cp a, 13
-    jp c, .s1
-    jp .s0
-.max12
-    ldh a, [hCurrentLockDelayRemaining]
-    cp a, 1
-    ret c
-    cp a, 3
-    jp c, .s6
-    cp a, 4
-    jp c, .s5
-    cp a, 6
-    jp c, .s4
-    cp a, 7
-    jp c, .s3
-    cp a, 9
-    jp c, .s2
-    cp a, 10
-    jp c, .s1
-    jp .s0
-.max10
-    ldh a, [hCurrentLockDelayRemaining]
-    cp a, 1
-    ret c
-    cp a, 2
-    jp c, .s6
-    cp a, 3
     jr c, .s5
-    cp a, 5
+    cp a, 10
     jr c, .s4
-    cp a, 6
+    cp a, 12
     jr c, .s3
-    cp a, 7
+    cp a, 15
     jr c, .s2
-    cp a, 8
+    cp a, 17
     jr c, .s1
     jr .s0
-.max8
+.max10
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 1
     ret c
@@ -1702,36 +1578,16 @@ GetTileShade:
     jr c, .s6
     cp a, 3
     jr c, .s5
-    cp a, 4
-    jr c, .s4
     cp a, 5
-    jr c, .s3
+    jr c, .s4
     cp a, 6
-    jr c, .s2
-    cp a, 7
-    jr c, .s1
-    jr .s0
-.max6
-    ldh a, [hCurrentLockDelayRemaining]
-    cp a, 1
-    ret c
-    cp a, 2
-    jr c, .s5
-    cp a, 3
     jr c, .s3
-    cp a, 4
+    cp a, 7
     jr c, .s2
-    cp a, 5
+    cp a, 8
     jr c, .s1
     jr .s0
-.max4
-    ldh a, [hCurrentLockDelayRemaining]
-    cp a, 1
-    ret c
-    cp a, 2
-    jr c, .s4
-    jr .s0
-.max2
+.max0
     jr .s4
 .s0
     ldh a, [hCurrentPiece]
@@ -1974,7 +1830,7 @@ FieldDelay::
     ld a, SFX_LINE_CLEAR
     call SFXEnqueue
 
-:   ldh a, [hCurrentARE]
+:   ldh a, [hCurrentLineARE]
     ldh [hRemainingDelay], a
 
 

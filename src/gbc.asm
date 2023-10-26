@@ -924,9 +924,11 @@ GBCGameplayProcess::
 .black
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    xor a, a
+    ld bc, R2 | B0
     wait_vram
+    ld a, c
     ldh [rOCPD], a
+    ld a, b
     ldh [rOCPD], a
     ret
 

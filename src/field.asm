@@ -1316,6 +1316,14 @@ FieldProcess::
     ; Are we grounded?
 .postgrav
 .nograv
+    ldh a, [hYPosAtStartOfFrame]
+    ld b, a
+    ldh a, [hCurrentPieceY]
+    cp a, b
+    jr z, .noreset
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+.noreset
     ldh a, [hCurrentPieceY]
     inc a
     ld b, a
@@ -1341,8 +1349,6 @@ FieldProcess::
 
     ; Play the firm drop sound, and also reset the lock delay since the piece stepped down.
 .playfirmdropsound
-    ldh a, [hCurrentLockDelay]
-    ldh [hCurrentLockDelayRemaining], a
     ldh a, [hCurrentIntegerGravity]
     cp a, 1
     jr nz, .postcheckforfirmdropsound
@@ -1437,10 +1443,8 @@ FieldProcess::
     call SFXEnqueue
     jr .draw
 
-    ; If we weren't grounded, reset the lock delay.
+    ; If we weren't grounded, reset the lock force.
 .notgrounded
-    ldh a, [hCurrentLockDelay]
-    ldh [hCurrentLockDelayRemaining], a
     xor a, a
     ldh [hShouldLockIfGrounded], a
 

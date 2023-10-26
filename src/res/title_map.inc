@@ -22,7 +22,7 @@ DEF TITLE_MAP_INC EQU 1
 SECTION "Title Screen Tilemap", ROMX, BANK[1]
 TitleScreenTilemap::
     DB $C3,$5B,$4C,$59,$4F,$5A,$5D,$4C,$01,$59
-    DB $5A,$61,$4C,$01,$FA,$FB,$FC,$FD,$FE,$FF
+    DB $5A,$61,$4C,$01,$01,$FB,$FC,$FD,$FE,$FF
     DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01

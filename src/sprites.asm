@@ -58,10 +58,10 @@ wSPRNLevel3:: ds 4
 wSPRNLevel4:: ds 4
 wUnused8:: ds 4
 wUnused9:: ds 4
-wSPRQueue1:: ds 4
-wSPRQueue2:: ds 4
-wUnusedA:: ds 4
-wUnusedB:: ds 4
+wSPRQueue1A:: ds 4
+wSPRQueue1B:: ds 4
+wSPRQueue2A:: ds 4
+wSPRQueue2B:: ds 4
 wSPRModeRNG:: ds 4
 wSPRModeRot:: ds 4
 wSPRModeDrop:: ds 4
@@ -222,22 +222,36 @@ ApplyNext::
 
     ; Queue
     ld a, QUEUE_BASE_Y
-    ld [wSPRQueue1], a
+    ld [wSPRQueue1A], a
+    ld [wSPRQueue1B], a
     add a, 9
-    ld [wSPRQueue2], a
+    ld [wSPRQueue2A], a
+    ld [wSPRQueue2B], a
 
     ld a, QUEUE_BASE_X
-    ld [wSPRQueue1+1], a
-    ld [wSPRQueue2+1], a
+    ld [wSPRQueue1A+1], a
+    ld [wSPRQueue2A+1], a
+    add a, 8
+    ld [wSPRQueue1B+1], a
+    ld [wSPRQueue2B+1], a
 
     ldh a, [hUpcomingPiece1]
-    ld [wSPRQueue1+3], a
+    ld [wSPRQueue1A+3], a
+    ld [wSPRQueue1B+3], a
+    sla a
     add a, TILE_PIECE_SMALL_0
-    ld [wSPRQueue1+2], a
+    ld [wSPRQueue1A+2], a
+    inc a
+    ld [wSPRQueue1B+2], a
+
     ldh a, [hUpcomingPiece2]
-    ld [wSPRQueue2+3], a
+    ld [wSPRQueue2A+3], a
+    ld [wSPRQueue2B+3], a
+    sla a
     add a, TILE_PIECE_SMALL_0
-    ld [wSPRQueue2+2], a
+    ld [wSPRQueue2A+2], a
+    inc a
+    ld [wSPRQueue2B+2], a
     ret
 
 ; Index of hold piece in A.

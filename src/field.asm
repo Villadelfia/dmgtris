@@ -41,7 +41,7 @@ hPieceDataBase: ds 2
 hPieceDataBaseFast: ds 2
 hPieceDataOffset: ds 1
 hCurrentLockDelayRemaining:: ds 1
-hDeepestY: ds 1
+hGrounded: ds 1
 hWantedTile: ds 1
 hWantedG: ds 1
 hActualG: ds 1
@@ -530,10 +530,10 @@ TrySpawnPiece::
     ldh [hAwardDownBonus], a
     ldh [hLockDelayForce], a
     ldh [hShouldLockIfGrounded], a
+    ldh [hGravityCtr], a
+    ldh [hGrounded], a
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
-    ld a, 1
-    ldh [hGravityCtr], a
     ld a, $FF
     ldh [hRemainingDelay], a
     ld a, DELAY_STATE_DETERMINE_DELAY
@@ -1221,19 +1221,6 @@ FieldProcess::
     ldh [hAwardDownBonus], a
     ld a, 20
     ldh [hWantedG], a
-    ldh a, [hCurrentFractionalGravity]
-    ld b, a
-    ldh a, [hGravityCtr]
-    add a, b
-    ldh [hGravityCtr], a
-    jr c, .grav
-    ld a, 1
-    ldh [hGravityCtr], a
-    ld a, [wDropModeState]
-    cp a, DROP_MODE_SNIC
-    jr z, .grav
-    ld a, $FF
-    ldh [hShouldLockIfGrounded], a
     jr .grav
 
     ; Hard drop.
@@ -1277,12 +1264,14 @@ FieldProcess::
 
     ; Gravity?
 :   ldh a, [hCurrentFractionalGravity]
+    cp a, $FF
+    jr z, :+
     ld b, a
     ldh a, [hGravityCtr]
     add a, b
     ldh [hGravityCtr], a
     jr nc, .nograv
-    ldh a, [hCurrentIntegerGravity]
+:   ldh a, [hCurrentIntegerGravity]
     ldh [hWantedG], a
 
     ; Can we drop the full requested distance?
@@ -1316,6 +1305,8 @@ FieldProcess::
     ; Are we grounded?
 .postgrav
 .nograv
+    xor a, a
+    ldh [hGrounded], a
     ldh a, [hYPosAtStartOfFrame]
     ld b, a
     ldh a, [hCurrentPieceY]
@@ -1338,6 +1329,8 @@ FieldProcess::
 
     ; We're grounded.
 .grounded
+    ld a, $FF
+    ldh [hGrounded], a
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hYPosAtStartOfFrame]
@@ -1499,6 +1492,11 @@ FieldProcess::
     ldh a, [hCurrentLockDelayRemaining]
     cp a, b
     jr z, .drawpiece
+
+    ; If we're not grounded, draw the piece normally.
+    ldh a, [hGrounded]
+    cp a, $FF
+    jr nz, .drawpiece
 
     ; If the lock delay is 0, draw the piece in the final color.
     ldh a, [hCurrentPiece]

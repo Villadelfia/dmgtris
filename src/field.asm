@@ -58,6 +58,7 @@ hDownFrames: ds 1
 hAwardDownBonus: ds 1
 hStalePiece: ds 1
 hBravo: ds 1
+hShouldLockIfGrounded: ds 1
 
 
 SECTION "Field Functions", ROM0
@@ -528,6 +529,7 @@ TrySpawnPiece::
     ldh [hDownFrames], a
     ldh [hAwardDownBonus], a
     ldh [hLockDelayForce], a
+    ldh [hShouldLockIfGrounded], a
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
     ldh a, [hCurrentFramesPerGravityTick]
@@ -574,8 +576,6 @@ TrySpawnPiece::
     ld e, l
     call GetPieceDataFast
     jp CanPieceFitFast
-
-
 
 
     ; Draws the piece onto the field.
@@ -820,6 +820,11 @@ FieldProcess::
     ; Try kicks if the piece isn't I or O. And in the case of J L and T, only if the blocked side is the left or right.
 .maybekick
     ld c, a
+    ; No kicks for NES mode.
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_NES
+    jp z, .norot
+
     ldh a, [hCurrentPiece]
     ; O pieces never kick, obviously.
     cp a, PIECE_O
@@ -1193,19 +1198,26 @@ FieldProcess::
     cp a, 20
     jr z, .postdrop
     ldh a, [hUpState]
-    cp a, 0
-    jr z, .postdrop
+    cp a, 1
+    jr nz, .postdrop
 
     ; What kind, if any?
     ld a, [wDropModeState]
     cp a, DROP_MODE_NONE
     jr z, .postdrop
+    cp a, DROP_MODE_LOCK
+    jr z, .harddrop
     cp a, DROP_MODE_HARD
     jr z, .harddrop
 
     ; Sonic drop.
 .sonicdrop
+    ld a, [wDropModeState]
+    cp a, DROP_MODE_SNIC
+    jr z, :+
     ld a, $FF
+    ldh [hShouldLockIfGrounded], a
+:   ld a, $FF
     ldh [hAwardDownBonus], a
     ld a, 20
     ldh [hWantedG], a
@@ -1215,6 +1227,11 @@ FieldProcess::
     jr nz, .grav
     ldh a, [hCurrentFramesPerGravityTick]
     ldh [hTicksUntilG], a
+    ld a, [wDropModeState]
+    cp a, DROP_MODE_SNIC
+    jr z, .grav
+    ld a, $FF
+    ldh [hShouldLockIfGrounded], a
     jr .grav
 
     ; Hard drop.
@@ -1250,6 +1267,11 @@ FieldProcess::
     ldh [hDownFrames], a
     ld a, 1
     ldh [hTicksUntilG], a
+    ld a, [wDropModeState]
+    cp a, DROP_MODE_HARD
+    jr nz, :+
+    ld a, $FF
+    ldh [hShouldLockIfGrounded], a
 
     ; Gravity?
 :   ldh a, [hTicksUntilG]
@@ -1302,7 +1324,7 @@ FieldProcess::
     call GetPieceDataFast
     call CanPieceFitFast
     cp a, $FF
-    jr z, .notgrounded
+    jp z, .notgrounded
 
     ; We're grounded.
 .grounded
@@ -1330,20 +1352,57 @@ FieldProcess::
 .postcheckforfirmdropsound
     ldh a, [hDownState]
     cp a, 0
-    jr z, .dontforcelock
-    ldh a, [hCurrentGravityPerTick]
+    jr z, .neutralcheck
+
+    ; Don't lock on down for hard drop mode immediately.
+    ld a, [wDropModeState]
+    cp a, DROP_MODE_HARD
+    jr nz, :+
+    ld a, $FF
+    ldh [hShouldLockIfGrounded], a
+    jr .dontforcelock
+
+    ; Lock on down in modes <20G.
+:   ldh a, [hCurrentGravityPerTick]
     cp a, 20
     jr nz, .forcelock
+
+    ; In 20G mode, only lock if down has been pressed for exactly 1 frame.
     ldh a, [hDownState]
     cp a, 1
+    jr z, .forcelock
+    jr .dontforcelock
+
+    ; If the down button is not held, check if we're neutral and if that should lock.
+.neutralcheck
+    ldh a, [hShouldLockIfGrounded]
+    cp a, 0
+    jr z, .dontforcelock
+
+    ; Check for neutral.
+    ldh a, [hUpState]
+    cp a, 0
+    jr nz, .dontforcelock
+    ldh a, [hLeftState]
+    cp a, 0
+    jr nz, .dontforcelock
+    ldh a, [hRightState]
+    cp a, 0
     jr nz, .dontforcelock
 
+    ; Lock on neutral for a few modes.
+    ld a, [wDropModeState]
+    cp a, DROP_MODE_FIRM
+    jr z, .forcelock
+    cp a, DROP_MODE_HARD
+    jr z, .forcelock
+    jr .dontforcelock
 
     ; Set the lock delay to 0 and save it.
 .forcelock
-    ld a, 0
+    xor a, a
     ldh [hCurrentLockDelayRemaining], a
-    jr .checklockdelay
+    jr .dolock
 
     ; Load the lock delay.
     ; Decrement it by one and save it.
@@ -1380,6 +1439,8 @@ FieldProcess::
 .notgrounded
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
+    xor a, a
+    ldh [hShouldLockIfGrounded], a
 
 
     ; **************************************************************

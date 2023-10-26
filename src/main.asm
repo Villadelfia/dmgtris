@@ -126,21 +126,36 @@ EventLoop::
     call HandleTimers
 
     ; Call the current state's event handler.
-    ld b, 0
+    ld hl, .eventloopjumps
     ldh a, [hGameState]
-    cp a, b
-    jp nz, GamePlayEventLoopHandler
+    ld b, 0
+    ld c, a
+    add hl, bc
+    jp hl
+
+.eventloopjumps
     jp TitleEventLoopHandler
+    jp GamePlayEventLoopHandler
 EventLoopPostHandler::
 
     ; Wait for vblank.
     wait_vblank
 
     ; Do OAM DMA.
-    ; This will chain jump into the vblank handler.
-    jp hOAMDMA
+    call hOAMDMA
 
-    ; The VBlank Handler is expected to end with jr EventLoop.
+    ; Call the current state's vblank handler.
+    ld hl, .vblankjumps
+    ldh a, [hGameState]
+    ld b, 0
+    ld c, a
+    add hl, bc
+    jp hl
+
+.vblankjumps
+    jp TitleVBlankHandler
+    jp BlitField
+    ; The VBlank Handler is expected to end with jp EventLoop.
 
 
 ENDC

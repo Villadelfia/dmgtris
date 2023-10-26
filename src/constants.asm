@@ -61,8 +61,9 @@ CHARMAP "[", 129
 CHARMAP "]", 130
 CHARMAP "/", 128
 CHARMAP "-", 127
-CHARMAP "|", 126
-CHARMAP "#", 125
+CHARMAP "#", 126
+CHARMAP ".", 216
+CHARMAP ":", 222
 
 
 SECTION "Static Data", ROMX, BANK[1]
@@ -83,9 +84,12 @@ sOption1::
 sOption2::
     db "ARS1"
     db "ARS2"
+    db " NES"
 sOption3::
+    db "FIRM"
     db "SNIC"
     db "HARD"
+    db "LOCK"
     db "NONE"
 sOption4::
     db "DMGT"

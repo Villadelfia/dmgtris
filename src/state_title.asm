@@ -115,8 +115,10 @@ SwitchToTitle::
     call GBCTitleInit
 
     ; Install the event loop handlers.
-    ld a, 0
+    ld a, STATE_TITLE
     ldh [hGameState], a
+
+    xor a, a
     ld [wSelected], a
 
     ; And turn the LCD back on before we start.

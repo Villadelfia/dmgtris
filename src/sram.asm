@@ -59,7 +59,7 @@ InitializeSRAM:
     ld [rRotModeState], a
     ld [wRotModeState], a
 
-    ld a, DROP_MODE_SONIC
+    ld a, DROP_MODE_FIRM
     ld [rDropModeState], a
     ld [wDropModeState], a
 

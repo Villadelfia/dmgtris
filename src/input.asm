@@ -23,15 +23,14 @@ INCLUDE "globals.asm"
 
 
 SECTION "High Input Variables", HRAM
-hUpState::     ds 1
-hDownState::   ds 1
-hLeftState::   ds 1
-hRightState::  ds 1
-hAState::      ds 1
-hBState::      ds 1
-hStartState::  ds 1
-hSelectState:: ds 1
-hDASCharge::   ds 1
+hUpState::         ds 1
+hDownState::       ds 1
+hLeftState::       ds 1
+hRightState::      ds 1
+hAState::          ds 1
+hBState::          ds 1
+hStartState::      ds 1
+hSelectState::     ds 1
 
 
 
@@ -46,37 +45,10 @@ InputInit::
     ldh [hBState], a
     ldh [hStartState], a
     ldh [hSelectState], a
-    ldh [hDASCharge], a
     ret
 
 
 GetInput::
-    ; Check if the left state > DAS charge.
-    ldh a, [hLeftState]
-    ld b, a
-    ldh a, [hDASCharge]
-    cp a, b
-    ; If so, save the new DAS charge.
-    jr nc, :+
-    ld a, b
-    ;ldh [hDASCharge], a
-
-    ; Check if the right state > DAS charge.
-:   ldh a, [hRightState]
-    ld b, a
-    ldh a, [hDASCharge]
-    cp a, b
-    ; If so, save the new DAS charge.
-    jr nc, :+
-    ld a, b
-    ;ldh [hDASCharge], a
-
-    ; There's an overflow risk here if the DAS charge is 255.
-:   cp a, $FF
-    jr nz, .btns
-    dec a
-    ldh [hDASCharge], a
-
     ; Get the button state.
 .btns
     ld a, P1F_GET_BTN
@@ -187,7 +159,7 @@ GetInput::
     xor a, a
     ldh [hDownState], a
 
-    ; Read left button. If it's just been pressed, restore the held DAS charge.
+    ; Read left button.
 .readLeft
     bit 1, b
     jr nz, .clearLeft
@@ -195,42 +167,41 @@ GetInput::
     ldh a, [hLeftState]
     cp a, $FF
     jr z, .readRight
-    cp a, 0
-    jr nz, :+
-    ldh a, [hDASCharge]
-:   inc a
+    inc a
     ldh [hLeftState], a
     jr .readRight
 .clearLeft
     xor a, a
     ldh [hLeftState], a
 
-    ; Read right button. If it's just been pressed, restore the held DAS charge.
+    ; Read right button.
 .readRight
     bit 0, b
     jr nz, .clearRight
 .setRight
     ldh a, [hRightState]
     cp a, $FF
-    jr z, .checkDAS
-    cp a, 0
-    jr nz, :+
-    ldh a, [hDASCharge]
-:   inc a
+    jr z, .priorities
+    inc a
     ldh [hRightState], a
-    jr .checkDAS
+    jr .priorities
 .clearRight
     xor a, a
     ldh [hRightState], a
 
-    ; If none of the four directions are pressed, reset the DAS charge.
-.checkDAS
-    ld a, b
-    or a, $F0
-    cp a, $FF
-    ret nz
+    ; If left or right are pressed, zero out up and down.
+.priorities
+    ldh a, [hRightState]
+    cp a, 0
+    jr nz, .zero
+    ldh a, [hLeftState]
+    cp a, 0
+    ret z
+
+.zero
     xor a, a
-    ldh [hDASCharge], a
+    ldh [hUpState], a
+    ldh [hDownState], a
     ret
 
 

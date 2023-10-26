@@ -40,9 +40,16 @@ Choose between a few randomizer options:
 Select the rotation rules:
 - ARS1: Classic ARS from TGM1 and TGM2.
 - ARS2: ARS from TGM3.
+- NES: No kicks.
 
 ### Drop Mode
-Select whether up performs a sonic drop, a hard drop, or nothing at all.
+Choose how the up and down buttons act:
+- FIRM: Up drops to the bottom but does not lock until you are in neutral position. Down locks.
+- SNIC: Like FIRM, but thre is no neutral lock.
+- HARD: Up drops and locks. Down does not lock until you go neutral when the piece is grounded.
+- LOCK: Like HARD but down locks.
+- NONE: Up does nothing. Down locks.
+
 
 ### Speed Curve
 Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all.

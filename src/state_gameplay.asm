@@ -23,15 +23,15 @@ INCLUDE "globals.asm"
 
 
 DEF MODE_LEADY              EQU 0
-DEF MODE_GO                 EQU 1
-DEF MODE_POSTGO             EQU 2
-DEF MODE_PREFETCHED_PIECE   EQU 4
-DEF MODE_SPAWN_PIECE        EQU 5
-DEF MODE_PIECE_IN_MOTION    EQU 6
-DEF MODE_DELAY              EQU 7
-DEF MODE_GAME_OVER          EQU 8
-DEF MODE_PRE_GAME_OVER      EQU 9
-DEF MODE_PAUSED             EQU 10
+DEF MODE_GO                 EQU 3
+DEF MODE_POSTGO             EQU 6
+DEF MODE_PREFETCHED_PIECE   EQU 9
+DEF MODE_SPAWN_PIECE        EQU 12
+DEF MODE_PIECE_IN_MOTION    EQU 15
+DEF MODE_DELAY              EQU 18
+DEF MODE_GAME_OVER          EQU 21
+DEF MODE_PRE_GAME_OVER      EQU 24
+DEF MODE_PAUSED             EQU 27
 
 
 SECTION "High Gameplay Variables", HRAM
@@ -114,7 +114,7 @@ SwitchToGameplay::
     call GBCGameplayInit
 
     ; Install the event loop handlers.
-    ld a, 1
+    ld a, STATE_GAMEPLAY
     ldh [hGameState], a
 
     ; And turn the LCD back on before we start.
@@ -132,28 +132,24 @@ SwitchToGameplay::
 
 GamePlayEventLoopHandler::
     ; What mode are we in?
+    ld hl, .modejumps
     ldh a, [hMode]
-    cp MODE_LEADY
-    jr z, leadyMode
-    cp MODE_GO
-    jr z, goMode
-    cp MODE_POSTGO
-    jr z, postGoMode
-    cp MODE_PREFETCHED_PIECE
-    jr z, prefetchedPieceMode
-    cp MODE_SPAWN_PIECE
-    jp z, spawnPieceMode
-    cp MODE_PIECE_IN_MOTION
-    jp z, pieceInMotionMode
-    cp MODE_DELAY
-    jp z, delayMode
-    cp MODE_PRE_GAME_OVER
-    jp z, preGameOverMode
-    cp MODE_GAME_OVER
-    jp z, gameOverMode
-    cp MODE_PAUSED
-    jp z, pauseMode
+    ld b, 0
+    ld c, a
+    add hl, bc
+    jp hl
 
+.modejumps
+    jp leadyMode
+    jp goMode
+    jp postGoMode
+    jp prefetchedPieceMode
+    jp spawnPieceMode
+    jp pieceInMotionMode
+    jp delayMode
+    jp gameOverMode
+    jp preGameOverMode
+    jp pauseMode
 
     ; Draw "READY" and wait a bit.
 leadyMode:
@@ -210,11 +206,11 @@ prefetchedPieceMode:
     ; A piece will spawn in the middle, at the top of the screen, not rotated by default.
     ld a, $FF
     ldh [hRequestedJingle], a
-    ld a, 5
+    ld a, PIECE_SPAWN_X
     ldh [hCurrentPieceX], a
-    ld a, 3
+    ld a, PIECE_SPAWN_Y
     ldh [hCurrentPieceY], a
-    xor a, a
+    xor a, a ; ROTATION_STATE_DEF
     ldh [hCurrentPieceRotationState], a
     ldh [hHoldSpent], a
 
@@ -252,7 +248,7 @@ prefetchedPieceMode:
     ld a, $FF
     ldh [hAState], a
 .cp1
-    ld a, 3
+    ld a, ROTATION_STATE_CCW
     ldh [hCurrentPieceRotationState], a
     ldh a, [hNextPiece]
     ld b, a
@@ -279,7 +275,7 @@ prefetchedPieceMode:
     ld a, $FF
     ldh [hBState], a
 .cp2
-    ld a, 1
+    ld a, ROTATION_STATE_CW
     ldh [hCurrentPieceRotationState], a
     ldh a, [hNextPiece]
     ld b, a
@@ -338,10 +334,11 @@ pieceInMotionMode:
     cp a, $FF
     jr z, :+
     ; Reset position and rotation.
-    ld a, 5
+    ld a, PIECE_SPAWN_X
     ldh [hCurrentPieceX], a
-    ld a, 3
+    ld a, PIECE_SPAWN_Y
     ldh [hCurrentPieceY], a
+    xor a, a ; ROTATION_STATE_DEF
     ldh [hCurrentPieceRotationState], a
     call DoHold
     ld a, MODE_SPAWN_PIECE
@@ -622,7 +619,7 @@ DoHold:
     ld a, $FF
     ldh [hAState], a
 .cp3
-    ld a, 3
+    ld a, ROTATION_STATE_CCW
     ldh [hCurrentPieceRotationState], a
     call SFXKill
     ld a, SFX_IRS | SFX_IHS
@@ -647,7 +644,7 @@ DoHold:
     ld a, $FF
     ldh [hBState], a
 .cp4
-    ld a, 1
+    ld a, ROTATION_STATE_CW
     ldh [hCurrentPieceRotationState], a
     call SFXKill
     ld a, SFX_IRS | SFX_IHS
@@ -658,7 +655,7 @@ DoHold:
     call SFXKill
     ld a, SFX_IHS
     call SFXEnqueue
-    ld a, 0
+    xor a, a ; ROTATION_STATE_DEF
     ldh [hCurrentPieceRotationState], a
 
 .doHoldOperation

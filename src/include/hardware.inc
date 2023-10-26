@@ -61,7 +61,7 @@ DEF HARDWARE_INC EQU 1
 
 
 ; Uncomment this line to build a rom with the registers scrambled for the analogue pocket.
-;DEF BUILD_POCKET EQU 1
+; DEF BUILD_POCKET EQU 1
 
 ; Usage: rev_Check_hardware_inc <min_ver>
 ; Examples: rev_Check_hardware_inc 4.1.2

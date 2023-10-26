@@ -120,7 +120,7 @@ Main::
     ; Set up the interrupt handlers.
     ld a, [wInitialA]
     cp a, $11
-    jr nz, :+
+    jr z, :+
     wait_vblank
 :   call InitializeLCDCInterrupt
 

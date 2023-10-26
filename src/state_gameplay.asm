@@ -457,31 +457,6 @@ preGameOverMode:
 .skip7\@
     ENDR
 
-    ; Place a tell on the screen for modes.
-    ld hl, FIELD_RNG
-    wait_vram
-    ld a, [wRNGModeState]
-    add a, TILE_RNG_MODE_BASE
-    ld [hl], a
-
-    ld hl, FIELD_ROT
-    wait_vram
-    ld a, [wRotModeState]
-    add a, TILE_ROT_MODE_BASE
-    ld [hl], a
-
-    ld hl, FIELD_DROP
-    wait_vram
-    ld a, [wDropModeState]
-    add a, TILE_DROP_MODE_BASE
-    ld [hl], a
-
-    ld hl, FIELD_HIG
-    wait_vram
-    ld a, [wAlways20GState]
-    add a, TILE_HIG_MODE_BASE
-    ld [hl], a
-
     ld a, MODE_GAME_OVER
     ldh [hMode], a
 

@@ -26,6 +26,8 @@ SECTION "High RNG Variables", HRAM
 hRNGSeed:      ds 4
 hPieceHistory: ds 4
 hNextPiece::   ds 1
+hUpcomingPiece1:: ds 1
+hUpcomingPiece2:: ds 1
 
 
 SECTION "TGM3 RNG Variables", WRAM0
@@ -77,7 +79,7 @@ RNGInit::
     cp a, RNG_MODE_HELL
     jr nz, .complexinit
     call Next7Piece
-    ld [hNextPiece], a
+    ld [hUpcomingPiece2], a
     ret
 
     ; Otherwise do complex init.
@@ -106,20 +108,31 @@ RNGInit::
 
     ; Save the generated piece and put it in the history.
     ldh [hPieceHistory], a
-    ld [hNextPiece], a
+    ld [hUpcomingPiece2], a
+
+    ; Generate the next 2 to fill up the queue.
+    call GetNextPiece
+    call GetNextPiece
     ret
 
 
     ; Shift the generated piece into the history and save it.
 ShiftHistory:
+    ld b, a
+    ldh a, [hUpcomingPiece1]
     ldh [hNextPiece], a
+    ldh a, [hUpcomingPiece2]
+    ldh [hUpcomingPiece1], a
+    ld a, b
+
+    ldh [hUpcomingPiece2], a
     ldh a, [hPieceHistory+2]
     ldh [hPieceHistory+3], a
     ldh a, [hPieceHistory+1]
     ldh [hPieceHistory+2], a
     ldh a, [hPieceHistory]
     ldh [hPieceHistory+1], a
-    ldh a, [hNextPiece]
+    ldh a, [hUpcomingPiece2]
     ldh [hPieceHistory], a
     ret
 
@@ -127,8 +140,7 @@ ShiftHistory:
     ; A random piece. Get fucked.
 GetNextHellPiece:
     call Next7Piece
-    ldh [hNextPiece], a
-    ret
+    jr ShiftHistory
 
 
     ; 4 history, 4 rerolls.
@@ -188,7 +200,7 @@ GetNextNesPiece:
     cp a, [hl]
     jr nz, ShiftHistory
     call Next7Piece
-    jr nz, ShiftHistory
+    jr ShiftHistory
 
 
     ; TGM3 mode... It's complex.

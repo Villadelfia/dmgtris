@@ -57,5 +57,15 @@ UnsafeMemSet::
     jr nz, UnsafeMemSet
     ret
 
+SafeMemSet::
+    wait_vram
+    ld [hl], d
+    inc hl
+    dec bc
+    ld a, b
+    or a, c
+    jr nz, SafeMemSet
+    ret
+
 
 ENDC

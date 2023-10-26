@@ -26,9 +26,9 @@ INCLUDE "structs.asm"
 ; Waits for PPU mode to be 0 or 1.
 ; We don't wait for 2 because it's super short and impractical to do much of anything in.
 MACRO wait_vram
-    ld hl, rSTAT
 .wvr\@
-    bit STATB_BUSY, [hl]
+    ldh a, [rSTAT]
+    bit STATB_BUSY, a
     jr nz, .wvr\@
 ENDM
 

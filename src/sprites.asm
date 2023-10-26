@@ -85,11 +85,11 @@ ClearOAM::
     ld hl, _OAMRAM
     ld bc, $9F
     ld d, 0
-    call UnsafeMemSet
+    call SafeMemSet
     ld hl, wShadowOAM
     ld bc, $9F
     ld d, 0
-    call UnsafeMemSet
+    call SafeMemSet
     ret
 
 

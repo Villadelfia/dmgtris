@@ -68,13 +68,20 @@ Main::
     ld a, l
     ld [wInitialL], a
 
-    ; Turn off LCD during initialization.
+    ; Let the DMG have some fun with the initial screen.
+    call DoDMGEffect
+
+    ; Turn off LCD during initialization, but not on DMG.
+    ld a, [wInitialA]
+    cp a, $11
+    jr nz, :+
+
     wait_vram
     xor a, a
     ldh [rLCDC], a
 
     ; Set up stack
-    ld sp, wStackEnd-1
+:   ld sp, wStackEnd-1
 
     ; GBC? Double speed mode and set up palettes.
     ld a, [wInitialA]
@@ -96,7 +103,7 @@ Main::
     ld de, Tiles
     ld hl, _VRAM
     ld bc, TilesEnd - Tiles
-    call UnsafeMemCopy
+    call SafeMemCopy
 
     ; Clear OAM.
     call ClearOAM
@@ -111,7 +118,11 @@ Main::
     call SFXInit
 
     ; Set up the interrupt handlers.
-    call InitializeLCDCInterrupt
+    ld a, [wInitialA]
+    cp a, $11
+    jr nz, :+
+    wait_vblank
+:   call InitializeLCDCInterrupt
 
     ; Switch to gameplay state.
     call SwitchToTitle

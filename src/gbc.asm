@@ -737,38 +737,51 @@ GBCGameplayProcess::
     ; Color based on mode.
     ld a, [wSpeedCurveState]
     cp a, SCURVE_DMGT
-    ld a, $03 ;Blue
-    jr z, .higoverride
+    ld a, $05 ;Blue
+    jr z, .goverride
     ld a, [wSpeedCurveState]
     cp a, SCURVE_TGM1
-    ld a, $05 ;Yellow
-    jr z, .higoverride
+    ld a, $06 ;Cyan
+    jr z, .goverride
     ld a, [wSpeedCurveState]
     cp a, SCURVE_TGM3
-    ld a, $04 ;Orange
-    jr z, .higoverride
+    ld a, $03 ;Blue
+    jr z, .goverride
     ld a, [wSpeedCurveState]
     cp a, SCURVE_DEAT
-    ld a, $06 ;Cyan
-    jr z, .higoverride
+    ld a, $00 ;Red
+    jr z, .goverride
     ld a, [wSpeedCurveState]
     cp a, SCURVE_SHIR
     ld a, $00 ;Red
-    jr z, .higoverride ;Always red
+    jr z, .goverride ;Always red
     ld a, [wSpeedCurveState]
     cp a, SCURVE_CHIL
     ld a, $01 ;Green
-    jr z, .higoverride
 
     ; Are we 20G?
-.higoverride
+.goverride
     ld d, a
     ldh a, [hCurrentIntegerGravity]
     cp a, 20
-    jr nz, .colorfield
-
-    ; Strobe the frame.
+    jr c, :+
     ld a, $00
+    ld d, a
+    jr .colorfield
+:   cp a, 3
+    jr c, :+
+    ld a, $04
+    ld d, a
+    jr .colorfield
+:   cp a, 2
+    jr c, :+
+    ld a, $05
+    ld d, a
+    jr .colorfield
+:   ldh a, [hCurrentFractionalGravity]
+    cp a, 0
+    jr nz, .colorfield
+    ld a, $05
     ld d, a
 
 .colorfield

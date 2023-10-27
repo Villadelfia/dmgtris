@@ -50,7 +50,6 @@ Choose how the up and down buttons act:
 - LOCK: Like HARD but down locks.
 - NONE: Up does nothing. Down locks.
 
-
 ### Speed Curve
 Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all.
 
@@ -106,13 +105,19 @@ ScoreIncrement points are then awarded.
 - B — Go back to title
 
 
+## Screenshots
+![DMG Title Screen](https://villadelfia.org/i/uvnJKLWR.png)
+![DMG Gameplay](https://villadelfia.org/i/GK_r3R_C.png)
+![GBC Title Screen](https://villadelfia.org/i/WYvFGaN8.png)
+![GBC Gameplay](https://villadelfia.org/i/D6NHvBsP.png)
+
+
 ## Building and Development
 The game can be built using gnu make and the RGBDS toolchain.
 
 A few guidelines are in effect:
 - If you add a bank, please add a section to `bankid.asm` and follow the existing format.
-- If your code breaks existing save data, please update `SAVE_MAGIC_X` in `globals.asm`. This only needs to be done if existing save data would be completely incompatible.
-- If you wish to save integer ID's they can be added to SRAM in `InitializeSRAM` and `RestoreSRAM`. However if you're saving a memory address, you should use `PartiallyInitializeSRAM` rather than `InitializeSRAM` so that it gets invalidated on every build.
+- Stuff that goes in the sram belongs in the `sram.asm` file, where there exists code to init SRAM to known defaults.
 
 
 ## License

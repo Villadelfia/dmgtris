@@ -27,22 +27,63 @@ hFrameCtr::  ds 1
 hEvenFrame:: ds 1
 
 
+SECTION "Time Variables", WRAM0
+wMinutes:: ds 1
+wSeconds:: ds 1
+wFrames:: ds 1
+
+
 SECTION "Time Functions", ROM0
+    ; Zeroes all timers and gets the free-running timer ticking.
 TimeInit::
     xor a, a
     ldh [rTMA], a
     ldh [hEvenFrame], a
     ldh [hFrameCtr], a
+    ld [wMinutes], a
+    ld [wSeconds], a
+    ld [wFrames], a
     ld a, TACF_262KHZ | TACF_START
     ldh [rTAC], a
     ret
 
+
+    ; Resets the minute-second timer.
+ResetTime::
+    xor a, a
+    ld [wMinutes], a
+    ld [wSeconds], a
+    ld [wFrames], a
+    ret
+
+
+    ; Increments the global timer. Also saves whether we're on an even frame.
 HandleTimers::
     ldh a, [hFrameCtr]
     inc a
     ldh [hFrameCtr], a
     and 1
     ldh [hEvenFrame], a
+
+    ld a, [wFrames]
+    inc a
+    ld [wFrames], a
+    cp a, 60
+    ret nz
+
+    xor a, a
+    ld [wFrames], a
+    ld a, [wSeconds]
+    inc a
+    ld [wSeconds], a
+    cp a, 60
+    ret nz
+
+    xor a, a
+    ld [wSeconds], a
+    ld a, [wMinutes]
+    inc a
+    ld [wMinutes], a
     ret
 
 

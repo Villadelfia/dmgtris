@@ -70,8 +70,9 @@ hNoisePlayhead:: ds 2
 
 
 SECTION "SFX Functions", ROM0
-SFXInit::
     ; Audio on, volume on, and enable all channels.
+    ; Zeroes out all playheads and the queue.
+SFXInit::
     ld a, $80
     ldh [rNR52], a
     ld a, $FF
@@ -92,8 +93,8 @@ SFXInit::
     ret
 
 
-SFXPopQueue:
     ; Pop the head of the queue into A, the tail of the queue will be set to $FF.
+SFXPopQueue:
     ldh a, [hPlayQueue]
     ld b, a
     ldh a, [hPlayQueue+1]
@@ -108,8 +109,8 @@ SFXPopQueue:
     ret
 
 
-SFXPushQueue:
     ; Push A onto the tail of the queue, the head of the queue will be pushed off.
+SFXPushQueue:
     ld b, a
     ldh a, [hPlayQueue+1]
     ldh [hPlayQueue], a
@@ -122,18 +123,18 @@ SFXPushQueue:
     ret
 
 
+    ; Process the queue, if there's more to play, it will do so.
 SFXProcessQueue:
     ; Clear the playhead.
     xor a, a
     ldh [hPlayhead], a
     ldh [hPlayhead+1], a
 
+    ; Music will just repeat.
     ldh a, [hPlayQueue]
     cp a, MUSIC_MENU
     jr nz, :+
-    call SFXEnqueue
-    ret
-
+    jr SFXEnqueue
 
     ; Try 4 times to pop a sound effect off the queue.
 :   call SFXPopQueue
@@ -150,10 +151,10 @@ SFXProcessQueue:
     ret z
 
     ; If we got a valid sound effect, then play it.
-    call SFXEnqueue
-    ret
+    jr SFXEnqueue
 
 
+    ; Noise effects use their own playhead that can play at the same time as the normal queue.
 SFXTriggerNoise::
     cp a, SFX_LINE_CLEAR
     jr nz, :+
@@ -191,8 +192,7 @@ SFXEnqueue::
     or a, l
     jr z, :+
     ld a, b
-    call SFXPushQueue
-    ret
+    jr SFXPushQueue
 
     ; Menu music
 :   ld a, b
@@ -203,9 +203,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sMusicMenu)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
-
+    jp SFXPlay
 
     ; Piece jingles.
 :   ld a, b
@@ -215,8 +213,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceI)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_I | SFX_IRS
@@ -225,8 +222,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceIRSI)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_S
@@ -235,8 +231,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceS)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_S | SFX_IRS
@@ -245,8 +240,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceIRSS)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_Z
@@ -255,8 +249,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceZ)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_Z | SFX_IRS
@@ -265,8 +258,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceIRSZ)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_J
@@ -275,8 +267,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceJ)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_J | SFX_IRS
@@ -285,8 +276,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceIRSJ)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_L
@@ -295,8 +285,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceL)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_L | SFX_IRS
@@ -305,8 +294,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceIRSL)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_O
@@ -315,8 +303,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceO)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_O | SFX_IRS
@@ -325,8 +312,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceIRSO)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_T
@@ -335,8 +321,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceT)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   ld a, b
     cp a, PIECE_T | SFX_IRS
@@ -345,9 +330,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXPieceIRST)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
-
+    jp SFXPlay
 
     ; IRS
 :   cp a, SFX_IHS
@@ -356,8 +339,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXIHS)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jp SFXPlay
 
 :   cp a, SFX_IHS | SFX_IRS
     jr nz, :+
@@ -365,9 +347,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXIHSIRS)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
-
+    jp SFXPlay
 
     ; Leveling
 :   cp a, SFX_LEVELLOCK
@@ -376,8 +356,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXLevelLock)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jr SFXPlay
 
 :   cp a, SFX_LEVELUP
     jr nz, :+
@@ -385,9 +364,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXLevelUp)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
-
+    jr SFXPlay
 
     ; Other
 :   cp a, SFX_RANKUP
@@ -396,8 +373,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXRankUp)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jr SFXPlay
 
 :   cp a, SFX_READYGO
     ret nz
@@ -405,10 +381,9 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXReadyGo)
     ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
+    jr SFXPlay
 
-
+    ; Kill the non-noise sound and clear the queue.
 SFXKill::
     ; Kill all sound without pops.
     ld a, %00111111
@@ -416,12 +391,10 @@ SFXKill::
     ldh [rNR21], a
     ld a, $FF
     ldh [rNR31], a
-    ;ldh [rNR41], a
     ld a, %01000000
     ldh [rNR14], a
     ldh [rNR24], a
     ldh [rNR34], a
-    ;ldh [rNR44], a
 
     ; Clear the queue.
     ld a, $FF
@@ -435,6 +408,8 @@ SFXKill::
     ret
 
 
+    ; Play routine for the noise channel.
+    ; Must be called every frame.
 SFXPlayNoise::
     ; Get the noise playhead.
     ldh a, [hNoisePlayhead]
@@ -484,11 +459,11 @@ SFXPlayNoise::
     ldh [hNoisePlayhead], a
     ld a, h
     ldh [hNoisePlayhead+1], a
-    rst RSTRestoreBank
-    ret
+    jp RSTRestoreBank
 
 
-    ; This play routine must be called every frame.
+    ; Play routine for the regular sfx channels.
+    ; Must be called every frame.
 SFXPlay::
     ; Bank to correct bank.
     ldh a, [hPlayQueue]
@@ -510,8 +485,7 @@ SFXPlay::
     ; Nothing to do if it's a null ptr.
     or a, l
     jr nz, .getRegister
-    rst RSTRestoreBank
-    ret
+    jp RSTRestoreBank
 
     ; Otherwise, get the register to write to.
 .getRegister
@@ -522,8 +496,7 @@ SFXPlay::
     cp a, $FE
     jr nz, :+
     rst RSTRestoreBank
-    call SFXProcessQueue
-    ret
+    jp SFXProcessQueue
 
     ; If it's $FF, then we're done for this frame.
 :   cp a, $FF
@@ -546,8 +519,7 @@ SFXPlay::
     ldh [hPlayhead], a
     ld a, h
     ldh [hPlayhead+1], a
-    rst RSTRestoreBank
-    ret
+    jp RSTRestoreBank
 
 
 ENDC

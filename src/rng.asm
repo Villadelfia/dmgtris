@@ -38,6 +38,7 @@ wTGM3WorstDroughtIdx: ds 1
 
 
 section "RNG Functions", ROM0
+    ; Snapshots the initial seed for a game, then initializes the history and piece queue.
 RNGInit::
     ; Do some bit fuckery on the seed using the gameboy's free-running timers.
     ldh a, [rDIV]
@@ -112,8 +113,7 @@ RNGInit::
 
     ; Generate the next 2 to fill up the queue.
     call GetNextPiece
-    call GetNextPiece
-    ret
+    jp GetNextPiece
 
 
     ; Shift the generated piece into the history and save it.
@@ -354,21 +354,27 @@ GetNextTGM3Piece:
     ld [hl], a
     ret
 
-
+    ; Gets the next piece depending on RNG mode.
 GetNextPiece::
+    ld hl, .nextpiecejumps
     ld a, [wRNGModeState]
-    cp a, RNG_MODE_HELL
-    jp z, GetNextHellPiece
-    cp a, RNG_MODE_TGM1
-    jp z, GetNextTGM1Piece
-    cp a, RNG_MODE_TGM2
-    jp z, GetNextTGM2Piece
-    cp a, RNG_MODE_TGM3
-    jp z, GetNextTGM3Piece
-    cp a, RNG_MODE_NES
-    jp z, GetNextNesPiece
+    ld b, 0
+    ld c, a
+    add a, c
+    add a, c
+    ld c, a
+    add hl, bc
+    jp hl
+
+.nextpiecejumps
+    jp GetNextTGM1Piece
+    jp GetNextTGM2Piece
+    jp GetNextTGM3Piece
+    jp GetNextHellPiece
+    jp GetNextNesPiece
 
 
+    ; Tries generating bytes until it gets one in [0; 35)
 Next35Piece:
 :   call NextByte
     and a, $3F
@@ -377,6 +383,7 @@ Next35Piece:
     ret
 
 
+    ; Tries generating bytes until it gets one in [0; 7)
 Next7Piece:
 :   call NextByte
     and a, $07
@@ -385,6 +392,7 @@ Next7Piece:
     ret
 
 
+    ; Cyrcles the RNG returning a random byte in a.
 NextByte:
     ; Load seed
     ld hl, hRNGSeed+3

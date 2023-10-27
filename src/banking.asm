@@ -25,7 +25,7 @@ INCLUDE "globals.asm"
 SECTION "High Banking Variables", HRAM
 hBankBackup: ds 1
 
-; 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, and 0x38
+
 SECTION "Switch Bank", ROM0[$08]
     ; Saves the current bank and switches to the bank in b.
 RSTSwitchBank::

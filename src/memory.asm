@@ -23,7 +23,7 @@ INCLUDE "globals.asm"
 
 
 SECTION "Memory Functions", ROM0
-; Copies data from de to hl, bc bytes
+    ; Copies data from de to hl, bc bytes. Doesn't check for vram access.
 UnsafeMemCopy::
     ld a, [de]
     ld [hl+], a
@@ -35,7 +35,7 @@ UnsafeMemCopy::
     ret
 
 
-; Copies data from de to hl, bc bytes
+    ; Copies data from de to hl, bc bytes. Checks for vram access.
 SafeMemCopy::
     wait_vram
     ld a, [de]
@@ -47,7 +47,8 @@ SafeMemCopy::
     jr nz, SafeMemCopy
     ret
 
-; Sets memory from hl to hl+bc to d
+
+    ; Sets memory from hl to hl+bc to d. Doesn't check for vram access.
 UnsafeMemSet::
     ld [hl], d
     inc hl
@@ -57,6 +58,8 @@ UnsafeMemSet::
     jr nz, UnsafeMemSet
     ret
 
+
+    ; Sets memory from hl to hl+bc to d. Checks for vram access.
 SafeMemSet::
     wait_vram
     ld [hl], d

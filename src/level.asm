@@ -41,21 +41,10 @@ hPrevHundreds:: ds 1
 
 
 SECTION "Level Functions", ROM0
+    ; Loads the initial state of the speed curve.
 LevelInit::
     xor a, a
-    ldh [hLevel], a
-    ldh [hLevel+1], a
-    ldh [hCLevel], a
-    ldh [hCLevel+1], a
-    ldh [hCLevel+2], a
-    ldh [hCLevel+3], a
-    ldh [hNLevel], a
-    ldh [hNLevel+2], a ; Note +1 is inited later.
-    ldh [hNLevel+3], a
     ldh [hRequiresLineClear], a
-
-    ld a, 1
-    ldh [hNLevel+1], a
 
     ldh a, [hStartSpeed]
     ld l, a
@@ -109,8 +98,8 @@ LevelInit::
     and a, $0F
     ldh [hNLevel], a
 
-    call DoSpeedUp
-    ret
+    jp DoSpeedUp
+
 
     ; Increment level and speed up if necessary. Level increment in E.
     ; Levels may only increment by single digits.
@@ -199,8 +188,7 @@ LevelUp::
     ldh [hLevel+1], a
     call DoSpeedUp
     ld a, SFX_RANKUP
-    call SFXEnqueue
-    ret
+    jp SFXEnqueue
 
 .checknlevel
     ; Make wNLevel make sense.
@@ -306,16 +294,14 @@ LevelUp::
 
 :   ldh a, [hNextSpeedUp+1]
     and a, $0F
-    jr z, :+
+    jr z, DoSpeedUp
     ld hl, hCLevel+3
     cp a, [hl]
-    jr z, :+
-    ret nc
-
-:   call DoSpeedUp
-    ret
+    jr z, DoSpeedUp
+    ret nc  ; This can fall through to the next function here. This is intentional.
 
 
+    ; Iterates over the speed curve and loads the new constants.
 DoSpeedUp:
     ; Load curve ptr.
     ldh a, [hSpeedCurvePtr]

@@ -30,6 +30,7 @@ hScoreIncrementHead:: ds 1
 
 
 SECTION "Score Functions", ROM0
+    ; Wipes the score.
 ScoreInit::
     xor a, a
     ldh [hScore], a
@@ -48,6 +49,7 @@ ScoreInit::
     ldh [hScoreIncrementBCD+4], a
     ldh [hScoreIncrementBCD+5], a
     ret
+
 
     ; Increases the current score by the amount in wScoreIncrement.
 IncreaseScore::
@@ -186,8 +188,7 @@ IncreaseScore::
     xor a, a
     ldh [hScore], a
     ld a, SFX_RANKUP
-    call SFXEnqueue
-    ret
+    jp SFXEnqueue
 
 
 ENDC

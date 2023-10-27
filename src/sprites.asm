@@ -90,14 +90,15 @@ OAMDMAEnd::
 
 
 SECTION "OAM Functions", ROM0
+    ; Copies the OAM handler to HRAM.
 CopyOAMHandler::
     ld de, OAMDMA
     ld hl, hOAMDMA
     ld bc, OAMDMAEnd - OAMDMA
-    call UnsafeMemCopy
-    ret
+    jp UnsafeMemCopy
 
 
+    ; Clears OAM and shadow OAM.
 ClearOAM::
     ld hl, _OAMRAM
     ld bc, $9F
@@ -106,12 +107,12 @@ ClearOAM::
     ld hl, wShadowOAM
     ld bc, $9F
     ld d, 0
-    call SafeMemSet
-    ret
+    jp UnsafeMemSet
 
 
 
 SECTION "Domain Specific Functions", ROM0
+    ; Puts the mode tells into sprites and displays them.
 ApplyTells::
     ld a, TELLS_BASE_Y
     ld [wSPRModeRNG], a
@@ -155,7 +156,8 @@ ApplyTells::
     ret
 
 
-; Index of next piece in A.
+    ; Draws the next pieces as a sprite.
+    ; Index of next piece in A.
 ApplyNext::
     ; Correct color
     ld [wSPRNext1+3], a
@@ -219,7 +221,6 @@ ApplyNext::
     add a, NEXT_BASE_Y
     ld [wSPRNext4+0], a
 
-
     ; Queue
     ld a, QUEUE_BASE_Y
     ld [wSPRQueue1A], a
@@ -254,17 +255,10 @@ ApplyNext::
     ld [wSPRQueue2B+2], a
     ret
 
-; Index of hold piece in A.
-ApplyHold::
-    cp 255
-    jr nz, .doApplyHold
-    ld hl, wSPRHold1
-    ld bc, 16
-    ld d, 0
-    call UnsafeMemSet
-    ret
 
-.doApplyHold
+    ; Draws the held piece.
+    ; Index of held piece in A.
+ApplyHold::
     ; Correct color
     ld [wSPRHold1+3], a
     ld [wSPRHold2+3], a
@@ -281,7 +275,6 @@ ApplyHold::
     cp a, 0
     ld a, b
     jr z, .show
-
 
 .hide
     ld b, a
@@ -350,8 +343,9 @@ ApplyHold::
     ret
 
 
-; Address of first sprite in hl.
-; Address of first digit in de.
+    ; Generic function to draw a BCD number (6 digits) as 6 sprites.
+    ; Address of first sprite in hl.
+    ; Address of first digit in de.
 ApplyNumbers::
     inc hl
     inc hl
@@ -390,11 +384,10 @@ ApplyNumbers::
     ld a, [de]
     add a, TILE_0
     ld [hl], a
-    add hl, bc
-    inc de
     ret
 
 
+    ; Positions all number sprites for gameplay.
 SetNumberSpritePositions::
     ld a, SCORE_BASE_X
     ld hl, wSPRScore1

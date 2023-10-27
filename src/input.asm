@@ -35,6 +35,7 @@ hSelectState::     ds 1
 
 
 SECTION "Input Functions", ROM0
+    ; Zeroes out all button states.
 InputInit::
     xor a, a
     ldh [hUpState], a
@@ -48,6 +49,9 @@ InputInit::
     ret
 
 
+    ; Gets the current state of all buttons.
+    ; Held buttons are incremented. Buttons that aren't held are reset to 0.
+    ; Left/Right cause Up/Down to be reset as well.
 GetInput::
     ; Get the button state.
 .btns

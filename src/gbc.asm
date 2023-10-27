@@ -38,8 +38,10 @@ DEF R3 EQU %0000000000011111
 SECTION "GBC Shadow Tilemap", WRAM0, ALIGN[8]
 wShadowTilemap:: ds 32*32
 
+
 SECTION "GBC Shadow Tile Attributes", WRAM0, ALIGN[8]
 wShadowTileAttrs:: ds 32*32
+
 
 SECTION "GBC Variables", WRAM0
 wOuterReps:: ds 1
@@ -48,6 +50,7 @@ wTitlePal:: ds 1
 
 
 SECTION "GBC Functions", ROM0
+    ; Copies the shadow tile attribute map to vram using instant HDMA.
 ToATTR::
     ld a, [wInitialA]
     cp a, $11
@@ -71,38 +74,7 @@ ToATTR::
     ret
 
 
-ToVRAM::
-    ; Bank 1
-    ld a, 1
-    ldh [rVBK], a
-    ld a, HIGH(wShadowTileAttrs)
-    ldh [rHDMA1], a
-    ld a, LOW(wShadowTileAttrs)
-    ldh [rHDMA2], a
-    ld a, HIGH($9800)
-    ldh [rHDMA3], a
-    ld a, LOW($9800)
-    ldh [rHDMA4], a
-    ld a, 40
-    ldh [rHDMA5], a
-
-
-    ; Bank 0
-    ld a, 0
-    ldh [rVBK], a
-    ld a, HIGH(wShadowTilemap)
-    ldh [rHDMA1], a
-    ld a, LOW(wShadowTilemap)
-    ldh [rHDMA2], a
-    ld a, HIGH($9800)
-    ldh [rHDMA3], a
-    ld a, LOW($9800)
-    ldh [rHDMA4], a
-    ld a, 39 | $80
-    ldh [rHDMA5], a
-    jp EventLoop
-
-
+    ; Sets up GBC registers for the title state.
 GBCTitleInit::
     ld a, [wInitialA]
     cp a, $11
@@ -384,7 +356,7 @@ GBCTitleInit::
     ld [wTitlePal], a
     ret
 
-
+    ; Sets the GBC registers for the gameplay state.
 GBCGameplayInit::
     ld a, [wInitialA]
     cp a, $11
@@ -678,6 +650,7 @@ GBCGameplayInit::
     ret
 
 
+    ; Additional GBC effects for the title screen process state.
 GBCTitleProcess::
     ld a, [wInitialA]
     cp a, $11
@@ -725,10 +698,10 @@ GBCTitleProcess::
     ld a, 3
     ld d, a
     ld bc, 32
-    call UnsafeMemSet
-    ret
+    jp UnsafeMemSet
 
 
+    ; Additional GBC effects for the gameplay process state.
 GBCGameplayProcess::
     ld a, [wInitialA]
     cp a, $11
@@ -946,8 +919,38 @@ GBCGameplayProcess::
     ret
 
 
+    ; Copies the shadow tile maps to VRAM using HDMA. The attributes are copied using instant mode
+    ; The tile data is done using hblank mode.
 GBCBlitField::
-    jp ToVRAM
+ToVRAM::
+    ; Bank 1
+    ld a, 1
+    ldh [rVBK], a
+    ld a, HIGH(wShadowTileAttrs)
+    ldh [rHDMA1], a
+    ld a, LOW(wShadowTileAttrs)
+    ldh [rHDMA2], a
+    ld a, HIGH($9800)
+    ldh [rHDMA3], a
+    ld a, LOW($9800)
+    ldh [rHDMA4], a
+    ld a, 40
+    ldh [rHDMA5], a
+
+    ; Bank 0
+    ld a, 0
+    ldh [rVBK], a
+    ld a, HIGH(wShadowTilemap)
+    ldh [rHDMA1], a
+    ld a, LOW(wShadowTilemap)
+    ldh [rHDMA2], a
+    ld a, HIGH($9800)
+    ldh [rHDMA3], a
+    ld a, LOW($9800)
+    ldh [rHDMA4], a
+    ld a, 39 | $80
+    ldh [rHDMA5], a
+    jp EventLoop
 
 
 ENDC

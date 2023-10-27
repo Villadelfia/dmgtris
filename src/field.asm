@@ -62,6 +62,10 @@ hShouldLockIfGrounded: ds 1
 
 
 SECTION "Field Functions", ROM0
+    ; Initializes the field completely blank.
+    ; Initializes the combo counter to 1.
+    ; Initializes the bravo counter to 0.
+    ; Initializes the shadow field.
 FieldInit::
     xor a, a
     ldh [hBravo], a
@@ -69,14 +73,14 @@ FieldInit::
     ldh [hComboCt], a
     ld hl, wField
     ld bc, 10*24
-    ld d, 1
+    ld d, TILE_BLANK
     call UnsafeMemSet
     ld hl, wShadowField
     ld bc, 14*26
     ld d, $FF
     jp UnsafeMemSet
 
-
+    ; Fills the field with the empty tile.
 FieldClear::
     ld hl, wField
     ld bc, 10*24
@@ -84,13 +88,16 @@ FieldClear::
     jp UnsafeMemSet
 
 
+    ; Backs up the field.
+    ; This backup field is used for pausing the game.
 ToBackupField::
-    ld hl, wBackupField
     ld de, wField
+    ld hl, wBackupField
     ld bc, 10*24
     jp UnsafeMemCopy
 
 
+    ; Restores the backup of the field for ending pause mode.
 FromBackupField::
     ld hl, wField
     ld de, wBackupField
@@ -98,6 +105,8 @@ FromBackupField::
     jp UnsafeMemCopy
 
 
+    ; Copies the field to the shadow field.
+    ; This shadow field is used to calculate whether or not the piece can fit.
 ToShadowField::
     ld hl, wField
     ld de, wShadowField+2
@@ -119,6 +128,7 @@ ToShadowField::
     ret
 
 
+    ; Restores the shadow field to the main field.
 FromShadowField:
     ld hl, wField
     ld de, wShadowField+2
@@ -140,9 +150,10 @@ FromShadowField:
     ret
 
 
-    ; This routine will copy wField onto the screen.
+    ; Blits the field onto the tile map.
+    ; On the GBC, this chain calls into a special version that takes
+    ; advantage of the GBC's CPU.
 BlitField::
-    ; Hold on, are we on a gbc?
     ld a, [wInitialA]
     cp a, $11
     jp z, GBCBlitField
@@ -190,39 +201,39 @@ BlitField::
         add hl, bc
     ENDR
 
-    ; This has to finish just before the first LCDC interrupt of the frame or stuff will break in weird ways.
+    ; This function is actually called as the vblank handler for the gameplay state.
+    ; This is why it jumps straight back to the event loop.
     jp EventLoop
 
 
+    ; The current piece ID is used to get the offset into the rotation states
+    ; corresponding to that piece's zero rotation.
 SetPieceData:
     ldh a, [hCurrentPiece]
+    sla a
+    sla a
+    sla a
+    sla a
+    ld c, a
+    ld b, 0
+
     ld hl, sPieceRotationStates
-    ld de, 16
-:   cp a, 0
-    jr z, :+
-    add hl, de
-    dec a
-    jr :-
-:   ld a, l
+    add hl, bc
+    ld a, l
     ldh [hPieceDataBase], a
     ld a, h
     ldh [hPieceDataBase+1], a
 
-    ldh a, [hCurrentPiece]
     ld hl, sPieceFastRotationStates
-    ld de, 16
-:   cp a, 0
-    jr z, :+
-    add hl, de
-    dec a
-    jr :-
-:   ld a, l
+    add hl, bc
+    ld a, l
     ldh [hPieceDataBaseFast], a
     ld a, h
     ldh [hPieceDataBaseFast+1], a
     ret
 
 
+    ; The rotation state is a further offset of 4 bytes.
 SetPieceDataOffset:
     ldh a, [hCurrentPieceRotationState]
     sla a
@@ -248,7 +259,6 @@ XYToSFieldPtr:
     ret
 
 
-
     ; Converts piece Y in B and a piece X in A to a pointer to the field in HL.
 XYToFieldPtr:
     ld hl, wField-2
@@ -266,6 +276,9 @@ XYToFieldPtr:
     ret
 
 
+    ; This function makes HL point to the correct offset into the rotation data.
+    ; This version of the data is used for thorough checking (T, J, and L have
+    ; a middle column exception.)
 GetPieceData:
     ldh a, [hPieceDataBase]
     ld l, a
@@ -273,12 +286,13 @@ GetPieceData:
     ld h, a
     ldh a, [hPieceDataOffset]
     ld c, a
-    xor a, a
-    ld b, a
+    ld b, 0
     add hl, bc
     ret
 
 
+    ; Same as the above but for the fast data. This data is used when the exact
+    ; cell that failed isn't important.
 GetPieceDataFast:
     ldh a, [hPieceDataBaseFast]
     ld l, a
@@ -291,61 +305,12 @@ GetPieceDataFast:
     add hl, bc
     ret
 
-    ; Checks if the piece can fit at the current position, but fast.
-    ; HL should point to the piece's rotation state data.
-    ; DE should be pointing to the right place in the SHADOW field.
-CanPieceFitFast:
-    ld a, [hl+]
-    add a, e
-    ld e, a
-    adc a, d
-    sub e
-    ld d, a
-    ld a, [de]
-    cp a, TILE_FIELD_EMPTY
-    jr z, :+
-    xor a, a
-    ret
-:   ld a, [hl+]
-    add a, e
-    ld e, a
-    adc a, d
-    sub e
-    ld d, a
-    ld a, [de]
-    cp a, TILE_FIELD_EMPTY
-    jr z, :+
-    xor a, a
-    ret
-:   ld a, [hl+]
-    add a, e
-    ld e, a
-    adc a, d
-    sub e
-    ld d, a
-    ld a, [de]
-    cp a, TILE_FIELD_EMPTY
-    jr z, :+
-    xor a, a
-    ret
-:   ld a, [hl+]
-    add a, e
-    ld e, a
-    adc a, d
-    sub e
-    ld d, a
-    ld a, [de]
-    cp a, TILE_FIELD_EMPTY
-    jr z, :+
-    xor a, a
-    ret
-:   ld a, $FF
-    ret
-
 
     ; Checks if the piece can fit at the current position.
     ; HL should point to the piece's rotation state data.
     ; DE should be pointing to the right place in the SHADOW field.
+    ; This will return with $FF in A if the piece fits, or with the
+    ; exact cell that caused the first failure in A.
 CanPieceFit:
     xor a, a
     ld b, a
@@ -503,6 +468,63 @@ CanPieceFit:
     ret
 
 
+    ; Checks if the piece can fit at the current position, but fast.
+    ; HL should point to the piece's fast rotation state data.
+    ; DE should be pointing to the right place in the SHADOW field.
+    ; This will return with $FF in A if the piece fits, or with a non-$FF
+    ; value if it doesn't.
+CanPieceFitFast:
+    ld a, [hl+]
+    add a, e
+    ld e, a
+    adc a, d
+    sub e
+    ld d, a
+    ld a, [de]
+    cp a, TILE_FIELD_EMPTY
+    jr z, :+
+    xor a, a
+    ret
+:   ld a, [hl+]
+    add a, e
+    ld e, a
+    adc a, d
+    sub e
+    ld d, a
+    ld a, [de]
+    cp a, TILE_FIELD_EMPTY
+    jr z, :+
+    xor a, a
+    ret
+:   ld a, [hl+]
+    add a, e
+    ld e, a
+    adc a, d
+    sub e
+    ld d, a
+    ld a, [de]
+    cp a, TILE_FIELD_EMPTY
+    jr z, :+
+    xor a, a
+    ret
+:   ld a, [hl+]
+    add a, e
+    ld e, a
+    adc a, d
+    sub e
+    ld d, a
+    ld a, [de]
+    cp a, TILE_FIELD_EMPTY
+    jr z, :+
+    xor a, a
+    ret
+:   ld a, $FF
+    ret
+
+
+    ; This function will draw the piece even if it can't fit.
+    ; We use this to draw a final failed spawn before going game
+    ; over.
 ForceSpawnPiece::
     call SetPieceData
     call SetPieceDataOffset
@@ -513,8 +535,7 @@ ForceSpawnPiece::
     ld d, h
     ld e, l
     call GetPieceData
-    ld a, GAME_OVER_OTHER
-    ld b, a
+    ld b, GAME_OVER_OTHER
     push hl
     push de
     pop hl
@@ -522,6 +543,8 @@ ForceSpawnPiece::
     jp DrawPiece
 
 
+    ; Initialize the state for a new piece and attempts to spawn it.
+    ; On return, A will be $FF if the piece fit.
 TrySpawnPiece::
     ; Always reset these for a new piece.
     xor a, a
@@ -708,6 +731,8 @@ FindMaxG:
     ret
 
 
+    ; This is the main function that will process input, gravity, and locking.
+    ; It should be ran once per frame as long as lock delay is greater than 0.
 FieldProcess::
     ; **************************************************************
     ; SETUP
@@ -836,7 +861,7 @@ FieldProcess::
     cp a, PIECE_Z
     jr z, .trykickright
 
-    ; I piece only kicks in TGM3/TGW3/EASY/EAWY
+    ; I piece only kicks in ARS2
     cp a, PIECE_I
     jr nz, :+
     ld a, [wRotModeState]
@@ -932,7 +957,7 @@ FieldProcess::
     ldh [hLockDelayForce], a
     jp .norot
 
-    ; In TGM3, TGW3, EASY, and EAWY modes, there are a few other kicks possible.
+    ; In ARS2 mode, there are a few other kicks possible.
 .maybetgm3rot
     ld a, [wRotModeState]
     cp a, ROT_MODE_ARSTI
@@ -1228,6 +1253,7 @@ FieldProcess::
     ld a, $FF
     ldh [hAwardDownBonus], a
     ld a, 20
+    ldh [hWantedG], a
     ld b, a
     ldh a, [hActualG]
     cp a, b
@@ -1260,7 +1286,7 @@ FieldProcess::
 
     ; Gravity?
 :   ldh a, [hCurrentFractionalGravity]
-    cp a, $00
+    cp a, $00 ; 0 is the sentinel value that should be interpreted as "every frame"
     jr z, :+
     ld b, a
     ldh a, [hGravityCtr]
@@ -1443,7 +1469,7 @@ FieldProcess::
     ldh a, [hWantedG]
     cp a, 1
     jr nz, .postghost
-    ld a, [wInitialA]
+    ld a, [wInitialA] ; Let's not do the flickering on the GBC.
     cp a, $11
     jr z, .ghost
     ldh a, [hEvenFrame]
@@ -1481,19 +1507,21 @@ FieldProcess::
     cp a, b
     jr z, .drawpiece
 
-    ; If we're not grounded, draw the piece normally.
-    ldh a, [hGrounded]
-    cp a, $FF
-    jr nz, .drawpiece
-
     ; If the lock delay is 0, draw the piece in the final color.
-    ldh a, [hCurrentPiece]
-    ld b, TILE_PIECE_0+7
-    add a, b
+    ldh a, [hWantedTile]
+    add a, 7
     ldh [hWantedTile], a
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
     jr z, .drawpiece
+
+    ; If we're not grounded, draw the piece normally.
+    ldh a, [hWantedTile]
+    sub a, 7
+    ldh [hWantedTile], a
+    ldh a, [hGrounded]
+    cp a, $FF
+    jr nz, .drawpiece
 
     ; Otherwise, look it up.
     call GetTileShade
@@ -1515,7 +1543,7 @@ FieldProcess::
     call DrawPiece
     ret
 
-
+    ; Performs a lookup to see how "locked" the piece is.
 GetTileShade:
     ldh a, [hCurrentLockDelay]
     cp a, 30
@@ -1623,6 +1651,8 @@ GetTileShade:
     ret
 
 
+    ; This is called every frame after a piece has been locked until the delay state ends.
+    ; Lines are cleared, levels and score are awarded, and ARE time is waited out.
 FieldDelay::
     ; Switch on the delay state.
     ld a, [wDelayState]
@@ -1661,7 +1691,7 @@ FieldDelay::
     and a, d
     cp a, $FF
     jr z, .skip
-    ld a, DELAY_STATE_LINE_PRE_CLEAR ; If there were line clears, do a line clear delay, then an ARE delay.
+    ld a, DELAY_STATE_LINE_PRE_CLEAR ; If there were line clears, do a line clear delay, then a LINE_ARE delay.
     ld [wDelayState], a
     ldh a, [hCurrentLineClearDelay]
     ldh [hRemainingDelay], a
@@ -1804,7 +1834,7 @@ FieldDelay::
 
 
     ; Line clear delay.
-    ; Count down the delay. If we're out of delay, clear the lines and go to ARE.
+    ; Count down the delay. If we're out of delay, clear the lines and go to LINE_ARE.
 .lineclear
     ldh a, [hRemainingDelay]
     dec a
@@ -1858,12 +1888,12 @@ FieldDelay::
     ldh [hCurrentPiece], a
     call GetNextPiece
 
-
     ; Kill the sound for the next piece.
-    call SFXKill
-    ret
+    jp SFXKill
 
 
+    ; Shifts B into the line clear list.
+    ; Also increments the line clear count.
 AppendClearedLine:
     ldh a, [hLineClearCt]
     inc a
@@ -1879,6 +1909,8 @@ AppendClearedLine:
     ret
 
 
+    ; Scans the field for lines that are completely filled with non-empty spaces.
+    ; Every time one is found, it is added to a list.
 FindClearedLines:
     xor a, a
     ldh [hLineClearCt], a
@@ -1914,7 +1946,7 @@ FindClearedLines:
 
     ret
 
-
+    ; Goes through the list of cleared lines and marks those lines with the "line clear" tile.
 MarkClear:
     ldh a, [hClearedLines]
     cp a, $FF
@@ -1966,10 +1998,10 @@ MarkClear:
     jr nz, :-
     ld bc, 10
     ld d, TILE_CLEARING
-    call UnsafeMemSet
-    ret
+    jp UnsafeMemSet
 
 
+    ; Once again, scans the field for cleared lines, but this time removes them.
 ClearLines:
     ld de, 0
 

@@ -39,10 +39,6 @@ wAlways20GState:: ds 1
 wInitialA:: ds 1
 wInitialB:: ds 1
 wInitialC:: ds 1
-wInitialD:: ds 1
-wInitialE:: ds 1
-wInitialH:: ds 1
-wInitialL:: ds 1
 
 
 SECTION "Stack", WRAM0
@@ -52,6 +48,7 @@ wStackEnd::
 
 
 SECTION "Code Entry Point", ROM0
+    ; Main entry point. Does some set up and then goes into an infinite event loop initialized on the title screen.
 Main::
     ; Load the initial registers. For reasons.
     ld [wInitialA], a
@@ -59,14 +56,6 @@ Main::
     ld [wInitialB], a
     ld a, c
     ld [wInitialC], a
-    ld a, d
-    ld [wInitialD], a
-    ld a, e
-    ld [wInitialE], a
-    ld a, h
-    ld [wInitialH], a
-    ld a, l
-    ld [wInitialL], a
 
     ; Let the DMG have some fun with the initial screen.
     call DoDMGEffect
@@ -128,6 +117,7 @@ Main::
     call SwitchToTitle
 
 
+    ; Event loop time!
 EventLoop::
     ; Play the sound effect, if any.
     call SFXPlay

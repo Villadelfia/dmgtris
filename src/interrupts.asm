@@ -27,12 +27,13 @@ hLCDCCtr:: ds 1
 
 
 SECTION "Interrupt Initialization Functions", ROM0
+    ; Zeroes out the interrupt counter.
 IntrInit::
     xor a, a
     ldh [hLCDCCtr], a
     ret
 
-
+    ; Sets up the STAT interrupt.
 InitializeLCDCInterrupt::
     ld a, STATF_LYC
     ldh [rSTAT], a
@@ -49,6 +50,8 @@ InitializeLCDCInterrupt::
 
 
 SECTION "LCDC Interrupt", ROM0[INT_HANDLER_STAT]
+    ; This interrupt handler will be called every 7 scanlines, scrolling up the tile map by 1 line. This has the
+    ; effect of making the tiles appear as 8x7 pixels, and making 20 rows fit on the screen.
 LCDCInterrupt:
     push af
     push hl

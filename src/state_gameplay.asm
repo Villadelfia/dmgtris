@@ -48,6 +48,7 @@ hRequestedJingle: ds 1
 
 
 SECTION "Gameplay Functions", ROM0
+    ; Change to game play mode. The event loop will call the event loop and vblank handlers for this mode after this returns.
 SwitchToGameplay::
     ; Turn the screen off if it's on.
     ldh a, [rLCDC]
@@ -113,6 +114,7 @@ SwitchToGameplay::
     ret
 
 
+    ; Main gameplay event loop.
 GamePlayEventLoopHandler::
     ; What mode are we in?
     ld hl, .modejumps
@@ -133,6 +135,7 @@ GamePlayEventLoopHandler::
     jp gameOverMode
     jp preGameOverMode
     jp pauseMode
+
 
     ; Draw "READY" and wait a bit.
 leadyMode:
@@ -359,6 +362,7 @@ delayMode:
 
 :   jp drawStaticInfo
 
+
 preGameOverMode:
     ; Spawn the failed piece.
     call ForceSpawnPiece
@@ -578,6 +582,7 @@ drawStaticInfo:
     jp EventLoopPostHandler
 
 
+    ; Do the hold action.
 DoHold:
     ; Mark hold as spent.
     ld a, $FF

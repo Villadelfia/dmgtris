@@ -34,8 +34,9 @@ rSelectedStartLevel:: ds 2
 
 
 SECTION "SRAM Functions", ROM0
-RestoreSRAM::
     ; Check if our SRAM is initialized and of the correct version.
+    ; Restores it if so, otherwise initializes it.
+RestoreSRAM::
     ld a, [rCheck]
     cp a, LOW(__UTC_YEAR__)
     jr nz, InitializeSRAM
@@ -75,6 +76,7 @@ RestoreSRAM::
     ldh [hStartSpeed+1], a
     ret
 
+    ; Initializes SRAM with default values.
 InitializeSRAM:
     ; Set the magic id.
     ld a, LOW(__UTC_YEAR__)
@@ -124,5 +126,6 @@ InitializeSRAM:
     ldh [hStartSpeed+1], a
     ld [rSelectedStartLevel+1], a
     ret
+
 
 ENDC

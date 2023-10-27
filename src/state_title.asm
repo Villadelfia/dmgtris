@@ -27,6 +27,7 @@ wSelected:: ds 1
 
 
 SECTION "Title Functions", ROM0
+    ; Change to title mode. The event loop will call the event loop and vblank handlers for this mode after this returns.
 SwitchToTitle::
     ; Turn the screen off if it's on.
     ldh a, [rLCDC]
@@ -136,6 +137,7 @@ SwitchToTitle::
     ret
 
 
+    ; Handles title screen input.
 TitleEventLoopHandler::
     call GBCTitleProcess
 
@@ -209,6 +211,8 @@ TitleEventLoopHandler::
 .done
     jp EventLoopPostHandler
 
+
+    ; Decrements the currently selected option.
 DecrementOption:
 .opt0
     ld a, [wSelected]
@@ -307,6 +311,8 @@ DecrementOption:
     jr DecrementLevel
     jp EventLoopPostHandler
 
+
+    ; Decrements start level.
 DecrementLevel:
     ; Decrement
     ldh a, [hStartSpeed]
@@ -324,6 +330,7 @@ DecrementLevel:
     jp CheckLevelRange
 
 
+    ; Increments the selected option.
 IncrementOption:
 .opt0
     ld a, [wSelected]
@@ -422,6 +429,8 @@ IncrementOption:
     jr IncrementLevel
     jp EventLoopPostHandler
 
+
+    ; Increments start level.
 IncrementLevel:
     ; Increment
     ldh a, [hStartSpeed]
@@ -438,11 +447,11 @@ IncrementLevel:
     ld [rSelectedStartLevel+1], a
     jp CheckLevelRange
 
+
+    ; Wipes the start level upon selecting a new speed curve.
 InitSpeedCurve:
     ld a, [wSpeedCurveState]
     call GetStart
-
-.set
     ld a, l
     ldh [hStartSpeed], a
     ld [rSelectedStartLevel], a
@@ -452,7 +461,7 @@ InitSpeedCurve:
     ret
 
 
-
+    ; Gets the end of a speed curve.
 GetEnd:
     ld a, [wSpeedCurveState]
     cp a, SCURVE_DMGT
@@ -478,6 +487,8 @@ GetEnd:
 :   ld bc, sCHILSpeedCurveEnd
     ret
 
+
+    ; Gets the beginning of a speed curve.
 GetStart:
     ld a, [wSpeedCurveState]
     cp a, SCURVE_DMGT
@@ -503,6 +514,8 @@ GetStart:
 :   ld hl, sCHILSpeedCurve
     ret
 
+
+    ; Make sure we don't overflow the level range.
 CheckLevelRange:
     ; At end?
     call GetEnd
@@ -547,6 +560,7 @@ CheckLevelRange:
     jp EventLoopPostHandler
 
 
+    ; Handles the display of the menu.
 TitleVBlankHandler::
     call ToATTR
 

@@ -23,6 +23,7 @@ INCLUDE "globals.asm"
 
 
 SECTION "DMG Intro Effect", ROM0
+    ; Does a small effect on boot with the nintendo logo.
 DoDMGEffect::
     ld a, [wInitialA]
     cp a, $11

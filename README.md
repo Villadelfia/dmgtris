@@ -124,6 +124,7 @@ A few guidelines are in effect:
 Thanks for playtesting and debugging go to:
 
 - CreeperCraftYT™
+- AntonErgo
 
 
 ## License

@@ -416,12 +416,12 @@ SFXKill::
     ldh [rNR21], a
     ld a, $FF
     ldh [rNR31], a
-    ldh [rNR41], a
+    ;ldh [rNR41], a
     ld a, %01000000
     ldh [rNR14], a
     ldh [rNR24], a
     ldh [rNR34], a
-    ldh [rNR44], a
+    ;ldh [rNR44], a
 
     ; Clear the queue.
     ld a, $FF

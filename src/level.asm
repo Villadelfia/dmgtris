@@ -361,7 +361,7 @@ DoSpeedUp:
     ret z
     ld a, 20
     ldh [hCurrentIntegerGravity], a
-    ld a, $FF
+    ld a, $00
     ldh [hCurrentFractionalGravity], a
     ret
 

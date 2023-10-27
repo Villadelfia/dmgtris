@@ -1264,7 +1264,7 @@ FieldProcess::
 
     ; Gravity?
 :   ldh a, [hCurrentFractionalGravity]
-    cp a, $FF
+    cp a, $00
     jr z, :+
     ld b, a
     ldh a, [hGravityCtr]

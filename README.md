@@ -120,6 +120,12 @@ A few guidelines are in effect:
 - Stuff that goes in the sram belongs in the `sram.asm` file, where there exists code to init SRAM to known defaults.
 
 
+## Shoutouts and Thanks
+Thanks for playtesting and debugging go to:
+
+- CreeperCraftYT™
+
+
 ## License
 Copyright (C) 2023 - Randy Thiemann <randy.thiemann@gmail.com>
 

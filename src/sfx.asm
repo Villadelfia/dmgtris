@@ -66,6 +66,7 @@ INCLUDE "res/music_data.inc"
 SECTION "High SFX Variables", HRAM
 hPlayhead:: ds 2
 hPlayQueue:: ds 4
+hNoisePlayhead:: ds 2
 
 
 SECTION "SFX Functions", ROM0
@@ -86,6 +87,8 @@ SFXInit::
     xor a, a
     ldh [hPlayhead], a
     ldh [hPlayhead+1], a
+    ldh [hNoisePlayhead], a
+    ldh [hNoisePlayhead+1], a
     ret
 
 
@@ -148,6 +151,32 @@ SFXProcessQueue:
 
     ; If we got a valid sound effect, then play it.
     call SFXEnqueue
+    ret
+
+
+SFXTriggerNoise::
+    cp a, SFX_LINE_CLEAR
+    jr nz, :+
+    ld a, LOW(sSFXLineClear)
+    ldh [hNoisePlayhead], a
+    ld a, HIGH(sSFXLineClear)
+    ldh [hNoisePlayhead+1], a
+    ret
+
+:   cp a, SFX_LAND
+    jr nz, :+
+    ld a, LOW(sSFXLand)
+    ldh [hNoisePlayhead], a
+    ld a, HIGH(sSFXLand)
+    ldh [hNoisePlayhead+1], a
+    ret
+
+:   cp a, SFX_LOCK
+    ret nz
+    ld a, LOW(sSFXLock)
+    ldh [hNoisePlayhead], a
+    ld a, HIGH(sSFXLock)
+    ldh [hNoisePlayhead+1], a
     ret
 
 
@@ -340,35 +369,6 @@ SFXEnqueue::
     ret
 
 
-    ; Pieces dropping
-:   cp a, SFX_LINE_CLEAR
-    jr nz, :+
-    ld a, LOW(sSFXLineClear)
-    ldh [hPlayhead], a
-    ld a, HIGH(sSFXLineClear)
-    ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
-
-:   cp a, SFX_LAND
-    jr nz, :+
-    ld a, LOW(sSFXLand)
-    ldh [hPlayhead], a
-    ld a, HIGH(sSFXLand)
-    ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
-
-:   cp a, SFX_LOCK
-    jr nz, :+
-    ld a, LOW(sSFXLock)
-    ldh [hPlayhead], a
-    ld a, HIGH(sSFXLock)
-    ldh [hPlayhead+1], a
-    call SFXPlay
-    ret
-
-
     ; Leveling
 :   cp a, SFX_LEVELLOCK
     jr nz, :+
@@ -432,6 +432,59 @@ SFXKill::
     xor a, a
     ldh [hPlayhead], a
     ldh [hPlayhead+1], a
+    ret
+
+
+SFXPlayNoise::
+    ; Get the noise playhead.
+    ldh a, [hNoisePlayhead]
+    ld l, a
+    ldh a, [hNoisePlayhead+1]
+    ld h, a
+    or a, l
+
+    ; Bail if it's null
+    ret z
+
+    ld b, BANK("SFX Data")
+    rst RSTSwitchBank
+
+    ; Get the register to write to
+.noisereg
+    ld a, [hl]
+    inc hl
+
+    ; If it's $FE, then we're done.
+    cp a, $FE
+    jr nz, :+
+    rst RSTRestoreBank
+    xor a, a
+    ldh [hNoisePlayhead], a
+    ldh [hNoisePlayhead+1], a
+    ret
+
+    ; If it's $FF, then we're done for this frame.
+:   cp a, $FF
+    jr z, .savenoiseplayhead
+
+    ; Otherwise, put the register in C.
+    ld c, a
+
+    ; Get the value to write.
+    ld a, [hl]
+    inc hl
+
+    ; Write it and loop.
+    ldh [$ff00+c], a
+    jr .noisereg
+
+    ; Save the playhead position.
+.savenoiseplayhead
+    ld a, l
+    ldh [hNoisePlayhead], a
+    ld a, h
+    ldh [hNoisePlayhead+1], a
+    rst RSTRestoreBank
     ret
 
 

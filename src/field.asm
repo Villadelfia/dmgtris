@@ -1238,12 +1238,8 @@ FieldProcess::
     ldh [hCurrentPieceY], a
     xor a, a
     ldh [hCurrentLockDelayRemaining], a
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 1
-    jp nz, .draw
-    call SFXKill
     ld a, SFX_LOCK
-    call SFXEnqueue
+    call SFXTriggerNoise
     jp .draw
 
     ; If we press down, we want to do a soft drop.
@@ -1342,12 +1338,8 @@ FieldProcess::
 
     ; Play the firm drop sound, and also reset the lock delay since the piece stepped down.
 .playfirmdropsound
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 1
-    jr nz, .postcheckforfirmdropsound
-    call SFXKill
     ld a, SFX_LAND
-    call SFXEnqueue
+    call SFXTriggerNoise
 
     ; If the down button is held, lock.
 .postcheckforfirmdropsound
@@ -1428,12 +1420,8 @@ FieldProcess::
 
     ; Play the locking sound and draw the piece.
 .dolock
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 1
-    jr nz, .draw
-    call SFXKill
     ld a, SFX_LOCK
-    call SFXEnqueue
+    call SFXTriggerNoise
     jr .draw
 
     ; If we weren't grounded, reset the lock force.
@@ -1825,12 +1813,8 @@ FieldDelay::
     ret nz
 
     call ClearLines
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 1
-    jr nz, :+
-    call SFXKill
     ld a, SFX_LINE_CLEAR
-    call SFXEnqueue
+    call SFXTriggerNoise
 
 :   ldh a, [hCurrentLineARE]
     ldh [hRemainingDelay], a

@@ -131,6 +131,7 @@ Main::
 EventLoop::
     ; Play the sound effect, if any.
     call SFXPlay
+    call SFXPlayNoise
 
     ; Wrangle inputs and timers at the start of every frame.
     call GetInput

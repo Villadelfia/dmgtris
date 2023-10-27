@@ -15,3 +15,7 @@ rd /S /Q dep
 del /Q src\include\hardware.inc
 copy src\include\hardware.nintendo src\include\hardware.inc
 make
+
+git add .
+git commit -am "Deploy new build."
+git push

@@ -582,13 +582,69 @@ TrySpawnPiece::
     cp a, $FF
     ret z
 
-    ; Otherwise check the rotation, and if it's not zero, try to reset it.
+    ; Otherwise, try in this order: 0, 1, 3, 2
     ldh a, [hCurrentPieceRotationState]
+    ldh [hWantRotation], a
+
+    ; Try rotation state 0.
+.try0
     cp a, 0
+    jr z, .try1
+    xor a, a
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    call GetPieceDataFast
+    call CanPieceFitFast
+    cp a, $FF
     ret z
 
-    ; Reset the rotation.
-    xor a, a
+    ; Try rotation state 1.
+.try1
+    ldh a, [hWantRotation]
+    cp a, 1
+    jr z, .try3
+    ld a, 1
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    call GetPieceDataFast
+    call CanPieceFitFast
+    cp a, $FF
+    ret z
+
+    ; Try rotation state 3.
+.try3
+    ldh a, [hWantRotation]
+    cp a, 3
+    jr z, .try2
+    ld a, 3
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    call GetPieceDataFast
+    call CanPieceFitFast
+    cp a, $FF
+    ret z
+
+    ; Try rotation state 2.
+.try2
+    ld a, 2
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
     ldh a, [hCurrentPieceY]

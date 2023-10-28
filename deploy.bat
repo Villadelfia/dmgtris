@@ -22,5 +22,5 @@ make > NUL
 
 echo Pushing new version...
 git add . > NUL
-git commit -am "Deploy new build." > NUL
+git commit -am %* > NUL
 git push

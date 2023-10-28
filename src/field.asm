@@ -1159,32 +1159,52 @@ FieldProcess::
     ; HANDLE MOVEMENT
     ; Do we want to move left?
 .norot
-    ldh a, [hLeftState]
+    ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
-    jr z, :+
+    jr z, .doleft
+    cp a, 0             ; We never want to move if the button wasn't held.
+    jr z, .wantright
     ld b, a
+    ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
+    cp a, $FF
+    jr nz, .checkdasleft
+    inc b
+    ld a, b
+    ldh [hLeftState], a
+.checkdasleft
     ldh a, [hCurrentDAS]
     ld c, a
     ld a, b
     cp a, c
     jr c, .wantright
-:   ldh a, [hWantX]
+.doleft
+    ldh a, [hWantX]
     dec a
     ldh [hWantX], a
     jr .trymove
 
     ; Do we want to move right?
 .wantright
-    ldh a, [hRightState]
+    ldh a, [hRightState] ; Check if held for 1 frame. If so we move.
     cp a, 1
-    jr z, :+
+    jr z, .doright
+    cp a, 0             ; We never want to move if the button wasn't held.
+    jr z, .donemanipulating
     ld b, a
+    ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
+    cp a, $FF
+    jr nz, .checkdasright
+    inc b
+    ld a, b
+    ldh [hRightState], a
+.checkdasright
     ldh a, [hCurrentDAS]
     ld c, a
     ld a, b
     cp a, c
     jr c, .donemanipulating
-:   ldh a, [hWantX]
+.doright
+    ldh a, [hWantX]
     inc a
     ldh [hWantX], a
 

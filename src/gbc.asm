@@ -919,6 +919,223 @@ GBCGameplayProcess::
     ret
 
 
+GBCBigGameplayProcess::
+    ld a, [wInitialA]
+    cp a, $11
+    ret nz
+
+    ; Color based on mode.
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_DMGT
+    ld a, $05 ;Blue
+    jr z, .goverride
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_TGM1
+    ld a, $06 ;Cyan
+    jr z, .goverride
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_TGM3
+    ld a, $03 ;Blue
+    jr z, .goverride
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_DEAT
+    ld a, $00 ;Red
+    jr z, .goverride
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    ld a, $00 ;Red
+    jr z, .goverride ;Always red
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_CHIL
+    ld a, $01 ;Green
+
+    ; Are we 20G?
+.goverride
+    ld d, a
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr c, :+
+    ld a, $00
+    ld d, a
+    jr .colorfield
+:   cp a, 3
+    jr c, :+
+    ld a, $04
+    ld d, a
+    jr .colorfield
+:   cp a, 2
+    jr c, :+
+    ld a, $05
+    ld d, a
+    jr .colorfield
+:   ldh a, [hCurrentFractionalGravity]
+    cp a, 0
+    jr nz, .colorfield
+    ld a, $05
+    ld d, a
+
+.colorfield
+    ld hl, wShadowTileAttrs
+    ld bc, 32-12
+
+    ld a, 21
+    ld [wOuterReps], a
+.outer0
+    ld a, 12
+    ld [wInnerReps], a
+.inner0
+    ld [hl], d
+    inc hl
+    ld a, [wInnerReps]
+    dec a
+    ld [wInnerReps], a
+    jr nz, .inner0
+
+    add hl, bc
+    ld a, [wOuterReps]
+    dec a
+    ld [wOuterReps], a
+    jr nz, .outer0
+
+
+    ; What to copy
+:   ld de, wWideBlittedField
+    ; Where to put it
+    ld hl, wShadowTilemap + 1
+    ; How much to increment hl after each row
+    ld bc, 32-10
+
+    ; Blit me up daddy.
+    ld a, 20
+    ld [wOuterReps], a
+.outer1
+    ld a, 10
+    ld [wInnerReps], a
+.inner1
+    ld a, [de]
+    ld [hl+], a
+    inc de
+    ld a, [wInnerReps]
+    dec a
+    ld [wInnerReps], a
+    jr nz, .inner1
+
+    add hl, bc
+    ld a, [wOuterReps]
+    dec a
+    ld [wOuterReps], a
+    jr nz, .outer1
+
+
+    ; What to copy
+    ld de, wWideBlittedField
+    ; Where to put it
+    ld hl, wShadowTileAttrs + 1
+    ; How much to increment hl after each row
+    ld bc, 32-10
+
+    ; Blit me up daddy.
+    ld a, 20
+    ld [wOuterReps], a
+.outer2
+    ld a, 10
+    ld [wInnerReps], a
+.inner2
+    ld a, [de]
+    cp a, 10
+    jr c, .empty
+    cp a, 10 + (1*7)
+    jr c, .sub10
+    cp a, 10 + (2*7)
+    jr c, .sub17
+    cp a, 10 + (3*7)
+    jr c, .sub24
+    cp a, 10 + (4*7)
+    jr c, .sub31
+    cp a, 10 + (5*7)
+    jr c, .sub38
+    cp a, 10 + (6*7)
+    jr c, .sub45
+    cp a, 10 + (7*7)
+    jr c, .sub52
+    cp a, 10 + (8*7)
+    jr c, .sub59
+.empty
+    ld a, $07
+    jr .done
+.sub59
+    sub a, 7
+.sub52
+    sub a, 7
+.sub45
+    sub a, 7
+.sub38
+    sub a, 7
+.sub31
+    sub a, 7
+.sub24
+    sub a, 7
+.sub17
+    sub a, 7
+.sub10
+    sub a, 10
+.done
+    ld [hl+], a
+    inc de
+    ld a, [wInnerReps]
+    dec a
+    ld [wInnerReps], a
+    jr nz, .inner2
+
+    add hl, bc
+    ld a, [wOuterReps]
+    dec a
+    ld [wOuterReps], a
+    jr nz, .outer2
+
+    ; Maybe flash numbers.
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr nz, .black
+
+    ld hl, hFrameCtr
+    bit 4, [hl]
+    jr z, .lighter
+
+.darker
+    ld a, OCPSF_AUTOINC | (7*8)+(3*2)
+    ldh [rOCPS], a
+    ld bc, R1 | G1
+    wait_vram
+    ld a, c
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rOCPD], a
+    ret
+
+.lighter
+    ld a, OCPSF_AUTOINC | (7*8)+(3*2)
+    ldh [rOCPS], a
+    ld bc, R2 | G2
+    wait_vram
+    ld a, c
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rOCPD], a
+    ret
+
+.black
+    ld a, OCPSF_AUTOINC | (7*8)+(3*2)
+    ldh [rOCPS], a
+    ld bc, R2 | B0
+    wait_vram
+    ld a, c
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rOCPD], a
+    ret
+
+
     ; Copies the shadow tile maps to VRAM using HDMA. The attributes are copied using instant mode
     ; The tile data is done using hblank mode.
 GBCBlitField::

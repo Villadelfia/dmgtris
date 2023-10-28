@@ -33,6 +33,8 @@ SECTION "Field Variables", WRAM0
 wField:: ds (10*24)
 wBackupField:: ds (10*24)
 wShadowField:: ds (14*26)
+wWideField:: ds (5*10)
+wWideBlittedField:: ds (20*10)
 wDelayState: ds 1
 
 
@@ -72,6 +74,62 @@ BlitField::
 
     ; What to copy
     ld de, wField + 40
+    ; Where to put it
+    ld hl, FIELD_TOP_LEFT
+    ; How much to increment hl after each row
+    ld bc, 32-10
+
+    ; The first 14 rows can be blitted without checking for vram access.
+    REPT 14
+        REPT 10
+            ld a, [de]
+            ld [hl+], a
+            inc de
+        ENDR
+        add hl, bc
+    ENDR
+
+:   ldh a, [rLY]
+    cp a, 0
+    jr nz, :-
+
+    ; The last 6 rows need some care.
+    REPT 6
+        ; Wait until start of drawing, then insert 35 nops.
+:       ldh a, [rSTAT]
+        and a, 3
+        cp a, 3
+        jr nz, :-
+        REPT 35
+            nop
+        ENDR
+
+        ; Blit a line.
+        REPT 10
+            ld a, [de]
+            ld [hl+], a
+            inc de
+        ENDR
+
+        ; Increment HL so that the next line can be blitted.
+        add hl, bc
+    ENDR
+
+    ; This function is actually called as the vblank handler for the gameplay state.
+    ; This is why it jumps straight back to the event loop.
+    jp EventLoop
+
+
+    ; Blits the field onto the tile map.
+    ; On the GBC, this chain calls into a special version that takes
+    ; advantage of the GBC's CPU.
+BigBlitField::
+    ld a, [wInitialA]
+    cp a, $11
+    jp z, GBCBlitField
+
+    ; What to copy
+    ld de, wWideBlittedField
     ; Where to put it
     ld hl, FIELD_TOP_LEFT
     ; How much to increment hl after each row
@@ -2173,6 +2231,10 @@ BigFieldInit::
     ld bc, 10*24
     ld d, TILE_BLANK
     call UnsafeMemSet
+    ld hl, wWideBlittedField
+    ld bc, 10*20
+    ld d, TILE_BLANK
+    call UnsafeMemSet
     ld hl, wShadowField
     ld bc, 14*26
     ld d, $FF
@@ -3667,7 +3729,8 @@ BigFieldProcess::
     pop hl
     pop de
     call BigDrawPiece
-    ret
+    jp WidenField
+
 
     ; Performs a lookup to see how "locked" the piece is.
 BigGetTileShade:
@@ -3966,7 +4029,7 @@ BigFieldDelay::
     dec a
     ldh [hRemainingDelay], a
     cp a, 0
-    ret nz
+    jp nz, WidenField
 
     call BigClearLines
     ld a, SFX_LINE_CLEAR
@@ -4000,7 +4063,7 @@ BigFieldDelay::
     dec a
     ldh [hRemainingDelay], a
     cp a, 0
-    ret nz
+    jp nz, WidenField
 
     ; Add one level if we're not at a breakpoint.
     ldh a, [hRequiresLineClear]
@@ -4225,6 +4288,62 @@ BigClearLines:
     dec de
     dec de
     jr :-
+    ret
+
+
+WidenField::
+    ld de, wField+(4*10)
+    ld hl, wWideField
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(5*10)
+    ld hl, wWideField+5
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(6*10)
+    ld hl, wWideField+10
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(7*10)
+    ld hl, wWideField+15
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(8*10)
+    ld hl, wWideField+20
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(9*10)
+    ld hl, wWideField+25
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(10*10)
+    ld hl, wWideField+30
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(11*10)
+    ld hl, wWideField+35
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(12*10)
+    ld hl, wWideField+40
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(13*10)
+    ld hl, wWideField+45
+    ld bc, 5
+    call UnsafeMemCopy
+
+    DEF piece = 0
+    REPT 50
+        ld a, [wWideField+piece]
+        ld hl, wWideBlittedField+((piece/5)*20)+((piece%5) * 2)
+        ld [hl+], a
+        ld [hl], a
+        ld hl, wWideBlittedField+((piece/5)*20)+((piece%5) * 2)+10
+        ld [hl+], a
+        ld [hl], a
+        DEF piece += 1
+    ENDR
     ret
 
 

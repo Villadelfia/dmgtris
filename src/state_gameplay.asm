@@ -797,7 +797,7 @@ GamePlayBigEventLoopHandlerB:
     ld a, GO_TIME
 :   ldh [hModeCounter], a
     ld de, sBigLeady
-    ld hl, wField+(14*10)
+    ld hl, wWideBlittedField+(10*10)
     ld bc, 10
     call UnsafeMemCopy
     jp .drawStaticInfo
@@ -813,7 +813,7 @@ GamePlayBigEventLoopHandlerB:
     xor a, a
 :   ldh [hModeCounter], a
     ld de, sBigGo
-    ld hl, wField+(14*10)
+    ld hl, wWideBlittedField+(10*10)
     ld bc, 10
     call UnsafeMemCopy
     jp .drawStaticInfo
@@ -1010,10 +1010,11 @@ GamePlayBigEventLoopHandlerB:
 .preGameOverMode
     ; Spawn the failed piece.
     call BigForceSpawnPiece
+    call WidenField
 
     ; Draw the field in grey.
     ; Yes. This really unrolls the loop that many times.
-    ld hl, wField+(4*10)
+    ld hl, wWideBlittedField
     REPT 60
         ld a, [hl]
         cp a, TILE_FIELD_EMPTY
@@ -1159,43 +1160,43 @@ GamePlayBigEventLoopHandlerB:
 
     ; Draw PAUSE all over the field.
 :   ld de, sBigPause
-    ld hl, wField+(4*10)
+    ld hl, wWideBlittedField
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(6*10)
+    ld hl, wWideBlittedField+20
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(8*10)
+    ld hl, wWideBlittedField+40
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(10*10)
+    ld hl, wWideBlittedField+60
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(12*10)
+    ld hl, wWideBlittedField+80
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(14*10)
+    ld hl, wWideBlittedField+100
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(16*10)
+    ld hl, wWideBlittedField+120
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(18*10)
+    ld hl, wWideBlittedField+140
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(20*10)
+    ld hl, wWideBlittedField+160
     ld bc, 20
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wField+(22*10)
+    ld hl, wWideBlittedField+180
     ld bc, 20
     call UnsafeMemCopy
     jr .drawStaticInfo
@@ -1221,7 +1222,7 @@ GamePlayBigEventLoopHandlerB:
     ld de, hNLevel
     call ApplyNumbers
 
-    jp GBCGameplayProcess
+    jp GBCBigGameplayProcess
 
 
     ; Do the hold action.

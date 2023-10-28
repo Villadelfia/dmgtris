@@ -156,7 +156,7 @@ EventLoopPostHandler::
 .vblankjumps
     jp TitleVBlankHandler
     jp BlitField
-    jp BlitField
+    jp BigBlitField
     ; The VBlank Handler is expected to end with jp EventLoop.
 
 

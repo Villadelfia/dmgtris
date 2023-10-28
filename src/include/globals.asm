@@ -23,6 +23,55 @@ INCLUDE "hardware.inc"
 INCLUDE "structs.asm"
 
 
+; Set up charmap.
+CHARMAP " ", 1
+CHARMAP "0", 66
+CHARMAP "1", 67
+CHARMAP "2", 68
+CHARMAP "3", 69
+CHARMAP "4", 70
+CHARMAP "5", 71
+CHARMAP "6", 72
+CHARMAP "7", 73
+CHARMAP "8", 74
+CHARMAP "9", 75
+CHARMAP "A", 76
+CHARMAP "B", 77
+CHARMAP "C", 78
+CHARMAP "D", 79
+CHARMAP "E", 80
+CHARMAP "F", 81
+CHARMAP "G", 82
+CHARMAP "H", 83
+CHARMAP "I", 84
+CHARMAP "J", 85
+CHARMAP "K", 86
+CHARMAP "L", 87
+CHARMAP "M", 88
+CHARMAP "N", 89
+CHARMAP "O", 90
+CHARMAP "P", 91
+CHARMAP "Q", 92
+CHARMAP "R", 93
+CHARMAP "S", 94
+CHARMAP "T", 95
+CHARMAP "U", 96
+CHARMAP "V", 97
+CHARMAP "W", 98
+CHARMAP "X", 99
+CHARMAP "Y", 100
+CHARMAP "Z", 101
+CHARMAP "!", 102
+CHARMAP "?", 103
+CHARMAP "[", 129
+CHARMAP "]", 130
+CHARMAP "/", 128
+CHARMAP "-", 127
+CHARMAP "#", 126
+CHARMAP ".", 216
+CHARMAP ":", 222
+
+
 ; Waits for PPU mode to be 0 or 1.
 ; We don't wait for 2 because it's super short and impractical to do much of anything in.
 MACRO wait_vram
@@ -87,11 +136,14 @@ MACRO lb
 ENDM
 
 
-; Magic bytes for save files.
-DEF SAVE_MAGIC_0        EQU "D"
-DEF SAVE_MAGIC_1        EQU "M"
-DEF SAVE_MAGIC_2        EQU "G"
-DEF SAVE_MAGIC_3        EQU "5"
+; Bank names
+DEF BANK_MAIN           EQU 0
+DEF BANK_OTHER          EQU 1
+DEF BANK_SFX            EQU 2
+DEF BANK_MUSIC          EQU 3
+DEF BANK_TITLE          EQU 4
+DEF BANK_GAMEPLAY       EQU 5
+DEF BANK_GAMEPLAY_BIG   EQU 6
 
 ; Some useful palettes.
 DEF PALETTE_REGULAR     EQU %11100100
@@ -231,6 +283,8 @@ DEF LEADY_TIME          EQU 80
 DEF GO_TIME             EQU 40
 DEF PIECE_SPAWN_X       EQU 5
 DEF PIECE_SPAWN_Y       EQU 3
+DEF PIECE_SPAWN_X_BIG   EQU 3
+DEF PIECE_SPAWN_Y_BIG   EQU 3
 DEF ROTATION_STATE_DEF  EQU 0
 DEF ROTATION_STATE_CW   EQU 1
 DEF ROTATION_STATE_180  EQU 2
@@ -239,6 +293,7 @@ DEF ROTATION_STATE_CCW  EQU 3
 ; Game states. (Let these increase by 3)
 DEF STATE_TITLE         EQU 0
 DEF STATE_GAMEPLAY      EQU 3
+DEF STATE_GAMEPLAY_BIG  EQU 6
 
 ; Other
 DEF STACK_SIZE          EQU 64

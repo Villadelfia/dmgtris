@@ -19,8 +19,240 @@ IF !DEF(GAMEPLAY_MAP_INC)
 DEF GAMEPLAY_MAP_INC EQU 1
 
 
-SECTION "Gameplay Tilemap", ROMX, BANK[1]
-GameplayTilemap::
+INCLUDE "globals.asm"
+
+
+SECTION "Gameplay Static Data", ROMX, BANK[BANK_GAMEPLAY]
+sLeady::     db "  READY?  "
+
+sGo::        db "    GO    "
+
+sPause::
+    db "P A U S E "
+    db " P A U S E"
+
+sPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
+    db 0, 8, 16, 24 ; I
+    db 0, 8, 8, 16  ; Z
+    db 0, 8, 8, 16  ; S
+    db 0, 8, 16, 16 ; J
+    db 0, 0, 8, 16  ; L
+    db 8, 8, 16, 16 ; O
+    db 0, 8, 8, 16  ; T
+
+sPieceYOffsets::    ; How to draw each piece. Y-offsets of the sprites.
+    db 0, 0, 0, 0   ; I
+    db 0, 0, 7, 7   ; Z
+    db 7, 7, 0, 0   ; S
+    db 0, 0, 0, 7   ; J
+    db 7, 0, 0, 0   ; L
+    db 0, 7, 0, 7   ; O
+    db 0, 0, 7, 0   ; T
+
+sPieceFastRotationStates::
+    ; I
+    db 14, 1, 1, 1
+    db 2, 14, 14, 14
+    db 14, 1, 1, 1
+    db 2, 14, 14, 14
+
+    ; Z
+    db 14, 1, 14, 1
+    db 2, 13, 1, 13
+    db 14, 1, 14, 1
+    db 2, 13, 1, 13
+
+    ; S
+    db 15, 1, 12, 1
+    db 0, 14, 1, 14
+    db 15, 1, 12, 1
+    db 0, 14, 1, 14
+
+    ; J
+    db 14, 1, 1, 14
+    db 1, 1, 13, 14
+    db 14, 14, 1, 1
+    db 1, 14, 13, 1
+
+    ; L
+    db 14, 1, 1, 12
+    db 1, 14, 14, 1
+    db 16, 12, 1, 1
+    db 0, 1, 14, 14
+
+    ; O
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+
+    ; T
+    db 14, 1, 1, 13
+    db 1, 14, 1, 13
+    db 15, 13, 1, 1
+    db 1, 13, 1, 14
+
+sPieceRotationStates:: ; How each piece is rotated.
+    ; I
+    db %0000
+    db %1111
+    db %0000
+    db %0000
+
+    db %0010
+    db %0010
+    db %0010
+    db %0010
+
+    db %0000
+    db %1111
+    db %0000
+    db %0000
+
+    db %0010
+    db %0010
+    db %0010
+    db %0010
+
+    ; Z
+    db %0000
+    db %1100
+    db %0110
+    db %0000
+
+    db %0010
+    db %0110
+    db %0100
+    db %0000
+
+    db %0000
+    db %1100
+    db %0110
+    db %0000
+
+    db %0010
+    db %0110
+    db %0100
+    db %0000
+
+    ; S
+    db %0000
+    db %0110
+    db %1100
+    db %0000
+
+    db %1000
+    db %1100
+    db %0100
+    db %0000
+
+    db %0000
+    db %0110
+    db %1100
+    db %0000
+
+    db %1000
+    db %1100
+    db %0100
+    db %0000
+
+    ; J
+    db %0000
+    db %1110
+    db %0010
+    db %0000
+
+    db %0110
+    db %0100
+    db %0100
+    db %0000
+
+    db %0000
+    db %1000
+    db %1110
+    db %0000
+
+    db %0100
+    db %0100
+    db %1100
+    db %0000
+
+    ; L
+    db %0000
+    db %1110
+    db %1000
+    db %0000
+
+    db %0100
+    db %0100
+    db %0110
+    db %0000
+
+    db %0000
+    db %0010
+    db %1110
+    db %0000
+
+    db %1100
+    db %0100
+    db %0100
+    db %0000
+
+    ; O
+    db %0000
+    db %0110
+    db %0110
+    db %0000
+
+    db %0000
+    db %0110
+    db %0110
+    db %0000
+
+    db %0000
+    db %0110
+    db %0110
+    db %0000
+
+    db %0000
+    db %0110
+    db %0110
+    db %0000
+
+    ; T
+    db %0000
+    db %1110
+    db %0100
+    db %0000
+
+    db %0100
+    db %0110
+    db %0100
+    db %0000
+
+    db %0000
+    db %0100
+    db %1110
+    db %0000
+
+    db %0100
+    db %1100
+    db %0100
+    db %0000
+
+sTGM3Bag::
+    db 0, 0, 0, 0, 0
+    db 1, 1, 1, 1, 1
+    db 2, 2, 2, 2, 2
+    db 3, 3, 3, 3, 3
+    db 4, 4, 4, 4, 4
+    db 5, 5, 5, 5, 5
+    db 6, 6, 6, 6, 6
+
+sTGM3Droughts::
+    db 0, 0, 0, 0, 0, 0, 0
+
+sGameplayTileMap::
     DB $02,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $01,$03,$09,$01,$01,$01,$01,$01,$01,$09
     DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
@@ -87,7 +319,7 @@ GameplayTilemap::
     DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     DB $02,$00,$00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$03,$09,$01,$01,$01,$01,$01,$01,$09
-GameplayTilemapEnd::
+sGameplayTileMapEnd::
 
 
 ENDC

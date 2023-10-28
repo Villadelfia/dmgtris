@@ -19,8 +19,61 @@ IF !DEF(TITLE_MAP_INC)
 DEF TITLE_MAP_INC EQU 1
 
 
-SECTION "Title Screen Tilemap", ROMX, BANK[1]
-TitleScreenTilemap::
+INCLUDE "globals.asm"
+
+
+SECTION "Title Screen Static Data", ROMX, BANK[BANK_TITLE]
+sEasterM0:: db $C4, $C6, $C8, $CA, $CC
+sEasterM1:: db $C5, $C7, $C9, $CB, $CD
+
+sEasterC0:: db $CE, $D0, $C8, $CA, $CC, $72, $74, $76, $78, $7A, $D6, $D7
+sEasterC1:: db $CF, $D1, $C9, $CB, $CD, $73, $75, $77, $79, $7B, $01, $01
+
+sEasterA0:: db $D2, $D4, $C8, $CA, $CC, $72, $74, $76, $78, $7A, $D6, $D7
+sEasterA1:: db $D3, $D5, $C9, $CB, $CD, $73, $75, $77, $79, $7B, $01, $01
+
+sEasterS0:: db $F7, $F9, $C8, $CA, $CC
+sEasterS1:: db $F8, $FA, $C9, $CB, $CD
+
+sOption0::
+    db "NORM"
+    db " INV"
+
+sOption1::
+    db "TGM1"
+    db "TGM2"
+    db "TGM3"
+    db "HELL"
+    db " NES"
+
+sOption2::
+    db "ARS1"
+    db "ARS2"
+    db " NES"
+
+sOption3::
+    db "FIRM"
+    db "SNIC"
+    db "HARD"
+    db "LOCK"
+    db "NONE"
+
+sOption4::
+    db "DMGT"
+    db "TGM1"
+    db "TGM3"
+    db "DEAT"
+    db "SHIR"
+    db "CHIL"
+
+sOption5::
+    db "  NO"
+    db " YES"
+
+sDisabled::
+    db "----"
+
+sTitleScreenTileMap::
     DB $C3,$5B,$4C,$59,$4F,$5A,$5D,$4C,$01,$59
     DB $5A,$61,$4C,$01,$01,$FB,$FC,$FD,$FE,$FF
     DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
@@ -89,7 +142,7 @@ TitleScreenTilemap::
     DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $01,$01
-TitleScreenTilemapEnd::
+sTitleScreenTileMapEnd::
 
 
 ENDC

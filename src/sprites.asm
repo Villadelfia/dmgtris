@@ -176,8 +176,18 @@ ApplyNext::
     sub a, 7
 
     ; X positions
+    ld b, a
+    ldh a, [hGameState]
+    cp a, STATE_GAMEPLAY_BIG
+    ld a, b
+    jr nz, .regular
+    ld hl, sBigPieceXOffsets
+    ld de, sBigPieceYOffsets
+    jr .postoffsets
+.regular
     ld hl, sPieceXOffsets
     ld de, sPieceYOffsets
+.postoffsets
     cp 0
     jr z, .skipoffn
 .getoffn
@@ -296,8 +306,18 @@ ApplyHold::
 
     ; X positions
 .x
+    ld b, a
+    ldh a, [hGameState]
+    cp a, STATE_GAMEPLAY_BIG
+    ld a, b
+    jr nz, .regular
+    ld hl, sBigPieceXOffsets
+    ld de, sBigPieceYOffsets
+    jr .postoffsets
+.regular
     ld hl, sPieceXOffsets
     ld de, sPieceYOffsets
+.postoffsets
     cp 0
     jr z, .skipoffh
 .getoffh

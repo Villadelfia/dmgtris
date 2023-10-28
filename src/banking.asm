@@ -22,23 +22,37 @@ DEF BANKING_ASM EQU 1
 INCLUDE "globals.asm"
 
 
-SECTION "High Banking Variables", HRAM
-hBankBackup: ds 1
+SECTION "Banking Variables", WRAM0
+wBankBackup: ds 4
 
 
 SECTION "Switch Bank", ROM0[$08]
-    ; Saves the current bank and switches to the bank in b.
+    ; Pushes the current bank to the stach, switches to bank in B.
 RSTSwitchBank::
+    ld a, [wBankBackup+2]
+    ld [wBankBackup+3], a
+    ld a, [wBankBackup+1]
+    ld [wBankBackup+2], a
+    ld a, [wBankBackup+0]
+    ld [wBankBackup+1], a
     ld a, [rBANKID]
-    ldh [hBankBackup], a
+    ld [wBankBackup+0], a
     ld a, b
     ld [rROMB0], a
     ret
 
-SECTION "Restore Bank", ROM0[$18]
-    ; Restore the bank previously saved. The current one is not saved.
+SECTION "Restore Bank", ROM0[$28]
+    ; Pops a bank from the stack ans switches to it.
 RSTRestoreBank::
-    ld a, [hBankBackup]
+    ld a, [wBankBackup+0]
+    ld b, a
+    ld a, [wBankBackup+1]
+    ld [wBankBackup+0], a
+    ld a, [wBankBackup+2]
+    ld [wBankBackup+1], a
+    ld a, [wBankBackup+3]
+    ld [wBankBackup+2], a
+    ld a, b
     ld [rROMB0], a
     ret
 

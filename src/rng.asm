@@ -58,6 +58,8 @@ RNGInit::
     ldh [hRNGSeed+3], a
 
     ; TGM3 vars
+    ld b, BANK_GAMEPLAY
+    rst RSTSwitchBank
     ld de, sTGM3Bag
     ld hl, wTGM3Bag
     ld bc, 35
@@ -66,6 +68,7 @@ RNGInit::
     ld hl, wTGM3Droughts
     ld bc, 7
     call UnsafeMemCopy
+    rst RSTRestoreBank
 
     ; Start with a random non-S/Z piece held.
 :   call Next7Piece

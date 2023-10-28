@@ -1,7 +1,11 @@
 IF !DEF(SFX_DATA_INC)
 DEF SFX_DATA_INC EQU 1
 
-SECTION "SFX Data", ROMX, BANK[2]
+
+INCLUDE "globals.asm"
+
+
+SECTION "SFX Data", ROMX, BANK[BANK_SFX]
 ; These sound effects can contain any channel.
 sSFXPieceI::
     db REG_NR12_CH1_VOLEV, $F0, REG_NR22_CH2_VOLEV, $F0, REG_NR11_CH1_LENDT, $BF, REG_NR11_CH1_LENDT, $BF

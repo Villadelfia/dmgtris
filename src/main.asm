@@ -20,9 +20,7 @@ DEF MAIN_ASM EQU 1
 
 
 INCLUDE "globals.asm"
-INCLUDE "res/tiles.inc"
-INCLUDE "res/gameplay_map.inc"
-INCLUDE "res/title_map.inc"
+INCLUDE "res/other_data.inc"
 
 
 SECTION "High Globals", HRAM
@@ -85,13 +83,13 @@ Main::
     ld [rRAMG], a
     xor a, a
     ld [rRAMB], a
-    ld a, BANK("Static Data")
+    ld a, BANK_OTHER
     ld [rROMB0], a
 
     ; We use a single set of tiles for the entire game, so we copy it at the start.
-    ld de, Tiles
+    ld de, sTiles
     ld hl, _VRAM
-    ld bc, TilesEnd - Tiles
+    ld bc, sTilesEnd - sTiles
     call SafeMemCopy
 
     ; Clear OAM.
@@ -138,6 +136,7 @@ EventLoop::
 .eventloopjumps
     jp TitleEventLoopHandler
     jp GamePlayEventLoopHandler
+    jp GamePlayBigEventLoopHandler
 EventLoopPostHandler::
 
     ; Wait for vblank.
@@ -156,6 +155,7 @@ EventLoopPostHandler::
 
 .vblankjumps
     jp TitleVBlankHandler
+    jp BlitField
     jp BlitField
     ; The VBlank Handler is expected to end with jp EventLoop.
 

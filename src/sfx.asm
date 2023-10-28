@@ -421,7 +421,8 @@ SFXPlayNoise::
     ; Bail if it's null
     ret z
 
-    ld b, BANK("SFX Data")
+    ; Bank to sound effects.
+    ld b, BANK_SFX
     rst RSTSwitchBank
 
     ; Get the register to write to
@@ -469,10 +470,10 @@ SFXPlay::
     ldh a, [hPlayQueue]
     cp a, MUSIC_MENU
     jr nz, :+
-    ld b, BANK("Music Data")
+    ld b, BANK_MUSIC
     rst RSTSwitchBank
     jr .play
-:   ld b, BANK("SFX Data")
+:   ld b, BANK_SFX
     rst RSTSwitchBank
 
     ; Load the playhead position into HL.

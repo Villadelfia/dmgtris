@@ -43,6 +43,10 @@ hPrevHundreds:: ds 1
 SECTION "Level Functions", ROM0
     ; Loads the initial state of the speed curve.
 LevelInit::
+    ; Bank to speed curve data.
+    ld b, BANK_OTHER
+    rst RSTSwitchBank
+
     xor a, a
     ldh [hRequiresLineClear], a
 
@@ -97,6 +101,9 @@ LevelInit::
     swap a
     and a, $0F
     ldh [hNLevel], a
+
+    ; Restore the bank before returning.
+    rst RSTRestoreBank
 
     jp DoSpeedUp
 
@@ -303,6 +310,10 @@ LevelUp::
 
     ; Iterates over the speed curve and loads the new constants.
 DoSpeedUp:
+    ; Bank to speed curve data.
+    ld b, BANK_OTHER
+    rst RSTSwitchBank
+
     ; Load curve ptr.
     ldh a, [hSpeedCurvePtr]
     ld l, a
@@ -344,12 +355,12 @@ DoSpeedUp:
     ; Do we want to force 20G?
     ld a, [wAlways20GState]
     cp a, 0
-    ret z
+    jp z, RSTRestoreBank
     ld a, 20
     ldh [hCurrentIntegerGravity], a
     ld a, $00
     ldh [hCurrentFractionalGravity], a
-    ret
+    jp RSTRestoreBank
 
 
 ENDC

@@ -1,21 +1,26 @@
 @echo off
 cd /D "%~dp0"
-make clean
+echo Cleaning up...
+make clean > NUL
 
-del /Q src\include\hardware.inc
-copy src\include\hardware.analogue src\include\hardware.inc
-make
+echo Making pocket version...
+del /Q src\include\hardware.inc > NUL
+copy src\include\hardware.analogue src\include\hardware.inc > NUL
+make > NUL
 
-ren bin\DMGTRIS.GBC DMGTRIS.pocket
-python patch_pocket.py
+echo Fixing pocket version header...
+ren bin\DMGTRIS.GBC DMGTRIS.pocket > NUL
+python patch_pocket.py > NUL
+rgbfix -fhg -O bin\DMGTRIS.pocket > NUL
 
-rd /S /Q obj
-rd /S /Q dep
+echo Making GB version...
+rd /S /Q obj > NUL
+rd /S /Q dep > NUL
+del /Q src\include\hardware.inc > NUL
+copy src\include\hardware.nintendo src\include\hardware.inc > NUL
+make > NUL
 
-del /Q src\include\hardware.inc
-copy src\include\hardware.nintendo src\include\hardware.inc
-make
-
-git add .
-git commit -am "Deploy new build."
+echo Pushing new version...
+git add . > NUL
+git commit -am "Deploy new build." > NUL
 git push

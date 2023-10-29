@@ -42,7 +42,7 @@ RSTSwitchBank::
     ret
 
 SECTION "Restore Bank", ROM0[$28]
-    ; Pops a bank from the stack ans switches to it.
+    ; Pops a bank from the stack and switches to it.
 RSTRestoreBank::
     ld a, [wBankBackup+0]
     ld b, a

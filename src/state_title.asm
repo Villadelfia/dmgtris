@@ -412,7 +412,7 @@ DecrementLevel:
     ld a, h
     ldh [hStartSpeed+1], a
     ld [rSelectedStartLevel+1], a
-    ret
+    jp CheckLevelRange
 
 
     ; Increments the selected option.

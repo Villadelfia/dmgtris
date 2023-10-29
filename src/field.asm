@@ -1279,6 +1279,9 @@ FieldProcess::
     cp a, 0             ; We never want to move if the button wasn't held.
     jr z, .wantright
     ld b, a
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20            ; No increased DAS at 20G.
+    jr z, .wantright
     ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
     cp a, $FF
     jr nz, .checkdasleft
@@ -1305,6 +1308,9 @@ FieldProcess::
     cp a, 0             ; We never want to move if the button wasn't held.
     jr z, .donemanipulating
     ld b, a
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20            ; No increased DAS at 20G.
+    jr z, .donemanipulating
     ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
     cp a, $FF
     jr nz, .checkdasright
@@ -3333,6 +3339,9 @@ BigFieldProcess::
     cp a, 0             ; We never want to move if the button wasn't held.
     jr z, .wantright
     ld b, a
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20            ; No increased DAS at 20G.
+    jr z, .wantright
     ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
     cp a, $FF
     jr nz, .checkdasleft
@@ -3359,6 +3368,9 @@ BigFieldProcess::
     cp a, 0             ; We never want to move if the button wasn't held.
     jr z, .donemanipulating
     ld b, a
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20            ; No increased DAS at 20G.
+    jr z, .wantright
     ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
     cp a, $FF
     jr nz, .checkdasright

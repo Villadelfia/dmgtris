@@ -120,11 +120,24 @@ A few guidelines are in effect:
 - Stuff that goes in the sram belongs in the `sram.asm` file, where there exists code to init SRAM to known defaults.
 
 
+## Reporting Bugs
+If you have found a bug, please follow the following steps *before* sending a bug report. The easier you make it for me to find and fix a bug, the more likely it is that I will do so.
+
+0. I do not own a analogue pocket, the `.pocket` version is released on a best effort basis and I cannot help with bugs that *only* happen on the analogue pocket. If you find a bug, please reproduce the bug on the `.gbc` version.
+1. Download the latest `.gbc`, `.map` and `.sym` files from this repository.
+2. Use either emulicious or bgb to reproduce the bug on that version, documenting the exact steps taken to make it happen. Please also include what should be happening if the bug is subtle.
+3. Make a save state at the moment the bug starts happening.
+4. Send the `.gbc`, `.map`, `.sym`, and save state files as well as the documentation of the bug to me.
+
+I will try to fix all bugs that I can, but please remember that this is free software and that I can not, and do not, guarantee fitness for purpose.
+
+
 ## Shoutouts and Thanks
 Thanks for playtesting and debugging go to:
 
 - CreeperCraftYT™
 - AntonErgo
+- Lindtobias
 
 
 ## License

@@ -1018,6 +1018,7 @@ GamePlayBigEventLoopHandlerB:
     jp nz, .drawStaticInfo
     ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
+    jp .drawStaticInfo
 
 
 .preGameOverMode

@@ -1281,7 +1281,7 @@ FieldProcess::
     ld b, a
     ldh a, [hCurrentIntegerGravity]
     cp a, 20            ; No increased DAS at 20G.
-    jr z, .wantright
+    jr z, .checkdasleft
     ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
     cp a, $FF
     jr nz, .checkdasleft
@@ -1310,7 +1310,7 @@ FieldProcess::
     ld b, a
     ldh a, [hCurrentIntegerGravity]
     cp a, 20            ; No increased DAS at 20G.
-    jr z, .donemanipulating
+    jr z, .checkdasright
     ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
     cp a, $FF
     jr nz, .checkdasright
@@ -3341,7 +3341,7 @@ BigFieldProcess::
     ld b, a
     ldh a, [hCurrentIntegerGravity]
     cp a, 20            ; No increased DAS at 20G.
-    jr z, .wantright
+    jr z, .checkdasleft
     ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
     cp a, $FF
     jr nz, .checkdasleft
@@ -3370,7 +3370,7 @@ BigFieldProcess::
     ld b, a
     ldh a, [hCurrentIntegerGravity]
     cp a, 20            ; No increased DAS at 20G.
-    jr z, .wantright
+    jr z, .checkdasright
     ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
     cp a, $FF
     jr nz, .checkdasright

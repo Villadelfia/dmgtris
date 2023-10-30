@@ -24,48 +24,48 @@ INCLUDE "globals.asm"
 
 SECTION "Shadow OAM", WRAM0, ALIGN[8]
 UNION
-wShadowOAM:: ds 160
+wShadowOAM::   ds 160
 NEXTU
-wSPRNext1:: ds 4
-wSPRNext2:: ds 4
-wSPRNext3:: ds 4
-wSPRNext4:: ds 4
-wUnused0:: ds 4
-wUnused1:: ds 4
-wSPRHold1:: ds 4
-wSPRHold2:: ds 4
-wSPRHold3:: ds 4
-wSPRHold4:: ds 4
-wUnused2:: ds 4
-wUnused3:: ds 4
-wSPRScore1:: ds 4
-wSPRScore2:: ds 4
-wSPRScore3:: ds 4
-wSPRScore4:: ds 4
-wSPRScore5:: ds 4
-wSPRScore6:: ds 4
-wUnused4:: ds 4
-wUnused5:: ds 4
-wSPRCLevel1:: ds 4
-wSPRCLevel2:: ds 4
-wSPRCLevel3:: ds 4
-wSPRCLevel4:: ds 4
-wUnused6:: ds 4
-wUnused7:: ds 4
-wSPRNLevel1:: ds 4
-wSPRNLevel2:: ds 4
-wSPRNLevel3:: ds 4
-wSPRNLevel4:: ds 4
-wUnused8:: ds 4
-wUnused9:: ds 4
-wSPRQueue1A:: ds 4
-wSPRQueue1B:: ds 4
-wSPRQueue2A:: ds 4
-wSPRQueue2B:: ds 4
-wSPRModeRNG:: ds 4
-wSPRModeRot:: ds 4
+wSPRNext1::    ds 4
+wSPRNext2::    ds 4
+wSPRNext3::    ds 4
+wSPRNext4::    ds 4
+wSPRHold1::    ds 4
+wSPRHold2::    ds 4
+wSPRHold3::    ds 4
+wSPRHold4::    ds 4
+wSPRScore1::   ds 4
+wSPRScore2::   ds 4
+wSPRScore3::   ds 4
+wSPRScore4::   ds 4
+wSPRScore5::   ds 4
+wSPRScore6::   ds 4
+wSPRCLevel1::  ds 4
+wSPRCLevel2::  ds 4
+wSPRCLevel3::  ds 4
+wSPRCLevel4::  ds 4
+wSPRNLevel1::  ds 4
+wSPRNLevel2::  ds 4
+wSPRNLevel3::  ds 4
+wSPRNLevel4::  ds 4
+wSPRQueue1A::  ds 4
+wSPRQueue1B::  ds 4
+wSPRQueue2A::  ds 4
+wSPRQueue2B::  ds 4
+wSPRModeRNG::  ds 4
+wSPRModeRot::  ds 4
 wSPRModeDrop:: ds 4
-wSPRModeHiG:: ds 4
+wSPRModeHiG::  ds 4
+wUnused0::     ds 4
+wUnused1::     ds 4
+wUnused2::     ds 4
+wUnused3::     ds 4
+wUnused4::     ds 4
+wUnused5::     ds 4
+wUnused6::     ds 4
+wUnused7::     ds 4
+wUnused8::     ds 4
+wUnused9::     ds 4
 ENDU
 
 
@@ -101,11 +101,11 @@ CopyOAMHandler::
     ; Clears OAM and shadow OAM.
 ClearOAM::
     ld hl, _OAMRAM
-    ld bc, $9F
+    ld bc, 160
     ld d, 0
     call SafeMemSet
     ld hl, wShadowOAM
-    ld bc, $9F
+    ld bc, 160
     ld d, 0
     jp UnsafeMemSet
 
@@ -366,7 +366,7 @@ ApplyHold::
     ; Generic function to draw a BCD number (6 digits) as 6 sprites.
     ; Address of first sprite in hl.
     ; Address of first digit in de.
-ApplyNumbers::
+ApplyNumbers6::
     inc hl
     inc hl
     ld bc, 4
@@ -382,6 +382,37 @@ ApplyNumbers::
     ld [hl], a
     add hl, bc
     inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    ret
+
+    ; Generic function to draw a BCD number (4 digits) as 4 sprites.
+    ; Address of first sprite in hl.
+    ; Address of first digit in de.
+ApplyNumbers4::
+    inc hl
+    inc hl
+    ld bc, 4
 
     ld a, [de]
     add a, TILE_0

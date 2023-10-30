@@ -603,15 +603,15 @@ drawStaticInfo:
 
     ld hl, wSPRScore1
     ld de, hScore
-    call ApplyNumbers
+    call ApplyNumbers6
 
     ld hl, wSPRCLevel1
     ld de, hCLevel
-    call ApplyNumbers
+    call ApplyNumbers4
 
     ld hl, wSPRNLevel1
     ld de, hNLevel
-    call ApplyNumbers
+    call ApplyNumbers4
 
     jp GBCGameplayProcess
 
@@ -1212,15 +1212,15 @@ GamePlayBigEventLoopHandlerB:
 
     ld hl, wSPRScore1
     ld de, hScore
-    call ApplyNumbers
+    call ApplyNumbers6
 
     ld hl, wSPRCLevel1
     ld de, hCLevel
-    call ApplyNumbers
+    call ApplyNumbers4
 
     ld hl, wSPRNLevel1
     ld de, hNLevel
-    call ApplyNumbers
+    call ApplyNumbers4
 
     jp GBCBigGameplayProcess
 

@@ -21,6 +21,9 @@ MAPPER := 0x1B
 # Do not insert nop after halt
 ASFLAGS += -h
 
+# 8.24 fixed point.
+ASFLAGS += -Q 25
+
 # Extra fix flags
 # Set as gbc compatible
 FIXFLAGS += -c

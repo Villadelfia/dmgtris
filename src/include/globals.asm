@@ -21,6 +21,7 @@ DEF GLOBALS_ASM EQU 1
 
 INCLUDE "hardware.inc"
 INCLUDE "structs.asm"
+INCLUDE "rgb555.asm"
 
 
 ; Set up charmap.

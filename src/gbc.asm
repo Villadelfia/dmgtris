@@ -21,6 +21,54 @@ DEF GBC_ASM EQU 1
 
 INCLUDE "globals.asm"
 
+    ; Standard B/W
+    DEF_RGB555_FROM24 BLACK,  $00, $00, $00
+    DEF_RGB555_FROM24 GRAY_0, $55, $55, $55
+    DEF_RGB555_FROM24 GRAY_1, $AA, $AA, $AA
+    DEF_RGB555_FROM24 WHITE,  $FF, $FF, $FF
+
+    ; I piece
+    DEF_RGB555_FROM24 RED_0, $A2, $24, $24
+    DEF_RGB555_FROM24 RED_1, $D3, $2F, $2F
+    DEF_RGB555_FROM24 RED_2, $DE, $60, $60
+    DEF_RGB555_FROM24 RED_3, $FF, $FF, $FF
+
+    ; S piece
+    DEF_RGB555_FROM24 GREEN_0, $2B, $6D, $2E
+    DEF_RGB555_FROM24 GREEN_1, $38, $8E, $3C
+    DEF_RGB555_FROM24 GREEN_2, $67, $A9, $6A
+    DEF_RGB555_FROM24 GREEN_3, $FF, $FF, $FF
+
+    ; Z piece
+    DEF_RGB555_FROM24 PURPLE_0, $5F, $16, $7C
+    DEF_RGB555_FROM24 PURPLE_1, $7B, $1F, $A2
+    DEF_RGB555_FROM24 PURPLE_2, $9A, $53, $B7
+    DEF_RGB555_FROM24 PURPLE_3, $FF, $FF, $FF
+
+    ; J piece
+    DEF_RGB555_FROM24 BLUE_0, $10, $4D, $94
+    DEF_RGB555_FROM24 BLUE_1, $15, $65, $C0
+    DEF_RGB555_FROM24 BLUE_2, $4B, $89, $CF
+    DEF_RGB555_FROM24 BLUE_3, $FF, $FF, $FF
+
+    ; L piece
+    DEF_RGB555_FROM24 ORANGE_0, $BB, $5F, $00
+    DEF_RGB555_FROM24 ORANGE_1, $F7, $7D, $00
+    DEF_RGB555_FROM24 ORANGE_2, $F7, $9B, $3B
+    DEF_RGB555_FROM24 ORANGE_3, $FF, $FF, $FF
+
+    ; O piece
+    DEF_RGB555_FROM24 YELLOW_0, $C0, $94, $23
+    DEF_RGB555_FROM24 YELLOW_1, $FB, $C0, $2D
+    DEF_RGB555_FROM24 YELLOW_2, $FC, $CE, $5E
+    DEF_RGB555_FROM24 YELLOW_3, $FF, $FF, $FF
+
+    ; T piece
+    DEF_RGB555_FROM24 CYAN_0, $02, $77, $AF
+    DEF_RGB555_FROM24 CYAN_1, $03, $9B, $E5
+    DEF_RGB555_FROM24 CYAN_2, $3D, $B2, $EB
+    DEF_RGB555_FROM24 CYAN_3, $FF, $FF, $FF
+
 DEF B0 EQU %0010000000000000
 DEF B1 EQU %0100000000000000
 DEF B2 EQU %0101000000000000
@@ -79,249 +127,30 @@ GBCTitleInit::
     ld a, [wInitialA]
     cp a, $11
     ret nz
-    ld a, BCPSF_AUTOINC
-    ldh [rBCPS], a
-    ldh [rOCPS], a
 
-    ; Pal 0 (red, I)
-    ld bc, %0000000000000000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 1 (green, Z)
-    ld bc, %0000000000000000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, G1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, G2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, G3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 2 (purple, S)
-    ld bc, %0000000000000000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R1 | B1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R2 | B2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R3 | B3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 3 (blue, J)
-    ld bc, %0000000000000000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, B1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, B2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, B3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 4 (orange, L)
-    ld bc, %0000000000000000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R1 | G0
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R2 | G1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R3 | G2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 5 (yellow, O)
-    ld bc, %0000000000000000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R1 | G1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R2 | G2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, R3 | G3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 6 (cyan, T)
-    ld bc, %0000000000000000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, B1 | G1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, B2 | G2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, B3 | G3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 7 (grayscale, inverted)
-    ld bc, %0000000000000000
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0010000100001000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0100001000010000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0111111111111111
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
+    ; Palettes.
+    ld a, [wInitialB]
+    bit 0, a
+    jp nz, .agb
+    WRITEPAL_A 0, BLACK_C, RED_0_C,    RED_1_C,    RED_2_C
+    WRITEPAL_A 1, BLACK_C, GREEN_0_C,  GREEN_1_C,  GREEN_2_C
+    WRITEPAL_A 2, BLACK_C, PURPLE_0_C, PURPLE_1_C, PURPLE_2_C
+    WRITEPAL_A 3, BLACK_C, BLUE_0_C,   BLUE_1_C,   BLUE_2_C
+    WRITEPAL_A 4, BLACK_C, ORANGE_0_C, ORANGE_1_C, ORANGE_2_C
+    WRITEPAL_A 5, BLACK_C, YELLOW_0_C, YELLOW_1_C, YELLOW_2_C
+    WRITEPAL_A 6, BLACK_C, CYAN_0_C,   CYAN_1_C,   CYAN_2_C
+    WRITEPAL_A 7, BLACK_C, GRAY_0_C,   GRAY_1_C,   WHITE_C
+    jp .postpalettes
+.agb
+    WRITEPAL_A 0, BLACK_A, RED_0_A,    RED_1_A,    RED_2_A
+    WRITEPAL_A 1, BLACK_A, GREEN_0_A,  GREEN_1_A,  GREEN_2_A
+    WRITEPAL_A 2, BLACK_A, PURPLE_0_A, PURPLE_1_A, PURPLE_2_A
+    WRITEPAL_A 3, BLACK_A, BLUE_0_A,   BLUE_1_A,   BLUE_2_A
+    WRITEPAL_A 4, BLACK_A, ORANGE_0_A, ORANGE_1_A, ORANGE_2_A
+    WRITEPAL_A 5, BLACK_A, YELLOW_0_A, YELLOW_1_A, YELLOW_2_A
+    WRITEPAL_A 6, BLACK_A, CYAN_0_A,   CYAN_1_A,   CYAN_2_A
+    WRITEPAL_A 7, BLACK_A, GRAY_0_A,   GRAY_1_A,   WHITE_A
+.postpalettes
 
     ; Copy the tilemap to shadow.
     ld de, $9800
@@ -361,270 +190,30 @@ GBCGameplayInit::
     ld a, [wInitialA]
     cp a, $11
     ret nz
-    ld a, BCPSF_AUTOINC
-    ldh [rBCPS], a
-    ldh [rOCPS], a
 
-    ; Pal 0 (red, I)
-    ld bc, R3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R0
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 1 (green, Z)
-    ld bc, G3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, G2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, G1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, G0
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 2 (purple, S)
-    ld bc, R2 | B3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R1 | B2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R0 | B1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, B0 | %0000000000000010
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 3 (blue, J)
-    ld bc, B3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, B2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, B1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, B0
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 4 (orange, L)
-    ld bc, R3 | G2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R2 | G1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R1 | G0
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R0
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 5 (yellow, O)
-    ld bc, R3 | G3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R2 | G2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R1 | G1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, R0 | G0
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 6 (cyan, T)
-    ld bc, B3 | G3
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, B2 | G2
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, B1 | G1
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ld bc, B0 | G0
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-
-    ; Pal 7 (grayscale)
-    ld bc, %0111111111111111
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0100001000010000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0010000100001000
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld bc, %0000000000000000
-    ld a, b
-    ldh [rBCPD], a
-    ldh [rOCPD], a
-    ld a, c
-    ldh [rBCPD], a
-    ldh [rOCPD], a
+    ; Palettes.
+    ld a, [wInitialB]
+    bit 0, a
+    jp nz, .agb
+    WRITEPAL_A 0, RED_3_C,    RED_2_C,    RED_1_C,    RED_0_C
+    WRITEPAL_A 1, GREEN_3_C,  GREEN_2_C,  GREEN_1_C,  GREEN_0_C
+    WRITEPAL_A 2, PURPLE_3_C, PURPLE_2_C, PURPLE_1_C, PURPLE_0_C
+    WRITEPAL_A 3, BLUE_3_C,   BLUE_2_C,   BLUE_1_C,   BLUE_0_C
+    WRITEPAL_A 4, ORANGE_3_C, ORANGE_2_C, ORANGE_1_C, ORANGE_0_C
+    WRITEPAL_A 5, YELLOW_3_C, YELLOW_2_C, YELLOW_1_C, YELLOW_0_C
+    WRITEPAL_A 6, CYAN_3_C,   CYAN_2_C,   CYAN_1_C,   CYAN_0_C
+    WRITEPAL_A 7, WHITE_C,    GRAY_1_C,   GRAY_0_C,   BLACK_C
+    jp .postpalettes
+.agb
+    WRITEPAL_A 0, RED_3_A,    RED_2_A,    RED_1_A,    RED_0_A
+    WRITEPAL_A 1, GREEN_3_A,  GREEN_2_A,  GREEN_1_A,  GREEN_0_A
+    WRITEPAL_A 2, PURPLE_3_A, PURPLE_2_A, PURPLE_1_A, PURPLE_0_A
+    WRITEPAL_A 3, BLUE_3_A,   BLUE_2_A,   BLUE_1_A,   BLUE_0_A
+    WRITEPAL_A 4, ORANGE_3_A, ORANGE_2_A, ORANGE_1_A, ORANGE_0_A
+    WRITEPAL_A 5, YELLOW_3_A, YELLOW_2_A, YELLOW_1_A, YELLOW_0_A
+    WRITEPAL_A 6, CYAN_3_A,   CYAN_2_A,   CYAN_1_A,   CYAN_0_A
+    WRITEPAL_A 7, WHITE_A,    GRAY_1_A,   GRAY_0_A,   BLACK_A
+.postpalettes
 
     ; Copy the tilemap to shadow.
     ld de, $9800

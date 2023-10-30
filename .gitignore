@@ -4,6 +4,4 @@
 /tools/**
 /src/res/sources/*.z80
 /src/res/sources/*.inc
-/bin/*.map
-/bin/*.sym
 /bin/*.sav

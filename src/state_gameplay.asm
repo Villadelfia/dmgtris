@@ -89,13 +89,14 @@ SwitchToGameplayB:
     ; Turn the screen off if it's on.
     ldh a, [rLCDC]
     and LCDCF_ON
-    jr z, :+ ; Screen is already off.
+    jr z, .loadtilemap ; Screen is already off.
     wait_vram
     xor a, a
     ldh [rLCDC], a
 
     ; Load the gameplay tilemap.
-:   ld de, sGameplayTileMap
+.loadtilemap
+    ld de, sGameplayTileMap
     ld hl, $9800
     ld bc, sGameplayTileMapEnd - sGameplayTileMap
     call UnsafeMemCopy
@@ -161,58 +162,61 @@ GamePlayEventLoopHandlerB::
     jp hl
 
 .modejumps
-    jp leadyMode
-    jp goMode
-    jp postGoMode
-    jp prefetchedPieceMode
-    jp spawnPieceMode
-    jp pieceInMotionMode
-    jp delayMode
-    jp gameOverMode
-    jp preGameOverMode
-    jp pauseMode
+    jp .leadyMode
+    jp .goMode
+    jp .postGoMode
+    jp .prefetchedPieceMode
+    jp .spawnPieceMode
+    jp .pieceInMotionMode
+    jp .delayMode
+    jp .gameOverMode
+    jp .preGameOverMode
+    jp .pauseMode
 
 
     ; Draw "READY" and wait a bit.
-leadyMode:
+.leadyMode
     ldh a, [hModeCounter]
     cp a, LEADY_TIME
-    jr nz, :+
+    jr nz, .firstleadyiterskip
     call SFXKill
     ld a, SFX_READYGO
     call SFXEnqueue
     ldh a, [hModeCounter]
-:   dec a
-    jr nz, :+
+.firstleadyiterskip
+    dec a
+    jr nz, .notdoneleady
     ld a, MODE_GO
     ldh [hMode], a
     ld a, GO_TIME
-:   ldh [hModeCounter], a
+.notdoneleady
+    ldh [hModeCounter], a
     ld de, sLeady
     ld hl, wField+(14*10)
     ld bc, 10
     call UnsafeMemCopy
-    jp drawStaticInfo
+    jp .drawStaticInfo
 
 
     ; Draw "GO" and wait a bit.
-goMode:
+.goMode
     ldh a, [hModeCounter]
     dec a
-    jr nz, :+
+    jr nz, .notdonego
     ld a, MODE_POSTGO
     ldh [hMode], a
     xor a, a
-:   ldh [hModeCounter], a
+.notdonego
+    ldh [hModeCounter], a
     ld de, sGo
     ld hl, wField+(14*10)
     ld bc, 10
     call UnsafeMemCopy
-    jp drawStaticInfo
+    jp .drawStaticInfo
 
 
     ; Clear the field, fetch the piece, ready for gameplay.
-postGoMode:
+.postGoMode
     ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
     call FieldClear
@@ -220,11 +224,11 @@ postGoMode:
     ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
-    jp drawStaticInfo
+    jp .drawStaticInfo
 
 
     ; Fetch the next piece.
-prefetchedPieceMode:
+.prefetchedPieceMode
     ; A piece will spawn in the middle, at the top of the screen, not rotated by default.
     ld a, $FF
     ldh [hRequestedJingle], a
@@ -313,48 +317,50 @@ prefetchedPieceMode:
 
 
     ; Spawn the piece.
-spawnPieceMode:
+.spawnPieceMode
     call TrySpawnPiece
     cp a, $FF
-    jr z, :+
+    jr z, .canspawn
     ld a, MODE_PRE_GAME_OVER
     ldh [hMode], a
-    jp drawStaticInfo
-:   ld a, MODE_PIECE_IN_MOTION
+    jp .drawStaticInfo
+.canspawn
+    ld a, MODE_PIECE_IN_MOTION
     ldh [hMode], a
 
     ; Play the next jingle... maybe!
     ldh a, [hHoldSpent]
     cp a, $FF
-    jr z, pieceInMotionMode
+    jr z, .pieceInMotionMode
     ldh a, [hRequestedJingle]
     cp a, $FF
-    jr z, pieceInMotionMode
+    jr z, .pieceInMotionMode
     call SFXEnqueue
 
 
     ; This mode lasts for as long as the piece is in motion.
     ; Field will let us know when it has locked in place.
-pieceInMotionMode:
+.pieceInMotionMode
     ldh a, [hStartState]
     cp a, 1
-    jr nz, :+
+    jr nz, .nopauserequested
     call ToBackupField
     ldh a, [hMode]
     ldh [hPrePause], a
     ld a, MODE_PAUSED
     ldh [hMode], a
-    jp drawStaticInfo
+    jp .drawStaticInfo
 
-:   call FieldProcess
+.nopauserequested
+    call FieldProcess
 
     ; Do we hold?
     ldh a, [hSelectState]
     cp a, 1
-    jr nz, :+
+    jr nz, .nohold
     ldh a, [hHoldSpent]
     cp a, $FF
-    jr z, :+
+    jr z, .nohold
     ; Reset position and rotation.
     ld a, PIECE_SPAWN_X
     ldh [hCurrentPieceX], a
@@ -367,39 +373,40 @@ pieceInMotionMode:
     ldh [hMode], a
 
     ; Do we go into delay state?
-:   ldh a, [hCurrentLockDelayRemaining]
+.nohold
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
-    jr nz, :+
+    jp nz, .drawStaticInfo
     ld a, MODE_DELAY
     ldh [hMode], a
     ; No fall through this time.
 
-:   jp drawStaticInfo
+    jp .drawStaticInfo
 
 
-delayMode:
+.delayMode
     ldh a, [hStartState]
     cp a, 1
-    jr nz, :+
+    jr nz, .nodelaypauserequested
     call ToBackupField
     ldh a, [hMode]
     ldh [hPrePause], a
     ld a, MODE_PAUSED
     ldh [hMode], a
-    jp drawStaticInfo
+    jp .drawStaticInfo
 
-:   call FieldDelay
+.nodelaypauserequested
+    call FieldDelay
 
     ldh a, [hRemainingDelay]
     cp a, 0
-    jr nz, :+
+    jp nz, .drawStaticInfo
     ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
+    jp .drawStaticInfo
 
-:   jp drawStaticInfo
 
-
-preGameOverMode:
+.preGameOverMode
     ; Spawn the failed piece.
     call ForceSpawnPiece
 
@@ -501,11 +508,11 @@ preGameOverMode:
     ldh [hMode], a
 
 
-gameOverMode:
+.gameOverMode
     ; Retry?
     ldh a, [hAState]
     cp a, 1
-    jr nz, :+
+    jr nz, .noretry
     call RNGInit
     call ScoreInit
     call LevelInit
@@ -516,41 +523,44 @@ gameOverMode:
     ldh [hMode], a
     ld a, LEADY_TIME
     ldh [hModeCounter], a
-    jp drawStaticInfo
+    jp .drawStaticInfo
 
     ; Quit
-:   ldh a, [hBState]
+.noretry
+    ldh a, [hBState]
     cp a, 1
-    jp nz, drawStaticInfo
+    jp nz, .drawStaticInfo
     call SwitchToTitle
     jp EventLoopPostHandler
 
 
-pauseMode:
+.pauseMode
     ; Quick reset.
     ldh a, [hAState]
     cp a, 0
-    jr z, :+
+    jr z, .noqr
     ldh a, [hBState]
     cp a, 0
-    jr z, :+
+    jr z, .noqr
     ldh a, [hSelectState]
     cp a, 0
-    jr z, :+
+    jr z, .noqr
     call SwitchToTitle
     jp EventLoopPostHandler
 
     ; Unpause
-:   ldh a, [hStartState]
+.noqr
+    ldh a, [hStartState]
     cp a, 1
-    jr nz, :+
+    jr nz, .nounpause
     call FromBackupField
     ldh a, [hPrePause]
     ldh [hMode], a
-    jr drawStaticInfo
+    jr .drawStaticInfo
 
     ; Draw PAUSE all over the field.
-:   ld de, sPause
+.nounpause
+    ld de, sPause
     ld hl, wField+(4*10)
     ld bc, 20
     call UnsafeMemCopy
@@ -590,12 +600,11 @@ pauseMode:
     ld hl, wField+(22*10)
     ld bc, 20
     call UnsafeMemCopy
-    jr drawStaticInfo
 
 
     ; Always draw the score, level, next piece, and held piece.
-drawStaticInfo:
-:   ldh a, [hNextPiece]
+.drawStaticInfo:
+    ldh a, [hNextPiece]
     call ApplyNext
 
     ldh a, [hHeldPiece]
@@ -624,21 +633,21 @@ DoHold:
 
     ; Check if IRS is requested.
     ; Apply the rotation if so.
-.checkIRSHA
+.checkIRSA
     ld a, [wSwapABState]
     cp a, 0
     jr z, .lda3
 .ldb3
     ldh a, [hBState]
     cp a, 0
-    jr z, .checkIRSHB
+    jr z, .checkIRSB
     ld a, $FF
     ldh [hBState], a
     jr .cp3
 .lda3
     ldh a, [hAState]
     cp a, 0
-    jr z, .checkIRSHB
+    jr z, .checkIRSB
     ld a, $FF
     ldh [hAState], a
 .cp3
@@ -649,7 +658,7 @@ DoHold:
     call SFXEnqueue
     jr .doHoldOperation
 
-.checkIRSHB
+.checkIRSB
     ld a, [wSwapABState]
     cp a, 0
     jr z, .ldb4
@@ -698,13 +707,14 @@ SwitchToGameplayBigB:
     ; Turn the screen off if it's on.
     ldh a, [rLCDC]
     and LCDCF_ON
-    jr z, :+ ; Screen is already off.
+    jr z, .loadtilemap ; Screen is already off.
     wait_vram
     xor a, a
     ldh [rLCDC], a
 
     ; Load the gameplay tilemap.
-:   ld de, sBigGameplayTileMap
+.loadtilemap
+    ld de, sBigGameplayTileMap
     ld hl, $9800
     ld bc, sBigGameplayTileMapEnd - sBigGameplayTileMap
     call UnsafeMemCopy
@@ -785,17 +795,19 @@ GamePlayBigEventLoopHandlerB:
 .leadyMode
     ldh a, [hModeCounter]
     cp a, LEADY_TIME
-    jr nz, :+
+    jr nz, .firstleadyiterskip
     call SFXKill
     ld a, SFX_READYGO
     call SFXEnqueue
     ldh a, [hModeCounter]
-:   dec a
-    jr nz, :+
+.firstleadyiterskip
+    dec a
+    jr nz, .notdoneleady
     ld a, MODE_GO
     ldh [hMode], a
     ld a, GO_TIME
-:   ldh [hModeCounter], a
+.notdoneleady
+    ldh [hModeCounter], a
     ld de, sBigLeady
     ld hl, wWideBlittedField+(10*10)
     ld bc, 10
@@ -807,11 +819,12 @@ GamePlayBigEventLoopHandlerB:
 .goMode
     ldh a, [hModeCounter]
     dec a
-    jr nz, :+
+    jr nz, .notdonego
     ld a, MODE_POSTGO
     ldh [hMode], a
     xor a, a
-:   ldh [hModeCounter], a
+.notdonego
+    ldh [hModeCounter], a
     ld de, sBigGo
     ld hl, wWideBlittedField+(10*10)
     ld bc, 10
@@ -924,11 +937,12 @@ GamePlayBigEventLoopHandlerB:
 .spawnPieceMode
     call BigTrySpawnPiece
     cp a, $FF
-    jr z, :+
+    jr z, .canspawn
     ld a, MODE_PRE_GAME_OVER
     ldh [hMode], a
     jp .drawStaticInfo
-:   ld a, MODE_PIECE_IN_MOTION
+.canspawn
+    ld a, MODE_PIECE_IN_MOTION
     ldh [hMode], a
 
     ; Play the next jingle... maybe!
@@ -946,7 +960,7 @@ GamePlayBigEventLoopHandlerB:
 .pieceInMotionMode
     ldh a, [hStartState]
     cp a, 1
-    jr nz, :+
+    jr nz, .nopauserequested
     call BigToBackupField
     ldh a, [hMode]
     ldh [hPrePause], a
@@ -954,15 +968,16 @@ GamePlayBigEventLoopHandlerB:
     ldh [hMode], a
     jp .drawStaticInfo
 
-:   call BigFieldProcess
+.nopauserequested
+    call BigFieldProcess
 
     ; Do we hold?
     ldh a, [hSelectState]
     cp a, 1
-    jr nz, :+
+    jr nz, .nohold
     ldh a, [hHoldSpent]
     cp a, $FF
-    jr z, :+
+    jr z, .nohold
     ; Reset position and rotation.
     ld a, PIECE_SPAWN_X_BIG
     ldh [hCurrentPieceX], a
@@ -975,20 +990,19 @@ GamePlayBigEventLoopHandlerB:
     ldh [hMode], a
 
     ; Do we go into delay state?
-:   ldh a, [hCurrentLockDelayRemaining]
+.nohold
+    ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
-    jr nz, :+
+    jp nz, .drawStaticInfo
     ld a, MODE_DELAY
     ldh [hMode], a
     ; No fall through this time.
-
-:   jp .drawStaticInfo
 
 
 .delayMode
     ldh a, [hStartState]
     cp a, 1
-    jr nz, :+
+    jr nz, .nodelaypauserequested
     call BigToBackupField
     ldh a, [hMode]
     ldh [hPrePause], a
@@ -996,21 +1010,20 @@ GamePlayBigEventLoopHandlerB:
     ldh [hMode], a
     jp .drawStaticInfo
 
-:   call BigFieldDelay
+.nodelaypauserequested
+    call BigFieldDelay
 
     ldh a, [hRemainingDelay]
     cp a, 0
-    jr nz, :+
+    jp nz, .drawStaticInfo
     ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
-
-:   jp .drawStaticInfo
 
 
 .preGameOverMode
     ; Spawn the failed piece.
     call BigForceSpawnPiece
-    call WidenField
+    call BigWidenField
 
     ; Draw the field in grey.
     ; Yes. This really unrolls the loop that many times.
@@ -1114,7 +1127,7 @@ GamePlayBigEventLoopHandlerB:
     ; Retry?
     ldh a, [hAState]
     cp a, 1
-    jr nz, :+
+    jr nz, .noretry
     call RNGInit
     call ScoreInit
     call LevelInit
@@ -1128,7 +1141,8 @@ GamePlayBigEventLoopHandlerB:
     jp .drawStaticInfo
 
     ; Quit
-:   ldh a, [hBState]
+.noretry
+    ldh a, [hBState]
     cp a, 1
     jp nz, .drawStaticInfo
     call SwitchToTitle
@@ -1139,27 +1153,29 @@ GamePlayBigEventLoopHandlerB:
     ; Quick reset.
     ldh a, [hAState]
     cp a, 0
-    jr z, :+
+    jr z, .noqr
     ldh a, [hBState]
     cp a, 0
-    jr z, :+
+    jr z, .noqr
     ldh a, [hSelectState]
     cp a, 0
-    jr z, :+
+    jr z, .noqr
     call SwitchToTitle
     jp EventLoopPostHandler
 
     ; Unpause
-:   ldh a, [hStartState]
+.noqr
+    ldh a, [hStartState]
     cp a, 1
-    jr nz, :+
+    jr nz, .nounpause
     call BigFromBackupField
     ldh a, [hPrePause]
     ldh [hMode], a
     jr .drawStaticInfo
 
     ; Draw PAUSE all over the field.
-:   ld de, sBigPause
+.nounpause
+    ld de, sBigPause
     ld hl, wWideBlittedField
     ld bc, 20
     call UnsafeMemCopy
@@ -1199,12 +1215,11 @@ GamePlayBigEventLoopHandlerB:
     ld hl, wWideBlittedField+180
     ld bc, 20
     call UnsafeMemCopy
-    jr .drawStaticInfo
 
 
     ; Always draw the score, level, next piece, and held piece.
 .drawStaticInfo
-:   ldh a, [hNextPiece]
+    ldh a, [hNextPiece]
     call ApplyNext
 
     ldh a, [hHeldPiece]
@@ -1233,21 +1248,21 @@ BigDoHold:
 
     ; Check if IRS is requested.
     ; Apply the rotation if so.
-.checkIRSHA
+.checkIRSA
     ld a, [wSwapABState]
     cp a, 0
     jr z, .lda3
 .ldb3
     ldh a, [hBState]
     cp a, 0
-    jr z, .checkIRSHB
+    jr z, .checkIRSB
     ld a, $FF
     ldh [hBState], a
     jr .cp3
 .lda3
     ldh a, [hAState]
     cp a, 0
-    jr z, .checkIRSHB
+    jr z, .checkIRSB
     ld a, $FF
     ldh [hAState], a
 .cp3
@@ -1258,7 +1273,7 @@ BigDoHold:
     call SFXEnqueue
     jr .doHoldOperation
 
-.checkIRSHB
+.checkIRSB
     ld a, [wSwapABState]
     cp a, 0
     jr z, .ldb4

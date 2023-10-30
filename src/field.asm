@@ -89,9 +89,10 @@ BlitField::
         add hl, bc
     ENDR
 
-:   ldh a, [rLY]
+.waitendvbloop
+    ldh a, [rLY]
     cp a, 0
-    jr nz, :-
+    jr nz, .waitendvbloop
 
     ; The last 6 rows need some care.
     REPT 6
@@ -120,7 +121,7 @@ BlitField::
     jp EventLoop
 
 
-    ; Blits the field onto the tile map.
+    ; Blits the big field onto the tile map.
     ; On the GBC, this chain calls into a special version that takes
     ; advantage of the GBC's CPU.
 BigBlitField::
@@ -145,9 +146,10 @@ BigBlitField::
         add hl, bc
     ENDR
 
-:   ldh a, [rLY]
+.waitendvbloop
+    ldh a, [rLY]
     cp a, 0
-    jr nz, :-
+    jr nz, .waitendvbloop
 
     ; The last 6 rows need some care.
     REPT 6
@@ -176,6 +178,7 @@ BigBlitField::
     jp EventLoop
 
 
+
 SECTION "Field Function Banked Gameplay", ROMX, BANK[BANK_GAMEPLAY]
     ; Initializes the field completely blank.
     ; Initializes the combo counter to 1.
@@ -194,6 +197,7 @@ FieldInit::
     ld bc, 14*26
     ld d, $FF
     jp UnsafeMemSet
+
 
     ; Fills the field with the empty tile.
 FieldClear::
@@ -264,6 +268,7 @@ FromShadowField:
     jr nz, .outer
     ret
 
+
     ; The current piece ID is used to get the offset into the rotation states
     ; corresponding to that piece's zero rotation.
 SetPieceData:
@@ -306,15 +311,16 @@ XYToSFieldPtr:
     ld de, 14
     inc a
     inc b
-:   dec b
-    jr z, :+
+.a
+    dec b
+    jr z, .b
     add hl, de
-    jr :-
-:   dec a
+    jr .a
+.b
+    dec a
     ret z
     inc hl
-    jr :-
-    ret
+    jr .b
 
 
     ; Converts piece Y in B and a piece X in A to a pointer to the field in HL.
@@ -323,15 +329,16 @@ XYToFieldPtr:
     ld de, 10
     inc a
     inc b
-:   dec b
-    jr z, :+
+.a
+    dec b
+    jr z, .b
     add hl, de
-    jr :-
-:   dec a
+    jr .a
+.b
+    dec a
     ret z
     inc hl
-    jr :-
-    ret
+    jr .b
 
 
     ; This function makes HL point to the correct offset into the rotation data.
@@ -375,28 +382,31 @@ CanPieceFit:
 
     ; Row 1
     bit 3, [hl]
-    jr z, :+
+    jr z, .skipr1a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr1a
+    inc de
     inc b
     bit 2, [hl]
-    jr z, :+
+    jr z, .skipr1b
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr1b
+    inc de
     inc b
     bit 1, [hl]
-    jr z, :+
+    jr z, .skipr1c
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr1c
+    inc de
     inc b
     bit 0, [hl]
     jr z, .r1end
@@ -414,28 +424,31 @@ CanPieceFit:
     inc b
     inc hl
     bit 3, [hl]
-    jr z, :+
+    jr z, .skipr2a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr2a
+    inc de
     inc b
     bit 2, [hl]
-    jr z, :+
+    jr z, .skipr2b
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr2b
+    inc de
     inc b
     bit 1, [hl]
-    jr z, :+
+    jr z, .skipr2c
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr2c
+    inc de
     inc b
     bit 0, [hl]
     jr z, .r2end
@@ -453,28 +466,31 @@ CanPieceFit:
     inc b
     inc hl
     bit 3, [hl]
-    jr z, :+
+    jr z, .skipr3a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr3a
+    inc de
     inc b
     bit 2, [hl]
-    jr z, :+
+    jr z, .skipr3b
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr3b
+    inc de
     inc b
     bit 1, [hl]
-    jr z, :+
+    jr z, .skipr3c
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr3c
+    inc de
     inc b
     bit 0, [hl]
     jr z, .r3end
@@ -491,38 +507,42 @@ CanPieceFit:
     inc b
     inc hl
     bit 3, [hl]
-    jr z, :+
+    jr z, .skipr4a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr4a
+    inc de
     inc b
     bit 2, [hl]
-    jr z, :+
+    jr z, .skipr4b
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr4b
+    inc de
     inc b
     bit 1, [hl]
-    jr z, :+
+    jr z, .skipr4c
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr4c
+    inc de
     inc b
     bit 0, [hl]
-    jr z, :+
+    jr z, .r4end
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
 
     ; If we got here, the piece can fit.
-:   ld a, $FF
+.r4end
+    ld a, $FF
     ret
 
 
@@ -540,10 +560,11 @@ CanPieceFitFast:
     ld d, a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
-    jr z, :+
+    jr z, .skip1
     xor a, a
     ret
-:   ld a, [hl+]
+.skip1
+    ld a, [hl+]
     add a, e
     ld e, a
     adc a, d
@@ -551,10 +572,11 @@ CanPieceFitFast:
     ld d, a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
-    jr z, :+
+    jr z, .skip2
     xor a, a
     ret
-:   ld a, [hl+]
+.skip2
+    ld a, [hl+]
     add a, e
     ld e, a
     adc a, d
@@ -562,10 +584,11 @@ CanPieceFitFast:
     ld d, a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
-    jr z, :+
+    jr z, .skip3
     xor a, a
     ret
-:   ld a, [hl+]
+.skip3
+    ld a, [hl+]
     add a, e
     ld e, a
     adc a, d
@@ -573,10 +596,11 @@ CanPieceFitFast:
     ld d, a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
-    jr z, :+
+    jr z, .skip4
     xor a, a
     ret
-:   ld a, $FF
+.skip4
+    ld a, $FF
     ret
 
 
@@ -724,22 +748,25 @@ DrawPiece:
     inc de
 
     bit 3, a
-    jr z, :+
+    jr z, .skipr1a
     ld [hl], b
-:   inc hl
+.skipr1a
+    inc hl
     bit 2, a
-    jr z, :+
+    jr z, .skipr1b
     ld [hl], b
-:   inc hl
+.skipr1b
+    inc hl
     bit 1, a
-    jr z, :+
+    jr z, .skipr1c
     ld [hl], b
-:   inc hl
+.skipr1c
+    inc hl
     bit 0, a
-    jr z, .r1end2
+    jr z, .r1end
     ld [hl], b
 
-.r1end2
+.r1end
     REPT 7
         inc hl
     ENDR
@@ -747,22 +774,25 @@ DrawPiece:
     inc de
 
     bit 3, a
-    jr z, :+
+    jr z, .skipr2a
     ld [hl], b
-:   inc hl
+.skipr2a
+    inc hl
     bit 2, a
-    jr z, :+
+    jr z, .skipr2b
     ld [hl], b
-:   inc hl
+.skipr2b
+    inc hl
     bit 1, a
-    jr z, :+
+    jr z, .skipr2c
     ld [hl], b
-:   inc hl
+.skipr2c
+    inc hl
     bit 0, a
-    jr z, .r2end2
+    jr z, .r2end
     ld [hl], b
 
-.r2end2
+.r2end
     REPT 7
         inc hl
     ENDR
@@ -770,22 +800,25 @@ DrawPiece:
     inc de
 
     bit 3, a
-    jr z, :+
+    jr z, .skipr3a
     ld [hl], b
-:   inc hl
+.skipr3a
+    inc hl
     bit 2, a
-    jr z, :+
+    jr z, .skipr3b
     ld [hl], b
-:   inc hl
+.skipr3b
+    inc hl
     bit 1, a
-    jr z, :+
+    jr z, .skipr3c
     ld [hl], b
-:   inc hl
+.skipr3c
+    inc hl
     bit 0, a
-    jr z, .r3end2
+    jr z, .r3end
     ld [hl], b
 
-.r3end2
+.r3end
     REPT 7
         inc hl
     ENDR
@@ -793,26 +826,29 @@ DrawPiece:
     inc de
 
     bit 3, a
-    jr z, :+
+    jr z, .skipr4a
     ld [hl], b
-:   inc hl
+.skipr4a
+    inc hl
     bit 2, a
-    jr z, :+
+    jr z, .skipr4b
     ld [hl], b
-:   inc hl
+.skipr4b
+    inc hl
     bit 1, a
-    jr z, :+
+    jr z, .skipr4c
     ld [hl], b
-:   inc hl
+.skipr4c
+    inc hl
     bit 0, a
     ret z
     ld [hl], b
     ret
 
 
-FindMaxG:
     ; Find the deepest the piece can go.
     ; We cache this pointer, cause it otherwise takes too much time.
+FindMaxG:
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
@@ -977,7 +1013,7 @@ FieldProcess::
 
     ; I piece only kicks in ARS2
     cp a, PIECE_I
-    jr nz, :+
+    jr nz, .tljexceptions
     ld a, [wRotModeState]
     cp a, ROT_MODE_ARSTI
     jp nz, .norot
@@ -987,7 +1023,8 @@ FieldProcess::
     jr .trykickright
 
     ; T/L/J only kick if not through the middle axis.
-:   ld a, c
+.tljexceptions
+    ld a, c
     cp a, 1
     jp z, .maybetgm3rot
     cp a, 5
@@ -1083,6 +1120,7 @@ FieldProcess::
     cp a, PIECE_T
     jr nz, .checki
 
+.tkickup
     ldh a, [hCurrentPieceY]
     dec a
     ld b, a
@@ -1114,11 +1152,12 @@ FieldProcess::
     call SetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
     cp a, 0
-    jr nz, :+
+    jr nz, .tkickupalreadysetforce
     inc a
     ldh [hLockDelayForce], a
     jp .norot
-:   cp a, 1                  ; Or to 2 if it's 1.
+.tkickupalreadysetforce
+    cp a, 1                  ; Or to 2 if it's 1.
     jp nz, .norot
     inc a
     ldh [hLockDelayForce], a
@@ -1131,6 +1170,7 @@ FieldProcess::
     jp nz, .norot
 
     ; What direction do we want to end up?
+.ikicks
     ldh a, [hWantRotation]
     bit 0, a
     jp z, .tryiright2   ; Flat? Sideways kicks are fine.
@@ -1174,11 +1214,12 @@ FieldProcess::
     call SetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
     cp a, 0
-    jr nz, :+
+    jr nz, .ikickup1alreadysetforce
     inc a
     ldh [hLockDelayForce], a
     jp .norot
-:   cp a, 1                  ; Or to 2 if it's 1.
+.ikickup1alreadysetforce
+    cp a, 1                  ; Or to 2 if it's 1.
     jp nz, .norot
     inc a
     ldh [hLockDelayForce], a
@@ -1219,11 +1260,12 @@ FieldProcess::
     call SetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
     cp a, 0
-    jr nz, :+
+    jr nz, .ikickup2alreadysetforce
     inc a
     ldh [hLockDelayForce], a
     jp .norot
-:   cp a, 1                  ; Or to 2 if it's 1.
+.ikickup2alreadysetforce
+    cp a, 1                  ; Or to 2 if it's 1.
     jp nz, .norot
     inc a
     ldh [hLockDelayForce], a
@@ -1273,6 +1315,7 @@ FieldProcess::
     ; HANDLE MOVEMENT
     ; Do we want to move left?
 .norot
+.wantleft
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
@@ -1349,7 +1392,7 @@ FieldProcess::
     ; This little maneuver is going to cost us 51 years.
 .skipmovement
 .donemanipulating
-:   call FindMaxG
+    call FindMaxG
 
 
     ; **************************************************************
@@ -1379,10 +1422,11 @@ FieldProcess::
 .sonicdrop
     ld a, [wDropModeState]
     cp a, DROP_MODE_SNIC
-    jr z, :+
+    jr z, .sonicneutrallockskip
     ld a, $FF
     ldh [hShouldLockIfGrounded], a
-:   ld a, $FF
+.sonicneutrallockskip
+    ld a, $FF
     ldh [hAwardDownBonus], a
     ld a, 20
     ldh [hWantedG], a
@@ -1397,13 +1441,16 @@ FieldProcess::
     ld b, a
     ldh a, [hActualG]
     cp a, b
-    jr nc, :+
+    jr nc, .donedeterminingharddropdistance
     ld b, a
-:   ldh a, [hCurrentPieceY]
+.donedeterminingharddropdistance
+    ldh a, [hCurrentPieceY]
     add a, b
     ldh [hCurrentPieceY], a
     xor a, a
     ldh [hCurrentLockDelayRemaining], a
+    ld a, $FF
+    ldh [hGrounded], a
     ld a, SFX_LOCK
     call SFXTriggerNoise
     jp .draw
@@ -1412,7 +1459,7 @@ FieldProcess::
 .postdrop
     ldh a, [hDownState]
     cp a, 0
-    jr z, :+
+    jr z, .checkregulargravity
     ldh a, [hDownFrames]
     inc a
     ldh [hDownFrames], a
@@ -1420,20 +1467,22 @@ FieldProcess::
     ldh [hGravityCtr], a
     ld a, [wDropModeState]
     cp a, DROP_MODE_HARD
-    jr nz, :+
+    jr nz, .checkregulargravity
     ld a, $FF
     ldh [hShouldLockIfGrounded], a
 
     ; Gravity?
-:   ldh a, [hCurrentFractionalGravity]
+.checkregulargravity
+    ldh a, [hCurrentFractionalGravity]
     cp a, $00 ; 0 is the sentinel value that should be interpreted as "every frame"
-    jr z, :+
+    jr z, .alwaysgravitysentinel
     ld b, a
     ldh a, [hGravityCtr]
     add a, b
     ldh [hGravityCtr], a
     jr nc, .nograv
-:   ldh a, [hCurrentIntegerGravity]
+.alwaysgravitysentinel
+    ldh a, [hCurrentIntegerGravity]
     ldh [hWantedG], a
 
     ; Can we drop the full requested distance?
@@ -1502,7 +1551,7 @@ FieldProcess::
     cp a, 0
     jr nz, .postcheckforfirmdropsound ; Don't play the sound if we're holding down.
 
-    ; Play the firm drop sound, and also reset the lock delay since the piece stepped down.
+    ; Play the firm drop sound.
 .playfirmdropsound
     ld a, SFX_LAND
     call SFXTriggerNoise
@@ -1516,13 +1565,14 @@ FieldProcess::
     ; Don't lock on down for hard drop mode immediately.
     ld a, [wDropModeState]
     cp a, DROP_MODE_HARD
-    jr nz, :+
+    jr nz, .downlock20gexceptioncheck
     ld a, $FF
     ldh [hShouldLockIfGrounded], a
     jr .dontforcelock
 
     ; Lock on down in modes <20G.
-:   ldh a, [hCurrentIntegerGravity]
+.downlock20gexceptioncheck
+    ldh a, [hCurrentIntegerGravity]
     cp a, 20
     jr nz, .forcelock
 
@@ -1647,6 +1697,11 @@ FieldProcess::
     cp a, b
     jr z, .drawpiece
 
+    ; If we're not grounded, draw the piece normally.
+    ldh a, [hGrounded]
+    cp a, $FF
+    jr nz, .drawpiece
+
     ; If the lock delay is 0, draw the piece in the final color.
     ldh a, [hWantedTile]
     add a, 7
@@ -1654,14 +1709,6 @@ FieldProcess::
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
     jr z, .drawpiece
-
-    ; If we're not grounded, draw the piece normally.
-    ldh a, [hWantedTile]
-    sub a, 7
-    ldh [hWantedTile], a
-    ldh a, [hGrounded]
-    cp a, $FF
-    jr nz, .drawpiece
 
     ; Otherwise, look it up.
     call GetTileShade
@@ -1680,8 +1727,8 @@ FieldProcess::
     push de
     pop hl
     pop de
-    call DrawPiece
-    ret
+    jp DrawPiece
+
 
     ; Performs a lookup to see how "locked" the piece is.
 GetTileShade:
@@ -1693,7 +1740,7 @@ GetTileShade:
     cp a, 10
     jr nc, .max10
     jr .max0
-    ret
+
 .max30
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 4
@@ -1711,6 +1758,7 @@ GetTileShade:
     cp a, 28
     jr c, .s1
     jr .s0
+
 .max20
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 2
@@ -1728,6 +1776,7 @@ GetTileShade:
     cp a, 17
     jr c, .s1
     jr .s0
+
 .max10
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 1
@@ -1745,44 +1794,52 @@ GetTileShade:
     cp a, 8
     jr c, .s1
     jr .s0
+
 .max0
     jr .s4
+
 .s0
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s1
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(2*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s2
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(3*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s3
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(4*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s4
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(5*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s5
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(6*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s6
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(7*7)
@@ -1844,10 +1901,9 @@ FieldDelay::
     ldh [hRemainingDelay], a
     jp .preare
 
-
     ; Pre-line clear delay.
     ; If we had line clears, immediately hand out the score and the levels.
-.prelineclear:
+.prelineclear
     ld a, DELAY_STATE_LINE_CLEAR
     ld [wDelayState], a
 
@@ -1863,9 +1919,10 @@ FieldDelay::
     ldh a, [hLineClearCt]
     ld b, a
     ldh a, [hBravo]
-:   sub a, 10
+.bravodecloop
+    sub a, 10
     dec b
-    jr nz, :-
+    jr nz, .bravodecloop
     ldh [hBravo], a
 
     ; Increment the level counter by the amount of lines.
@@ -1931,10 +1988,11 @@ FieldDelay::
     ldh a, [hLineClearCt]
     dec a
     jr z, .combo
-:   add hl, bc
+.lineclearloop
+    add hl, bc
     jr c, .forcemax
     dec a
-    jr nz, :-
+    jr nz, .lineclearloop
     ld b, h
     ld c, l
 
@@ -1943,10 +2001,11 @@ FieldDelay::
     ldh a, [hComboCt]
     dec a
     jr z, .applyscore
-:   add hl, bc
+.comboloop
+    add hl, bc
     jr c, .forcemax
     dec a
-    jr nz, :-
+    jr nz, .comboloop
     jr .applyscore
 
     ; Overflow = 65535
@@ -1967,11 +2026,10 @@ FieldDelay::
     ldh a, [hLineClearCt]
     ld b, a
     ldh a, [hComboCt] ; Old combo count.
-    add b             ; + lines
-    add b             ; + lines
-    sub 2             ; - 2
+    add a, b          ; + lines
+    add a, b          ; + lines
+    sub a, 2          ; - 2
     ldh [hComboCt], a
-
 
     ; Line clear delay.
     ; Count down the delay. If we're out of delay, clear the lines and go to LINE_ARE.
@@ -1986,12 +2044,11 @@ FieldDelay::
     ld a, SFX_LINE_CLEAR
     call SFXTriggerNoise
 
-:   ldh a, [hCurrentLineARE]
+    ldh a, [hCurrentLineARE]
     ldh [hRemainingDelay], a
 
-
     ; Pre-ARE delay.
-.preare:
+.preare
     ld a, DELAY_STATE_ARE
     ld [wDelayState], a
 
@@ -2019,12 +2076,13 @@ FieldDelay::
     ; Add one level if we're not at a breakpoint.
     ldh a, [hRequiresLineClear]
     cp a, $FF
-    jr z, :+
+    jr z, .generatenextpiece
     ld e, 1
     call LevelUp
 
     ; Cycle the RNG.
-:   ldh a, [hNextPiece]
+.generatenextpiece
+    ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
 
@@ -2092,11 +2150,12 @@ MarkClear:
     cp a, $FF
     ret z
     ld hl, wField+(24*10)
-:   ld bc, -10
+.markclear1loop
+    ld bc, -10
     add hl, bc
     dec a
     cp a, $FF
-    jr nz, :-
+    jr nz, .markclear1loop
     ld bc, 10
     ld d, TILE_CLEARING
     call UnsafeMemSet
@@ -2105,11 +2164,12 @@ MarkClear:
     cp a, $FF
     ret z
     ld hl, wField+(24*10)
-:   ld bc, -10
+.markclear2loop
+    ld bc, -10
     add hl, bc
     dec a
     cp a, $FF
-    jr nz, :-
+    jr nz, .markclear2loop
     ld bc, 10
     ld d, TILE_CLEARING
     call UnsafeMemSet
@@ -2118,11 +2178,12 @@ MarkClear:
     cp a, $FF
     ret z
     ld hl, wField+(24*10)
-:   ld bc, -10
+.markclear3loop
+    ld bc, -10
     add hl, bc
     dec a
     cp a, $FF
-    jr nz, :-
+    jr nz, .markclear3loop
     ld bc, 10
     ld d, TILE_CLEARING
     call UnsafeMemSet
@@ -2131,11 +2192,12 @@ MarkClear:
     cp a, $FF
     ret z
     ld hl, wField+(24*10)
-:   ld bc, -10
+.markclear4loop
+    ld bc, -10
     add hl, bc
     dec a
     cp a, $FF
-    jr nz, :-
+    jr nz, .markclear4loop
     ld bc, 10
     ld d, TILE_CLEARING
     jp UnsafeMemSet
@@ -2212,15 +2274,16 @@ ClearLines:
     ; Make sure there's no garbage in the top de lines.
 .fixgarbo
     ld hl, wField
-:   xor a, a
+.fixgarboloop
+    xor a, a
     or a, d
     or a, e
     ret z
     ld a, TILE_FIELD_EMPTY
     ld [hl+], a
     dec de
-    jr :-
-    ret
+    jr .fixgarboloop
+
 
 
 SECTION "Field Function Banked Gameplay Big", ROMX, BANK[BANK_GAMEPLAY_BIG]
@@ -2366,15 +2429,16 @@ BigXYToSFieldPtr:
     ld de, 14
     inc a
     inc b
-:   dec b
-    jr z, :+
+.a
+    dec b
+    jr z, .b
     add hl, de
-    jr :-
-:   dec a
+    jr .a
+.b
+    dec a
     ret z
     inc hl
-    jr :-
-    ret
+    jr .b
 
 
     ; Converts piece Y in B and a piece X in A to a pointer to the field in HL.
@@ -2383,15 +2447,16 @@ BigXYToFieldPtr:
     ld de, 10
     inc a
     inc b
-:   dec b
-    jr z, :+
+.a
+    dec b
+    jr z, .b
     add hl, de
-    jr :-
-:   dec a
+    jr .a
+.b
+    dec a
     ret z
     inc hl
-    jr :-
-    ret
+    jr .b
 
 
     ; This function makes HL point to the correct offset into the rotation data.
@@ -2435,28 +2500,31 @@ BigCanPieceFit:
 
     ; Row 1
     bit 3, [hl]
-    jr z, :+
+    jr z, .skipr1a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr1a
+    inc de
     inc b
     bit 2, [hl]
-    jr z, :+
+    jr z, .skipr1b
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr1b
+    inc de
     inc b
     bit 1, [hl]
-    jr z, :+
+    jr z, .skipr1c
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr1c
+    inc de
     inc b
     bit 0, [hl]
     jr z, .r1end
@@ -2474,28 +2542,31 @@ BigCanPieceFit:
     inc b
     inc hl
     bit 3, [hl]
-    jr z, :+
+    jr z, .skipr2a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr2a
+    inc de
     inc b
     bit 2, [hl]
-    jr z, :+
+    jr z, .skipr2b
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr2b
+    inc de
     inc b
     bit 1, [hl]
-    jr z, :+
+    jr z, .skipr2c
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr2c
+    inc de
     inc b
     bit 0, [hl]
     jr z, .r2end
@@ -2513,28 +2584,31 @@ BigCanPieceFit:
     inc b
     inc hl
     bit 3, [hl]
-    jr z, :+
+    jr z, .skipr3a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr3a
+    inc de
     inc b
     bit 2, [hl]
-    jr z, :+
+    jr z, .skipr3b
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr3b
+    inc de
     inc b
     bit 1, [hl]
-    jr z, :+
+    jr z, .skipr3c
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr3c
+    inc de
     inc b
     bit 0, [hl]
     jr z, .r3end
@@ -2551,38 +2625,42 @@ BigCanPieceFit:
     inc b
     inc hl
     bit 3, [hl]
-    jr z, :+
+    jr z, .skipr4a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr4a
+    inc de
     inc b
     bit 2, [hl]
-    jr z, :+
+    jr z, .skipr4b
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr4b
+    inc de
     inc b
     bit 1, [hl]
-    jr z, :+
+    jr z, .skipr4c
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
-:   inc de
+.skipr4c
+    inc de
     inc b
     bit 0, [hl]
-    jr z, :+
+    jr z, .r4end
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
     ld a, b
     ret nz
 
     ; If we got here, the piece can fit.
-:   ld a, $FF
+.r4end
+    ld a, $FF
     ret
 
 
@@ -2600,10 +2678,11 @@ BigCanPieceFitFast:
     ld d, a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
-    jr z, :+
+    jr z, .skip1
     xor a, a
     ret
-:   ld a, [hl+]
+.skip1
+    ld a, [hl+]
     add a, e
     ld e, a
     adc a, d
@@ -2611,10 +2690,11 @@ BigCanPieceFitFast:
     ld d, a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
-    jr z, :+
+    jr z, .skip2
     xor a, a
     ret
-:   ld a, [hl+]
+.skip2
+    ld a, [hl+]
     add a, e
     ld e, a
     adc a, d
@@ -2622,10 +2702,11 @@ BigCanPieceFitFast:
     ld d, a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
-    jr z, :+
+    jr z, .skip3
     xor a, a
     ret
-:   ld a, [hl+]
+.skip3
+    ld a, [hl+]
     add a, e
     ld e, a
     adc a, d
@@ -2633,10 +2714,11 @@ BigCanPieceFitFast:
     ld d, a
     ld a, [de]
     cp a, TILE_FIELD_EMPTY
-    jr z, :+
+    jr z, .skip4
     xor a, a
     ret
-:   ld a, $FF
+.skip4
+    ld a, $FF
     ret
 
 
@@ -2714,7 +2796,7 @@ BigTrySpawnPiece::
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
-    call XYToSFieldPtr
+    call BigXYToSFieldPtr
     ld d, h
     ld e, l
     call BigGetPieceDataFast
@@ -2784,22 +2866,25 @@ BigDrawPiece:
     inc de
 
     bit 3, a
-    jr z, :+
+    jr z, .skipr1a
     ld [hl], b
-:   inc hl
+.skipr1a
+    inc hl
     bit 2, a
-    jr z, :+
+    jr z, .skipr1b
     ld [hl], b
-:   inc hl
+.skipr1b
+    inc hl
     bit 1, a
-    jr z, :+
+    jr z, .skipr1c
     ld [hl], b
-:   inc hl
+.skipr1c
+    inc hl
     bit 0, a
-    jr z, .r1end2
+    jr z, .r1end
     ld [hl], b
 
-.r1end2
+.r1end
     REPT 7
         inc hl
     ENDR
@@ -2807,22 +2892,25 @@ BigDrawPiece:
     inc de
 
     bit 3, a
-    jr z, :+
+    jr z, .skipr2a
     ld [hl], b
-:   inc hl
+.skipr2a
+    inc hl
     bit 2, a
-    jr z, :+
+    jr z, .skipr2b
     ld [hl], b
-:   inc hl
+.skipr2b
+    inc hl
     bit 1, a
-    jr z, :+
+    jr z, .skipr2c
     ld [hl], b
-:   inc hl
+.skipr2c
+    inc hl
     bit 0, a
-    jr z, .r2end2
+    jr z, .r2end
     ld [hl], b
 
-.r2end2
+.r2end
     REPT 7
         inc hl
     ENDR
@@ -2830,22 +2918,25 @@ BigDrawPiece:
     inc de
 
     bit 3, a
-    jr z, :+
+    jr z, .skipr3a
     ld [hl], b
-:   inc hl
+.skipr3a
+    inc hl
     bit 2, a
-    jr z, :+
+    jr z, .skipr3b
     ld [hl], b
-:   inc hl
+.skipr3b
+    inc hl
     bit 1, a
-    jr z, :+
+    jr z, .skipr3c
     ld [hl], b
-:   inc hl
+.skipr3c
+    inc hl
     bit 0, a
-    jr z, .r3end2
+    jr z, .r3end
     ld [hl], b
 
-.r3end2
+.r3end
     REPT 7
         inc hl
     ENDR
@@ -2853,17 +2944,20 @@ BigDrawPiece:
     inc de
 
     bit 3, a
-    jr z, :+
+    jr z, .skipr4a
     ld [hl], b
-:   inc hl
+.skipr4a
+    inc hl
     bit 2, a
-    jr z, :+
+    jr z, .skipr4b
     ld [hl], b
-:   inc hl
+.skipr4b
+    inc hl
     bit 1, a
-    jr z, :+
+    jr z, .skipr4c
     ld [hl], b
-:   inc hl
+.skipr4c
+    inc hl
     bit 0, a
     ret z
     ld [hl], b
@@ -3037,7 +3131,7 @@ BigFieldProcess::
 
     ; I piece only kicks in ARS2
     cp a, PIECE_I
-    jr nz, :+
+    jr nz, .tljexceptions
     ld a, [wRotModeState]
     cp a, ROT_MODE_ARSTI
     jp nz, .norot
@@ -3047,7 +3141,8 @@ BigFieldProcess::
     jr .trykickright
 
     ; T/L/J only kick if not through the middle axis.
-:   ld a, c
+.tljexceptions
+    ld a, c
     cp a, 1
     jp z, .maybetgm3rot
     cp a, 5
@@ -3143,6 +3238,7 @@ BigFieldProcess::
     cp a, PIECE_T
     jr nz, .checki
 
+.tkickup
     ldh a, [hCurrentPieceY]
     dec a
     ld b, a
@@ -3171,14 +3267,15 @@ BigFieldProcess::
     ldh [hCurrentPieceY], a
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
-    call SetPieceDataOffset
+    call BigSetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
     cp a, 0
-    jr nz, :+
+    jr nz, .tkickupalreadysetforce
     inc a
     ldh [hLockDelayForce], a
     jp .norot
-:   cp a, 1                  ; Or to 2 if it's 1.
+.tkickupalreadysetforce
+    cp a, 1                  ; Or to 2 if it's 1.
     jp nz, .norot
     inc a
     ldh [hLockDelayForce], a
@@ -3231,14 +3328,15 @@ BigFieldProcess::
     ldh [hCurrentPieceY], a
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
-    call SetPieceDataOffset
+    call BigSetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
     cp a, 0
-    jr nz, :+
+    jr nz, .ikick1upalreadysetforce
     inc a
     ldh [hLockDelayForce], a
     jp .norot
-:   cp a, 1                  ; Or to 2 if it's 1.
+.ikick1upalreadysetforce
+    cp a, 1                  ; Or to 2 if it's 1.
     jp nz, .norot
     inc a
     ldh [hLockDelayForce], a
@@ -3279,11 +3377,12 @@ BigFieldProcess::
     call BigSetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
     cp a, 0
-    jr nz, :+
+    jr nz, .ikick2upalreadysetforce
     inc a
     ldh [hLockDelayForce], a
     jp .norot
-:   cp a, 1                  ; Or to 2 if it's 1.
+.ikick2upalreadysetforce
+    cp a, 1                  ; Or to 2 if it's 1.
     jp nz, .norot
     inc a
     ldh [hLockDelayForce], a
@@ -3296,7 +3395,7 @@ BigFieldProcess::
     ldh a, [hCurrentPieceX]
     inc a
     inc a
-    call XYToSFieldPtr
+    call BigXYToSFieldPtr
     ld d, h
     ld e, l
     ldh a, [hPieceDataBaseFast]
@@ -3321,7 +3420,7 @@ BigFieldProcess::
     ldh [hCurrentPieceX], a
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
-    call SetPieceDataOffset
+    call BigSetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
     jp nz, .norot
@@ -3333,6 +3432,7 @@ BigFieldProcess::
     ; HANDLE MOVEMENT
     ; Do we want to move left?
 .norot
+.wantleft
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
@@ -3409,7 +3509,7 @@ BigFieldProcess::
     ; This little maneuver is going to cost us 51 years.
 .skipmovement
 .donemanipulating
-:   call BigFindMaxG
+    call BigFindMaxG
 
 
     ; **************************************************************
@@ -3439,10 +3539,11 @@ BigFieldProcess::
 .sonicdrop
     ld a, [wDropModeState]
     cp a, DROP_MODE_SNIC
-    jr z, :+
+    jr z, .sonicneutrallockskip
     ld a, $FF
     ldh [hShouldLockIfGrounded], a
-:   ld a, $FF
+.sonicneutrallockskip
+    ld a, $FF
     ldh [hAwardDownBonus], a
     ld a, 20
     ldh [hWantedG], a
@@ -3457,13 +3558,16 @@ BigFieldProcess::
     ld b, a
     ldh a, [hActualG]
     cp a, b
-    jr nc, :+
+    jr nc, .donedeterminingharddropdistance
     ld b, a
-:   ldh a, [hCurrentPieceY]
+.donedeterminingharddropdistance
+    ldh a, [hCurrentPieceY]
     add a, b
     ldh [hCurrentPieceY], a
     xor a, a
     ldh [hCurrentLockDelayRemaining], a
+    ld a, $FF
+    ldh [hGrounded], a
     ld a, SFX_LOCK
     call SFXTriggerNoise
     jp .draw
@@ -3472,7 +3576,7 @@ BigFieldProcess::
 .postdrop
     ldh a, [hDownState]
     cp a, 0
-    jr z, :+
+    jr z, .checkregulargravity
     ldh a, [hDownFrames]
     inc a
     ldh [hDownFrames], a
@@ -3480,20 +3584,22 @@ BigFieldProcess::
     ldh [hGravityCtr], a
     ld a, [wDropModeState]
     cp a, DROP_MODE_HARD
-    jr nz, :+
+    jr nz, .checkregulargravity
     ld a, $FF
     ldh [hShouldLockIfGrounded], a
 
     ; Gravity?
-:   ldh a, [hCurrentFractionalGravity]
+.checkregulargravity
+    ldh a, [hCurrentFractionalGravity]
     cp a, $00 ; 0 is the sentinel value that should be interpreted as "every frame"
-    jr z, :+
+    jr z, .alwaysgravitysentinel
     ld b, a
     ldh a, [hGravityCtr]
     add a, b
     ldh [hGravityCtr], a
     jr nc, .nograv
-:   ldh a, [hCurrentIntegerGravity]
+.alwaysgravitysentinel
+    ldh a, [hCurrentIntegerGravity]
     ldh [hWantedG], a
 
     ; Can we drop the full requested distance?
@@ -3562,7 +3668,7 @@ BigFieldProcess::
     cp a, 0
     jr nz, .postcheckforfirmdropsound ; Don't play the sound if we're holding down.
 
-    ; Play the firm drop sound, and also reset the lock delay since the piece stepped down.
+    ; Play the firm drop sound.
 .playfirmdropsound
     ld a, SFX_LAND
     call SFXTriggerNoise
@@ -3576,13 +3682,14 @@ BigFieldProcess::
     ; Don't lock on down for hard drop mode immediately.
     ld a, [wDropModeState]
     cp a, DROP_MODE_HARD
-    jr nz, :+
+    jr nz, .downlock20gexceptioncheck
     ld a, $FF
     ldh [hShouldLockIfGrounded], a
     jr .dontforcelock
 
     ; Lock on down in modes <20G.
-:   ldh a, [hCurrentIntegerGravity]
+.downlock20gexceptioncheck
+    ldh a, [hCurrentIntegerGravity]
     cp a, 20
     jr nz, .forcelock
 
@@ -3707,6 +3814,11 @@ BigFieldProcess::
     cp a, b
     jr z, .drawpiece
 
+    ; If we're not grounded, draw the piece normally.
+    ldh a, [hGrounded]
+    cp a, $FF
+    jr nz, .drawpiece
+
     ; If the lock delay is 0, draw the piece in the final color.
     ldh a, [hWantedTile]
     add a, 7
@@ -3714,14 +3826,6 @@ BigFieldProcess::
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
     jr z, .drawpiece
-
-    ; If we're not grounded, draw the piece normally.
-    ldh a, [hWantedTile]
-    sub a, 7
-    ldh [hWantedTile], a
-    ldh a, [hGrounded]
-    cp a, $FF
-    jr nz, .drawpiece
 
     ; Otherwise, look it up.
     call BigGetTileShade
@@ -3741,7 +3845,7 @@ BigFieldProcess::
     pop hl
     pop de
     call BigDrawPiece
-    jp WidenField
+    jp BigWidenField
 
 
     ; Performs a lookup to see how "locked" the piece is.
@@ -3754,7 +3858,7 @@ BigGetTileShade:
     cp a, 10
     jr nc, .max10
     jr .max0
-    ret
+
 .max30
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 4
@@ -3772,6 +3876,7 @@ BigGetTileShade:
     cp a, 28
     jr c, .s1
     jr .s0
+
 .max20
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 2
@@ -3789,6 +3894,7 @@ BigGetTileShade:
     cp a, 17
     jr c, .s1
     jr .s0
+
 .max10
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 1
@@ -3806,44 +3912,52 @@ BigGetTileShade:
     cp a, 8
     jr c, .s1
     jr .s0
+
 .max0
     jr .s4
+
 .s0
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s1
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(2*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s2
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(3*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s3
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(4*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s4
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(5*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s5
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(6*7)
     add a, b
     ldh [hWantedTile], a
     ret
+
 .s6
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0+(7*7)
@@ -3908,7 +4022,7 @@ BigFieldDelay::
 
     ; Pre-line clear delay.
     ; If we had line clears, immediately hand out the score and the levels.
-.prelineclear:
+.prelineclear
     ld a, DELAY_STATE_LINE_CLEAR
     ld [wDelayState], a
 
@@ -3924,9 +4038,10 @@ BigFieldDelay::
     ldh a, [hLineClearCt]
     ld b, a
     ldh a, [hBravo]
-:   sub a, 10
+.bravodecloop
+    sub a, 10
     dec b
-    jr nz, :-
+    jr nz, .bravodecloop
     ldh [hBravo], a
 
     ; Increment the level counter by the amount of lines.
@@ -3992,10 +4107,11 @@ BigFieldDelay::
     ldh a, [hLineClearCt]
     dec a
     jr z, .combo
-:   add hl, bc
+.linecleardecloop
+    add hl, bc
     jr c, .forcemax
     dec a
-    jr nz, :-
+    jr nz, .linecleardecloop
     ld b, h
     ld c, l
 
@@ -4004,10 +4120,11 @@ BigFieldDelay::
     ldh a, [hComboCt]
     dec a
     jr z, .applyscore
-:   add hl, bc
+.combodecloop
+    add hl, bc
     jr c, .forcemax
     dec a
-    jr nz, :-
+    jr nz, .combodecloop
     jr .applyscore
 
     ; Overflow = 65535
@@ -4028,9 +4145,9 @@ BigFieldDelay::
     ldh a, [hLineClearCt]
     ld b, a
     ldh a, [hComboCt] ; Old combo count.
-    add b             ; + lines
-    add b             ; + lines
-    sub 2             ; - 2
+    add a, b          ; + lines
+    add a, b          ; + lines
+    sub a, 2          ; - 2
     ldh [hComboCt], a
 
 
@@ -4041,18 +4158,18 @@ BigFieldDelay::
     dec a
     ldh [hRemainingDelay], a
     cp a, 0
-    jp nz, WidenField
+    jp nz, BigWidenField
 
     call BigClearLines
     ld a, SFX_LINE_CLEAR
     call SFXTriggerNoise
 
-:   ldh a, [hCurrentLineARE]
+    ldh a, [hCurrentLineARE]
     ldh [hRemainingDelay], a
 
 
     ; Pre-ARE delay.
-.preare:
+.preare
     ld a, DELAY_STATE_ARE
     ld [wDelayState], a
 
@@ -4075,17 +4192,18 @@ BigFieldDelay::
     dec a
     ldh [hRemainingDelay], a
     cp a, 0
-    jp nz, WidenField
+    jp nz, BigWidenField
 
     ; Add one level if we're not at a breakpoint.
     ldh a, [hRequiresLineClear]
     cp a, $FF
-    jr z, :+
+    jr z, .generatenextpiece
     ld e, 1
     call LevelUp
 
     ; Cycle the RNG.
-:   ldh a, [hNextPiece]
+.generatenextpiece
+    ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
 
@@ -4144,8 +4262,8 @@ BigFindClearedLines:
         DEF row -= 1
 .next\@
     ENDR
-
     ret
+
 
     ; Goes through the list of cleared lines and marks those lines with the "line clear" tile.
 BigMarkClear:
@@ -4153,11 +4271,12 @@ BigMarkClear:
     cp a, $FF
     ret z
     ld hl, wField+(14*10)
-:   ld bc, -10
+.markclear1loop
+    ld bc, -10
     add hl, bc
     dec a
     cp a, $FF
-    jr nz, :-
+    jr nz, .markclear1loop
     ld bc, 5
     ld d, TILE_CLEARING
     call UnsafeMemSet
@@ -4166,11 +4285,12 @@ BigMarkClear:
     cp a, $FF
     ret z
     ld hl, wField+(14*10)
-:   ld bc, -10
+.markclear2loop
+    ld bc, -10
     add hl, bc
     dec a
     cp a, $FF
-    jr nz, :-
+    jr nz, .markclear2loop
     ld bc, 5
     ld d, TILE_CLEARING
     call UnsafeMemSet
@@ -4179,11 +4299,12 @@ BigMarkClear:
     cp a, $FF
     ret z
     ld hl, wField+(14*10)
-:   ld bc, -10
+.markclear3loop
+    ld bc, -10
     add hl, bc
     dec a
     cp a, $FF
-    jr nz, :-
+    jr nz, .markclear3loop
     ld bc, 5
     ld d, TILE_CLEARING
     call UnsafeMemSet
@@ -4192,11 +4313,12 @@ BigMarkClear:
     cp a, $FF
     ret z
     ld hl, wField+(14*10)
-:   ld bc, -10
+.markclear4loop
+    ld bc, -10
     add hl, bc
     dec a
     cp a, $FF
-    jr nz, :-
+    jr nz, .markclear4loop
     ld bc, 5
     ld d, TILE_CLEARING
     jp UnsafeMemSet
@@ -4273,7 +4395,8 @@ BigClearLines:
     ; Make sure there's no garbage in the top de lines.
 .fixgarbo
     ld hl, wField
-:   xor a, a
+.fixgarboloop
+    xor a, a
     or a, d
     or a, e
     ret z
@@ -4299,11 +4422,10 @@ BigClearLines:
     dec de
     dec de
     dec de
-    jr :-
-    ret
+    jr .fixgarboloop
 
 
-WidenField::
+BigWidenField::
     ld de, wField+(4*10)
     ld hl, wWideField
     ld bc, 5

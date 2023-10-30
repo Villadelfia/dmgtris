@@ -92,6 +92,16 @@ Main::
     ld bc, sTilesEnd - sTiles
     call SafeMemCopy
 
+    ; GBC uses a few different tiles.
+    ld a, [wInitialA]
+    cp a, $11
+    jr nz, .nocolortiles
+    ld de, sColorTiles
+    ld hl, _VRAM + (TILE_PIECE_0 * 16)
+    ld bc, sColorTilesEnd - sColorTiles
+    call SafeMemCopy
+.nocolortiles
+
     ; Clear OAM.
     call ClearOAM
     call SetNumberSpritePositions

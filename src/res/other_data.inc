@@ -22,7 +22,7 @@ DEF TILES_INC EQU 1
 INCLUDE "globals.asm"
 
 
-SECTION "Tile data", ROMX, BANK[BANK_OTHER]
+SECTION "Static Global data", ROMX, BANK[BANK_OTHER]
 ; Speed curve data is defined as follows:
 ; N blocks of:
 ;   dw BCD_START_LEVEL, START_LEVEL, BCD_NEXT_100_LEVEL_BREAKPOINT
@@ -1139,6 +1139,121 @@ sTiles::
     DB $00,$00,$00,$00,$00,$00,$00,$00
     DB $0A,$0A,$04,$04,$0A,$0A,$00,$00
 sTilesEnd::
+
+sColorTiles::
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$7E,$81,$00,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$7E,$81,$00,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$7E,$81,$00,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$7E,$81,$00,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$7E,$81,$00,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$7E,$81,$00,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$7E,$81,$00,$FF,$00,$00
+    DB $01,$FF,$7F,$81,$7F,$81,$7F,$81
+    DB $7F,$81,$7F,$81,$7F,$FF,$00,$00
+    DB $01,$FF,$7F,$81,$7F,$81,$7F,$81
+    DB $7F,$81,$7F,$81,$7F,$FF,$00,$00
+    DB $01,$FF,$7F,$81,$7F,$81,$7F,$81
+    DB $7F,$81,$7F,$81,$7F,$FF,$00,$00
+    DB $01,$FF,$7F,$81,$7F,$81,$7F,$81
+    DB $7F,$81,$7F,$81,$7F,$FF,$00,$00
+    DB $01,$FF,$7F,$81,$7F,$81,$7F,$81
+    DB $7F,$81,$7F,$81,$7F,$FF,$00,$00
+    DB $01,$FF,$7F,$81,$7F,$81,$7F,$81
+    DB $7F,$81,$7F,$81,$7F,$FF,$00,$00
+    DB $01,$FF,$7F,$81,$7F,$81,$7F,$81
+    DB $7F,$81,$7F,$81,$7F,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$FE,$AB,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$FE,$AB,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$FE,$AB,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$FE,$AB,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$FE,$AB,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$FE,$AB,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $7E,$81,$FE,$AB,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $FE,$AB,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $FE,$AB,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $FE,$AB,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $FE,$AB,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $FE,$AB,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $FE,$AB,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$7E,$81
+    DB $FE,$AB,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$FE,$AB
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$FE,$AB
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$FE,$AB
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$FE,$AB
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$FE,$AB
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$FE,$AB
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$7E,$81,$FE,$AB
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$FE,$AB,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$FE,$AB,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$FE,$AB,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$FE,$AB,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$FE,$AB,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$FE,$AB,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$7E,$81,$FE,$AB,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$FE,$AB,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$FE,$AB,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$FE,$AB,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$FE,$AB,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$FE,$AB,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$FE,$AB,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $00,$FF,$FE,$AB,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $AA,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $AA,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $AA,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $AA,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $AA,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $AA,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+    DB $AA,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    DB $FF,$FF,$FF,$FF,$FF,$FF,$00,$00
+sColorTilesEnd::
 
 
 ENDC

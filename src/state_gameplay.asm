@@ -120,6 +120,7 @@ SwitchToGameplayB:
     call ScoreInit
     call LevelInit
     call FieldInit
+    call GradeInit
 
     ; We don't start with hold spent.
     xor a, a
@@ -517,6 +518,7 @@ GamePlayEventLoopHandlerB::
     call ScoreInit
     call LevelInit
     call FieldInit
+    call GradeInit
     xor a, a
     ldh [hHoldSpent], a
     ld a, MODE_LEADY
@@ -738,6 +740,7 @@ SwitchToGameplayBigB:
     call ScoreInit
     call LevelInit
     call BigFieldInit
+    call GradeInit
 
     ; We don't start with hold spent.
     xor a, a
@@ -1133,6 +1136,7 @@ GamePlayBigEventLoopHandlerB:
     call ScoreInit
     call LevelInit
     call BigFieldInit
+    call GradeInit
     xor a, a
     ldh [hHoldSpent], a
     ld a, MODE_LEADY

@@ -56,6 +56,8 @@ wSPRModeRNG::  ds 4
 wSPRModeRot::  ds 4
 wSPRModeDrop:: ds 4
 wSPRModeHiG::  ds 4
+wGrade0::      ds 4
+wGrade1::      ds 4
 wUnused0::     ds 4
 wUnused1::     ds 4
 wUnused2::     ds 4
@@ -64,8 +66,6 @@ wUnused4::     ds 4
 wUnused5::     ds 4
 wUnused6::     ds 4
 wUnused7::     ds 4
-wUnused8::     ds 4
-wUnused9::     ds 4
 ENDU
 
 
@@ -263,7 +263,7 @@ ApplyNext::
     ld [wSPRQueue2A+2], a
     inc a
     ld [wSPRQueue2B+2], a
-    ret
+    jp GradeRendering
 
 
     ; Draws the held piece.
@@ -601,6 +601,65 @@ SetNumberSpritePositions::
     inc hl
     ld a, OAMF_PAL1 | $07
     ld [hl], a
+    ret
+
+GradeRendering::
+    ; Set the Y position of the grade objects.
+    ld a, $17
+    ld [wGrade0], a
+    ld [wGrade1], a
+
+    ; Set the X position of the grade objects.
+    ld a, $91
+    ld [wGrade0+1], a
+    add a, $8
+    ld [wGrade1+1], a
+
+    ; Set the palette of the grade objects.
+    ld a, $7
+    ld [wGrade0+3], a
+    ld [wGrade1+3], a
+
+    ; Set the grades to blank
+    ld a, $1
+    ld [wGrade0+2], a
+    ld [wGrade1+2], a
+
+    ; Is the grade S1 or better?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_S1
+    jr nc, .sgrade
+
+.regulargrade
+    ; Draw as a regular grade.
+    ld b, a
+    ld a, "9"
+    sub a, b
+    ld [wGrade1+2], a
+    ret
+
+.sgrade
+    ; Is the grade a GM?
+    cp a, GRADE_GM
+    jr z, .gmgrade
+
+    ; Draw as S grade.
+    ld a, "S"
+    ld [wGrade0+2], a
+    ld a, [wDisplayedGrade]
+    sub a, GRADE_S1
+    ld b, a
+    ld a, "1"
+    add a, b
+    ld [wGrade1+2], a
+    ret
+
+.gmgrade
+    ; Draw as GM grade.
+    ld a, "G"
+    ld [wGrade0+2], a
+    ld a, "M"
+    ld [wGrade1+2], a
     ret
 
 

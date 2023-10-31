@@ -2055,6 +2055,9 @@ FieldDelay::
     ; Copy over the newly cleaned field.
     call ToShadowField
 
+    ; Rank checks.
+    call UpdateGrade
+
     ; Don't do anything if there were line clears
     ldh a, [hLineClearCt]
     cp a, 0
@@ -4175,6 +4178,9 @@ BigFieldDelay::
 
     ; Copy over the newly cleaned field.
     call BigToShadowField
+
+    ; Rank checks.
+    call UpdateGrade
 
     ; Don't do anything if there were line clears
     ldh a, [hLineClearCt]

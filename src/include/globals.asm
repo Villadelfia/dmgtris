@@ -304,4 +304,25 @@ DEF EASTER_1            EQU $9865
 ; Magic location for bank id.
 DEF rBANKID             EQU $4007
 
+; Grade names.
+DEF GRADE_9             EQU 0
+DEF GRADE_8             EQU 1
+DEF GRADE_7             EQU 2
+DEF GRADE_6             EQU 3
+DEF GRADE_5             EQU 4
+DEF GRADE_4             EQU 5
+DEF GRADE_3             EQU 6
+DEF GRADE_2             EQU 7
+DEF GRADE_1             EQU 8
+DEF GRADE_S1            EQU 9
+DEF GRADE_S2            EQU 10
+DEF GRADE_S3            EQU 11
+DEF GRADE_S4            EQU 12
+DEF GRADE_S5            EQU 13
+DEF GRADE_S6            EQU 14
+DEF GRADE_S7            EQU 15
+DEF GRADE_S8            EQU 16
+DEF GRADE_S9            EQU 17
+DEF GRADE_GM            EQU 18
+
 ENDC

@@ -19,45 +19,6 @@ IF !DEF(SFX_ASM)
 DEF SFX_ASM EQU 1
 
 
-DEF REG_NR10_CH1_SWEEP EQU $10
-DEF REG_NR11_CH1_LENDT EQU $11
-DEF REG_NR12_CH1_VOLEV EQU $12
-DEF REG_NR13_CH1_FRQLO EQU $13
-DEF REG_NR14_CH1_FRQHI EQU $14
-DEF REG_NR21_CH2_LENDT EQU $16
-DEF REG_NR22_CH2_VOLEV EQU $17
-DEF REG_NR23_CH2_FRQLO EQU $18
-DEF REG_NR24_CH2_FRQHI EQU $19
-DEF REG_NR30_CH3_DACEN EQU $1A
-DEF REG_NR31_CH3_LENGT EQU $1B
-DEF REG_NR32_CH3_VOLUM EQU $1C
-DEF REG_NR33_CH3_FRQLO EQU $1D
-DEF REG_NR34_CH3_FRQHI EQU $1E
-DEF REG_NR41_CH4_LENGT EQU $20
-DEF REG_NR42_CH4_VOLEV EQU $21
-DEF REG_NR43_CH4_FQRND EQU $22
-DEF REG_NR44_CH4_CNTRL EQU $23
-DEF REG_NR50_MVOLVINPN EQU $24
-DEF REG_NR51_MASTERPAN EQU $25
-DEF REG_NR52_MASTERCTL EQU $26
-DEF REG_WAVE_PATTERN_0 EQU $30
-DEF REG_WAVE_PATTERN_1 EQU $31
-DEF REG_WAVE_PATTERN_2 EQU $32
-DEF REG_WAVE_PATTERN_3 EQU $33
-DEF REG_WAVE_PATTERN_4 EQU $34
-DEF REG_WAVE_PATTERN_5 EQU $35
-DEF REG_WAVE_PATTERN_6 EQU $36
-DEF REG_WAVE_PATTERN_7 EQU $37
-DEF REG_WAVE_PATTERN_8 EQU $38
-DEF REG_WAVE_PATTERN_9 EQU $39
-DEF REG_WAVE_PATTERN_A EQU $3A
-DEF REG_WAVE_PATTERN_B EQU $3B
-DEF REG_WAVE_PATTERN_C EQU $3C
-DEF REG_WAVE_PATTERN_D EQU $3D
-DEF REG_WAVE_PATTERN_E EQU $3E
-DEF REG_WAVE_PATTERN_F EQU $3F
-
-
 INCLUDE "globals.asm"
 INCLUDE "res/sfx_data.inc"
 INCLUDE "res/music_data.inc"
@@ -65,6 +26,7 @@ INCLUDE "res/music_data.inc"
 
 SECTION "High SFX Variables", HRAM
 hPlayhead:: ds 2
+hCurrentlyPlaying:: ds 1
 hPlayQueue:: ds 4
 hNoisePlayhead:: ds 2
 
@@ -85,6 +47,7 @@ SFXInit::
     ldh [hPlayQueue+1], a
     ldh [hPlayQueue+2], a
     ldh [hPlayQueue+3], a
+    ldh [hCurrentlyPlaying], a
     xor a, a
     ldh [hPlayhead], a
     ldh [hPlayhead+1], a
@@ -137,7 +100,10 @@ SFXProcessQueue:
     jr SFXEnqueue
 
     ; Try 4 times to pop a sound effect off the queue.
-:   call SFXPopQueue
+:   ld a, $FF
+    ldh [hCurrentlyPlaying], a
+
+    call SFXPopQueue
     cp a, $FF
     jr nz, :+
     call SFXPopQueue
@@ -183,19 +149,28 @@ SFXTriggerNoise::
 
     ; Attempt to play the sound effect in A. Will enqueue the sound effect if the play routine is currently busy.
 SFXEnqueue::
-    ; If the playhead isn't null, then we're already playing something.
+    ; If we're playing the grade up sound, it has absolute prio.
     ld b, a
+    ldh a, [hCurrentlyPlaying]
+    cp a, SFX_RANKUP
+    ret z
+
+    ; If the playhead isn't null, then we're already playing something.
     ldh a, [hPlayhead]
     ld l, a
     ldh a, [hPlayhead+1]
     ld h, a
     or a, l
-    jr z, :+
+    jr z, .findsfx
     ld a, b
     jr SFXPushQueue
 
+.findsfx
+    ld a, b
+    ldh [hCurrentlyPlaying], a
+
     ; Menu music
-:   ld a, b
+    ld a, b
     cp a, MUSIC_MENU
     jr nz, :+
     ldh [hPlayQueue], a
@@ -385,6 +360,12 @@ SFXEnqueue::
 
     ; Kill the non-noise sound and clear the queue.
 SFXKill::
+    ; If we're playing the grade up sound, it has absolute prio and cannot be killed.
+    ld b, a
+    ldh a, [hCurrentlyPlaying]
+    cp a, SFX_RANKUP
+    ret z
+
     ; Kill all sound without pops.
     ld a, %00111111
     ldh [rNR11], a

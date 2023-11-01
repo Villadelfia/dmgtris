@@ -194,7 +194,7 @@ LevelUp::
     ld a, h
     ldh [hLevel+1], a
     call DoSpeedUp
-    ld a, SFX_RANKUP
+    ld a, SFX_RANKGM
     jp SFXEnqueue
 
 .checknlevel

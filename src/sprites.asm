@@ -678,9 +678,6 @@ GradeRendering::
     ret
 
 .mgrade
-    ; Is the grade a GM?
-    cp a, GRADE_GM
-    jr z, .gmgrade
     
     ; Is the grade M or better?
     cp a, GRADE_M
@@ -698,9 +695,6 @@ GradeRendering::
     ret
 
 .Mastergrade
-    ; Is the grade a GM?
-    cp a, GRADE_GM
-    jr z, .gmgrade
 
     ; Draw as Master grade.
     ld a, "M"

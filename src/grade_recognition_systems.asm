@@ -34,7 +34,7 @@ wPalette::        ds 1
 
 SECTION "Grading Data", ROM0
 ; The Score Thresholds are 1/4th of the original ones
-sGradeScores:
+sTGM1GradeScores:
     dw $0001 ;00 — 8
     dw $0002 ;00 — 7
     dw $0003 ;00 — 6
@@ -53,7 +53,7 @@ sGradeScores:
     dw $0250 ;00 — S8
     dw $0300 ;00 — S9
 ; Man..., the TGM3 Grade system is really complex...
-sInternalGradeSystem:
+sTGM3InternalGradeSystem:
     db 125, 10, 20, 40, 50 ;Decay rate, (Internal grade points awarded for:) Single, Double, Triple, Tetris
     db 80, 10, 20, 30, 40
     db 80, 10, 20, 30, 40
@@ -87,7 +87,7 @@ sInternalGradeSystem:
     db 10, 2, 12, 13, 30
     db 10, 2, 12, 13, 30
 
-sGradeBoosts:
+sTGM3GradeBoosts:
     ;This should explain itself
     db 0
     db 1
@@ -120,7 +120,7 @@ sGradeBoosts:
     db 16 
     db 16 
     db 17
-sComboMultipliers:
+sTGM3ComboMultipliers:
     db 1, 1, 1, 1, 1 ; Combo size, (Multiplier for: ) Single, Double, Triple, Tetris
     db 2, 1, 1.2, 1.4, 1.5
     db 3, 1, 1.2, 1.5, 1.8
@@ -131,12 +131,12 @@ sComboMultipliers:
     db 8, 1, 1.5, 2, 2.5
     db 9, 1, 1.5, 2.1, 2.6
     db 10, 2, 2.5, 3
-sLevelMultiplier:
+sTGM3LevelMultiplier:
     db 1 ; 000-249
     db 2 ; 250-499
     db 3 ; 500-749
     db 4 ; 750-999
-sBaselineCOOL:
+sTGM3BaselineCOOL:
     db 52 ;070 (value in seconds)
     db 52 ;170
     db 49 ;270
@@ -146,17 +146,17 @@ sBaselineCOOL:
     db 42 ;670
     db 38 ;770
     db 38 ;870
-sREGRETConditions:
+sTGM3REGRETConditions:
     db 1, 30 ;minutes, seconds
     db 1, 15
     db 1, 15 
     db 1, 8 
     db 1, 0
     db 1, 0 
-    db 50 ;seconds
-    db 50 
-    db 50 
-    db 50
+    db 0, 50 
+    db 0, 50 
+    db 0, 50 
+    db 0, 50
 
 SECTION "Grading Functions", ROM0
     ; Wipe the grading variables.
@@ -169,30 +169,27 @@ GradeInit::
     ld a, $7
     ld [wPalette], a
     jp UpdateGrade
-    ret
 
 
     ; Gets the highest grade the player qualifies for.
-UpdateGrade::
+UpdateGradeTGM1::
     ; Is the Speed Curve Death or Shirase?
     ld hl, .GradeJumps
     ld a, [wSpeedCurveState]
-    sub a, $3
-    cp a, $3
-    jp nc, .Normal
+    ld b, a
+    add a, b
+    add a, b
     ld b, 0
-    cp a, $1
-    jr c, :+
-    inc a
-    inc a
-:   cp a, $4
-    jr nc, .Normal
-    ld c, a
+    ld c,  a
     add hl, bc
     jp hl
 .GradeJumps
-    jp Death
-    jp Shirase
+    jp UpdateGradeTGM1 ;DMGT
+    jp UpdateGradeTGM1 ;TGM1
+    jp UpdateGradeTGM1 ;TGM3
+    jp Death           ;DEAT
+    jp Shirase         ;SHIR
+    jp UpdateGradeTGM1 ;CHIL
 .Normal
     ; Skip to GM check if past S9.
     ld a, [wDisplayedGrade]
@@ -260,7 +257,7 @@ UpdateGrade::
     jr .trygradeup
 
 
-CheckForGM:
+CheckForTGM1GM:
     ; Grade has to be S9.
     ld a, [wDisplayedGrade]
     cp a, GRADE_S9

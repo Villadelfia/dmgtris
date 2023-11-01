@@ -2065,7 +2065,7 @@ FieldDelay::
     call ToShadowField
 
     ; Rank checks.
-    call UpdateGrade
+    call UpdateGradeTGM1
 
     ; Don't do anything if there were line clears
     ldh a, [hLineClearCt]
@@ -4193,7 +4193,7 @@ BigFieldDelay::
     call BigToShadowField
 
     ; Rank checks.
-    call UpdateGrade
+    call UpdateGradeTGM1
 
     ; Don't do anything if there were line clears
     ldh a, [hLineClearCt]

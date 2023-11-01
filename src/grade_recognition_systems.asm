@@ -88,6 +88,7 @@ sInternalGradeSystem:
     db 10, 2, 12, 13, 30
 
 sGradeBoosts:
+    ;This should explain itself
     db 0
     db 1
     db 2

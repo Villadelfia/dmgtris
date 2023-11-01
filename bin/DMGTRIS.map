@@ -357,7 +357,7 @@ ROMX bank #1:
 
 ROMX bank #2:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_SFX"]
-	SECTION: $4008-$6c16 ($2c0f bytes) ["SFX Data"]
+	SECTION: $4008-$6b58 ($2b51 bytes) ["SFX Data"]
 	         $4008 = sSFXPieceI
 	         $4325 = sSFXPieceZ
 	         $4325 = sSFXPieceIEnd
@@ -399,15 +399,15 @@ ROMX bank #2:
 	         $5fcd = sSFXRankUpEnd
 	         $673b = sSFXRankGM
 	         $673b = sSFXReadyGoEnd
-	         $6b80 = sSFXLineClear
-	         $6b80 = sSFXRankGMEnd
-	         $6b96 = sSFXLand
-	         $6b96 = sSFXLineClearEnd
-	         $6ba1 = sSFXLock
-	         $6ba1 = sSFXLandEnd
-	         $6c17 = sSFXLockEnd
-	EMPTY: $6c17-$7fff ($13e9 bytes)
-	TOTAL EMPTY: $13e9 bytes
+	         $6ac2 = sSFXLineClear
+	         $6ac2 = sSFXRankGMEnd
+	         $6ad8 = sSFXLand
+	         $6ad8 = sSFXLineClearEnd
+	         $6ae3 = sSFXLock
+	         $6ae3 = sSFXLandEnd
+	         $6b59 = sSFXLockEnd
+	EMPTY: $6b59-$7fff ($14a7 bytes)
+	TOTAL EMPTY: $14a7 bytes
 
 ROMX bank #3:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_MUSIC"]
@@ -2308,7 +2308,7 @@ HRAM bank #0:
 
 SUMMARY:
 	ROM0: 9162 bytes used / 7222 free
-	ROMX: 49929 bytes used / 48375 free in 6 banks
+	ROMX: 49739 bytes used / 48565 free in 6 banks
 	SRAM: 14 bytes used / 8178 free in 1 bank
 	WRAM0: 3489 bytes used / 607 free
 	HRAM: 121 bytes used / 6 free

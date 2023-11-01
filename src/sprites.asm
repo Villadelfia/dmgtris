@@ -629,22 +629,24 @@ GradeRendering::
     ; And check if the palette is 7, too.
     ld a, [wEffectTimer]
     cp a, $0
-    jr z, :+
+    jr z, .CheckPal
     dec a
     ld [wEffectTimer], a
-:   ld a, [wPalette]
+.CheckPal
+    ld a, [wPalette]
     cp a, $7
-    jr z, :+
+    jr z, .Continue
     ld a, [wEffectTimer]
     cp a, 0
-    jr nz, :+
+    jr nz, .Continue
     ld a, [wPalette]
     inc a
     ld [wPalette], a
     ld a, $f
     ld [wEffectTimer], a
 
-:   ; Is the grade S1 or better?
+.Continue   
+    ; Is the grade S1 or better?
     ld a, [wDisplayedGrade]
     cp a, GRADE_S1
     jr nc, .sgrade

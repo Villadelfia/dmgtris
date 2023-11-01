@@ -208,7 +208,7 @@ UpdateGradeTGM1::
     ld e, a
 
     ; Have HL point to the next required score and get it into DE.
-    ld hl, sGradeScores
+    ld hl, sTGM1GradeScores
     add hl, de
 
     ; LSB

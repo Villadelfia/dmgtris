@@ -187,7 +187,7 @@ IncreaseScore::
     ; If it has, reset the score.
     xor a, a
     ldh [hScore], a
-    ld a, SFX_RANKUP
+    ld a, SFX_RANKGM
     jp SFXEnqueue
 
 

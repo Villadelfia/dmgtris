@@ -154,6 +154,8 @@ SFXEnqueue::
     ldh a, [hCurrentlyPlaying]
     cp a, SFX_RANKUP
     ret z
+    cp a, SFX_RANKGM
+    ret z
 
     ; If the playhead isn't null, then we're already playing something.
     ldh a, [hPlayhead]
@@ -331,7 +333,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXLevelLock)
     ldh [hPlayhead+1], a
-    jr SFXPlay
+    jp SFXPlay
 
 :   cp a, SFX_LEVELUP
     jr nz, :+
@@ -350,6 +352,14 @@ SFXEnqueue::
     ldh [hPlayhead+1], a
     jr SFXPlay
 
+:   cp a, SFX_RANKGM
+    jr nz, :+
+    ld a, LOW(sSFXRankGM)
+    ldh [hPlayhead], a
+    ld a, HIGH(sSFXRankGM)
+    ldh [hPlayhead+1], a
+    jr SFXPlay
+
 :   cp a, SFX_READYGO
     ret nz
     ld a, LOW(sSFXReadyGo)
@@ -364,6 +374,8 @@ SFXKill::
     ld b, a
     ldh a, [hCurrentlyPlaying]
     cp a, SFX_RANKUP
+    ret z
+    cp a, SFX_RANKGM
     ret z
 
     ; Kill all sound without pops.

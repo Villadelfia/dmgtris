@@ -199,6 +199,7 @@ DEF SFX_LEVELLOCK       EQU 14
 DEF SFX_LEVELUP         EQU 15
 DEF SFX_RANKUP          EQU 16
 DEF SFX_READYGO         EQU 17
+DEF SFX_RANKGM          EQU 18
 DEF MUSIC_MENU          EQU $EE
 
 ; Tile data offsets

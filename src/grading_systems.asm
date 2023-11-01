@@ -140,7 +140,7 @@ CheckForGM:
     ld [wDisplayedGrade], a
 
     ; Sound effect
-    ld a, SFX_RANKUP
+    ld a, SFX_RANKGM
     jp SFXEnqueue
 
 

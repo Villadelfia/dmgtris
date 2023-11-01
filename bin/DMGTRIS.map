@@ -411,11 +411,11 @@ ROMX bank #2:
 
 ROMX bank #3:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_MUSIC"]
-	SECTION: $4008-$681a ($2813 bytes) ["Music Data"]
+	SECTION: $4008-$6ac0 ($2ab9 bytes) ["Music Data"]
 	         $4008 = sMusicMenu
-	         $681b = sMusicMenuEnd
-	EMPTY: $681b-$7fff ($17e5 bytes)
-	TOTAL EMPTY: $17e5 bytes
+	         $6ac1 = sMusicMenuEnd
+	EMPTY: $6ac1-$7fff ($153f bytes)
+	TOTAL EMPTY: $153f bytes
 
 ROMX bank #4:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_TITLE"]
@@ -2308,7 +2308,7 @@ HRAM bank #0:
 
 SUMMARY:
 	ROM0: 9162 bytes used / 7222 free
-	ROMX: 49739 bytes used / 48565 free in 6 banks
+	ROMX: 50417 bytes used / 47887 free in 6 banks
 	SRAM: 14 bytes used / 8178 free in 1 bank
 	WRAM0: 3489 bytes used / 607 free
 	HRAM: 121 bytes used / 6 free

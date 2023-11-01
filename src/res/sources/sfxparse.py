@@ -188,6 +188,7 @@ sfx_names = [
     "sSFXLevelUp",
     "sSFXRankUp",
     "sSFXReadyGo",
+    "sSFXRankGM"
 ]
 
 def chunks(lst, n):

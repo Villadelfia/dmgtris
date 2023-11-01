@@ -168,7 +168,7 @@ GradeInit::
     ld [wDisplayedGrade], a
     ld a, $7
     ld [wPalette], a
-    jp UpdateGrade
+    jp UpdateGradeTGM1
 
 
     ; Gets the highest grade the player qualifies for.
@@ -195,7 +195,7 @@ UpdateGradeTGM1::
     ld a, [wDisplayedGrade]
     cp a, GRADE_S9
     jr c, .trygradeup
-    jr CheckForGM
+    jr CheckForTGM1GM
 
 .trygradeup
     ; Get our score into BC

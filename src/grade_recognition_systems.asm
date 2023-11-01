@@ -273,7 +273,7 @@ CheckForTGM1GM:
     ld [wDisplayedGrade], a
 
     ; Sound effect
-    ld a, SFX_RANKUP
+    ld a, SFX_RANKGM
     jp SFXEnqueue
 
     ; Prepare the effect stuff
@@ -308,7 +308,7 @@ Death:
     ld a, [wDisplayedGrade]
     cp a, GRADE_M
     ; If so, skip to the GM check
-    jr z, :+
+    jr nc, .CheckModeCompletion
     ld a, GRADE_M
     ld [wDisplayedGrade], a
     ; Play the jingle.
@@ -319,8 +319,9 @@ Death:
     ld [wEffectTimer], a
     xor a, a
     ld [wPalette], a
+.CheckModeCompletion
     ; Check if the player finished the mode
-:   ld a, [hCLevel]
+    ld a, [hCLevel]
     cp a, 1
     ret c
     ; If so, award the GM grade too
@@ -336,7 +337,7 @@ Death:
     xor a, a
     ld [wPalette], a
     ; Play the jingle.
-    ld a, SFX_RANKUP
+    ld a, SFX_RANKGM
     call SFXEnqueue
     ret
 

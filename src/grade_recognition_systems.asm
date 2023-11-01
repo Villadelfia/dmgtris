@@ -33,25 +33,25 @@ wPalette::        ds 1
 
 
 SECTION "Grading Data", ROM0
-; The Score Thresholds are 1/4th of the original ones
+; The Score Thresholds are 3/4th of the original ones (original value/4*3)
 sTGM1GradeScores:
-    dw $0001 ;00 — 8
-    dw $0002 ;00 — 7
-    dw $0003 ;00 — 6
-    dw $0005 ;00 — 5
-    dw $0007 ;00 — 4
-    dw $0013 ;00 — 3
-    dw $0020 ;00 — 2
-    dw $0030 ;00 — 1
-    dw $0040 ;00 — S1
-    dw $0055 ;00 — S2
-    dw $0075 ;00 — S3
-    dw $0100 ;00 — S4
-    dw $0130 ;00 — S5
-    dw $0165 ;00 — S6
-    dw $0205 ;00 — S7
-    dw $0250 ;00 — S8
-    dw $0300 ;00 — S9
+    dw $0003 ;00 — 8
+    dw $0006 ;00 — 7
+    dw $0009 ;00 — 6
+    dw $0015 ;00 — 5
+    dw $0021 ;00 — 4
+    dw $0039 ;00 — 3
+    dw $0060 ;00 — 2
+    dw $0090 ;00 — 1
+    dw $0120 ;00 — S1
+    dw $0165 ;00 — S2
+    dw $0225 ;00 — S3
+    dw $0300 ;00 — S4
+    dw $0390 ;00 — S5
+    dw $0495 ;00 — S6
+    dw $0615 ;00 — S7
+    dw $0750 ;00 — S8
+    dw $0900 ;00 — S9
 ; Man..., the TGM3 Grade system is really complex...
 sTGM3InternalGradeSystem:
     db 125, 10, 20, 40, 50 ;Decay rate, (Internal grade points awarded for:) Single, Double, Triple, Tetris
@@ -184,12 +184,12 @@ UpdateGradeTGM1::
     add hl, bc
     jp hl
 .GradeJumps
-    jp UpdateGradeTGM1 ;DMGT
-    jp UpdateGradeTGM1 ;TGM1
-    jp UpdateGradeTGM1 ;TGM3
+    jp .Normal         ;DMGT
+    jp .Normal         ;TGM1
+    jp .Normal         ;TGM3
     jp Death           ;DEAT
     jp Shirase         ;SHIR
-    jp UpdateGradeTGM1 ;CHIL
+    jp .Normal         ;CHIL
 .Normal
     ; Skip to GM check if past S9.
     ld a, [wDisplayedGrade]
@@ -299,16 +299,15 @@ PrepareScore:
     ret
 
 Death:
-    ; Check if the player is halfway through the mode
+    ; Check if the player is halfway through the mode, make sure the player hasn't completed the mode already
+    ld a, [hCLevel]
+    cp a, $1
+    jr z, .AwardGM
     ld a, [hCLevel+1]
     cp a, 5
+    jr nc, .AwardM
     ret c
-    ; If so, award the M grade
-    ; WAIT!, is the player already an M Grade?
-    ld a, [wDisplayedGrade]
-    cp a, GRADE_M
-    ; If so, skip to the GM check
-    jr nc, .CheckModeCompletion
+.AwardM
     ld a, GRADE_M
     ld [wDisplayedGrade], a
     ; Play the jingle.
@@ -319,13 +318,9 @@ Death:
     ld [wEffectTimer], a
     xor a, a
     ld [wPalette], a
-.CheckModeCompletion
-    ; Check if the player finished the mode
-    ld a, [hCLevel]
-    cp a, 1
-    ret c
-    ; If so, award the GM grade too
-    ; WAIT!, is the player a GM too?
+    ret
+.AwardGM
+    ; WAIT!, is the player a GM?
     cp a, GRADE_GM
     ; If so, just return
     ret z

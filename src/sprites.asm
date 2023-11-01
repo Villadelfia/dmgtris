@@ -616,7 +616,7 @@ GradeRendering::
     ld [wGrade1+1], a
 
     ; Set the palette of the grade objects.
-    ld a, $7
+    ld a, [wPalette]
     ld [wGrade0+3], a
     ld [wGrade1+3], a
 
@@ -625,7 +625,26 @@ GradeRendering::
     ld [wGrade0+2], a
     ld [wGrade1+2], a
 
-    ; Is the grade S1 or better?
+    ; If the effect timer is something higher than 0, decrease it, if it is 0, make it $1e and increase the palette value
+    ; And check if the palette is 7, too.
+    ld a, [wEffectTimer]
+    cp a, $0
+    jr z, :+
+    dec a
+    ld [wEffectTimer], a
+:   ld a, [wPalette]
+    cp a, $7
+    jr z, :+
+    ld a, [wEffectTimer]
+    cp a, 0
+    jr nz, :+
+    ld a, [wPalette]
+    inc a
+    ld [wPalette], a
+    ld a, $f
+    ld [wEffectTimer], a
+
+:   ; Is the grade S1 or better?
     ld a, [wDisplayedGrade]
     cp a, GRADE_S1
     jr nc, .sgrade
@@ -642,6 +661,10 @@ GradeRendering::
     ; Is the grade a GM?
     cp a, GRADE_GM
     jr z, .gmgrade
+    
+    ; Is the grade m1 or better?
+    cp a, GRADE_M1
+    jr nc, .mgrade
 
     ; Draw as S grade.
     ld a, "S"
@@ -651,6 +674,63 @@ GradeRendering::
     ld b, a
     ld a, "1"
     add a, b
+    ld [wGrade1+2], a
+    ret
+
+.mgrade
+    ; Is the grade a GM?
+    cp a, GRADE_GM
+    jr z, .gmgrade
+    
+    ; Is the grade M or better?
+    cp a, GRADE_M
+    jr nc, .Mastergrade
+
+    ; Draw as M grade.
+    ld a, "M"
+    ld [wGrade0+2], a
+    ld a, [wDisplayedGrade]
+    sub a, GRADE_M1
+    ld b, a
+    ld a, "1"
+    add a, b
+    ld [wGrade1+2], a
+    ret
+
+.Mastergrade
+    ; Is the grade a GM?
+    cp a, GRADE_GM
+    jr z, .gmgrade
+
+    ; Draw as Master grade.
+    ld a, "M"
+    ld [wGrade0+2], a
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_MK
+    jr nc, .k
+    ld a, $1
+    ld [wGrade1+2], a
+    ret
+.k
+    cp a, GRADE_MV
+    jr nc, .v
+    ld a, "K"
+    ld [wGrade1+2], a
+    ret
+.v
+    cp a, GRADE_MO
+    jr nc, .o
+    ld a, "V"
+    ld [wGrade1+2], a
+    ret
+.o
+    cp a, GRADE_MM
+    jr nc, .m
+    ld a, "O"
+    ld [wGrade1+2], a
+    ret
+.m
+    ld a, "M"
     ld [wGrade1+2], a
     ret
 

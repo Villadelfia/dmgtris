@@ -138,6 +138,7 @@ Thanks for playtesting and debugging go to:
 - CreeperCraftYT™
 - AntonErgo
 - Lindtobias
+- \_Zaphod77\_
 
 
 ## License

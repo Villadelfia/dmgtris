@@ -115,7 +115,7 @@ ToATTR::
     ldh [rHDMA3], a
     ld a, LOW($9800)
     ldh [rHDMA4], a
-    ld a, 40
+    ld a, 41
     ldh [rHDMA5], a
     ld a, 0
     ldh [rVBK], a
@@ -221,7 +221,7 @@ GBCGameplayInit::
     ld bc, 32*32
     call UnsafeMemCopy
 
-    ; Copy set attrs to pal 7 and copy to shadow.
+    ; Set attrs to pal 7 and copy to shadow.
     ld a, 1
     ldh [rVBK], a
     ld d, $07
@@ -251,8 +251,8 @@ GBCTitleProcess::
     ld bc, 32
     call UnsafeMemSet
     ld d, $07
-    ld hl, wShadowTileAttrs+32
-    ld bc, (19*32)
+    ld hl, wShadowTileAttrs
+    ld bc, (32*32)
     call UnsafeMemSet
 
     ; Palette for the title?
@@ -272,14 +272,14 @@ GBCTitleProcess::
     ; Set the palette for the title.
     ld a, [wTitlePal]
     ld d, a
-    ld hl, wShadowTileAttrs + (2*32)
+    ld hl, wShadowTileAttrs + (3*32)
     ld bc, (4*32)
     call UnsafeMemSet
 
     ; And the selected row.
     ld a, [wSelected]
     inc a
-    ld hl, wShadowTileAttrs + (5*32)
+    ld hl, wShadowTileAttrs + (6*32)
     ld bc, 64
 :   add hl, bc
     dec a
@@ -346,39 +346,58 @@ GBCGameplayProcess::
     ld a, $05
     ld d, a
 
+
 .colorfield
-    ld hl, wShadowTileAttrs
-    ld bc, 32-12
+    ld a, d
+    DEF row = 0
+    REPT 21
+        ld hl, wShadowTileAttrs+(row*32)+10
+        ld [hl], a
+        ld hl, wShadowTileAttrs+(row*32)+19
+        ld [hl], a
+        DEF row += 1
+    ENDR
 
-    ld a, 21
-    ld [wOuterReps], a
-.outer0
-    ld a, 12
-    ld [wInnerReps], a
-.inner0
-    ld [hl], d
-    inc hl
-    ld a, [wInnerReps]
-    dec a
-    ld [wInnerReps], a
-    jr nz, .inner0
+    ld hl, wShadowTileAttrs+203
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl], a
 
-    add hl, bc
-    ld a, [wOuterReps]
-    dec a
-    ld [wOuterReps], a
-    jr nz, .outer0
+    ld hl, wShadowTileAttrs+395
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl], a
+
+    ld hl, wShadowTileAttrs+491
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl], a
 
 
     ; What to copy
-:   ld de, wField + 40
+:   ld de, wField + 30
     ; Where to put it
-    ld hl, wShadowTilemap + 1
+    ld hl, wShadowTilemap
     ; How much to increment hl after each row
     ld bc, 32-10
 
     ; Blit me up daddy.
-    ld a, 20
+    ld a, 21
     ld [wOuterReps], a
 .outer1
     ld a, 10
@@ -400,14 +419,14 @@ GBCGameplayProcess::
 
 
     ; What to copy
-    ld de, wField + 40
+    ld de, wField + 30
     ; Where to put it
-    ld hl, wShadowTileAttrs + 1
+    ld hl, wShadowTileAttrs
     ; How much to increment hl after each row
     ld bc, 32-10
 
     ; Blit me up daddy.
-    ld a, 20
+    ld a, 21
     ld [wOuterReps], a
 .outer2
     ld a, 10
@@ -564,38 +583,56 @@ GBCBigGameplayProcess::
     ld d, a
 
 .colorfield
-    ld hl, wShadowTileAttrs
-    ld bc, 32-12
+    ld a, d
+    DEF row = 0
+    REPT 21
+        ld hl, wShadowTileAttrs+(row*32)+10
+        ld [hl], a
+        ld hl, wShadowTileAttrs+(row*32)+19
+        ld [hl], a
+        DEF row += 1
+    ENDR
 
-    ld a, 21
-    ld [wOuterReps], a
-.outer0
-    ld a, 12
-    ld [wInnerReps], a
-.inner0
-    ld [hl], d
-    inc hl
-    ld a, [wInnerReps]
-    dec a
-    ld [wInnerReps], a
-    jr nz, .inner0
+    ld hl, wShadowTileAttrs+203
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl], a
 
-    add hl, bc
-    ld a, [wOuterReps]
-    dec a
-    ld [wOuterReps], a
-    jr nz, .outer0
+    ld hl, wShadowTileAttrs+395
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl], a
+
+    ld hl, wShadowTileAttrs+491
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl+], a
+    ld [hl], a
 
 
     ; What to copy
-:   ld de, wWideBlittedField
+:   ld de, wWideBlittedField+10
     ; Where to put it
-    ld hl, wShadowTilemap + 1
+    ld hl, wShadowTilemap
     ; How much to increment hl after each row
     ld bc, 32-10
 
     ; Blit me up daddy.
-    ld a, 20
+    ld a, 21
     ld [wOuterReps], a
 .outer1
     ld a, 10
@@ -617,14 +654,14 @@ GBCBigGameplayProcess::
 
 
     ; What to copy
-    ld de, wWideBlittedField
+    ld de, wWideBlittedField+10
     ; Where to put it
-    ld hl, wShadowTileAttrs + 1
+    ld hl, wShadowTileAttrs
     ; How much to increment hl after each row
     ld bc, 32-10
 
     ; Blit me up daddy.
-    ld a, 20
+    ld a, 21
     ld [wOuterReps], a
 .outer2
     ld a, 10
@@ -740,7 +777,7 @@ ToVRAM::
     ldh [rHDMA3], a
     ld a, LOW($9800)
     ldh [rHDMA4], a
-    ld a, 40
+    ld a, 41
     ldh [rHDMA5], a
 
     ; Bank 0
@@ -754,7 +791,7 @@ ToVRAM::
     ldh [rHDMA3], a
     ld a, LOW($9800)
     ldh [rHDMA4], a
-    ld a, 39 | $80
+    ld a, 41 | $80
     ldh [rHDMA5], a
     jp EventLoop
 

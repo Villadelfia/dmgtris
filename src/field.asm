@@ -32,9 +32,10 @@ DEF DELAY_STATE_PRE_ARE         EQU 4
 SECTION "Field Variables", WRAM0
 wField:: ds (10*24)
 wBackupField:: ds (10*24)
+wPreShadowField:: ds (14*2)
 wShadowField:: ds (14*26)
-wWideField:: ds (5*10)
-wWideBlittedField:: ds (20*10)
+wWideField:: ds (5*11)
+wWideBlittedField:: ds (22*10)
 wDelayState: ds 1
 
 
@@ -73,7 +74,7 @@ BlitField::
     jp z, GBCBlitField
 
     ; What to copy
-    ld de, wField + 40
+    ld de, wField + 30
     ; Where to put it
     ld hl, FIELD_TOP_LEFT
     ; How much to increment hl after each row
@@ -95,13 +96,13 @@ BlitField::
     jr nz, .waitendvbloop
 
     ; The last 6 rows need some care.
-    REPT 6
+    REPT 7
         ; Wait until start of drawing, then insert 35 nops.
 :       ldh a, [rSTAT]
         and a, 3
         cp a, 3
         jr nz, :-
-        REPT 35
+        REPT 38
             nop
         ENDR
 
@@ -130,7 +131,7 @@ BigBlitField::
     jp z, GBCBlitField
 
     ; What to copy
-    ld de, wWideBlittedField
+    ld de, wWideBlittedField+10
     ; Where to put it
     ld hl, FIELD_TOP_LEFT
     ; How much to increment hl after each row
@@ -152,13 +153,13 @@ BigBlitField::
     jr nz, .waitendvbloop
 
     ; The last 6 rows need some care.
-    REPT 6
+    REPT 7
         ; Wait until start of drawing, then insert 35 nops.
 :       ldh a, [rSTAT]
         and a, 3
         cp a, 3
         jr nz, :-
-        REPT 35
+        REPT 38
             nop
         ENDR
 
@@ -195,6 +196,10 @@ FieldInit::
     call UnsafeMemSet
     ld hl, wShadowField
     ld bc, 14*26
+    ld d, $FF
+    jp UnsafeMemSet
+    ld hl, wPreShadowField
+    ld bc, 14*2
     ld d, $FF
     jp UnsafeMemSet
 
@@ -892,8 +897,6 @@ FieldProcess::
     call FromShadowField
 
     ; Cleanup from last frame.
-    ldh a, [hCurrentPieceX]
-    ldh [hWantX], a
     ldh a, [hCurrentPieceRotationState]
     ldh [hWantRotation], a
 
@@ -1028,7 +1031,7 @@ FieldProcess::
     cp a, 1
     jp z, .maybetgm3rot
     cp a, 5
-    jr z, .maybetgm3rot
+    jp z, .maybetgm3rot
     cp a, 9
     jr z, .maybetgm3rot
 
@@ -1075,6 +1078,8 @@ FieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
+    cp a, 0
+    jr z, .maybetgm3rot
     dec a
     call XYToSFieldPtr
     ld d, h
@@ -1315,22 +1320,19 @@ FieldProcess::
     ; HANDLE MOVEMENT
     ; Do we want to move left?
 .norot
+    ldh a, [hCurrentPieceX]
+    ldh [hWantX], a
+
 .wantleft
+    ldh a, [hCurrentPieceX]
+    cp a, 0
+    jr z, .wantright
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
     cp a, 0             ; We never want to move if the button wasn't held.
     jr z, .wantright
     ld b, a
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 20            ; No increased DAS at 20G.
-    jr z, .checkdasleft
-    ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
-    cp a, $FF
-    jr nz, .checkdasleft
-    inc b
-    ld a, b
-    ldh [hLeftState], a
 .checkdasleft
     ldh a, [hCurrentDAS]
     ld c, a
@@ -1351,15 +1353,6 @@ FieldProcess::
     cp a, 0             ; We never want to move if the button wasn't held.
     jr z, .donemanipulating
     ld b, a
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 20            ; No increased DAS at 20G.
-    jr z, .checkdasright
-    ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
-    cp a, $FF
-    jr nz, .checkdasright
-    inc b
-    ld a, b
-    ldh [hRightState], a
 .checkdasright
     ldh a, [hCurrentDAS]
     ld c, a
@@ -1851,7 +1844,23 @@ GetTileShade:
     ; This is called every frame after a piece has been locked until the delay state ends.
     ; Lines are cleared, levels and score are awarded, and ARE time is waited out.
 FieldDelay::
+    ; In delay state, DAS increments double speed.
+.incl
+    ldh a, [hLeftState]
+    cp a, 0
+    jr z, .incr
+    inc a
+    ldh [hLeftState], a
+
+.incr
+    ldh a, [hRightState]
+    cp a, 0
+    jr z, .noinc
+    inc a
+    ldh [hRightState], a
+
     ; Switch on the delay state.
+.noinc
     ld a, [wDelayState]
     cp DELAY_STATE_DETERMINE_DELAY
     jr z, .determine
@@ -2211,7 +2220,7 @@ ClearLines:
     ld de, 0
 
     DEF row = 23
-    REPT 23
+    REPT 24
         ; Check if the row begins with a clearing tile.
         ld hl, wField+(row*10)
         ld a, [hl]
@@ -2304,7 +2313,7 @@ BigFieldInit::
     ld d, TILE_BLANK
     call UnsafeMemSet
     ld hl, wWideBlittedField
-    ld bc, 10*20
+    ld bc, 10*22
     ld d, TILE_BLANK
     call UnsafeMemSet
     ld hl, wShadowField
@@ -3013,8 +3022,6 @@ BigFieldProcess::
     call BigFromShadowField
 
     ; Cleanup from last frame.
-    ldh a, [hCurrentPieceX]
-    ldh [hWantX], a
     ldh a, [hCurrentPieceRotationState]
     ldh [hWantRotation], a
 
@@ -3149,7 +3156,7 @@ BigFieldProcess::
     cp a, 1
     jp z, .maybetgm3rot
     cp a, 5
-    jr z, .maybetgm3rot
+    jp z, .maybetgm3rot
     cp a, 9
     jr z, .maybetgm3rot
 
@@ -3196,6 +3203,8 @@ BigFieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
+    cp a, 0
+    jr z, .maybetgm3rot
     dec a
     call BigXYToSFieldPtr
     ld d, h
@@ -3435,22 +3444,19 @@ BigFieldProcess::
     ; HANDLE MOVEMENT
     ; Do we want to move left?
 .norot
+    ldh a, [hCurrentPieceX]
+    ldh [hWantX], a
+
 .wantleft
+    ldh a, [hCurrentPieceX]
+    cp a, 0
+    jr z, .wantright
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
     cp a, 0             ; We never want to move if the button wasn't held.
     jr z, .wantright
     ld b, a
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 20            ; No increased DAS at 20G.
-    jr z, .checkdasleft
-    ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
-    cp a, $FF
-    jr nz, .checkdasleft
-    inc b
-    ld a, b
-    ldh [hLeftState], a
 .checkdasleft
     ldh a, [hCurrentDAS]
     ld c, a
@@ -3471,15 +3477,6 @@ BigFieldProcess::
     cp a, 0             ; We never want to move if the button wasn't held.
     jr z, .donemanipulating
     ld b, a
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 20            ; No increased DAS at 20G.
-    jr z, .checkdasright
-    ldh a, [hGrounded]  ; If we're grounded, assume some urgency in getting DAS charged, charge at twice the rate.
-    cp a, $FF
-    jr nz, .checkdasright
-    inc b
-    ld a, b
-    ldh [hRightState], a
 .checkdasright
     ldh a, [hCurrentDAS]
     ld c, a
@@ -3972,7 +3969,23 @@ BigGetTileShade:
     ; This is called every frame after a piece has been locked until the delay state ends.
     ; Lines are cleared, levels and score are awarded, and ARE time is waited out.
 BigFieldDelay::
+    ; In delay state, DAS increments double speed.
+.incl
+    ldh a, [hLeftState]
+    cp a, 0
+    jr z, .incr
+    inc a
+    ldh [hLeftState], a
+
+.incr
+    ldh a, [hRightState]
+    cp a, 0
+    jr z, .noinc
+    inc a
+    ldh [hRightState], a
+
     ; Switch on the delay state.
+.noinc
     ld a, [wDelayState]
     cp DELAY_STATE_DETERMINE_DELAY
     jr z, .determine
@@ -4432,49 +4445,53 @@ BigClearLines:
 
 
 BigWidenField::
-    ld de, wField+(4*10)
+    ld de, wField+(3*10)
     ld hl, wWideField
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(5*10)
+    ld de, wField+(4*10)
     ld hl, wWideField+5
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(6*10)
+    ld de, wField+(5*10)
     ld hl, wWideField+10
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(7*10)
+    ld de, wField+(6*10)
     ld hl, wWideField+15
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(8*10)
+    ld de, wField+(7*10)
     ld hl, wWideField+20
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(9*10)
+    ld de, wField+(8*10)
     ld hl, wWideField+25
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(10*10)
+    ld de, wField+(9*10)
     ld hl, wWideField+30
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(11*10)
+    ld de, wField+(10*10)
     ld hl, wWideField+35
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(12*10)
+    ld de, wField+(11*10)
     ld hl, wWideField+40
     ld bc, 5
     call UnsafeMemCopy
-    ld de, wField+(13*10)
+    ld de, wField+(12*10)
     ld hl, wWideField+45
+    ld bc, 5
+    call UnsafeMemCopy
+    ld de, wField+(13*10)
+    ld hl, wWideField+50
     ld bc, 5
     call UnsafeMemCopy
 
     DEF piece = 0
-    REPT 50
+    REPT 55
         ld a, [wWideField+piece]
         ld hl, wWideBlittedField+((piece/5)*20)+((piece%5) * 2)
         ld [hl+], a

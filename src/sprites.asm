@@ -605,12 +605,12 @@ SetNumberSpritePositions::
 
 GradeRendering::
     ; Set the Y position of the grade objects.
-    ld a, $17
+    ld a, GRADE_BASE_Y
     ld [wGrade0], a
     ld [wGrade1], a
 
     ; Set the X position of the grade objects.
-    ld a, $91
+    ld a, GRADE_BASE_X
     ld [wGrade0+1], a
     add a, $8
     ld [wGrade1+1], a

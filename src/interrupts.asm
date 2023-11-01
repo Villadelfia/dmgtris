@@ -22,6 +22,10 @@ DEF INTERRUPTS_ASM EQU 1
 INCLUDE "globals.asm"
 
 
+DEF INIT_SCY EQU 3
+DEF INIT_LYC EQU 3
+
+
 SECTION "High Interrupt Variables", HRAM
 hLCDCCtr:: ds 1
 
@@ -37,9 +41,9 @@ IntrInit::
 InitializeLCDCInterrupt::
     ld a, STATF_LYC
     ldh [rSTAT], a
-    ld a, 6
+    ld a, INIT_LYC
     ldh [rLYC], a
-    ld a, 0
+    ld a, INIT_SCY
     ldh [rSCY], a
     ld a, IEF_STAT
     ldh [rIE], a
@@ -72,19 +76,14 @@ LCDCInterrupt_WaitUntilNotBusy:
     ldh [rLYC], a
 
     ; Check our interrupt counter
-    ldh a, [hLCDCCtr]
-    cp 21
-    jr nz, LCDCInterrupt_End
-    ld a, 255
-    ldh [hLCDCCtr], a
-    ld a, 6
+    cp a, 144
+    jr c, LCDCInterrupt_End
+    ld a, INIT_LYC
     ldh [rLYC], a
-    ld a, 0
+    ld a, INIT_SCY
     ldh [rSCY], a
 
 LCDCInterrupt_End:
-    inc a
-    ldh [hLCDCCtr], a
     pop hl
     pop af
     reti

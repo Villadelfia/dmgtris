@@ -413,8 +413,8 @@ GamePlayEventLoopHandlerB::
 
     ; Draw the field in grey.
     ; Yes. This really unrolls the loop that many times.
-    ld hl, wField+(4*10)
-    REPT 60
+    ld hl, wField+(3*10)
+    REPT 70
         ld a, [hl]
         cp a, TILE_FIELD_EMPTY
         jr nz, .notempty1\@
@@ -558,12 +558,16 @@ GamePlayEventLoopHandlerB::
     call FromBackupField
     ldh a, [hPrePause]
     ldh [hMode], a
-    jr .drawStaticInfo
+    jp .drawStaticInfo
 
     ; Draw PAUSE all over the field.
 .nounpause
     ld de, sPause
     ld hl, wField+(4*10)
+    ld bc, 20
+    call UnsafeMemCopy
+    ld de, sPause
+    ld hl, wField+(2*10)
     ld bc, 20
     call UnsafeMemCopy
     ld de, sPause
@@ -1110,7 +1114,7 @@ GamePlayBigEventLoopHandlerB:
 .skip6\@
         DEF off += 1
     ENDR
-    REPT 90
+    REPT 110
     ld a, [hl]
     cp a, TILE_FIELD_EMPTY
     jr nz, .notempty7\@

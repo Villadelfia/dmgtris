@@ -225,6 +225,7 @@ GamePlayEventLoopHandlerB::
     ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
+    call ResetGameTime
     jp .drawStaticInfo
 
 
@@ -848,6 +849,7 @@ GamePlayBigEventLoopHandlerB:
     ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
+    call ResetGameTime
     jp .drawStaticInfo
 
 

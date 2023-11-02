@@ -615,20 +615,44 @@ GradeRendering::
     add a, $8
     ld [wGrade1+1], a
 
-    ; Set the palette of the grade objects.
-    ld a, $7
-    ld [wGrade0+3], a
-    ld [wGrade1+3], a
-
     ; Set the grades to blank
-    ld a, $1
+    ld a, TILE_BLANK
     ld [wGrade0+2], a
     ld [wGrade1+2], a
 
-    ; Is the grade S1 or better?
+    ; If our grade is GRADE_NONE, we don't need to do anything else.
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_NONE
+    ret z
+
+    ; If the effect timer is greater than 0, decrement it and do some palette magic.
+    ld a, [wEffectTimer]
+    cp a, 0
+    jr z, .noeffect
+    dec a
+    ld [wEffectTimer], a
+
+    ; Cycle the palette of the grade objects.
+.effect
+    ld a, [wGrade0+3]
+    inc a
+    and a, OAMF_PALMASK
+    or a, OAMF_PAL1
+    ld [wGrade0+3], a
+    ld [wGrade1+3], a
+    jr .drawgrade
+
+    ; Set the palette of the grade objects to the normal palette.
+.noeffect
+    ld a, 7 | OAMF_PAL1
+    ld [wGrade0+3], a
+    ld [wGrade1+3], a
+
+    ; Do we draw this as a regular grade?
+.drawgrade
     ld a, [wDisplayedGrade]
     cp a, GRADE_S1
-    jr nc, .sgrade
+    jr nc, .sgrade ; No. S or better.
 
 .regulargrade
     ; Draw as a regular grade.
@@ -639,9 +663,9 @@ GradeRendering::
     ret
 
 .sgrade
-    ; Is the grade a GM?
-    cp a, GRADE_GM
-    jr z, .gmgrade
+    ; Is the grade M1 or better?
+    cp a, GRADE_M1
+    jr nc, .mgrade
 
     ; Draw as S grade.
     ld a, "S"
@@ -651,6 +675,63 @@ GradeRendering::
     ld b, a
     ld a, "1"
     add a, b
+    ld [wGrade1+2], a
+    ret
+
+.mgrade
+    ; Is the grade one of the letter grades?
+    cp a, GRADE_M
+    jr nc, .lettergrade
+
+    ; Draw as M grade.
+    ld a, "M"
+    ld [wGrade0+2], a
+    ld a, [wDisplayedGrade]
+    sub a, GRADE_M1
+    ld b, a
+    ld a, "1"
+    add a, b
+    ld [wGrade1+2], a
+    ret
+
+.lettergrade
+    ; Is the grade GM?
+    cp a, GRADE_GM
+    jr z, .gmgrade
+
+    ; Draw as MX grade.
+    ld a, "M"
+    ld [wGrade0+2], a
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_M
+    ret z ; No second letter for M.
+
+    ; Otherwise jump to the right letter.
+    cp a, GRADE_MK
+    jr z, .mk
+    cp a, GRADE_MV
+    jr z, .mv
+    cp a, GRADE_MO
+    jr z, .mo
+    jr .mm
+
+.mk
+    ld a, "K"
+    ld [wGrade1+2], a
+    ret
+
+.mv
+    ld a, "V"
+    ld [wGrade1+2], a
+    ret
+
+.mo
+    ld a, "O"
+    ld [wGrade1+2], a
+    ret
+
+.mm
+    ld a, "M"
     ld [wGrade1+2], a
     ret
 

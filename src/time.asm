@@ -49,11 +49,44 @@ TimeInit::
 
 
     ; Resets the minute-second timer.
-ResetTime::
+ResetGameTime::
     xor a, a
     ld [wMinutes], a
     ld [wSeconds], a
     ld [wFrames], a
+    ret
+
+    ; Checks if the minute-second timer has reached a certain value.
+    ; Call with max minutes in B and max seconds in C.
+    ; A will be $FF if the torikan has succeeded, and $00 otherwise.
+CheckTorikan::
+    ; Okay if minutes are less than max minutes.
+    ld a, [wMinutes]
+    cp a, b
+    jr c, .success
+
+    ; Check seconds if minutes are equal.
+    jr nz, .failure
+
+    ; Okay if seconds are less than max seconds.
+    ld a, [wSeconds]
+    cp a, c
+    jr c, .success
+
+    ; Check frames if seconds are equal.
+    jr nz, .failure
+
+    ; Okay if frames are exactly 0.
+    ld a, [wFrames]
+    cp a, 0
+    jr z, .success
+
+.failure
+    xor a, a
+    ret
+
+.success
+    ld a, $FF
     ret
 
 

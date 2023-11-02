@@ -439,6 +439,7 @@ UpdateGradeSHIR:
     ld a, [wDisplayedGrade]
     cp a, b
     ret z ; If the grade is already correct, return.
+    ld a, b
     ld [wDisplayedGrade], a ; Otherwise, set the grade.
 
     ; Play the jingle.

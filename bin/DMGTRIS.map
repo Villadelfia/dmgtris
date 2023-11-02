@@ -242,7 +242,7 @@ ROM0 bank #0:
 	         $1fcf = !3
 	         $1fe0 = !4
 	         $1fed = DoSpeedUp
-	SECTION: $202e-$21a2 ($0175 bytes) ["Grading Functions"]
+	SECTION: $202e-$21a3 ($0176 bytes) ["Grading Functions"]
 	         $202e = GradeInit
 	         $204f = GradeInit.notdeat
 	         $205d = GradeInit.notshir
@@ -259,113 +259,113 @@ ROM0 bank #0:
 	         $2119 = UpdateGradeDEAT.notm
 	         $2139 = UpdateGradeDEAT.disqualify
 	         $213f = UpdateGradeSHIR
-	         $217e = UpdateGradeSHIR.s5torikan
-	         $218e = UpdateGradeSHIR.s10torikan
-	         $219d = UpdateGradeSHIR.disqualify
-	SECTION: $21a3-$22a4 ($0102 bytes) ["Grading Data"]
-	         $21a3 = sTGM1GradeScores
-	         $21c5 = sTGM3InternalGradeSystem
-	         $2265 = sTGM3GradeBoosts
-	         $2284 = sTGM3LevelMultiplier
-	         $2288 = sTGM3BaselineCOOL
-	         $2291 = sTGM3REGRETConditions
-	SECTION: $22a5-$2371 ($00cd bytes) ["Input Functions"]
-	         $22a5 = InputInit
-	         $22b7 = GetInput
-	         $22b7 = GetInput.btns
-	         $22c4 = GetInput.readA
-	         $22c8 = GetInput.setA
-	         $22d3 = GetInput.clearA
-	         $22d6 = GetInput.readB
-	         $22da = GetInput.setB
-	         $22e5 = GetInput.clearB
-	         $22e8 = GetInput.readSelect
-	         $22ec = GetInput.setSelect
-	         $22f7 = GetInput.clearSelect
-	         $22fa = GetInput.readStart
-	         $22fe = GetInput.setStart
-	         $2309 = GetInput.clearStart
-	         $230c = GetInput.dpad
-	         $2319 = GetInput.readUp
-	         $231d = GetInput.setUp
-	         $2328 = GetInput.clearUp
-	         $232b = GetInput.readDown
-	         $232f = GetInput.setDown
-	         $233a = GetInput.clearDown
-	         $233d = GetInput.readLeft
-	         $2341 = GetInput.setLeft
-	         $234c = GetInput.clearLeft
-	         $234f = GetInput.readRight
-	         $2353 = GetInput.setRight
-	         $235e = GetInput.clearRight
-	         $2361 = GetInput.priorities
-	         $236c = GetInput.zero
-	SECTION: $2372-$243d ($00cc bytes) ["Score Functions"]
-	         $2372 = ScoreInit
-	         $2392 = IncreaseScore
-	         $23c6 = IncreaseScore.doConvert
-	         $23c8 = !0
-	         $23de = IncreaseScore.carry
-	         $23e0 = IncreaseScore.postConvert
-	         $23ed = !1
-	         $23f4 = IncreaseScore.preAddDigit
-	         $2414 = IncreaseScore.addDigit
-	         $242a = IncreaseScore.nextDigit
-	SECTION: $243e-$24f4 ($00b7 bytes) ["SRAM Functions"]
-	         $243e = RestoreSRAM
-	         $2497 = InitializeSRAM
-	SECTION: $24f5-$2598 ($00a4 bytes) ["Code Entry Point"]
-	         $24f5 = Main
-	         $250a = Main.wvr_u1
-	         $2513 = !0
-	         $2523 = Main.notgbc
-	         $2552 = Main.wvb_u2
-	         $2557 = !1
-	         $255d = EventLoop
-	         $2573 = EventLoop.eventloopjumps
-	         $257c = EventLoopPostHandler
-	         $257e = EventLoopPostHandler.wvb_u3
-	         $2590 = EventLoopPostHandler.vblankjumps
-	SECTION: $2599-$2606 ($006e bytes) ["Title Function Trampolines"]
-	         $2599 = SwitchToTitle
-	         $25a3 = TitleEventLoopHandler
-	         $25ad = TitleVBlankHandler
-	         $25b7 = DrawOption6
-	SECTION: $2607-$266f ($0069 bytes) ["Time Functions"]
-	         $2607 = TimeInit
-	         $261c = ResetGameTime
-	         $2627 = CheckTorikan
-	         $263e = CheckTorikan.failure
-	         $2640 = CheckTorikan.success
-	         $2643 = HandleTimers
-	SECTION: $2670-$26c1 ($0052 bytes) ["Tile Functions"]
-	         $2670 = LoadTitleTiles
-	         $268e = LoadGameplayTiles
-	         $26a4 = LoadGameplayTiles.gbc
-	         $26b3 = LoadGameplayTiles.dmg
-	SECTION: $26c2-$26ef ($002e bytes) ["Memory Functions"]
-	         $26c2 = UnsafeMemCopy
-	         $26cb = SafeMemCopy.wvr_u1
-	         $26cb = SafeMemCopy
-	         $26da = UnsafeMemSet
-	         $26e2 = SafeMemSet
-	         $26e2 = SafeMemSet.wvr_u2
-	SECTION: $26f0-$2717 ($0028 bytes) ["Gameplay Function Trampolines"]
-	         $26f0 = SwitchToGameplay
-	         $26fa = SwitchToGameplayBig
-	         $2704 = GamePlayEventLoopHandler
-	         $270e = GamePlayBigEventLoopHandler
-	SECTION: $2718-$2739 ($0022 bytes) ["OAM Functions"]
-	         $2718 = CopyOAMHandler
-	         $2724 = ClearOAM
-	SECTION: $273a-$2752 ($0019 bytes) ["Interrupt Initialization Functions"]
-	         $273a = IntrInit
-	         $273e = InitializeLCDCInterrupt
-	SECTION: $2753-$275c ($000a bytes) ["OAM DMA Code"]
-	         $2753 = OAMDMA
-	         $275d = OAMDMAEnd
-	EMPTY: $275d-$3fff ($18a3 bytes)
-	TOTAL EMPTY: $18ae bytes
+	         $217f = UpdateGradeSHIR.s5torikan
+	         $218f = UpdateGradeSHIR.s10torikan
+	         $219e = UpdateGradeSHIR.disqualify
+	SECTION: $21a4-$22a5 ($0102 bytes) ["Grading Data"]
+	         $21a4 = sTGM1GradeScores
+	         $21c6 = sTGM3InternalGradeSystem
+	         $2266 = sTGM3GradeBoosts
+	         $2285 = sTGM3LevelMultiplier
+	         $2289 = sTGM3BaselineCOOL
+	         $2292 = sTGM3REGRETConditions
+	SECTION: $22a6-$2372 ($00cd bytes) ["Input Functions"]
+	         $22a6 = InputInit
+	         $22b8 = GetInput
+	         $22b8 = GetInput.btns
+	         $22c5 = GetInput.readA
+	         $22c9 = GetInput.setA
+	         $22d4 = GetInput.clearA
+	         $22d7 = GetInput.readB
+	         $22db = GetInput.setB
+	         $22e6 = GetInput.clearB
+	         $22e9 = GetInput.readSelect
+	         $22ed = GetInput.setSelect
+	         $22f8 = GetInput.clearSelect
+	         $22fb = GetInput.readStart
+	         $22ff = GetInput.setStart
+	         $230a = GetInput.clearStart
+	         $230d = GetInput.dpad
+	         $231a = GetInput.readUp
+	         $231e = GetInput.setUp
+	         $2329 = GetInput.clearUp
+	         $232c = GetInput.readDown
+	         $2330 = GetInput.setDown
+	         $233b = GetInput.clearDown
+	         $233e = GetInput.readLeft
+	         $2342 = GetInput.setLeft
+	         $234d = GetInput.clearLeft
+	         $2350 = GetInput.readRight
+	         $2354 = GetInput.setRight
+	         $235f = GetInput.clearRight
+	         $2362 = GetInput.priorities
+	         $236d = GetInput.zero
+	SECTION: $2373-$243e ($00cc bytes) ["Score Functions"]
+	         $2373 = ScoreInit
+	         $2393 = IncreaseScore
+	         $23c7 = IncreaseScore.doConvert
+	         $23c9 = !0
+	         $23df = IncreaseScore.carry
+	         $23e1 = IncreaseScore.postConvert
+	         $23ee = !1
+	         $23f5 = IncreaseScore.preAddDigit
+	         $2415 = IncreaseScore.addDigit
+	         $242b = IncreaseScore.nextDigit
+	SECTION: $243f-$24f5 ($00b7 bytes) ["SRAM Functions"]
+	         $243f = RestoreSRAM
+	         $2498 = InitializeSRAM
+	SECTION: $24f6-$2599 ($00a4 bytes) ["Code Entry Point"]
+	         $24f6 = Main
+	         $250b = Main.wvr_u1
+	         $2514 = !0
+	         $2524 = Main.notgbc
+	         $2553 = Main.wvb_u2
+	         $2558 = !1
+	         $255e = EventLoop
+	         $2574 = EventLoop.eventloopjumps
+	         $257d = EventLoopPostHandler
+	         $257f = EventLoopPostHandler.wvb_u3
+	         $2591 = EventLoopPostHandler.vblankjumps
+	SECTION: $259a-$2607 ($006e bytes) ["Title Function Trampolines"]
+	         $259a = SwitchToTitle
+	         $25a4 = TitleEventLoopHandler
+	         $25ae = TitleVBlankHandler
+	         $25b8 = DrawOption6
+	SECTION: $2608-$2670 ($0069 bytes) ["Time Functions"]
+	         $2608 = TimeInit
+	         $261d = ResetGameTime
+	         $2628 = CheckTorikan
+	         $263f = CheckTorikan.failure
+	         $2641 = CheckTorikan.success
+	         $2644 = HandleTimers
+	SECTION: $2671-$26c2 ($0052 bytes) ["Tile Functions"]
+	         $2671 = LoadTitleTiles
+	         $268f = LoadGameplayTiles
+	         $26a5 = LoadGameplayTiles.gbc
+	         $26b4 = LoadGameplayTiles.dmg
+	SECTION: $26c3-$26f0 ($002e bytes) ["Memory Functions"]
+	         $26c3 = UnsafeMemCopy
+	         $26cc = SafeMemCopy.wvr_u1
+	         $26cc = SafeMemCopy
+	         $26db = UnsafeMemSet
+	         $26e3 = SafeMemSet
+	         $26e3 = SafeMemSet.wvr_u2
+	SECTION: $26f1-$2718 ($0028 bytes) ["Gameplay Function Trampolines"]
+	         $26f1 = SwitchToGameplay
+	         $26fb = SwitchToGameplayBig
+	         $2705 = GamePlayEventLoopHandler
+	         $270f = GamePlayBigEventLoopHandler
+	SECTION: $2719-$273a ($0022 bytes) ["OAM Functions"]
+	         $2719 = CopyOAMHandler
+	         $2725 = ClearOAM
+	SECTION: $273b-$2753 ($0019 bytes) ["Interrupt Initialization Functions"]
+	         $273b = IntrInit
+	         $273f = InitializeLCDCInterrupt
+	SECTION: $2754-$275d ($000a bytes) ["OAM DMA Code"]
+	         $2754 = OAMDMA
+	         $275e = OAMDMAEnd
+	EMPTY: $275e-$3fff ($18a2 bytes)
+	TOTAL EMPTY: $18ad bytes
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]
@@ -2368,7 +2368,7 @@ HRAM bank #0:
 	TOTAL EMPTY: $0006 bytes
 
 SUMMARY:
-	ROM0: 10066 bytes used / 6318 free
+	ROM0: 10067 bytes used / 6317 free
 	ROMX: 56500 bytes used / 41804 free in 6 banks
 	SRAM: 14 bytes used / 8178 free in 1 bank
 	WRAM0: 3494 bytes used / 602 free

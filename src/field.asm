@@ -37,6 +37,9 @@ wShadowField:: ds (14*26)
 wWideField:: ds (5*11)
 wWideBlittedField:: ds (22*10)
 wDelayState: ds 1
+wLeftSlamTimer: ds 1
+wRightSlamTimer: ds 1
+wMovementLastFrame: ds 1
 
 
 SECTION "High Field Variables", HRAM
@@ -188,6 +191,7 @@ SECTION "Field Function Banked Gameplay", ROMX, BANK[BANK_GAMEPLAY]
 FieldInit::
     xor a, a
     ldh [hBravo], a
+    ld [wMovementLastFrame], a
     ld a, 1
     ldh [hComboCt], a
     ld hl, wField
@@ -197,11 +201,15 @@ FieldInit::
     ld hl, wShadowField
     ld bc, 14*26
     ld d, $FF
-    jp UnsafeMemSet
+    call UnsafeMemSet
     ld hl, wPreShadowField
     ld bc, 14*2
     ld d, $FF
-    jp UnsafeMemSet
+    call UnsafeMemSet
+    ld a, SLAM_ANIMATION_LEN
+    ld [wLeftSlamTimer], a
+    ld [wRightSlamTimer], a
+    ret
 
 
     ; Fills the field with the empty tile.
@@ -642,6 +650,12 @@ TrySpawnPiece::
     ldh [hShouldLockIfGrounded], a
     ldh [hGravityCtr], a
     ldh [hGrounded], a
+    ld [wMovementLastFrame], a
+    ld a, SLAM_ANIMATION_LEN
+    ld [wLeftSlamTimer], a
+    ld [wRightSlamTimer], a
+    ld a, -2
+    ldh [rSCX], a
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
     ld a, $FF
@@ -891,7 +905,36 @@ FindMaxG:
 FieldProcess::
     ; **************************************************************
     ; SETUP
+    ; Apply screen shake if needed.
+.leftslam
+    ld a, [wLeftSlamTimer]
+    cp a, SLAM_ANIMATION_LEN
+    jr z, .rightslam
+    ld b, 0
+    ld c, a
+    ld hl, sLeftDasSlam
+    add hl, bc
+    inc a
+    ld [wLeftSlamTimer], a
+    ld a, [hl]
+    ldh [rSCX], a
+    jr .wipe
+
+.rightslam
+    ld a, [wRightSlamTimer]
+    cp a, SLAM_ANIMATION_LEN
+    jr z, .wipe
+    ld b, 0
+    ld c, a
+    ld hl, sRightDasSlam
+    add hl, bc
+    inc a
+    ld [wRightSlamTimer], a
+    ld a, [hl]
+    ldh [rSCX], a
+
     ; Wipe out the piece.
+.wipe
     ldh a, [hCurrentPieceY]
     ldh [hYPosAtStartOfFrame], a
     call FromShadowField
@@ -1351,14 +1394,14 @@ FieldProcess::
     cp a, 1
     jr z, .doright
     cp a, 0             ; We never want to move if the button wasn't held.
-    jr z, .donemanipulating
+    jr z, .noeffect
     ld b, a
 .checkdasright
     ldh a, [hCurrentDAS]
     ld c, a
     ld a, b
     cp a, c
-    jr c, .donemanipulating
+    jr c, .noeffect
 .doright
     ldh a, [hWantX]
     inc a
@@ -1375,9 +1418,46 @@ FieldProcess::
     call GetPieceDataFast
     call CanPieceFitFast
     cp a, $FF
-    jr nz, .donemanipulating
+    jr nz, .nomove
+    ld a, $FF
+    ld [wMovementLastFrame], a
     ldh a, [hWantX]
     ldh [hCurrentPieceX], a
+    jr .donemanipulating
+
+.nomove
+    ld a, [wMovementLastFrame]
+    cp a, 0
+    jr z, .noeffect
+
+    ; We moved last frame but couldn't move this frame. That means we slammed into a wall.
+    ; First check if either effect is playing.
+    ld a, [wLeftSlamTimer]
+    cp a, SLAM_ANIMATION_LEN
+    jr nz, .noeffect
+    ld a, [wRightSlamTimer]
+    cp a, SLAM_ANIMATION_LEN
+    jr nz, .noeffect
+
+    ; Which wall did we slam into?
+    ldh a, [hWantX]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    cp a, b
+    jr c, .slamright
+
+.slamleft
+    xor a, a
+    ld [wLeftSlamTimer], a
+    jr .noeffect
+
+.slamright
+    xor a, a
+    ld [wRightSlamTimer], a
+
+.noeffect
+    xor a, a
+    ld [wMovementLastFrame], a
 
 
     ; **************************************************************
@@ -2306,6 +2386,7 @@ SECTION "Field Function Banked Gameplay Big", ROMX, BANK[BANK_GAMEPLAY_BIG]
 BigFieldInit::
     xor a, a
     ldh [hBravo], a
+    ld [wMovementLastFrame], a
     ld a, 1
     ldh [hComboCt], a
     ld hl, wField
@@ -2319,7 +2400,15 @@ BigFieldInit::
     ld hl, wShadowField
     ld bc, 14*26
     ld d, $FF
-    jp UnsafeMemSet
+    call UnsafeMemSet
+    ld hl, wPreShadowField
+    ld bc, 14*2
+    ld d, $FF
+    call UnsafeMemSet
+    ld a, SLAM_ANIMATION_LEN
+    ld [wLeftSlamTimer], a
+    ld [wRightSlamTimer], a
+    ret
 
     ; Fills the field with the empty tile.
 BigFieldClear::
@@ -2767,6 +2856,12 @@ BigTrySpawnPiece::
     ldh [hShouldLockIfGrounded], a
     ldh [hGravityCtr], a
     ldh [hGrounded], a
+    ld [wMovementLastFrame], a
+    ld a, SLAM_ANIMATION_LEN
+    ld [wLeftSlamTimer], a
+    ld [wRightSlamTimer], a
+    ld a, -2
+    ldh [rSCX], a
     ldh a, [hCurrentLockDelay]
     ldh [hCurrentLockDelayRemaining], a
     ld a, $FF
@@ -3016,7 +3111,36 @@ BigFindMaxG:
 BigFieldProcess::
     ; **************************************************************
     ; SETUP
+    ; Apply screen shake if needed.
+.leftslam
+    ld a, [wLeftSlamTimer]
+    cp a, SLAM_ANIMATION_LEN
+    jr z, .rightslam
+    ld b, 0
+    ld c, a
+    ld hl, sBigLeftDasSlam
+    add hl, bc
+    inc a
+    ld [wLeftSlamTimer], a
+    ld a, [hl]
+    ldh [rSCX], a
+    jr .wipe
+
+.rightslam
+    ld a, [wRightSlamTimer]
+    cp a, SLAM_ANIMATION_LEN
+    jr z, .wipe
+    ld b, 0
+    ld c, a
+    ld hl, sBigRightDasSlam
+    add hl, bc
+    inc a
+    ld [wRightSlamTimer], a
+    ld a, [hl]
+    ldh [rSCX], a
+
     ; Wipe out the piece.
+.wipe
     ldh a, [hCurrentPieceY]
     ldh [hYPosAtStartOfFrame], a
     call BigFromShadowField
@@ -3475,14 +3599,14 @@ BigFieldProcess::
     cp a, 1
     jr z, .doright
     cp a, 0             ; We never want to move if the button wasn't held.
-    jr z, .donemanipulating
+    jr z, .noeffect
     ld b, a
 .checkdasright
     ldh a, [hCurrentDAS]
     ld c, a
     ld a, b
     cp a, c
-    jr c, .donemanipulating
+    jr c, .noeffect
 .doright
     ldh a, [hWantX]
     inc a
@@ -3499,9 +3623,46 @@ BigFieldProcess::
     call BigGetPieceDataFast
     call BigCanPieceFitFast
     cp a, $FF
-    jr nz, .donemanipulating
+    jr nz, .nomove
+    ld a, $FF
+    ld [wMovementLastFrame], a
     ldh a, [hWantX]
     ldh [hCurrentPieceX], a
+    jr .donemanipulating
+
+.nomove
+    ld a, [wMovementLastFrame]
+    cp a, 0
+    jr z, .noeffect
+
+    ; We moved last frame but couldn't move this frame. That means we slammed into a wall.
+    ; First check if either effect is playing.
+    ld a, [wLeftSlamTimer]
+    cp a, SLAM_ANIMATION_LEN
+    jr nz, .noeffect
+    ld a, [wRightSlamTimer]
+    cp a, SLAM_ANIMATION_LEN
+    jr nz, .noeffect
+
+    ; Which wall did we slam into?
+    ldh a, [hWantX]
+    ld b, a
+    ldh a, [hCurrentPieceX]
+    cp a, b
+    jr c, .slamright
+
+.slamleft
+    xor a, a
+    ld [wLeftSlamTimer], a
+    jr .noeffect
+
+.slamright
+    xor a, a
+    ld [wRightSlamTimer], a
+
+.noeffect
+    xor a, a
+    ld [wMovementLastFrame], a
 
 
     ; **************************************************************

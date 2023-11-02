@@ -303,6 +303,7 @@ DEF STATE_GAMEPLAY_BIG  EQU 6
 DEF STACK_SIZE          EQU 64
 DEF EASTER_0            EQU $9865
 DEF EASTER_1            EQU $9885
+DEF SLAM_ANIMATION_LEN  EQU 11
 
 ; Magic location for bank id.
 DEF rBANKID             EQU $4007

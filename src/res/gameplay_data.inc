@@ -23,6 +23,26 @@ INCLUDE "globals.asm"
 
 
 SECTION "Gameplay Static Data", ROMX, BANK[BANK_GAMEPLAY]
+sLeftDasSlam::
+    db -1
+    db 0
+    db 1, 1
+    db 0, 0
+    db 1, 1
+    db 0
+    db -1
+    db -2
+
+sRightDasSlam::
+    db -3
+    db -4
+    db -5, -5
+    db -4, -4
+    db -5, -5
+    db -4
+    db -3
+    db -2
+
 sLeady::     db "  READY?  "
 
 sGo::        db "    GO    "

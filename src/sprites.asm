@@ -655,7 +655,10 @@ GradeRendering::
     cp a, GRADE_NONE
     ret z
 
-    ; If the effect timer is greater than 0, decrement it and do some palette magic.
+    ; If the effect timer is greater than 0 and on even frames, decrement it and do some palette magic.
+    ldh a, [hFrameCtr]
+    cp a, 0
+    jr z, .noeffect
     ld a, [wEffectTimer]
     cp a, 0
     jr z, .noeffect
@@ -693,9 +696,9 @@ GradeRendering::
     ret
 
 .sgrade
-    ; Is the grade M1 or better?
-    cp a, GRADE_M1
-    jr nc, .mgrade
+    ; Is the grade S10 or better?
+    cp a, GRADE_S10
+    jr nc, .hisgrade
 
     ; Draw as S grade.
     ld a, "S"
@@ -708,13 +711,29 @@ GradeRendering::
     ld [wGrade1+2], a
     ret
 
+.hisgrade
+    ; Is the grade M1 or better?
+    cp a, GRADE_M1
+    jr nc, .mgrade
+
+    ; Draw as high S grade.
+    ld a, "S"
+    ld [wGrade0+2], a
+    ld a, [wDisplayedGrade]
+    sub a, GRADE_S10
+    ld b, a
+    ld a, "a"
+    add a, b
+    ld [wGrade1+2], a
+    ret
+
 .mgrade
     ; Is the grade one of the letter grades?
     cp a, GRADE_M
     jr nc, .lettergrade
 
     ; Draw as M grade.
-    ld a, "M"
+    ld a, "m"
     ld [wGrade0+2], a
     ld a, [wDisplayedGrade]
     sub a, GRADE_M1
@@ -730,7 +749,7 @@ GradeRendering::
     jr z, .gmgrade
 
     ; Draw as MX grade.
-    ld a, "M"
+    ld a, "m"
     ld [wGrade0+2], a
     ld a, [wDisplayedGrade]
     cp a, GRADE_M

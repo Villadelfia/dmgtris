@@ -123,7 +123,10 @@ ApplyTells::
     add a, TELLS_Y_DIST
     ld [wSPRModeHiG], a
 
+    ldh a, [rSCX]
+    ld b, a
     ld a, TELLS_BASE_X
+    sub a, b
     ld [wSPRModeRNG+1], a
     ld [wSPRModeRot+1], a
     ld [wSPRModeDrop+1], a
@@ -202,17 +205,23 @@ ApplyNext::
     dec a
     jr nz, .getoffn
 .skipoffn
+    ldh a, [rSCX]
+    ld b, a
     ld a, [hl+]
     add a, NEXT_BASE_X
+    sub a, b
     ld [wSPRNext1+1], a
     ld a, [hl+]
     add a, NEXT_BASE_X
+    sub a, b
     ld [wSPRNext2+1], a
     ld a, [hl+]
     add a, NEXT_BASE_X
+    sub a, b
     ld [wSPRNext3+1], a
     ld a, [hl]
     add a, NEXT_BASE_X
+    sub a, b
     ld [wSPRNext4+1], a
 
     ; Y positions
@@ -239,7 +248,10 @@ ApplyNext::
     ld [wSPRQueue2A], a
     ld [wSPRQueue2B], a
 
+    ldh a, [rSCX]
+    ld b, a
     ld a, QUEUE_BASE_X
+    sub a, b
     ld [wSPRQueue1A+1], a
     ld [wSPRQueue2A+1], a
     add a, 8
@@ -332,17 +344,23 @@ ApplyHold::
     dec a
     jr nz, .getoffh
 .skipoffh
+    ldh a, [rSCX]
+    ld b, a
     ld a, [hl+]
     add a, HOLD_BASE_X
+    sub a, b
     ld [wSPRHold1+1], a
     ld a, [hl+]
     add a, HOLD_BASE_X
+    sub a, b
     ld [wSPRHold2+1], a
     ld a, [hl+]
     add a, HOLD_BASE_X
+    sub a, b
     ld [wSPRHold3+1], a
     ld a, [hl]
     add a, HOLD_BASE_X
+    sub a, b
     ld [wSPRHold4+1], a
 
     ; Y positions
@@ -440,7 +458,10 @@ ApplyNumbers4::
 
     ; Positions all number sprites for gameplay.
 SetNumberSpritePositions::
+    ldh a, [rSCX]
+    ld b, a
     ld a, SCORE_BASE_X
+    sub a, b
     ld hl, wSPRScore1
     ld [hl], SCORE_BASE_Y
     inc hl
@@ -510,7 +531,10 @@ SetNumberSpritePositions::
     ld a, OAMF_PAL1 | $07
     ld [hl], a
 
+    ldh a, [rSCX]
+    ld b, a
     ld a, LEVEL_BASE_X
+    sub a, b
     ld hl, wSPRCLevel1
     ld [hl], CLEVEL_BASE_Y
     inc hl
@@ -556,7 +580,10 @@ SetNumberSpritePositions::
     ld a, OAMF_PAL1 | $07
     ld [hl], a
 
+    ldh a, [rSCX]
+    ld b, a
     ld a, LEVEL_BASE_X
+    sub a, b
     ld hl, wSPRNLevel1
     ld [hl], NLEVEL_BASE_Y
     inc hl
@@ -610,7 +637,10 @@ GradeRendering::
     ld [wGrade1], a
 
     ; Set the X position of the grade objects.
+    ldh a, [rSCX]
+    ld b, a
     ld a, GRADE_BASE_X
+    sub a, b
     ld [wGrade0+1], a
     add a, $8
     ld [wGrade1+1], a

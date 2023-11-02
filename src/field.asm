@@ -100,12 +100,12 @@ BlitField::
 
     ; The last 6 rows need some care.
     REPT 7
-        ; Wait until start of drawing, then insert 35 nops.
+        ; Wait until start of drawing, then insert nops.
 :       ldh a, [rSTAT]
         and a, 3
         cp a, 3
         jr nz, :-
-        REPT 38
+        REPT 40
             nop
         ENDR
 
@@ -157,12 +157,12 @@ BigBlitField::
 
     ; The last 6 rows need some care.
     REPT 7
-        ; Wait until start of drawing, then insert 35 nops.
+        ; Wait until start of drawing, then insert nops.
 :       ldh a, [rSTAT]
         and a, 3
         cp a, 3
         jr nz, :-
-        REPT 38
+        REPT 40
             nop
         ENDR
 

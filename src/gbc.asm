@@ -435,23 +435,23 @@ GBCGameplayProcess::
     ld [wInnerReps], a
 .inner2
     ld a, [de]
-    cp a, 10
+    cp a, TILE_PIECE_0
     jr c, .empty
-    cp a, 10 + (1*7)
+    cp a, TILE_PIECE_0 + (1*7)
     jr c, .sub10
-    cp a, 10 + (2*7)
+    cp a, TILE_PIECE_0 + (2*7)
     jr c, .sub17
-    cp a, 10 + (3*7)
+    cp a, TILE_PIECE_0 + (3*7)
     jr c, .sub24
-    cp a, 10 + (4*7)
+    cp a, TILE_PIECE_0 + (4*7)
     jr c, .sub31
-    cp a, 10 + (5*7)
+    cp a, TILE_PIECE_0 + (5*7)
     jr c, .sub38
-    cp a, 10 + (6*7)
+    cp a, TILE_PIECE_0 + (6*7)
     jr c, .sub45
-    cp a, 10 + (7*7)
+    cp a, TILE_PIECE_0 + (7*7)
     jr c, .sub52
-    cp a, 10 + (8*7)
+    cp a, TILE_PIECE_0 + (8*7)
     jr c, .sub59
 .empty
     ld a, $07
@@ -471,7 +471,7 @@ GBCGameplayProcess::
 .sub17
     sub a, 7
 .sub10
-    sub a, 10
+    sub a, TILE_PIECE_0
 .done
     ld [hl+], a
     inc de
@@ -672,23 +672,23 @@ GBCBigGameplayProcess::
     ld [wInnerReps], a
 .inner2
     ld a, [de]
-    cp a, 10
+    cp a, TILE_PIECE_0
     jr c, .empty
-    cp a, 10 + (1*7)
+    cp a, TILE_PIECE_0 + (1*7)
     jr c, .sub10
-    cp a, 10 + (2*7)
+    cp a, TILE_PIECE_0 + (2*7)
     jr c, .sub17
-    cp a, 10 + (3*7)
+    cp a, TILE_PIECE_0 + (3*7)
     jr c, .sub24
-    cp a, 10 + (4*7)
+    cp a, TILE_PIECE_0 + (4*7)
     jr c, .sub31
-    cp a, 10 + (5*7)
+    cp a, TILE_PIECE_0 + (5*7)
     jr c, .sub38
-    cp a, 10 + (6*7)
+    cp a, TILE_PIECE_0 + (6*7)
     jr c, .sub45
-    cp a, 10 + (7*7)
+    cp a, TILE_PIECE_0 + (7*7)
     jr c, .sub52
-    cp a, 10 + (8*7)
+    cp a, TILE_PIECE_0 + (8*7)
     jr c, .sub59
 .empty
     ld a, $07
@@ -708,7 +708,7 @@ GBCBigGameplayProcess::
 .sub17
     sub a, 7
 .sub10
-    sub a, 10
+    sub a, TILE_PIECE_0
 .done
     ld [hl+], a
     inc de

@@ -86,22 +86,6 @@ Main::
     ld a, BANK_OTHER
     ld [rROMB0], a
 
-    ; We use a single set of tiles for the entire game, so we copy it at the start.
-    ld de, sTiles
-    ld hl, _VRAM
-    ld bc, sTilesEnd - sTiles
-    call SafeMemCopy
-
-    ; GBC uses a few different tiles.
-    ld a, [wInitialA]
-    cp a, $11
-    jr nz, .nocolortiles
-    ld de, sColorTiles
-    ld hl, _VRAM + (TILE_PIECE_0 * 16)
-    ld bc, sColorTilesEnd - sColorTiles
-    call SafeMemCopy
-.nocolortiles
-
     ; Clear OAM.
     call ClearOAM
     call SetNumberSpritePositions

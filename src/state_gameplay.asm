@@ -101,6 +101,9 @@ SwitchToGameplayB:
     ld bc, sGameplayTileMapEnd - sGameplayTileMap
     call UnsafeMemCopy
 
+    ; And the tiles.
+    call LoadGameplayTiles
+
     ; Zero out SCX.
     ld a, -2
     ldh [rSCX], a
@@ -633,6 +636,9 @@ GamePlayEventLoopHandlerB::
     ld de, hNLevel
     call ApplyNumbers4
 
+    call SetNumberSpritePositions
+    call ApplyTells
+
     jp GBCGameplayProcess
 
 
@@ -729,6 +735,9 @@ SwitchToGameplayBigB:
     ld hl, $9800
     ld bc, sBigGameplayTileMapEnd - sBigGameplayTileMap
     call UnsafeMemCopy
+
+    ; And the tiles.
+    call LoadGameplayTiles
 
     ; Zero out SCX.
     ld a, -2
@@ -1255,6 +1264,9 @@ GamePlayBigEventLoopHandlerB:
     ld hl, wSPRNLevel1
     ld de, hNLevel
     call ApplyNumbers4
+
+    call SetNumberSpritePositions
+    call ApplyTells
 
     jp GBCBigGameplayProcess
 

@@ -127,6 +127,9 @@ SwitchToTitleB:
     ld bc, sTitleScreenTileMapEnd - sTitleScreenTileMap
     call UnsafeMemCopy
 
+    ; And the tiles.
+    call LoadTitleTiles
+
     ; Zero out SCX.
     xor a, a
     ldh [rSCX], a

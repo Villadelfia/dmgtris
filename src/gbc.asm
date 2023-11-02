@@ -355,6 +355,8 @@ GBCGameplayProcess::
         ld [hl], a
         ld hl, wShadowTileAttrs+(row*32)+19
         ld [hl], a
+        ld hl, wShadowTileAttrs+(row*32)+31
+        ld [hl], a
         DEF row += 1
     ENDR
 

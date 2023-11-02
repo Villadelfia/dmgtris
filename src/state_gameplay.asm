@@ -101,6 +101,10 @@ SwitchToGameplayB:
     ld bc, sGameplayTileMapEnd - sGameplayTileMap
     call UnsafeMemCopy
 
+    ; Zero out SCX.
+    ld a, -2
+    ldh [rSCX], a
+
     ; Clear OAM.
     call ClearOAM
     call SetNumberSpritePositions
@@ -725,6 +729,10 @@ SwitchToGameplayBigB:
     ld hl, $9800
     ld bc, sBigGameplayTileMapEnd - sBigGameplayTileMap
     call UnsafeMemCopy
+
+    ; Zero out SCX.
+    ld a, -2
+    ldh [rSCX], a
 
     ; Clear OAM.
     call ClearOAM

@@ -127,6 +127,10 @@ SwitchToTitleB:
     ld bc, sTitleScreenTileMapEnd - sTitleScreenTileMap
     call UnsafeMemCopy
 
+    ; Zero out SCX.
+    xor a, a
+    ldh [rSCX], a
+
     ; Title screen easter egg.
     ld a, [wInitialC]
     cp a, $14

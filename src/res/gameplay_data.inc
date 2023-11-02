@@ -26,9 +26,7 @@ SECTION "Gameplay Static Data", ROMX, BANK[BANK_GAMEPLAY]
 sLeftDasSlam::
     db -1
     db 0
-    db 1
-    db 0
-    db 1
+    db -1
     db 0
     db -1
     db -2
@@ -36,9 +34,7 @@ sLeftDasSlam::
 sRightDasSlam::
     db -3
     db -4
-    db -5
-    db -4
-    db -5
+    db -3
     db -4
     db -3
     db -2

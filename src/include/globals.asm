@@ -131,6 +131,12 @@ MACRO set_all_palettes
     set_obj1_palette
 ENDM
 
+MACRO no_jump
+    nop
+    nop
+    ret
+ENDM
+
 
 ; Writes two bytes to a register pair.
 MACRO lb
@@ -309,7 +315,7 @@ DEF STATE_GAMEPLAY_BIG  EQU 6
 DEF STACK_SIZE          EQU 64
 DEF EASTER_0            EQU $9865
 DEF EASTER_1            EQU $9885
-DEF SLAM_ANIMATION_LEN  EQU 8
+DEF SLAM_ANIMATION_LEN  EQU 6
 
 ; Magic location for bank id.
 DEF rBANKID             EQU $4007
@@ -352,6 +358,6 @@ DEF GRADE_MV            EQU 33
 DEF GRADE_MO            EQU 34
 DEF GRADE_MM            EQU 35
 DEF GRADE_GM            EQU 36
-DEF GRADE_NONE          EQU 37
+DEF GRADE_NONE          EQU 255
 
 ENDC

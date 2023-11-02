@@ -642,7 +642,7 @@ GradeRendering::
     ld a, GRADE_BASE_X
     sub a, b
     ld [wGrade0+1], a
-    add a, $8
+    add a, 9
     ld [wGrade1+1], a
 
     ; Set the grades to blank
@@ -732,7 +732,7 @@ GradeRendering::
     cp a, GRADE_M
     jr nc, .lettergrade
 
-    ; Draw as M grade.
+    ; Draw as m grade.
     ld a, "m"
     ld [wGrade0+2], a
     ld a, [wDisplayedGrade]
@@ -749,7 +749,7 @@ GradeRendering::
     jr z, .gmgrade
 
     ; Draw as MX grade.
-    ld a, "m"
+    ld a, "M"
     ld [wGrade0+2], a
     ld a, [wDisplayedGrade]
     cp a, GRADE_M

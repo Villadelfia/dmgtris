@@ -57,8 +57,8 @@ hYPosAtStartOfFrame: ds 1
 hWantRotation: ds 1
 hRemainingDelay:: ds 1
 hClearedLines: ds 4
-hLineClearCt: ds 1
-hComboCt: ds 1
+hLineClearCt:: ds 1
+hComboCt:: ds 1
 hLockDelayForce: ds 1
 hDownFrames: ds 1
 hAwardDownBonus: ds 1
@@ -191,6 +191,7 @@ SECTION "Field Function Banked Gameplay", ROMX, BANK[BANK_GAMEPLAY]
 FieldInit::
     xor a, a
     ldh [hBravo], a
+    ldh [hLineClearCt], a
     ld [wMovementLastFrame], a
     ld a, 1
     ldh [hComboCt], a
@@ -905,6 +906,9 @@ FindMaxG:
 FieldProcess::
     ; **************************************************************
     ; SETUP
+    ; Grade decay?
+    call DecayGradeProcess
+
     ; Apply screen shake if needed.
 .leftslam
     ld a, [wLeftSlamTimer]
@@ -1924,6 +1928,9 @@ GetTileShade:
     ; This is called every frame after a piece has been locked until the delay state ends.
     ; Lines are cleared, levels and score are awarded, and ARE time is waited out.
 FieldDelay::
+    ; Grade decay?
+    call DecayGradeDelay
+
     ; In delay state, DAS increments double speed.
 .incl
     ldh a, [hLeftState]
@@ -2386,6 +2393,7 @@ SECTION "Field Function Banked Gameplay Big", ROMX, BANK[BANK_GAMEPLAY_BIG]
 BigFieldInit::
     xor a, a
     ldh [hBravo], a
+    ldh [hLineClearCt], a
     ld [wMovementLastFrame], a
     ld a, 1
     ldh [hComboCt], a
@@ -3111,6 +3119,9 @@ BigFindMaxG:
 BigFieldProcess::
     ; **************************************************************
     ; SETUP
+    ; Grade decay?
+    call DecayGradeProcess
+
     ; Apply screen shake if needed.
 .leftslam
     ld a, [wLeftSlamTimer]
@@ -4130,6 +4141,9 @@ BigGetTileShade:
     ; This is called every frame after a piece has been locked until the delay state ends.
     ; Lines are cleared, levels and score are awarded, and ARE time is waited out.
 BigFieldDelay::
+    ; Grade decay?
+    call DecayGradeDelay
+
     ; In delay state, DAS increments double speed.
 .incl
     ldh a, [hLeftState]

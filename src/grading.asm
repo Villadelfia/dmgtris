@@ -29,6 +29,15 @@ wInternalGrade:        ds 1
 wDisplayedGrade::      ds 1
 wEffectTimer::         ds 1
 wRankingDisqualified:: ds 1
+wDecayCounter:         ds 1
+wGradeGauge:           ds 1
+wSMult:                ds 1
+wDMult:                ds 1
+wTMult:                ds 1
+wSRate:                ds 1
+wDRate:                ds 1
+wTRate:                ds 1
+wQRate:                ds 1
 
 
 SECTION "Grading Data", ROM0
@@ -160,6 +169,45 @@ sTGM3REGRETConditions:
     db 0, 50
     db 0, 50
 
+sDMGTGrading:
+    db 125, 10, 20, 40, 50 ; Grade 9   — frames/decay, single base, double base, triple base, tetris base
+    db 80,  10, 20, 30, 40 ; Grade 8   — frames/decay, single base, double base, triple base, tetris base
+    db 80,  10, 20, 30, 40 ; Grade 7   — frames/decay, single base, double base, triple base, tetris base
+    db 50,  10, 20, 30, 40 ; Grade 6   — frames/decay, single base, double base, triple base, tetris base
+    db 45,   5, 20, 30, 40 ; Grade 5   — frames/decay, single base, double base, triple base, tetris base
+    db 45,   5, 20, 30, 40 ; Grade 4   — frames/decay, single base, double base, triple base, tetris base
+    db 45,   5, 20, 30, 40 ; Grade 3   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   5, 20, 20, 30 ; Grade 2   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   5, 20, 20, 30 ; Grade 1   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   2, 20, 20, 30 ; Grade S1  — frames/decay, single base, double base, triple base, tetris base
+    db 40,   2, 20, 20, 30 ; Grade S2  — frames/decay, single base, double base, triple base, tetris base
+    db 40,   2, 20, 20, 30 ; Grade S3  — frames/decay, single base, double base, triple base, tetris base
+    db 30,   2, 20, 20, 30 ; Grade S4  — frames/decay, single base, double base, triple base, tetris base
+    db 30,   2, 15, 20, 30 ; Grade S5  — frames/decay, single base, double base, triple base, tetris base
+    db 30,   2, 15, 20, 30 ; Grade S6  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S7  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S8  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S9  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S10 — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S11 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 20, 30 ; Grade S12 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 20, 30 ; Grade S13 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 15, 30 ; Grade m1  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 15, 30 ; Grade m2  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 15, 30 ; Grade m3  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 15, 30 ; Grade m4  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m5  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m6  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m7  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m8  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 13, 30 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2,  8, 10, 20 ; Grade MM  — frames/decay, single base, double base, triple base, tetris base
+                           ; No entry for GM. We're done there.
+
 SECTION "Grading Functions", ROM0
     ; Wipe the grading variables.
 GradeInit::
@@ -170,29 +218,26 @@ GradeInit::
     ld [wDisplayedGrade], a
     ld [wRankingDisqualified], a
     ld [wEffectTimer], a
+    ld [wDecayCounter], a
+    ld [wGradeGauge], a
 
-    ; Not all modes start at 9.
-    ; Death starts ungraded.
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_DEAT
-    jr nz, .notdeat
+    ; Most modes begin ungraded.
     ld a, GRADE_NONE
     ld [wDisplayedGrade], a
-    jr UpdateGrade
 
-.notdeat
-    ; Shirase starts ungraded.
+    ; TGM1 and DMGT are the exceptions.
     ld a, [wSpeedCurveState]
-    cp a, SCURVE_SHIR
-    jr nz, .notshir
-    ld a, GRADE_NONE
-    ld [wDisplayedGrade], a
-    jr UpdateGrade
+    cp a, SCURVE_TGM1
+    jr z, .grade9start
+    cp a, SCURVE_DMGT
+    jr z, .grade9start
+    jr .end
 
-.notshir
-    ; All the rest start at 9.
+.grade9start
     ld a, GRADE_9
     ld [wDisplayedGrade], a
+
+.end
     jr UpdateGrade
 
 
@@ -209,12 +254,58 @@ UpdateGrade::
     jp hl
 
 .gradejumptable
-    jp UpdateGradeTGM1 ;DMGT
+    jp UpdateGradeDMGT ;DMGT
     jp UpdateGradeTGM1 ;TGM1
-    jp UpdateGradeTGM1 ;TGM3
+    no_jump            ;TGM3
     jp UpdateGradeDEAT ;DEAT
     jp UpdateGradeSHIR ;SHIR
-    jp UpdateGradeTGM1 ;CHIL
+    no_jump            ;CHIL
+
+
+    ; Jumps to the grade decay function for the current mode.
+    ; Called once per frame where a piece is in motion.
+DecayGradeProcess::
+    ld hl, .gradejumptable
+    ld a, [wSpeedCurveState]
+    ld b, a
+    add a, b
+    add a, b
+    ld b, 0
+    ld c,  a
+    add hl, bc
+    jp hl
+
+.gradejumptable
+    jp DecayGradeDMGT ;DMGT
+    no_jump           ;TGM1
+    no_jump           ;TGM3
+    no_jump           ;DEAT
+    no_jump           ;SHIR
+    no_jump           ;CHIL
+
+
+
+
+    ; Jumps to the grade decay function for the current mode.
+    ; Called once per frame during ARE and line clear delay.
+DecayGradeDelay::
+    ld hl, .gradejumptable
+    ld a, [wSpeedCurveState]
+    ld b, a
+    add a, b
+    add a, b
+    ld b, 0
+    ld c,  a
+    add hl, bc
+    jp hl
+
+.gradejumptable
+    no_jump  ;DMGT
+    no_jump  ;TGM1
+    no_jump  ;TGM3
+    no_jump  ;DEAT
+    no_jump  ;SHIR
+    no_jump  ;CHIL
 
 
     ; Get the four most significant figures of the score in BC as BCD.
@@ -231,6 +322,291 @@ PrepareScore:
     swap a
     or b
     ld b, a
+    ret
+
+UpdateGradeDMGT::
+    ; Did we have line clears?
+    ldh a, [hLineClearCt]
+    cp a, 0
+    ret z
+
+    ; Bail if we're already GM.
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    ret z
+
+    ; Get grade in BC.
+    ld b, 0
+    ld c, a
+
+    ; Point HL to decay rate.
+    ld hl, sDMGTGrading
+    add hl, bc
+    add hl, bc
+    add hl, bc
+    add hl, bc
+    add hl, bc
+
+    ; What is our single/double/triple/quad rate?
+.clearrate
+    inc hl
+    ld a, [hl+]
+    ld [wSRate], a
+    ld a, [hl+]
+    ld [wDRate], a
+    ld a, [hl+]
+    ld [wTRate], a
+    ld a, [hl]
+    ld [wQRate], a
+
+    ; What is our single/double/triple multiplier?
+.combomult
+    ld a, [hComboCt]
+    cp a, 10
+    jr nc, .combo10
+    cp a, 5
+    jr nc, .combo5
+    jr .combo1
+
+.combo10
+    ld a, 2
+    ld [wSMult], a
+    ld a, 3
+    ld [wDMult], a
+    ld a, 3
+    ld [wTMult], a
+    jr .prelevel
+
+.combo5
+    ld a, 1
+    ld [wSMult], a
+    ld a, 2
+    ld [wDMult], a
+    ld a, 2
+    ld [wTMult], a
+    jr .prelevel
+
+.combo1
+    ld a, 1
+    ld [wSMult], a
+    ld a, 1
+    ld [wDMult], a
+    ld a, 1
+    ld [wTMult], a
+
+    ; Branch on line clear count.
+.prelevel
+    ldh a, [hLineClearCt]
+    ld d, a
+    cp a, 4
+    jr z, .tetris
+    cp a, 3
+    jr z, .triple
+    cp a, 2
+    jr z, .double
+
+    ; Singles are worth the single rate x1 or x2.
+.single
+    ld a, [wSRate]
+    ld d, a
+    ld a, [wSMult]
+    cp a, 1
+    jr z, .levelmult
+    ld a, d
+    add a, d
+    ld d, a
+    jr .levelmult
+
+    ; Doubles are worth the double rate x1, x2 or x3.
+.double
+    ld a, [wDRate]
+    ld d, a
+    ld a, [wDMult]
+    cp a, 1
+    jr z, .levelmult
+    cp a, 2
+    ld a, d
+    jr z, .adddonce
+    add a, d
+.adddonce
+    add a, d
+    ld d, a
+    jr .levelmult
+
+    ; Triples are worth the triple rate x1, x2 or x3.
+.triple
+    ld a, [wTRate]
+    ld d, a
+    ld a, [wTMult]
+    cp a, 1
+    jr z, .levelmult
+    cp a, 2
+    ld a, d
+    jr z, .addtonce
+    add a, d
+.addtonce
+    add a, d
+    ld d, a
+    jr .levelmult
+
+    ; Tetris are worth just tetris.
+.tetris
+    ld a, [wQRate]
+    ld d, a
+
+    ; What is our level multiplier?
+    ; Running counter is in in D now.
+.levelmult
+    ld a, [hCLevel] ; thousands
+    cp a, 1
+    jr nc, .mult5
+    ld a, [hCLevel+1] ; hundreds
+    cp a, 7
+    jr nc, .mult4
+    cp a, 5
+    jr nc, .mult3
+    cp a, 2
+    jr nc, .mult2
+    jr .mult1
+
+.mult5
+    ld a, d
+    add a, d
+    add a, d
+    add a, d
+    add a, d
+    jr .processgrade
+
+.mult4
+    ld a, d
+    add a, d
+    add a, d
+    add a, d
+    jr .processgrade
+
+.mult3
+    ld a, d
+    add a, d
+    add a, d
+    jr .processgrade
+
+.mult2
+    ld a, d
+    add a, d
+    jr .processgrade
+
+.mult1
+    ld a, d
+
+    ; Increase the gauge.
+    ; The value to add to the gauge is in A
+.processgrade
+    ld d, a
+    ld a, [wGradeGauge]
+    add a, d
+    ld [wGradeGauge], a
+
+    ; Did we overflow? Failsafe.
+    jr nc, .increasegrademaybe
+    xor a, a
+    ld [wGradeGauge], a
+
+    ; Increment the grade.
+    ld a, [wDisplayedGrade]
+    inc a
+    ld [wDisplayedGrade], a
+
+    ; GM?
+    cp a, GRADE_GM
+    jr z, .gotgm
+
+    ; No, play the normal jingle.
+    ld a, SFX_RANKUP
+    call SFXEnqueue
+    ld a, $0F
+    ld [wEffectTimer], a
+    ret
+
+.increasegrademaybe
+    ; Do we have 150 in the gauge?
+    ld a, [wGradeGauge]
+    cp a, 150
+    ret c
+
+    ; Yes, take 150 away.
+    sub a, 150
+    ld [wGradeGauge], a
+
+    ; Increment the grade.
+    ld a, [wDisplayedGrade]
+    inc a
+    ld [wDisplayedGrade], a
+
+    ; GM?
+    cp a, GRADE_GM
+    jr z, .gotgm
+
+    ; No, play the normal jingle.
+    ld a, SFX_RANKUP
+    call SFXEnqueue
+    ld a, $0F
+    ld [wEffectTimer], a
+    ret
+
+.gotgm
+    ld a, SFX_RANKGM
+    call SFXEnqueue
+    ld a, $0F
+    ld [wEffectTimer], a
+    ret
+
+
+DecayGradeDMGT::
+    ; Bail if the gauge is empty.
+    ld a, [wGradeGauge]
+    cp a, 0
+    ret z
+
+    ; Bail if we're already GM.
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    ret z
+
+    ; Get grade in BC.
+    ld b, 0
+    ld c, a
+
+    ; Point HL to decay rate.
+    ld hl, sDMGTGrading
+    add hl, bc
+    add hl, bc
+    add hl, bc
+    add hl, bc
+    add hl, bc
+
+    ; Increment the decay.
+    ld a, [wDecayCounter]
+    inc a
+
+    ; Did we hit the rate?
+    ld b, a
+    ld a, [hl]
+    cp a, b
+    jr z, .decay
+
+    ; Nope, don't decay, but do save.
+.nodecay
+    ld a, b
+    ld [wDecayCounter], a
+    ret
+
+    ; Yes, decay.
+.decay
+    ld a, [wGradeGauge]
+    dec a
+    ld [wGradeGauge], a
+    xor a, a
+    ld [wDecayCounter], a
     ret
 
 

@@ -520,7 +520,7 @@ GamePlayEventLoopHandlerB::
 .gameOverMode
     ; Retry?
     ldh a, [hAState]
-    cp a, 1
+    cp a, 10 ; 10 frame hold
     jr nz, .noretry
     call RNGInit
     call ScoreInit
@@ -538,7 +538,7 @@ GamePlayEventLoopHandlerB::
     ; Quit
 .noretry
     ldh a, [hBState]
-    cp a, 1
+    cp a, 10 ; 10 frame hold
     jp nz, .drawStaticInfo
     call SwitchToTitle
     jp EventLoopPostHandler
@@ -1153,7 +1153,7 @@ GamePlayBigEventLoopHandlerB:
 .gameOverMode
     ; Retry?
     ldh a, [hAState]
-    cp a, 1
+    cp a, 10 ; 10 frame hold
     jr nz, .noretry
     call RNGInit
     call ScoreInit
@@ -1171,7 +1171,7 @@ GamePlayBigEventLoopHandlerB:
     ; Quit
 .noretry
     ldh a, [hBState]
-    cp a, 1
+    cp a, 10 ; 10 frame hold
     jp nz, .drawStaticInfo
     call SwitchToTitle
     jp EventLoopPostHandler

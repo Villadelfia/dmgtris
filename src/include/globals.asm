@@ -394,5 +394,6 @@ DEF NLEVEL_HUNDREDS         EQU 1
 DEF NLEVEL_TENS             EQU 2
 DEF NLEVEL_ONES             EQU 3
 
-
+; Bone Skin
+DEF BONE                EQU $68
 ENDC

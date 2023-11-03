@@ -24,7 +24,7 @@ INCLUDE "globals.asm"
 
 SECTION "Grade Variables", WRAM0
 wDecayRate:            ds 1
-wGradePoints:          ds 1
+wInternalGradePoints:  ds 1
 wInternalGrade:        ds 1
 wDisplayedGrade::      ds 1
 wEffectTimer::         ds 1
@@ -96,49 +96,49 @@ sTGM3InternalGradeSystem:
     db 10,  2,  12, 13, 30
 
 sTGM3GradeBoosts:
-    db 0
-    db 1
-    db 2
-    db 3
-    db 4
-    db 5
-    db 5
-    db 6
-    db 6
-    db 7
-    db 7
-    db 7
-    db 8
-    db 8
-    db 8
-    db 9
-    db 9
-    db 10
-    db 11
-    db 12
-    db 12
-    db 12
-    db 13
-    db 13
-    db 14
-    db 14
-    db 15
-    db 15
-    db 16
-    db 16
-    db 17
+    db 0 ;9
+    db 1 ;8
+    db 2 ;7
+    db 3 ;6
+    db 4 ;5
+    db 5 ;4
+    db 5 ;4
+    db 6 ;3
+    db 6 ;3
+    db 7 ;2
+    db 7 ;2
+    db 7 ;2
+    db 8 ;1
+    db 8 ;1
+    db 8 ;1
+    db 9 ;S1 (yes, here you finally get into the S grades, unless you are very COOL)
+    db 9 ;S1
+    db 10 ;S2
+    db 11 ;S3
+    db 12 ;S4
+    db 12 ;S4
+    db 12 ;S4
+    db 13 ;S5
+    db 13 ;S5
+    db 14 ;S6
+    db 14 ;S6
+    db 15 ;S7
+    db 15 ;S7
+    db 16 ;S8
+    db 16 ;S8
+    db 17 ;S9
 
-; sTGM3ComboMultipliers:
-;     db 1,  1.0, 1.0, 1.0, 1.0   ; Combo size, (Multiplier for: ) Single, Double, Triple, Tetris
-;     db 2,  1.0, 1.2, 1.4, 1.5
-;     db 3,  1.0, 1.2, 1.5, 1.8
-;     db 4,  1.0, 1.4, 1.6, 2.0
-;     db 5,  1.0, 1.4, 1.7, 2.2
-;     db 6,  1.0, 1.4, 1.8, 2.3
-;     db 7,  1.0, 1.4, 1.9, 2.4
-;     db 8,  1.0, 1.5, 2.0, 2.5
-;     db 9,  1.0, 1.5, 2.1, 2.6
-;     db 10, 2.0, 2.5, 3.0, 3.0
+sTGM3ComboMultipliers:
+    db 1,  1, 1, 1, 1   ; Combo size, (Multiplier for: ) Single, Double, Triple, Tetris (Screw the fractional part, x.5 gets rounded down)
+    db 2,  1, 1, 1, 1
+    db 3,  1, 1, 1, 2
+    db 4,  1, 1, 2, 2
+    db 5,  1, 1, 2, 2
+    db 6,  1, 1, 2, 2
+    db 7,  1, 1, 2, 2
+    db 8,  1, 1, 2, 2
+    db 9,  1, 1, 2, 3
+    db 10, 2, 2, 3, 3
 
 sTGM3LevelMultiplier:
     db 1 ; 000-249
@@ -188,7 +188,7 @@ sDMGTGrading:
     db 20,   2, 15, 20, 30 ; Grade S7  — frames/decay, single base, double base, triple base, tetris base
     db 20,   2, 15, 20, 30 ; Grade S8  — frames/decay, single base, double base, triple base, tetris base
     db 20,   2, 15, 20, 30 ; Grade S9  — frames/decay, single base, double base, triple base, tetris base
-    db 20,   2, 15, 20, 30 ; Grade S10 — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S10 — frames/decay, single base, double base, triple base, tetris base (hey!, nice idea here to make S10-S13 more useful XD)
     db 20,   2, 15, 20, 30 ; Grade S11 — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 15, 20, 30 ; Grade S12 — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 15, 20, 30 ; Grade S13 — frames/decay, single base, double base, triple base, tetris base
@@ -213,7 +213,7 @@ SECTION "Grading Functions", ROM0
 GradeInit::
     xor a, a
     ld [wDecayRate], a
-    ld [wGradePoints], a
+    ld [wInternalGradePoints], a
     ld [wInternalGrade], a
     ld [wDisplayedGrade], a
     ld [wRankingDisqualified], a
@@ -256,7 +256,7 @@ UpdateGrade::
 .gradejumptable
     jp UpdateGradeDMGT ;DMGT
     jp UpdateGradeTGM1 ;TGM1
-    no_jump            ;TGM3
+    jp UpdateGradeTGM3 ;TGM3
     jp UpdateGradeDEAT ;DEAT
     jp UpdateGradeSHIR ;SHIR
     no_jump            ;CHIL
@@ -278,7 +278,7 @@ DecayGradeProcess::
 .gradejumptable
     jp DecayGradeDMGT ;DMGT
     no_jump           ;TGM1
-    no_jump           ;TGM3
+    jp TGM3DecayRate  ;TGM3
     no_jump           ;DEAT
     no_jump           ;SHIR
     no_jump           ;CHIL
@@ -300,12 +300,12 @@ DecayGradeDelay::
     jp hl
 
 .gradejumptable
-    no_jump  ;DMGT
-    no_jump  ;TGM1
-    no_jump  ;TGM3
-    no_jump  ;DEAT
-    no_jump  ;SHIR
-    no_jump  ;CHIL
+    no_jump           ;DMGT
+    no_jump           ;TGM1
+    jp TGM3DecayRate  ;TGM3
+    no_jump           ;DEAT
+    no_jump           ;SHIR
+    no_jump           ;CHIL
 
 
     ; Get the four most significant figures of the score in BC as BCD.
@@ -837,7 +837,7 @@ UpdateGradeSHIR:
     ld c, 28
     call CheckTorikan
 
-    ; If we failed the Torikan, disqualify from ranking up further.
+    ; If we failed the Torikan, disqualify from ranking up further. (Excellent, but... lets go better next time)
     cp a, $FF
     jr nz, .disqualify
     ret
@@ -861,4 +861,105 @@ UpdateGradeSHIR:
     ld [wRankingDisqualified], a
     ret
 
+UpdateGradeTGM3:
+    ; First things first, Update our grade points.
+.GradePoints
+    ; Load the Table address to HL.
+    ld hl, sTGM3InternalGradeSystem
+    ; Get the correct offset using the lines cleared on the frame and our current Internal Grade.
+    ; Make sure the offsets are set properly and that the amount of Cleared lines isn't 0.
+    ld a, [wInternalGrade] ; Example: 3
+    cp a, 0 ; If it's 0, we don't need to do weird math.
+    jr z, .GetOffset
+    ld d, a ; ld d, 3
+    ld b, 5 
+    ld a, b ; ld a, 5
+    dec d ;dec 3 to 2, so we don't accidentally add more than intended
+:   add a, b ; 5+5 = 10 ; 10+5 = 15
+    dec d 
+    jr nz, :- ; go back if d isn't 0
+    ld b, a ; ld b, 15
+.GetOffset
+    ld a, [hLineClearCt]
+    cp a, 0 ; If no lines were cleared, we don't need to do anything, just continue
+    jr z, .IncreaseInternalGrade
+    add a, b
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl]
+    ld hl, wInternalGradePoints
+    add a, [hl]
+    ld [wInternalGradePoints], a
+.IncreaseInternalGrade
+    ; Do we have 100 Grade Points?
+    ld a, [wInternalGradePoints]
+    cp a, 100
+    ret c ; If the Internal Grade Points is less than 100, return, we don't have to change our Grade
+    xor a, a ; Reset the points to 0 and increase the internal grade
+    ld [wInternalGradePoints], a
+    ld a, [wInternalGrade]
+    inc a
+    ld [wInternalGrade], a
+.IncreaseDisplayedGrade
+    ld a, GRADE_9 ; Load the lowest grade into a
+    ld b, a ; Then save it into b
+    ld hl, sTGM3GradeBoosts ; Make HL point to the Grade boosts table
+    ld a, [wInternalGrade] ; Get the offset
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl] ; Load the boosts into a...
+    add a, b ; ...and add them to a.
+    ld b, a ; Save the result and check if we have the same grade as before
+    ld a, [wDisplayedGrade]
+    cp a, b
+    ret z ; If the grade is the same, return.
+    ld a, b
+    ld [wDisplayedGrade], a ; Otherwise, set the grade.
+    ; ...Play the jingle.
+    ld a, SFX_RANKUP
+    call SFXEnqueue
+    ; Prepare the effect stuff
+    ld a, $0f
+    ld [wEffectTimer], a
+TGM3DecayRate:
+    ; Check if we can decrease the Grade points, if not, decrease the timer
+    ld a, [wDecayRate]
+    cp a, 0
+    jr z, .points
+    ld a, [hComboCt] ; If there is an active combo, do not decrease the counter, return instead
+    and a
+    ret z
+    dec a
+    ld [wDecayRate], a
+.points
+    ld a, [wInternalGradePoints] ; Do we have 0 grade points?
+    cp a, 0
+    ret z ; If so, return
+    dec a
+    cp a, 0 ; Do we have 0 now?
+    jr z, .lpoints ; If so, load the points, since we don't have any points to decay
+    ; Else, load the corresponding Decay Rate
+    ; Get the Decay Rate required
+    ld hl, sTGM3InternalGradeSystem
+    ld a, [wInternalGrade] ; Example: 3
+    cp a, 0 ; If it's 0, we don't need to do weird math.
+    jr z, .GetOffset
+    ld d, a ; ld d, 3
+    ld b, 5 
+    ld a, b ; ld a, 5
+    dec d ;dec 3 to 2, so we don't accidentally add more than intended
+:   add a, b ; 5+5 = 10 ; 10+5 = 15
+    dec d 
+    jr nz, :- ; go back if d isn't 0
+.GetOffset
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl] ; Load the rate into a...
+    ld [wDecayRate], a ; ... and then into the timer
+.lpoints
+    ld [wInternalGradePoints], a
+    ret 
 ENDC

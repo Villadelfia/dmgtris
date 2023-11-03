@@ -225,11 +225,13 @@ GradeInit::
     ld a, GRADE_NONE
     ld [wDisplayedGrade], a
 
-    ; TGM1 and DMGT are the exceptions.
+    ; TGM1, TGM3 and DMGT are the exceptions.
     ld a, [wSpeedCurveState]
     cp a, SCURVE_TGM1
     jr z, .grade9start
     cp a, SCURVE_DMGT
+    jr z, .grade9start
+    cp a, SCURVE_TGM3
     jr z, .grade9start
     jr .end
 
@@ -310,15 +312,15 @@ DecayGradeDelay::
 
     ; Get the four most significant figures of the score in BC as BCD.
 PrepareScore:
-    ld a, [hScore+3]
+    ld a, [hScore+5]
     ld b, a
-    ld a, [hScore+2]
+    ld a, [hScore+4]
     swap a
     or b
     ld c, a
-    ld a, [hScore+1]
+    ld a, [hScore+3]
     ld b, a
-    ld a, [hScore]
+    ld a, [hScore+2]
     swap a
     or b
     ld b, a

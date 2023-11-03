@@ -33,6 +33,20 @@ wSeconds:: ds 1
 wFrames:: ds 1
 
 
+SECTION "Time Data", ROM0
+sFramesToCS::
+    db $00, $02, $03, $05, $07, $10
+    db $12, $13, $15, $17, $18, $20
+    db $22, $23, $25, $27, $28, $30
+    db $32, $33, $35, $37, $38, $40
+    db $42, $43, $45, $47, $48, $50
+    db $52, $53, $55, $57, $58, $60
+    db $62, $63, $65, $67, $68, $70
+    db $72, $73, $75, $77, $78, $80
+    db $82, $83, $85, $87, $88, $90
+    db $92, $93, $95, $97, $98, $00
+
+
 SECTION "Time Functions", ROM0
     ; Zeroes all timers and gets the free-running timer ticking.
 TimeInit::
@@ -106,6 +120,17 @@ HandleTimers::
     cp a, MODE_PRE_GAME_OVER
     ret z
 
+    ld a, [wMinutes]
+    cp a, 99
+    jr nz, .go
+    ld a, [wSeconds]
+    cp a, 59
+    jr nz, .go
+    ld a, [wFrames]
+    cp a, 59
+    ret z
+
+.go
     ld a, [wFrames]
     inc a
     ld [wFrames], a

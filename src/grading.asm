@@ -312,15 +312,17 @@ DecayGradeDelay::
 
     ; Get the four most significant figures of the score in BC as BCD.
 PrepareScore:
-    ld a, [hScore+5]
+
+    ldh a, [hScore+SCORE_HUNDREDS]
     ld b, a
-    ld a, [hScore+4]
+    ldh a, [hScore+SCORE_THOUSANDS]
     swap a
     or b
     ld c, a
-    ld a, [hScore+3]
+    ldh a, [hScore+SCORE_TENTHOUSANDS]
     ld b, a
-    ld a, [hScore+2]
+    ldh a, [hScore+SCORE_HUNDREDTHOUSANDS]
+
     swap a
     or b
     ld b, a
@@ -459,10 +461,10 @@ UpdateGradeDMGT::
     ; What is our level multiplier?
     ; Running counter is in in D now.
 .levelmult
-    ld a, [hCLevel] ; thousands
+    ld a, [hCLevel+CLEVEL_THOUSANDS] ; thousands
     cp a, 1
     jr nc, .mult5
-    ld a, [hCLevel+1] ; hundreds
+    ld a, [hCLevel+CLEVEL_HUNDREDS] ; hundreds
     cp a, 7
     jr nc, .mult4
     cp a, 5
@@ -687,7 +689,7 @@ UpdateGradeTGM1:
 
 .maybegm
     ; Level needs to be 1000 or greater.
-    ld a, [hCLevel] ; Level, thousands digit.
+    ld a, [hCLevel+CLEVEL_THOUSANDS] ; Level, thousands digit.
     cp a, 1
     ret c
 
@@ -724,7 +726,7 @@ UpdateGradeDEAT:
     jr nz, .notm
 
     ; We should be GM if we're at or past level 1000.
-    ldh a, [hCLevel] ; Level, thousands digit.
+    ldh a, [hCLevel+CLEVEL_THOUSANDS] ; Level, thousands digit.
     cp a, 1
     ret c ; If less than 1000, return.
 
@@ -743,7 +745,7 @@ UpdateGradeDEAT:
 
 .notm
     ; If we're not M, check if we should be M.
-    ldh a, [hCLevel+1] ; Level, hundreds digit.
+    ldh a, [hCLevel+CLEVEL_HUNDREDS] ; Level, hundreds digit.
     cp a, 5
     ret c ; If less than 500, return.
 
@@ -788,13 +790,13 @@ UpdateGradeSHIR:
     ret z
 
     ; We don't give out a grade until level 100.
-    ldh a, [hCLevel+1] ; Level, hundreds digit.
+    ldh a, [hCLevel+CLEVEL_HUNDREDS] ; Level, hundreds digit.
     cp a, 0
     ret z
 
     ; Get the hundreds and thousands of the level as a hex number.
     ld b, a ; Hundreds
-    ldh a, [hCLevel] ; Thousands
+    ldh a, [hCLevel+CLEVEL_THOUSANDS] ; Thousands
     swap a
     or b
 

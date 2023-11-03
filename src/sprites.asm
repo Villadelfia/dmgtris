@@ -40,6 +40,8 @@ wSPRScore3::   ds 4
 wSPRScore4::   ds 4
 wSPRScore5::   ds 4
 wSPRScore6::   ds 4
+wSPRScore7::   ds 4
+wSPRScore8::   ds 4
 wSPRCLevel1::  ds 4
 wSPRCLevel2::  ds 4
 wSPRCLevel3::  ds 4
@@ -56,16 +58,14 @@ wSPRModeRNG::  ds 4
 wSPRModeRot::  ds 4
 wSPRModeDrop:: ds 4
 wSPRModeHiG::  ds 4
-wGrade0::      ds 4
-wGrade1::      ds 4
+wSPRGrade1::   ds 4
+wSPRGrade2::   ds 4
 wUnused0::     ds 4
 wUnused1::     ds 4
 wUnused2::     ds 4
 wUnused3::     ds 4
 wUnused4::     ds 4
 wUnused5::     ds 4
-wUnused6::     ds 4
-wUnused7::     ds 4
 ENDU
 
 
@@ -381,6 +381,64 @@ ApplyHold::
     ret
 
 
+
+
+    ; Generic function to draw a BCD number (8 digits) as 8 sprites.
+    ; Address of first sprite in hl.
+    ; Address of first digit in de.
+ApplyNumbers8::
+    inc hl
+    inc hl
+    ld bc, 4
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    ret
+
+
     ; Generic function to draw a BCD number (6 digits) as 6 sprites.
     ; Address of first sprite in hl.
     ; Address of first digit in de.
@@ -528,6 +586,30 @@ SetNumberSpritePositions::
     ld [hl], a
     inc hl
     inc hl
+    ld b, a
+    ld a, OAMF_PAL1 | $07
+    ld [hl], a
+    ld a, b
+    add a, 8
+
+    ld hl, wSPRScore7
+    ld [hl], SCORE_BASE_Y
+    inc hl
+    ld [hl], a
+    inc hl
+    inc hl
+    ld b, a
+    ld a, OAMF_PAL1 | $07
+    ld [hl], a
+    ld a, b
+    add a, 8
+
+    ld hl, wSPRScore8
+    ld [hl], SCORE_BASE_Y
+    inc hl
+    ld [hl], a
+    inc hl
+    inc hl
     ld a, OAMF_PAL1 | $07
     ld [hl], a
 
@@ -633,22 +715,22 @@ SetNumberSpritePositions::
 GradeRendering::
     ; Set the Y position of the grade objects.
     ld a, GRADE_BASE_Y
-    ld [wGrade0], a
-    ld [wGrade1], a
+    ld [wSPRGrade1], a
+    ld [wSPRGrade2], a
 
     ; Set the X position of the grade objects.
     ldh a, [rSCX]
     ld b, a
     ld a, GRADE_BASE_X
     sub a, b
-    ld [wGrade0+1], a
+    ld [wSPRGrade1+1], a
     add a, 9
-    ld [wGrade1+1], a
+    ld [wSPRGrade2+1], a
 
     ; Set the grades to blank
     ld a, TILE_BLANK
-    ld [wGrade0+2], a
-    ld [wGrade1+2], a
+    ld [wSPRGrade1+2], a
+    ld [wSPRGrade2+2], a
 
     ; If our grade is GRADE_NONE, we don't need to do anything else.
     ld a, [wDisplayedGrade]
@@ -667,19 +749,19 @@ GradeRendering::
 
     ; Cycle the palette of the grade objects.
 .effect
-    ld a, [wGrade0+3]
+    ld a, [wSPRGrade1+3]
     inc a
     and a, OAMF_PALMASK
     or a, OAMF_PAL1
-    ld [wGrade0+3], a
-    ld [wGrade1+3], a
+    ld [wSPRGrade1+3], a
+    ld [wSPRGrade2+3], a
     jr .drawgrade
 
     ; Set the palette of the grade objects to the normal palette.
 .noeffect
     ld a, 7 | OAMF_PAL1
-    ld [wGrade0+3], a
-    ld [wGrade1+3], a
+    ld [wSPRGrade1+3], a
+    ld [wSPRGrade2+3], a
 
     ; Do we draw this as a regular grade?
 .drawgrade
@@ -692,7 +774,7 @@ GradeRendering::
     ld b, a
     ld a, "9"
     sub a, b
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 .sgrade
@@ -702,13 +784,13 @@ GradeRendering::
 
     ; Draw as S grade.
     ld a, "S"
-    ld [wGrade0+2], a
+    ld [wSPRGrade1+2], a
     ld a, [wDisplayedGrade]
     sub a, GRADE_S1
     ld b, a
     ld a, "1"
     add a, b
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 .hisgrade
@@ -718,13 +800,13 @@ GradeRendering::
 
     ; Draw as high S grade.
     ld a, "S"
-    ld [wGrade0+2], a
+    ld [wSPRGrade1+2], a
     ld a, [wDisplayedGrade]
     sub a, GRADE_S10
     ld b, a
     ld a, "a"
     add a, b
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 .mgrade
@@ -734,13 +816,13 @@ GradeRendering::
 
     ; Draw as m grade.
     ld a, "m"
-    ld [wGrade0+2], a
+    ld [wSPRGrade1+2], a
     ld a, [wDisplayedGrade]
     sub a, GRADE_M1
     ld b, a
     ld a, "1"
     add a, b
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 .lettergrade
@@ -750,7 +832,7 @@ GradeRendering::
 
     ; Draw as MX grade.
     ld a, "M"
-    ld [wGrade0+2], a
+    ld [wSPRGrade1+2], a
     ld a, [wDisplayedGrade]
     cp a, GRADE_M
     ret z ; No second letter for M.
@@ -766,30 +848,30 @@ GradeRendering::
 
 .mk
     ld a, "K"
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 .mv
     ld a, "V"
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 .mo
     ld a, "O"
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 .mm
     ld a, "M"
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 .gmgrade
     ; Draw as GM grade.
     ld a, "G"
-    ld [wGrade0+2], a
+    ld [wSPRGrade1+2], a
     ld a, "M"
-    ld [wGrade1+2], a
+    ld [wSPRGrade2+2], a
     ret
 
 

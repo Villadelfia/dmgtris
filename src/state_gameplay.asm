@@ -614,7 +614,7 @@ GamePlayEventLoopHandlerB::
 
     ld hl, wSPRScore1
     ld de, hScore
-    call ApplyNumbers6
+    call ApplyNumbers8
 
     ld hl, wSPRCLevel1
     ld de, hCLevel
@@ -1243,7 +1243,7 @@ GamePlayBigEventLoopHandlerB:
 
     ld hl, wSPRScore1
     ld de, hScore
-    call ApplyNumbers6
+    call ApplyNumbers8
 
     ld hl, wSPRCLevel1
     ld de, hCLevel

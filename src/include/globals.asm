@@ -393,6 +393,11 @@ DEF NLEVEL_THOUSANDS        EQU 0
 DEF NLEVEL_HUNDREDS         EQU 1
 DEF NLEVEL_TENS             EQU 2
 DEF NLEVEL_ONES             EQU 3
+DEF LEVEL_MULT_1A           EQU $02
+DEF LEVEL_MULT_1B           EQU $50
+DEF LEVEL_MULT_2A           EQU $05
+DEF LEVEL_MULT_3A           EQU $07
+DEF LEVEL_MULT_3B           EQU $50
 
 ; Bone Skin
 DEF BONE                EQU $68

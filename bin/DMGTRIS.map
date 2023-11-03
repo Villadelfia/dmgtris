@@ -357,46 +357,46 @@ ROM0 bank #0:
 	         $27eb = EventLoopPostHandler
 	         $27ed = EventLoopPostHandler.wvb_u3
 	         $27ff = EventLoopPostHandler.vblankjumps
-	SECTION: $2808-$2875 ($006e bytes) ["Title Function Trampolines"]
-	         $2808 = SwitchToTitle
-	         $2812 = TitleEventLoopHandler
-	         $281c = TitleVBlankHandler
-	         $2826 = DrawOption6
-	SECTION: $2876-$28de ($0069 bytes) ["Time Functions"]
-	         $2876 = TimeInit
-	         $288b = ResetGameTime
-	         $2896 = CheckTorikan
-	         $28ad = CheckTorikan.failure
-	         $28af = CheckTorikan.success
-	         $28b2 = HandleTimers
-	SECTION: $28df-$2930 ($0052 bytes) ["Tile Functions"]
-	         $28df = LoadTitleTiles
-	         $28fd = LoadGameplayTiles
-	         $2913 = LoadGameplayTiles.gbc
-	         $2922 = LoadGameplayTiles.dmg
-	SECTION: $2931-$295e ($002e bytes) ["Memory Functions"]
-	         $2931 = UnsafeMemCopy
-	         $293a = SafeMemCopy.wvr_u1
-	         $293a = SafeMemCopy
-	         $2949 = UnsafeMemSet
-	         $2951 = SafeMemSet
-	         $2951 = SafeMemSet.wvr_u2
-	SECTION: $295f-$2986 ($0028 bytes) ["Gameplay Function Trampolines"]
-	         $295f = SwitchToGameplay
-	         $2969 = SwitchToGameplayBig
-	         $2973 = GamePlayEventLoopHandler
-	         $297d = GamePlayBigEventLoopHandler
-	SECTION: $2987-$29a8 ($0022 bytes) ["OAM Functions"]
-	         $2987 = CopyOAMHandler
-	         $2993 = ClearOAM
-	SECTION: $29a9-$29c1 ($0019 bytes) ["Interrupt Initialization Functions"]
-	         $29a9 = IntrInit
-	         $29ad = InitializeLCDCInterrupt
-	SECTION: $29c2-$29cb ($000a bytes) ["OAM DMA Code"]
-	         $29c2 = OAMDMA
-	         $29cc = OAMDMAEnd
-	EMPTY: $29cc-$3fff ($1634 bytes)
-	TOTAL EMPTY: $163f bytes
+	SECTION: $2808-$287b ($0074 bytes) ["Time Functions"]
+	         $2808 = TimeInit
+	         $281d = ResetGameTime
+	         $2828 = CheckTorikan
+	         $283f = CheckTorikan.failure
+	         $2841 = CheckTorikan.success
+	         $2844 = HandleTimers
+	SECTION: $287c-$28e9 ($006e bytes) ["Title Function Trampolines"]
+	         $287c = SwitchToTitle
+	         $2886 = TitleEventLoopHandler
+	         $2890 = TitleVBlankHandler
+	         $289a = DrawOption6
+	SECTION: $28ea-$293b ($0052 bytes) ["Tile Functions"]
+	         $28ea = LoadTitleTiles
+	         $2908 = LoadGameplayTiles
+	         $291e = LoadGameplayTiles.gbc
+	         $292d = LoadGameplayTiles.dmg
+	SECTION: $293c-$2969 ($002e bytes) ["Memory Functions"]
+	         $293c = UnsafeMemCopy
+	         $2945 = SafeMemCopy.wvr_u1
+	         $2945 = SafeMemCopy
+	         $2954 = UnsafeMemSet
+	         $295c = SafeMemSet
+	         $295c = SafeMemSet.wvr_u2
+	SECTION: $296a-$2991 ($0028 bytes) ["Gameplay Function Trampolines"]
+	         $296a = SwitchToGameplay
+	         $2974 = SwitchToGameplayBig
+	         $297e = GamePlayEventLoopHandler
+	         $2988 = GamePlayBigEventLoopHandler
+	SECTION: $2992-$29b3 ($0022 bytes) ["OAM Functions"]
+	         $2992 = CopyOAMHandler
+	         $299e = ClearOAM
+	SECTION: $29b4-$29cc ($0019 bytes) ["Interrupt Initialization Functions"]
+	         $29b4 = IntrInit
+	         $29b8 = InitializeLCDCInterrupt
+	SECTION: $29cd-$29d6 ($000a bytes) ["OAM DMA Code"]
+	         $29cd = OAMDMA
+	         $29d7 = OAMDMAEnd
+	EMPTY: $29d7-$3fff ($1629 bytes)
+	TOTAL EMPTY: $1634 bytes
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]
@@ -2408,7 +2408,7 @@ HRAM bank #0:
 	TOTAL EMPTY: $0006 bytes
 
 SUMMARY:
-	ROM0: 10689 bytes used / 5695 free
+	ROM0: 10700 bytes used / 5684 free
 	ROMX: 56508 bytes used / 41796 free in 6 banks
 	SRAM: 14 bytes used / 8178 free in 1 bank
 	WRAM0: 3503 bytes used / 593 free

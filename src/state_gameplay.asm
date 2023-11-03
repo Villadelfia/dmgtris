@@ -24,18 +24,6 @@ INCLUDE "res/gameplay_data.inc"
 INCLUDE "res/gameplay_big_data.inc"
 
 
-DEF MODE_LEADY              EQU 0
-DEF MODE_GO                 EQU 3
-DEF MODE_POSTGO             EQU 6
-DEF MODE_PREFETCHED_PIECE   EQU 9
-DEF MODE_SPAWN_PIECE        EQU 12
-DEF MODE_PIECE_IN_MOTION    EQU 15
-DEF MODE_DELAY              EQU 18
-DEF MODE_GAME_OVER          EQU 21
-DEF MODE_PRE_GAME_OVER      EQU 24
-DEF MODE_PAUSED             EQU 27
-
-
 SECTION "High Gameplay Variables", HRAM
 hCurrentPiece:: ds 1
 hCurrentPieceX:: ds 1
@@ -43,7 +31,7 @@ hCurrentPieceY:: ds 1
 hCurrentPieceRotationState:: ds 1
 hHeldPiece:: ds 1
 hHoldSpent:: ds 1
-hMode: ds 1
+hMode:: ds 1
 hModeCounter: ds 1
 hPrePause: ds 1
 hRequestedJingle: ds 1

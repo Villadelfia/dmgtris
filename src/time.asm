@@ -98,6 +98,14 @@ HandleTimers::
     and 1
     ldh [hEvenFrame], a
 
+    ldh a, [hMode]
+    cp a, MODE_PAUSED
+    ret z
+    cp a, MODE_GAME_OVER
+    ret z
+    cp a, MODE_PRE_GAME_OVER
+    ret z
+
     ld a, [wFrames]
     inc a
     ld [wFrames], a

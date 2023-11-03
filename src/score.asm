@@ -23,10 +23,9 @@ INCLUDE "globals.asm"
 
 
 SECTION "Score Variables", HRAM
-hScore:: ds 6
-hScoreIncrement:: ds 2
-hScoreIncrementBCD:: ds 6
-hScoreIncrementHead:: ds 1
+hScore::             ds 8
+hScoreIncrement::    ds 2
+hScoreIncrementBCD:: ds 8
 
 
 SECTION "Score Functions", ROM0
@@ -39,6 +38,8 @@ ScoreInit::
     ldh [hScore+3], a
     ldh [hScore+4], a
     ldh [hScore+5], a
+    ldh [hScore+6], a
+    ldh [hScore+7], a
     ldh [hScoreIncrement], a
     ldh [hScoreIncrement+1], a
     ld a, $FF
@@ -48,6 +49,8 @@ ScoreInit::
     ldh [hScoreIncrementBCD+3], a
     ldh [hScoreIncrementBCD+4], a
     ldh [hScoreIncrementBCD+5], a
+    ldh [hScoreIncrementBCD+6], a
+    ldh [hScoreIncrementBCD+7], a
     ret
 
 
@@ -61,6 +64,8 @@ IncreaseScore::
     ldh [hScoreIncrementBCD+3], a
     ldh [hScoreIncrementBCD+4], a
     ldh [hScoreIncrementBCD+5], a
+    ldh [hScoreIncrementBCD+6], a
+    ldh [hScoreIncrementBCD+7], a
 
     ; First convert to BCD.
     ldh a, [hScoreIncrement]
@@ -112,17 +117,21 @@ IncreaseScore::
     ld [hl+], a
     ld [hl], a
 
-    ld de, hScoreIncrementBCD+5
+    ld hl, hScoreIncrementBCD+7
     ld b, 0
     ld a, $FF
-:   cp a, b
+:   cp a, [hl]
     jr nz, .preAddDigit
     inc b
-    dec de
+    dec hl
     jr :-
 
 .preAddDigit
     ; B contains the amount of times we need to shift the BCD score to the right.
+    ldh a, [hScoreIncrementBCD+6]
+    ldh [hScoreIncrementBCD+7], a
+    ldh a, [hScoreIncrementBCD+5]
+    ldh [hScoreIncrementBCD+6], a
     ldh a, [hScoreIncrementBCD+4]
     ldh [hScoreIncrementBCD+5], a
     ldh a, [hScoreIncrementBCD+3]
@@ -136,9 +145,9 @@ IncreaseScore::
     xor a, a
     ldh [hScoreIncrementBCD], a
     dec b
-    jr z, :-
-    ld hl, hScore+5
-    ld de, hScoreIncrementBCD+5
+    jr nz, .preAddDigit
+    ld hl, hScore+7
+    ld de, hScoreIncrementBCD+7
 
     ; DE is now pointing to the last digit of the BCD score.
     ; HL points at the last digit of the displayed score.
@@ -156,8 +165,8 @@ IncreaseScore::
     cp a, $0A
     jr c, .nextDigit
 
-    ; Except if this is the 6th digit.
-    ld a, 5
+    ; Except if this is the 8th digit.
+    ld a, 7
     cp a, b
     jr z, .nextDigit
 
@@ -175,7 +184,7 @@ IncreaseScore::
     dec hl
 
     ; Check if we're out of numbers.
-    ld a, 5
+    ld a, 7
     cp a, b
     jr nz, .addDigit
 

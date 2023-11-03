@@ -4341,7 +4341,6 @@ BigFieldDelay::
     sub a, 2          ; - 2
     ldh [hComboCt], a
 
-
     ; Line clear delay.
     ; Count down the delay. If we're out of delay, clear the lines and go to LINE_ARE.
 .lineclear

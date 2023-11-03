@@ -937,6 +937,7 @@ TGM3DecayRate:
     ret z
     dec a
     ld [wDecayRate], a
+    ret
 .points
     ld a, [wInternalGradePoints] ; Do we have 0 grade points?
     cp a, 0

@@ -141,7 +141,6 @@ sTGM3ComboMultipliers:
     db 10, 2, 2, 3, 3
 
 sTGM3LevelMultiplier:
-    db 1 ; 000-249
     db 2 ; 250-499
     db 3 ; 500-749
     db 4 ; 750-999
@@ -312,7 +311,6 @@ DecayGradeDelay::
 
     ; Get the four most significant figures of the score in BC as BCD.
 PrepareScore:
-
     ldh a, [hScore+SCORE_HUNDREDS]
     ld b, a
     ldh a, [hScore+SCORE_THOUSANDS]
@@ -322,7 +320,6 @@ PrepareScore:
     ldh a, [hScore+SCORE_TENTHOUSANDS]
     ld b, a
     ldh a, [hScore+SCORE_HUNDREDTHOUSANDS]
-
     swap a
     or b
     ld b, a
@@ -886,15 +883,129 @@ UpdateGradeTGM3:
 .GetOffset
     ld a, [hLineClearCt]
     cp a, 0 ; If no lines were cleared, we don't need to do anything, just continue
-    jr z, .IncreaseInternalGrade
+    jp z, .IncreaseInternalGrade
     add a, b
     ld b, 0
     ld c, a
     add hl, bc
     ld a, [hl]
+    ld e, a ; We will use almost all registers to get the multipliers, so we need to keep the points we should add in a safe spot 
+    jp .multipliers
+.loadpoints    
     ld hl, wInternalGradePoints
     add a, [hl]
     ld [wInternalGradePoints], a
+    jp .IncreaseInternalGrade
+.multipliers
+    ; There are some multipliers to help us increase our grade faster
+    ld hl, sTGM3ComboMultipliers
+    ld a, [hComboCt] ; Example: 3
+    cp a, 0
+    
+    ld d, a ; ld d, 3
+    ld b, 5 
+    ld a, b ; ld a, 5
+    dec d ;dec 3 to 2, so we don't accidentally add more than intended
+:   add a, b ; 5+5 = 10 ; 10+5 = 15
+    dec d 
+    jr nz, :- ; go back if d isn't 0
+    ld b, a ; ld b, 15
+    ld a, [hLineClearCt]
+    cp a, 0 ; If no lines were cleared, we don't need to do anything, just continue
+    jr z, .levelmultiplier
+    add a, b
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl] ; Now we got our multiplier!, let's apply it.
+    dec a ; A multiplier of 1 shouldn't change anything, so let's get rid of them
+    cp a, 0
+    jr z, .levelmultiplier; Continue
+    ld b, a ; Load the multiplier into B
+    ld a, e ; Remember the points we got earlier?, here they are
+    ld c, a ; We will add from C
+:   add a, c
+    dec b
+    jr nz, :-
+    ; Finally!, we can now load the points, right?, NO!, there is yet another multiplier...
+    ; We have to keep the points safe again...
+    ld e, a
+.levelmultiplier
+    ; Make HL point to the table that contains the level multipliers
+    ld hl, sTGM3LevelMultiplier
+    ; Get our level into BC
+    ld a, [hCLevel+3]
+    ld b, a
+    ld a, [hCLevel+2]
+    swap a
+    or b
+    ld c, a
+    ld a, [hCLevel+1]
+    ld b, a
+    ld a, [hCLevel]
+    swap a
+    or b
+    ld b, a
+.Level750
+    ; Is our level 750 or higher?
+    ld a, b
+    cp a, LEVEL_MULT_3A
+    ; If B is less than 7, that means we are not even in level 700, so check for 500
+    jr c, .Level500
+    ; If B is NOT less than 7, we might be in level 750 or greater, so check the remaining digits.
+    ld a, c
+    cp a, LEVEL_MULT_3B
+    ; If C is less than 50, we didn't reach level 750 yet, but we are for sure in the 7** Section, load the corresponding offset.
+    jp .under750
+    ; If C is equal or greater than 50, then congrats!, load the corresponding offset
+    ld b, 0
+    ld c, 2 
+    add hl, bc
+    ld a, [hl]
+    jp .Multiply
+.under750
+    ld b, 0
+    ld c, 1
+    add hl, bc
+    ld a, [hl]
+.Level500
+    ; Is our level 500 or higher?
+    ld a, b
+    cp a, LEVEL_MULT_2A
+    ; If B is less than 5, that means we are not even in level 500, so check for 250
+    jr c, .Level250
+    ; If B is NOT less than 5, we are in level 500 or greater
+    ld b, 0
+    ld c, 2 
+    add hl, bc
+    ld a, [hl]
+    jp .Multiply
+.Level250 ; There is no Offset, so just get the multiplier
+    ; Is our level 750 or higher?
+    ld a, b
+    cp a, LEVEL_MULT_1A
+    ; If B is less than 2, that means we are not even in level 200, so no multiplier
+    jr c, .under250
+    ; If B is NOT less than 2, we might be in level 250 or greater, so check the remaining digits.
+    ld a, c
+    cp a, LEVEL_MULT_1B
+    ; If C is less than 50, we didn't reach level 250 yet, so no multiplier
+    jp .under250
+    ; If C is equal or greater than 50, then congrats!, load the corresponding offset (I said there is no Offset!)
+    ld a, [hl]
+    jp .Multiply
+.under250 ; There is no multiplier, so just load the points
+    ld a, e
+    jp .loadpoints
+.Multiply ; FINALLY!!!!!, This took forever!
+    ld b, a ; Load the multiplier into B
+    ld a, e ; Remember the points we got earlier?, here they are... Again.
+    ld c, a ; We will add from C
+:   add a, c
+    dec b
+    jr nz, :-
+    ; AND NOW WE ARE DONE!, LOAD THOSE POINTS!
+    jp .loadpoints
 .IncreaseInternalGrade
     ; Do we have 100 Grade Points?
     ld a, [wInternalGradePoints]
@@ -932,9 +1043,12 @@ TGM3DecayRate:
     ld a, [wDecayRate]
     cp a, 0
     jr z, .points
+    ld b, a ; Save the timer
     ld a, [hComboCt] ; If there is an active combo, do not decrease the counter, return instead
+    dec a
     and a
-    ret z
+    ret nz
+    ld a, b ; Load the timer back
     dec a
     ld [wDecayRate], a
     ret
@@ -945,7 +1059,8 @@ TGM3DecayRate:
     dec a
     cp a, 0 ; Do we have 0 now?
     jr z, .lpoints ; If so, load the points, since we don't have any points to decay
-    ; Else, load the corresponding Decay Rate
+    ; Else, load the points and the corresponding Decay Rate
+    ld [wInternalGradePoints], a
     ; Get the Decay Rate required
     ld hl, sTGM3InternalGradeSystem
     ld a, [wInternalGrade] ; Example: 3
@@ -964,6 +1079,7 @@ TGM3DecayRate:
     add hl, bc
     ld a, [hl] ; Load the rate into a...
     ld [wDecayRate], a ; ... and then into the timer
+    ret
 .lpoints
     ld [wInternalGradePoints], a
     ret 

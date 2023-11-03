@@ -1764,7 +1764,16 @@ FieldProcess::
 
 .postghost
     ; If the lock delay is at the highest value, draw the piece normally.
-    ldh a, [hCurrentPiece]
+    ld a, [wSpeedCurveState]
+    cp a, 4
+    jr nz, :+
+    ld a, [hCLevel]
+    cp a, 1
+    jr c, :+
+    ld a, BONE
+    ld [hWantedTile], a
+    jp .drawpiece 
+:   ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b
     ldh [hWantedTile], a
@@ -3976,7 +3985,16 @@ BigFieldProcess::
 
 .postghost
     ; If the lock delay is at the highest value, draw the piece normally.
-    ldh a, [hCurrentPiece]
+    ld a, [wSpeedCurveState]
+    cp a, 4
+    jr nz, :+
+    ld a, [hCLevel]
+    cp a, 1
+    jr c, :+
+    ld a, BONE
+    ld [hWantedTile], a
+    jp .drawpiece 
+:   ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b
     ldh [hWantedTile], a
@@ -4340,6 +4358,7 @@ BigFieldDelay::
     add a, b          ; + lines
     sub a, 2          ; - 2
     ldh [hComboCt], a
+
 
     ; Line clear delay.
     ; Count down the delay. If we're out of delay, clear the lines and go to LINE_ARE.

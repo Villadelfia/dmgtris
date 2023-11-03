@@ -172,6 +172,7 @@ GamePlayEventLoopHandlerB::
 
     ; Draw "READY" and wait a bit.
 .leadyMode
+    call ResetGameTime
     ldh a, [hModeCounter]
     cp a, LEADY_TIME
     jr nz, .firstleadyiterskip
@@ -196,6 +197,7 @@ GamePlayEventLoopHandlerB::
 
     ; Draw "GO" and wait a bit.
 .goMode
+    call ResetGameTime
     ldh a, [hModeCounter]
     dec a
     jr nz, .notdonego
@@ -626,6 +628,7 @@ GamePlayEventLoopHandlerB::
 
     call SetNumberSpritePositions
     call ApplyTells
+    call ApplyTime
 
     jp GBCGameplayProcess
 
@@ -806,6 +809,7 @@ GamePlayBigEventLoopHandlerB:
 
     ; Draw "READY" and wait a bit.
 .leadyMode
+    call ResetGameTime
     ldh a, [hModeCounter]
     cp a, LEADY_TIME
     jr nz, .firstleadyiterskip
@@ -830,6 +834,7 @@ GamePlayBigEventLoopHandlerB:
 
     ; Draw "GO" and wait a bit.
 .goMode
+    call ResetGameTime
     ldh a, [hModeCounter]
     dec a
     jr nz, .notdonego
@@ -1255,6 +1260,7 @@ GamePlayBigEventLoopHandlerB:
 
     call SetNumberSpritePositions
     call ApplyTells
+    call ApplyTime
 
     jp GBCBigGameplayProcess
 

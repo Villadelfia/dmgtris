@@ -60,13 +60,14 @@ wSPRModeDrop:: ds 4
 wSPRModeHiG::  ds 4
 wSPRGrade1::   ds 4
 wSPRGrade2::   ds 4
-wUnused0::     ds 4
-wUnused1::     ds 4
-wUnused2::     ds 4
-wUnused3::     ds 4
-wUnused4::     ds 4
-wUnused5::     ds 4
+wSPRTimeM1::   ds 4
+wSPRTimeM2::   ds 4
+wSPRTimeS1::   ds 4
+wSPRTimeS2::   ds 4
+wSPRTimeCS1::  ds 4
+wSPRTimeCS2::  ds 4
 ENDU
+wScratch:      ds 2
 
 
 SECTION "OAM DMA Code", ROM0
@@ -381,6 +382,146 @@ ApplyHold::
     ret
 
 
+    ; Draw the time.
+ApplyTime::
+    ; Set the Y position of the time objects.
+    ld a, TIME_BASE_Y
+    ld [wSPRTimeM1], a
+    ld [wSPRTimeM2], a
+    ld [wSPRTimeS1], a
+    ld [wSPRTimeS2], a
+    ld [wSPRTimeCS1], a
+    ld [wSPRTimeCS2], a
+
+    ; Set the X position of the time objects.
+    ldh a, [rSCX]
+    ld b, a
+    ld a, TIME_BASE_X
+    sub a, b
+    ld [wSPRTimeM1+1], a
+    add a, 8
+    ld [wSPRTimeM2+1], a
+    add a, 12
+    ld [wSPRTimeS1+1], a
+    add a, 8
+    ld [wSPRTimeS2+1], a
+    add a, 12
+    ld [wSPRTimeCS1+1], a
+    add a, 8
+    ld [wSPRTimeCS2+1], a
+
+    ; Set the palette of the time objects.
+    ld a, OAMF_PAL0 | $07
+    ld [wSPRTimeM1+3], a
+    ld [wSPRTimeM2+3], a
+    ld [wSPRTimeS1+3], a
+    ld [wSPRTimeS2+3], a
+    ld [wSPRTimeCS1+3], a
+    ld [wSPRTimeCS2+3], a
+
+    ; Minutes. Hex to BCD.
+    ld a, [wMinutes]
+    ld c, a
+    ld b, 8
+    xor a, a
+.loop0
+    sla c
+    adc a, a
+    daa
+    dec b
+    jr nz, .loop0
+
+    ; Save to scratch.
+    ld b, a
+    and a, $0F
+    ld [wScratch+1], a
+    ld a, b
+    and a, $F0
+    swap a
+    ld [wScratch], a
+
+    ; Apply to sprites.
+    ld de, wScratch
+    ld hl, wSPRTimeM1+2
+    ld bc, 4
+    ld a, [de]
+    add a, TILE_SMALL_0
+    ld [hl], a
+    add hl, bc
+    inc de
+    ld a, [de]
+    add a, TILE_SMALL_0
+    ld [hl], a
+
+    ; Seconds. Hex to BCD.
+    ld a, [wSeconds]
+    ld c, a
+    ld b, 8
+    xor a, a
+.loop1
+    sla c
+    adc a, a
+    daa
+    dec b
+    jr nz, .loop1
+
+    ; Save to scratch.
+    ld b, a
+    and a, $0F
+    ld [wScratch+1], a
+    ld a, b
+    and a, $F0
+    swap a
+    ld [wScratch], a
+
+    ; Apply to sprites.
+    ld de, wScratch
+    ld hl, wSPRTimeS1+2
+    ld bc, 4
+    ld a, [de]
+    add a, TILE_SMALL_0
+    ld [hl], a
+    add hl, bc
+    inc de
+    ld a, [de]
+    add a, TILE_SMALL_0
+    ld [hl], a
+
+    ; Centiseconds. Frames using LUT.
+    ld a, [wFrames]
+    ld c, a
+    ld b, 0
+    ld hl, sFramesToCS
+    add hl, bc
+    ld a, [hl]
+
+    ; Save to scratch.
+    ld b, a
+    and a, $0F
+    ld [wScratch+1], a
+    ld a, b
+    and a, $F0
+    swap a
+    ld [wScratch], a
+
+    ; Apply to sprites.
+    ld de, wScratch
+    ld hl, wSPRTimeCS1+2
+    ld bc, 4
+    ld a, [de]
+    add a, TILE_SMALL_0
+    ld [hl], a
+    add hl, bc
+    inc de
+    ld a, [de]
+    add a, TILE_SMALL_0
+    ld [hl], a
+
+
+
+
+
+    ret
 
 
     ; Generic function to draw a BCD number (8 digits) as 8 sprites.
@@ -481,6 +622,7 @@ ApplyNumbers6::
     add a, TILE_0
     ld [hl], a
     ret
+
 
     ; Generic function to draw a BCD number (4 digits) as 4 sprites.
     ; Address of first sprite in hl.
@@ -711,6 +853,7 @@ SetNumberSpritePositions::
     ld a, OAMF_PAL1 | $07
     ld [hl], a
     ret
+
 
 GradeRendering::
     ; Set the Y position of the grade objects.

@@ -72,6 +72,7 @@ CHARMAP "b", 208
 CHARMAP "c", 209
 CHARMAP "d", 210
 CHARMAP "m", 211
+CHARMAP ":", 212
 
 
 ; Waits for PPU mode to be 0 or 1.

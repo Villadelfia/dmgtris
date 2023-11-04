@@ -38,6 +38,9 @@ wSRate:                ds 1
 wDRate:                ds 1
 wTRate:                ds 1
 wQRate:                ds 1
+wPrevCOOL:             ds 3
+wCOOLIsActive:         ds 1    
+wSubgrade:             ds 1
 
 
 SECTION "Grading Data", ROM0
@@ -168,6 +171,13 @@ sTGM3REGRETConditions:
     db 0, 50
     db 0, 50
 
+sTGM3CHILStaffrollGrading: ;subgrades awarded per line clear
+    db 1 ;Single
+    db 2 ;Double
+    db 3 ;Triple
+    db 10 ;Tetris
+    db 16 ;Clear
+
 sDMGTGrading:
     db 125, 10, 20, 40, 50 ; Grade 9   — frames/decay, single base, double base, triple base, tetris base
     db 80,  10, 20, 30, 40 ; Grade 8   — frames/decay, single base, double base, triple base, tetris base
@@ -219,18 +229,21 @@ GradeInit::
     ld [wEffectTimer], a
     ld [wDecayCounter], a
     ld [wGradeGauge], a
+    ld [wSubgrade], a
 
     ; Most modes begin ungraded.
     ld a, GRADE_NONE
     ld [wDisplayedGrade], a
 
-    ; TGM1, TGM3 and DMGT are the exceptions.
+    ; TGM1, TGM3, CHIL and DMGT are the exceptions.
     ld a, [wSpeedCurveState]
     cp a, SCURVE_TGM1
     jr z, .grade9start
     cp a, SCURVE_DMGT
     jr z, .grade9start
     cp a, SCURVE_TGM3
+    jr z, .grade9start
+    cp a, SCURVE_CHIL
     jr z, .grade9start
     jr .end
 
@@ -260,7 +273,7 @@ UpdateGrade::
     jp UpdateGradeTGM3 ;TGM3
     jp UpdateGradeDEAT ;DEAT
     jp UpdateGradeSHIR ;SHIR
-    no_jump            ;CHIL
+    jp UpdateGradeCHIL ;CHIL
 
 
     ; Jumps to the grade decay function for the current mode.
@@ -1083,4 +1096,108 @@ TGM3DecayRate:
 .lpoints
     ld [wInternalGradePoints], a
     ret 
+
+UpdateGradeCHIL:
+    ; Make HL Point to the Staffroll Table
+    ld hl, sTGM3CHILStaffrollGrading
+    ; Get the offset, if no lines were cleared, return
+    ld a, [hLineClearCt]
+    and a
+    ret z
+    dec a
+    ld b, 0 
+    ld c, a
+    add hl, bc
+    ; Load the value into A
+    ld a, [hl]
+    ; And then add that to the subgrade variable
+    ld b, a
+    ld a, [wSubgrade]
+    add a, b
+    ld [wSubgrade], a
+    ; If the Subgrade is $a or higher (unless our grade is an S grade or higher), increase the grade and keep the remainder
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_S1
+    jr c, .normalgrade
+    cp a, GRADE_M1
+    jr c, .sgrade 
+    cp a, GRADE_M
+    jr c, .mgrade
+    cp a, GRADE_GM
+    jr c, .lettergrade
+    ret z
+.normalgrade
+    ld a, [wSubgrade]
+    cp a, $a
+    ret c
+    sub a, $a
+    ld [wSubgrade], a
+    ld a, [wDisplayedGrade]
+    inc a
+    ld [wDisplayedGrade], a
+    ; ...Play the jingle.
+    ld a, SFX_RANKUP
+    call SFXEnqueue
+    ; Prepare the effect stuff
+    ld a, $0f
+    ld [wEffectTimer], a
+    ret
+.sgrade
+    ld a, [wSubgrade]
+    cp a, $14
+    ret c
+    sub a, $14
+    ld [wSubgrade], a
+    ld a, [wDisplayedGrade]
+    inc a
+    ld [wDisplayedGrade], a
+    ; ...Play the jingle.
+    ld a, SFX_RANKUP
+    call SFXEnqueue
+    ; Prepare the effect stuff
+    ld a, $0f
+    ld [wEffectTimer], a
+    ret
+.mgrade
+    ld a, [wSubgrade]
+    cp a, $1e
+    ret c
+    sub a, $1e
+    ld [wSubgrade], a
+    ld a, [wDisplayedGrade]
+    inc a
+    ld [wDisplayedGrade], a
+    ; ...Play the jingle.
+    ld a, SFX_RANKUP
+    call SFXEnqueue
+    ; Prepare the effect stuff
+    ld a, $0f
+    ld [wEffectTimer], a
+    ret
+.lettergrade
+    ld a, [wSubgrade]
+    cp a, $28
+    ret c
+    sub a, $28
+    ld [wSubgrade], a
+    ld a, [wDisplayedGrade]
+    inc a
+    ld [wDisplayedGrade], a
+    ; ...Play the jingle.
+    cp a, GRADE_GM
+    jr z, .isgm 
+.notgm
+    ld a, SFX_RANKUP
+    call SFXEnqueue
+    jp .gfx
+.isgm
+    ld a, SFX_RANKGM
+    call SFXEnqueue
+.gfx
+    ; Prepare the effect stuff
+    ld a, $0f
+    ld [wEffectTimer], a
+    ret
+
+
 ENDC

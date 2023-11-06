@@ -1763,7 +1763,19 @@ FieldProcess::
     call DrawPiece
 
 .postghost
+    ; Draw pieces as bones past 1000 when in Shirase.
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, .nobone
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
+    cp a, 1
+    jr c, .nobone
+    ld a, TILE_BONE
+    ld [hWantedTile], a
+    jp .drawpiece
+
     ; If the lock delay is at the highest value, draw the piece normally.
+.nobone
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b
@@ -3975,7 +3987,19 @@ BigFieldProcess::
     call BigDrawPiece
 
 .postghost
+    ; Draw pieces as bones past 1000 when in Shirase.
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, .nobone
+    ld a, [hCLevel+CLEVEL_THOUSANDS]
+    cp a, 1
+    jr c, .nobone
+    ld a, TILE_BONE
+    ld [hWantedTile], a
+    jp .drawpiece
+
     ; If the lock delay is at the highest value, draw the piece normally.
+.nobone
     ldh a, [hCurrentPiece]
     ld b, TILE_PIECE_0
     add a, b

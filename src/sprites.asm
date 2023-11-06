@@ -163,7 +163,35 @@ ApplyTells::
     ; Draws the next pieces as a sprite.
     ; Index of next piece in A.
 ApplyNext::
+    ; If we're in Shirase mode and past level 1000...
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, .nobone
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
+    cp a, 1
+    jr c, .nobone
+
+.bone
+    ; Color
+    ld a, 7
+    ld [wSPRNext1+3], a
+    ld [wSPRNext2+3], a
+    ld [wSPRNext3+3], a
+    ld [wSPRNext4+3], a
+
+    ; Tile
+    ld a, TILE_QUEUE_BONE
+    ld [wSPRNext1+2], a
+    ld [wSPRNext2+2], a
+    ld [wSPRNext3+2], a
+    ld [wSPRNext4+2], a
+    ld a, b
+    jr .pos
+
+.nobone
     ; Correct color
+    ld a, b
     ld [wSPRNext1+3], a
     ld [wSPRNext2+3], a
     ld [wSPRNext3+3], a
@@ -179,6 +207,7 @@ ApplyNext::
     sub a, TILE_PIECE_0
     sub a, 7
 
+.pos
     ; X positions
     ld b, a
     ldh a, [hGameState]
@@ -276,13 +305,56 @@ ApplyNext::
     ld [wSPRQueue2A+2], a
     inc a
     ld [wSPRQueue2B+2], a
+
+    ; Shirase bone colors
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, .done
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
+    cp a, 1
+    jr c, .done
+    ld a, 7
+    ld [wSPRQueue1A+3], a
+    ld [wSPRQueue1B+3], a
+    ld [wSPRQueue2A+3], a
+    ld [wSPRQueue2B+3], a
+
+.done
     jp GradeRendering
 
 
     ; Draws the held piece.
     ; Index of held piece in A.
 ApplyHold::
+    ; If we're in Shirase mode and past level 1000...
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, .nobone
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
+    cp a, 1
+    jr c, .nobone
+
+.bone
+    ; Color
+    ld a, 7
+    ld [wSPRHold1+3], a
+    ld [wSPRHold2+3], a
+    ld [wSPRHold3+3], a
+    ld [wSPRHold4+3], a
+
+    ; Tile
+    ld a, TILE_QUEUE_BONE
+    ld [wSPRHold1+2], a
+    ld [wSPRHold2+2], a
+    ld [wSPRHold3+2], a
+    ld [wSPRHold4+2], a
+    ld a, b
+    jr .x
+
+.nobone
     ; Correct color
+    ld a, b
     ld [wSPRHold1+3], a
     ld [wSPRHold2+3], a
     ld [wSPRHold3+3], a

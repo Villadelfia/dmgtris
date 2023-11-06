@@ -606,91 +606,113 @@ ApplyNumbers8::
     ld bc, 4
 
     ld a, [de]
-    add a, TILE_0
+    cp a, 0
+    jr nz, .one
+    ld a, TILE_BLANK
     ld [hl], a
     add hl, bc
     inc de
 
+    ld a, [de]
+    cp a, 0
+    jr nz, .two
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .three
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .four
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .five
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .six
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .seven
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    jr .eight
+
+.one
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.two
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.three
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.four
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.five
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.six
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    ret
-
-
-    ; Generic function to draw a BCD number (6 digits) as 6 sprites.
-    ; Address of first sprite in hl.
-    ; Address of first digit in de.
-ApplyNumbers6::
-    inc hl
-    inc hl
-    ld bc, 4
-
+.seven
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    add hl, bc
-    inc de
-
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    add hl, bc
-    inc de
-
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    add hl, bc
-    inc de
-
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    add hl, bc
-    inc de
-
+.eight
     ld a, [de]
     add a, TILE_0
     ld [hl], a
@@ -706,23 +728,53 @@ ApplyNumbers4::
     ld bc, 4
 
     ld a, [de]
-    add a, TILE_0
+    cp a, 0
+    jr nz, .one
+    ld a, TILE_BLANK
     ld [hl], a
     add hl, bc
     inc de
 
+    ld a, [de]
+    cp a, 0
+    jr nz, .two
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .three
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    jr .four
+
+.one
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.two
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.three
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+.four
     ld a, [de]
     add a, TILE_0
     ld [hl], a

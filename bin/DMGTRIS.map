@@ -119,7 +119,7 @@ ROM0 bank #0:
 	         $1499 = !11
 	         $14e8 = !12
 	         $1537 = !13
-	SECTION: $1589-$1af6 ($056e bytes) ["Domain Specific Functions"]
+	SECTION: $1589-$1b36 ($05ae bytes) ["Domain Specific Functions"]
 	         $1589 = ApplyTells
 	         $15e6 = ApplyNext
 	         $15f4 = ApplyNext.bone
@@ -144,272 +144,301 @@ ROM0 bank #0:
 	         $1816 = ApplyTime.loop0
 	         $1845 = ApplyTime.loop1
 	         $189a = ApplyNumbers8
-	         $18ce = ApplyNumbers6
-	         $18f6 = ApplyNumbers4
-	         $1912 = SetNumberSpritePositions
-	         $1a19 = GradeRendering
-	         $1a4e = GradeRendering.effect
-	         $1a5e = GradeRendering.noeffect
-	         $1a66 = GradeRendering.drawgrade
-	         $1a6d = GradeRendering.regulargrade
-	         $1a75 = GradeRendering.sgrade
-	         $1a8b = GradeRendering.hisgrade
-	         $1aa1 = GradeRendering.mgrade
-	         $1ab7 = GradeRendering.lettergrade
-	         $1ad4 = GradeRendering.mk
-	         $1ada = GradeRendering.mv
-	         $1ae0 = GradeRendering.mo
-	         $1ae6 = GradeRendering.mm
-	         $1aec = GradeRendering.gmgrade
-	SECTION: $1af7-$1e06 ($0310 bytes) ["Grading Functions"]
-	         $1af7 = GradeInit
-	         $1b22 = GradeInit.grade9start
-	         $1b27 = GradeInit.end
-	         $1b29 = UpdateGrade
-	         $1b37 = UpdateGrade.gradejumptable
-	         $1b49 = DecayGradeProcess
-	         $1b57 = DecayGradeProcess.gradejumptable
-	         $1b69 = DecayGradeDelay
-	         $1b77 = DecayGradeDelay.gradejumptable
-	         $1b89 = PrepareScore
-	         $1b9c = UpdateGradeDMGT
-	         $1bb2 = UpdateGradeDMGT.clearrate
-	         $1bc3 = UpdateGradeDMGT.combomult
-	         $1bd0 = UpdateGradeDMGT.combo10
-	         $1be1 = UpdateGradeDMGT.combo5
-	         $1bf2 = UpdateGradeDMGT.combo1
-	         $1c01 = UpdateGradeDMGT.prelevel
-	         $1c10 = UpdateGradeDMGT.single
-	         $1c20 = UpdateGradeDMGT.double
-	         $1c31 = UpdateGradeDMGT.adddonce
-	         $1c35 = UpdateGradeDMGT.triple
-	         $1c46 = UpdateGradeDMGT.addtonce
-	         $1c4a = UpdateGradeDMGT.tetris
-	         $1c4e = UpdateGradeDMGT.levelmult
-	         $1c66 = UpdateGradeDMGT.mult5
-	         $1c6d = UpdateGradeDMGT.mult4
-	         $1c73 = UpdateGradeDMGT.mult3
-	         $1c78 = UpdateGradeDMGT.mult2
-	         $1c7c = UpdateGradeDMGT.mult1
-	         $1c7d = UpdateGradeDMGT.processgrade
-	         $1ca1 = UpdateGradeDMGT.increasegrademaybe
-	         $1cc2 = UpdateGradeDMGT.gotgm
-	         $1ccd = DecayGradeDMGT
-	         $1ced = DecayGradeDMGT.nodecay
-	         $1cf2 = DecayGradeDMGT.decay
-	         $1cfe = UpdateGradeTGM1
-	         $1d08 = UpdateGradeTGM1.trygradeup
-	         $1d22 = UpdateGradeTGM1.increasegrade
-	         $1d34 = UpdateGradeTGM1.skipjingle
-	         $1d41 = UpdateGradeTGM1.maybegm
-	         $1d57 = UpdateGradeDEAT
-	         $1d63 = UpdateGradeDEAT.notgm
-	         $1d7c = UpdateGradeDEAT.notm
-	         $1d9c = UpdateGradeDEAT.disqualify
-	         $1da2 = UpdateGradeSHIR
-	         $1de2 = UpdateGradeSHIR.s5torikan
-	         $1df2 = UpdateGradeSHIR.s10torikan
-	         $1e01 = UpdateGradeSHIR.disqualify
-	SECTION: $1e07-$209d ($0297 bytes) ["SFX Functions"]
-	         $1e07 = SFXInit
-	         $1e29 = SFXPopQueue
-	         $1e3e = SFXPushQueue
-	         $1e4f = SFXProcessQueue
-	         $1e5c = !0
-	         $1e7d = SFXTriggerNoise
-	         $1e8a = !1
-	         $1e97 = !2
-	         $1ea3 = SFXEnqueue
-	         $1eb8 = SFXEnqueue.findsfx
-	         $1ecd = !3
-	         $1edd = !4
-	         $1eed = !5
-	         $1efd = !6
-	         $1f0d = !7
-	         $1f1d = !8
-	         $1f2d = !9
-	         $1f3d = !10
-	         $1f4d = !11
-	         $1f5d = !12
-	         $1f6d = !13
-	         $1f7d = !14
-	         $1f8d = !15
-	         $1f9d = !16
-	         $1fad = !17
-	         $1fbc = !18
-	         $1fcb = !19
-	         $1fda = !20
-	         $1fe8 = !21
-	         $1ff6 = !22
-	         $2004 = !23
-	         $2011 = SFXKill
-	         $203c = SFXPlayNoise
-	         $2047 = SFXPlayNoise.noisereg
-	         $2054 = !24
-	         $205e = SFXPlayNoise.savenoiseplayhead
-	         $2067 = SFXPlay
-	         $2072 = !25
-	         $2075 = SFXPlay.play
-	         $2081 = SFXPlay.getRegister
-	         $208b = !26
-	         $2095 = SFXPlay.savePlayhead
-	SECTION: $209e-$228b ($01ee bytes) ["RNG Functions"]
-	         $209e = RNGInit
-	         $20ce = !0
-	         $20e9 = RNGInit.complexinit
-	         $2100 = !1
-	         $211a = ShiftHistory
-	         $2137 = GetNextHellPiece
-	         $213c = GetNextTGM1Piece
-	         $213f = !2
-	         $2157 = !3
-	         $2159 = GetNextTGM2Piece
-	         $215c = !4
-	         $2174 = !5
-	         $2176 = GetNextNesPiece
-	         $2184 = GetNextTGM3Piece
-	         $2187 = !6
-	         $21aa = !7
-	         $21ad = !8
-	         $21bd = !9
-	         $21c7 = !10
-	         $21d5 = !11
-	         $21e4 = !12
-	         $21f0 = !13
-	         $21fc = !14
-	         $2208 = !15
-	         $2214 = !16
-	         $2220 = !17
-	         $222c = !18
-	         $223b = GetNextPiece
-	         $2249 = GetNextPiece.nextpiecejumps
-	         $2258 = Next35Piece
-	         $2258 = !19
-	         $2262 = Next7Piece
-	         $2262 = !20
-	         $226c = NextByte
-	SECTION: $228c-$2441 ($01b6 bytes) ["Grading Data"]
-	         $228c = sTGM1GradeScores
-	         $22ae = sTGM3InternalGradeSystem
-	         $234e = sTGM3GradeBoosts
-	         $236d = sTGM3LevelMultiplier
-	         $2371 = sTGM3BaselineCOOL
-	         $237a = sTGM3REGRETConditions
-	         $238e = sDMGTGrading
-	SECTION: $2442-$25e4 ($01a3 bytes) ["Level Functions"]
-	         $2442 = LevelInit
-	         $2492 = LevelUp
-	         $24b6 = LevelUp.doit
-	         $24fa = LevelUp.checknlevel
-	         $2528 = !0
-	         $2540 = !1
-	         $2549 = LevelUp.bellmaybe
-	         $255b = LevelUp.leveljinglemaybe
-	         $2568 = LevelUp.checkspeedup
-	         $2579 = !2
-	         $2586 = !3
-	         $2597 = !4
-	         $25a4 = DoSpeedUp
-	SECTION: $25e5-$26c4 ($00e0 bytes) ["Score Functions"]
-	         $25e5 = ScoreInit
-	         $260d = IncreaseScore
-	         $2645 = IncreaseScore.doConvert
-	         $2647 = !0
-	         $265d = IncreaseScore.carry
-	         $265f = IncreaseScore.postConvert
-	         $266c = !1
-	         $2673 = IncreaseScore.preAddDigit
-	         $269b = IncreaseScore.addDigit
-	         $26b1 = IncreaseScore.nextDigit
-	SECTION: $26c5-$2791 ($00cd bytes) ["Input Functions"]
-	         $26c5 = InputInit
-	         $26d7 = GetInput
-	         $26d7 = GetInput.btns
-	         $26e4 = GetInput.readA
-	         $26e8 = GetInput.setA
-	         $26f3 = GetInput.clearA
-	         $26f6 = GetInput.readB
-	         $26fa = GetInput.setB
-	         $2705 = GetInput.clearB
-	         $2708 = GetInput.readSelect
-	         $270c = GetInput.setSelect
-	         $2717 = GetInput.clearSelect
-	         $271a = GetInput.readStart
-	         $271e = GetInput.setStart
-	         $2729 = GetInput.clearStart
-	         $272c = GetInput.dpad
-	         $2739 = GetInput.readUp
-	         $273d = GetInput.setUp
-	         $2748 = GetInput.clearUp
-	         $274b = GetInput.readDown
-	         $274f = GetInput.setDown
-	         $275a = GetInput.clearDown
-	         $275d = GetInput.readLeft
-	         $2761 = GetInput.setLeft
-	         $276c = GetInput.clearLeft
-	         $276f = GetInput.readRight
-	         $2773 = GetInput.setRight
-	         $277e = GetInput.clearRight
-	         $2781 = GetInput.priorities
-	         $278c = GetInput.zero
-	SECTION: $2792-$2848 ($00b7 bytes) ["SRAM Functions"]
-	         $2792 = RestoreSRAM
-	         $27eb = InitializeSRAM
-	SECTION: $2849-$28ec ($00a4 bytes) ["Code Entry Point"]
-	         $2849 = Main
-	         $285e = Main.wvr_u1
-	         $2867 = !0
-	         $2877 = Main.notgbc
-	         $28a6 = Main.wvb_u2
-	         $28ab = !1
-	         $28b1 = EventLoop
-	         $28c7 = EventLoop.eventloopjumps
-	         $28d0 = EventLoopPostHandler
-	         $28d2 = EventLoopPostHandler.wvb_u3
-	         $28e4 = EventLoopPostHandler.vblankjumps
-	SECTION: $28ed-$2974 ($0088 bytes) ["Time Functions"]
-	         $28ed = TimeInit
-	         $2902 = ResetGameTime
-	         $290d = CheckTorikan
-	         $2924 = CheckTorikan.failure
-	         $2926 = CheckTorikan.success
-	         $2929 = HandleTimers
-	         $2951 = HandleTimers.go
-	SECTION: $2975-$29e2 ($006e bytes) ["Title Function Trampolines"]
-	         $2975 = SwitchToTitle
-	         $297f = TitleEventLoopHandler
-	         $2989 = TitleVBlankHandler
-	         $2993 = DrawOption6
-	SECTION: $29e3-$2a34 ($0052 bytes) ["Tile Functions"]
-	         $29e3 = LoadTitleTiles
-	         $2a01 = LoadGameplayTiles
-	         $2a17 = LoadGameplayTiles.gbc
-	         $2a26 = LoadGameplayTiles.dmg
-	SECTION: $2a35-$2a70 ($003c bytes) ["Time Data"]
-	         $2a35 = sFramesToCS
-	SECTION: $2a71-$2a9e ($002e bytes) ["Memory Functions"]
-	         $2a71 = UnsafeMemCopy
-	         $2a7a = SafeMemCopy.wvr_u1
-	         $2a7a = SafeMemCopy
-	         $2a89 = UnsafeMemSet
-	         $2a91 = SafeMemSet
-	         $2a91 = SafeMemSet.wvr_u2
-	SECTION: $2a9f-$2ac6 ($0028 bytes) ["Gameplay Function Trampolines"]
-	         $2a9f = SwitchToGameplay
-	         $2aa9 = SwitchToGameplayBig
-	         $2ab3 = GamePlayEventLoopHandler
-	         $2abd = GamePlayBigEventLoopHandler
-	SECTION: $2ac7-$2ae8 ($0022 bytes) ["OAM Functions"]
-	         $2ac7 = CopyOAMHandler
-	         $2ad3 = ClearOAM
-	SECTION: $2ae9-$2b01 ($0019 bytes) ["Interrupt Initialization Functions"]
-	         $2ae9 = IntrInit
-	         $2aed = InitializeLCDCInterrupt
-	SECTION: $2b02-$2b0b ($000a bytes) ["OAM DMA Code"]
-	         $2b02 = OAMDMA
-	         $2b0c = OAMDMAEnd
-	EMPTY: $2b0c-$3fff ($14f4 bytes)
-	TOTAL EMPTY: $14ff bytes
+	         $18e7 = ApplyNumbers8.one
+	         $18ed = ApplyNumbers8.two
+	         $18f3 = ApplyNumbers8.three
+	         $18f9 = ApplyNumbers8.four
+	         $18ff = ApplyNumbers8.five
+	         $1905 = ApplyNumbers8.six
+	         $190b = ApplyNumbers8.seven
+	         $1911 = ApplyNumbers8.eight
+	         $1916 = ApplyNumbers4
+	         $193b = ApplyNumbers4.one
+	         $1941 = ApplyNumbers4.two
+	         $1947 = ApplyNumbers4.three
+	         $194d = ApplyNumbers4.four
+	         $1952 = SetNumberSpritePositions
+	         $1a59 = GradeRendering
+	         $1a8e = GradeRendering.effect
+	         $1a9e = GradeRendering.noeffect
+	         $1aa6 = GradeRendering.drawgrade
+	         $1aad = GradeRendering.regulargrade
+	         $1ab5 = GradeRendering.sgrade
+	         $1acb = GradeRendering.hisgrade
+	         $1ae1 = GradeRendering.mgrade
+	         $1af7 = GradeRendering.lettergrade
+	         $1b14 = GradeRendering.mk
+	         $1b1a = GradeRendering.mv
+	         $1b20 = GradeRendering.mo
+	         $1b26 = GradeRendering.mm
+	         $1b2c = GradeRendering.gmgrade
+	SECTION: $1b37-$1e63 ($032d bytes) ["Grading Functions"]
+	         $1b37 = GradeInit
+	         $1b62 = GradeInit.grade9start
+	         $1b67 = GradeInit.end
+	         $1b69 = UpdateGrade
+	         $1b77 = UpdateGrade.gradejumptable
+	         $1b89 = DecayGradeProcess
+	         $1b97 = DecayGradeProcess.gradejumptable
+	         $1ba9 = DecayGradeDelay
+	         $1bb7 = DecayGradeDelay.gradejumptable
+	         $1bc9 = PrepareScore
+	         $1bdc = DrawGradeProgressDMGT
+	         $1beb = UpdateGradeDMGT
+	         $1c05 = UpdateGradeDMGT.clearrate
+	         $1c16 = UpdateGradeDMGT.combomult
+	         $1c23 = UpdateGradeDMGT.combo10
+	         $1c34 = UpdateGradeDMGT.combo5
+	         $1c45 = UpdateGradeDMGT.combo1
+	         $1c54 = UpdateGradeDMGT.prelevel
+	         $1c63 = UpdateGradeDMGT.single
+	         $1c73 = UpdateGradeDMGT.double
+	         $1c84 = UpdateGradeDMGT.adddonce
+	         $1c88 = UpdateGradeDMGT.triple
+	         $1c99 = UpdateGradeDMGT.addtonce
+	         $1c9d = UpdateGradeDMGT.tetris
+	         $1ca1 = UpdateGradeDMGT.levelmult
+	         $1cb9 = UpdateGradeDMGT.mult5
+	         $1cc0 = UpdateGradeDMGT.mult4
+	         $1cc6 = UpdateGradeDMGT.mult3
+	         $1ccb = UpdateGradeDMGT.mult2
+	         $1ccf = UpdateGradeDMGT.mult1
+	         $1cd0 = UpdateGradeDMGT.processgrade
+	         $1cf6 = UpdateGradeDMGT.increasegrademaybe
+	         $1d17 = UpdateGradeDMGT.gotgm
+	         $1d22 = DecayGradeDMGT
+	         $1d46 = DecayGradeDMGT.nodecay
+	         $1d4d = DecayGradeDMGT.decay
+	         $1d5b = UpdateGradeTGM1
+	         $1d65 = UpdateGradeTGM1.trygradeup
+	         $1d7f = UpdateGradeTGM1.increasegrade
+	         $1d91 = UpdateGradeTGM1.skipjingle
+	         $1d9e = UpdateGradeTGM1.maybegm
+	         $1db4 = UpdateGradeDEAT
+	         $1dc0 = UpdateGradeDEAT.notgm
+	         $1dd9 = UpdateGradeDEAT.notm
+	         $1df9 = UpdateGradeDEAT.disqualify
+	         $1dff = UpdateGradeSHIR
+	         $1e3f = UpdateGradeSHIR.s5torikan
+	         $1e4f = UpdateGradeSHIR.s10torikan
+	         $1e5e = UpdateGradeSHIR.disqualify
+	SECTION: $1e64-$2119 ($02b6 bytes) ["Grading Data"]
+	         $1e64 = sTGM1GradeScores
+	         $1e86 = sTGM3InternalGradeSystem
+	         $1f26 = sTGM3GradeBoosts
+	         $1f45 = sTGM3LevelMultiplier
+	         $1f49 = sTGM3BaselineCOOL
+	         $1f52 = sTGM3REGRETConditions
+	         $1f66 = sDMGTGrading
+	         $201a = sDMGTGaugeLUT
+	SECTION: $211a-$23b0 ($0297 bytes) ["SFX Functions"]
+	         $211a = SFXInit
+	         $213c = SFXPopQueue
+	         $2151 = SFXPushQueue
+	         $2162 = SFXProcessQueue
+	         $216f = !0
+	         $2190 = SFXTriggerNoise
+	         $219d = !1
+	         $21aa = !2
+	         $21b6 = SFXEnqueue
+	         $21cb = SFXEnqueue.findsfx
+	         $21e0 = !3
+	         $21f0 = !4
+	         $2200 = !5
+	         $2210 = !6
+	         $2220 = !7
+	         $2230 = !8
+	         $2240 = !9
+	         $2250 = !10
+	         $2260 = !11
+	         $2270 = !12
+	         $2280 = !13
+	         $2290 = !14
+	         $22a0 = !15
+	         $22b0 = !16
+	         $22c0 = !17
+	         $22cf = !18
+	         $22de = !19
+	         $22ed = !20
+	         $22fb = !21
+	         $2309 = !22
+	         $2317 = !23
+	         $2324 = SFXKill
+	         $234f = SFXPlayNoise
+	         $235a = SFXPlayNoise.noisereg
+	         $2367 = !24
+	         $2371 = SFXPlayNoise.savenoiseplayhead
+	         $237a = SFXPlay
+	         $2385 = !25
+	         $2388 = SFXPlay.play
+	         $2394 = SFXPlay.getRegister
+	         $239e = !26
+	         $23a8 = SFXPlay.savePlayhead
+	SECTION: $23b1-$259e ($01ee bytes) ["RNG Functions"]
+	         $23b1 = RNGInit
+	         $23e1 = !0
+	         $23fc = RNGInit.complexinit
+	         $2413 = !1
+	         $242d = ShiftHistory
+	         $244a = GetNextHellPiece
+	         $244f = GetNextTGM1Piece
+	         $2452 = !2
+	         $246a = !3
+	         $246c = GetNextTGM2Piece
+	         $246f = !4
+	         $2487 = !5
+	         $2489 = GetNextNesPiece
+	         $2497 = GetNextTGM3Piece
+	         $249a = !6
+	         $24bd = !7
+	         $24c0 = !8
+	         $24d0 = !9
+	         $24da = !10
+	         $24e8 = !11
+	         $24f7 = !12
+	         $2503 = !13
+	         $250f = !14
+	         $251b = !15
+	         $2527 = !16
+	         $2533 = !17
+	         $253f = !18
+	         $254e = GetNextPiece
+	         $255c = GetNextPiece.nextpiecejumps
+	         $256b = Next35Piece
+	         $256b = !19
+	         $2575 = Next7Piece
+	         $2575 = !20
+	         $257f = NextByte
+	SECTION: $259f-$2741 ($01a3 bytes) ["Level Functions"]
+	         $259f = LevelInit
+	         $25ef = LevelUp
+	         $2613 = LevelUp.doit
+	         $2657 = LevelUp.checknlevel
+	         $2685 = !0
+	         $269d = !1
+	         $26a6 = LevelUp.bellmaybe
+	         $26b8 = LevelUp.leveljinglemaybe
+	         $26c5 = LevelUp.checkspeedup
+	         $26d6 = !2
+	         $26e3 = !3
+	         $26f4 = !4
+	         $2701 = DoSpeedUp
+	SECTION: $2742-$288b ($014a bytes) ["Progress Data"]
+	         $2742 = sProgressData
+	SECTION: $288c-$296b ($00e0 bytes) ["Score Functions"]
+	         $288c = ScoreInit
+	         $28b4 = IncreaseScore
+	         $28ec = IncreaseScore.doConvert
+	         $28ee = !0
+	         $2904 = IncreaseScore.carry
+	         $2906 = IncreaseScore.postConvert
+	         $2913 = !1
+	         $291a = IncreaseScore.preAddDigit
+	         $2942 = IncreaseScore.addDigit
+	         $2958 = IncreaseScore.nextDigit
+	SECTION: $296c-$2a38 ($00cd bytes) ["Input Functions"]
+	         $296c = InputInit
+	         $297e = GetInput
+	         $297e = GetInput.btns
+	         $298b = GetInput.readA
+	         $298f = GetInput.setA
+	         $299a = GetInput.clearA
+	         $299d = GetInput.readB
+	         $29a1 = GetInput.setB
+	         $29ac = GetInput.clearB
+	         $29af = GetInput.readSelect
+	         $29b3 = GetInput.setSelect
+	         $29be = GetInput.clearSelect
+	         $29c1 = GetInput.readStart
+	         $29c5 = GetInput.setStart
+	         $29d0 = GetInput.clearStart
+	         $29d3 = GetInput.dpad
+	         $29e0 = GetInput.readUp
+	         $29e4 = GetInput.setUp
+	         $29ef = GetInput.clearUp
+	         $29f2 = GetInput.readDown
+	         $29f6 = GetInput.setDown
+	         $2a01 = GetInput.clearDown
+	         $2a04 = GetInput.readLeft
+	         $2a08 = GetInput.setLeft
+	         $2a13 = GetInput.clearLeft
+	         $2a16 = GetInput.readRight
+	         $2a1a = GetInput.setRight
+	         $2a25 = GetInput.clearRight
+	         $2a28 = GetInput.priorities
+	         $2a33 = GetInput.zero
+	SECTION: $2a39-$2aef ($00b7 bytes) ["SRAM Functions"]
+	         $2a39 = RestoreSRAM
+	         $2a92 = InitializeSRAM
+	SECTION: $2af0-$2ba1 ($00b2 bytes) ["Progress Functions"]
+	         $2af0 = SetProgress
+	         $2afb = SetProgress.loop
+	         $2aff = SetProgress.correct
+	         $2b26 = SetProgress.wvr_u1
+	         $2b32 = SetProgress.wvr_u2
+	         $2b40 = SetProgress.wvr_u3
+	         $2b4c = SetProgress.wvr_u4
+	         $2b5a = SetProgress.wvr_u5
+	         $2b66 = SetProgress.wvr_u6
+	         $2b74 = SetProgress.wvr_u7
+	         $2b80 = SetProgress.wvr_u8
+	         $2b8e = SetProgress.wvr_u9
+	         $2b9a = SetProgress.wvr_u10
+	SECTION: $2ba2-$2c45 ($00a4 bytes) ["Code Entry Point"]
+	         $2ba2 = Main
+	         $2bb7 = Main.wvr_u1
+	         $2bc0 = !0
+	         $2bd0 = Main.notgbc
+	         $2bff = Main.wvb_u2
+	         $2c04 = !1
+	         $2c0a = EventLoop
+	         $2c20 = EventLoop.eventloopjumps
+	         $2c29 = EventLoopPostHandler
+	         $2c2b = EventLoopPostHandler.wvb_u3
+	         $2c3d = EventLoopPostHandler.vblankjumps
+	SECTION: $2c46-$2ccd ($0088 bytes) ["Time Functions"]
+	         $2c46 = TimeInit
+	         $2c5b = ResetGameTime
+	         $2c66 = CheckTorikan
+	         $2c7d = CheckTorikan.failure
+	         $2c7f = CheckTorikan.success
+	         $2c82 = HandleTimers
+	         $2caa = HandleTimers.go
+	SECTION: $2cce-$2d3b ($006e bytes) ["Title Function Trampolines"]
+	         $2cce = SwitchToTitle
+	         $2cd8 = TitleEventLoopHandler
+	         $2ce2 = TitleVBlankHandler
+	         $2cec = DrawOption6
+	SECTION: $2d3c-$2d8d ($0052 bytes) ["Tile Functions"]
+	         $2d3c = LoadTitleTiles
+	         $2d5a = LoadGameplayTiles
+	         $2d70 = LoadGameplayTiles.gbc
+	         $2d7f = LoadGameplayTiles.dmg
+	SECTION: $2d8e-$2dc9 ($003c bytes) ["Time Data"]
+	         $2d8e = sFramesToCS
+	SECTION: $2dca-$2df7 ($002e bytes) ["Memory Functions"]
+	         $2dca = UnsafeMemCopy
+	         $2dd3 = SafeMemCopy.wvr_u1
+	         $2dd3 = SafeMemCopy
+	         $2de2 = UnsafeMemSet
+	         $2dea = SafeMemSet
+	         $2dea = SafeMemSet.wvr_u2
+	SECTION: $2df8-$2e1f ($0028 bytes) ["Gameplay Function Trampolines"]
+	         $2df8 = SwitchToGameplay
+	         $2e02 = SwitchToGameplayBig
+	         $2e0c = GamePlayEventLoopHandler
+	         $2e16 = GamePlayBigEventLoopHandler
+	SECTION: $2e20-$2e41 ($0022 bytes) ["OAM Functions"]
+	         $2e20 = CopyOAMHandler
+	         $2e2c = ClearOAM
+	SECTION: $2e42-$2e5a ($0019 bytes) ["Interrupt Initialization Functions"]
+	         $2e42 = IntrInit
+	         $2e46 = InitializeLCDCInterrupt
+	SECTION: $2e5b-$2e64 ($000a bytes) ["OAM DMA Code"]
+	         $2e5b = OAMDMA
+	         $2e65 = OAMDMAEnd
+	EMPTY: $2e65-$3fff ($119b bytes)
+	TOTAL EMPTY: $11a6 bytes
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]
@@ -922,7 +951,7 @@ ROMX bank #5:
 	         $5310 = ClearLines.r_u48
 	         $5310 = ClearLines.fixgarbo
 	         $5313 = ClearLines.fixgarboloop
-	SECTION: $531d-$6146 ($0e2a bytes) ["Gameplay Function Banked"]
+	SECTION: $531d-$610f ($0df3 bytes) ["Gameplay Function Banked"]
 	         $531d = SwitchToGameplayB
 	         $5323 = SwitchToGameplayB.wvr_u1
 	         $532c = SwitchToGameplayB.loadtilemap
@@ -1380,35 +1409,35 @@ ROMX bank #5:
 	         $5fed = GamePlayEventLoopHandlerB.noretry
 	         $5ffa = GamePlayEventLoopHandlerB.pauseMode
 	         $6012 = GamePlayEventLoopHandlerB.noqr
-	         $6022 = GamePlayEventLoopHandlerB.nounpause
-	         $60a6 = GamePlayEventLoopHandlerB.drawStaticInfo
-	         $60d7 = DoHold
-	         $60db = DoHold.checkIRSA
-	         $60e2 = DoHold.ldb3
-	         $60ee = DoHold.lda3
-	         $60f8 = DoHold.cp3
-	         $6106 = DoHold.checkIRSB
-	         $610d = DoHold.lda4
-	         $6119 = DoHold.ldb4
-	         $6123 = DoHold.cp4
-	         $6131 = DoHold.noRotation
-	         $613c = DoHold.doHoldOperation
-	SECTION: $6147-$655c ($0416 bytes) ["Gameplay Static Data"]
-	         $6147 = sLeftDasSlam
-	         $614d = sRightDasSlam
-	         $6153 = sLeady
-	         $615d = sGo
-	         $6167 = sPause
-	         $617b = sPieceXOffsets
-	         $6197 = sPieceYOffsets
-	         $61b3 = sPieceFastRotationStates
-	         $6223 = sPieceRotationStates
-	         $6293 = sTGM3Bag
-	         $62b6 = sTGM3Droughts
-	         $62bd = sGameplayTileMap
-	         $655d = sGameplayTileMapEnd
-	EMPTY: $655d-$7fff ($1aa3 bytes)
-	TOTAL EMPTY: $1aa3 bytes
+	         $6027 = GamePlayEventLoopHandlerB.nounpause
+	         $606f = GamePlayEventLoopHandlerB.drawStaticInfo
+	         $60a0 = DoHold
+	         $60a4 = DoHold.checkIRSA
+	         $60ab = DoHold.ldb3
+	         $60b7 = DoHold.lda3
+	         $60c1 = DoHold.cp3
+	         $60cf = DoHold.checkIRSB
+	         $60d6 = DoHold.lda4
+	         $60e2 = DoHold.ldb4
+	         $60ec = DoHold.cp4
+	         $60fa = DoHold.noRotation
+	         $6105 = DoHold.doHoldOperation
+	SECTION: $6110-$6539 ($042a bytes) ["Gameplay Static Data"]
+	         $6110 = sLeftDasSlam
+	         $6116 = sRightDasSlam
+	         $611c = sLeady
+	         $6126 = sGo
+	         $6130 = sPause
+	         $6158 = sPieceXOffsets
+	         $6174 = sPieceYOffsets
+	         $6190 = sPieceFastRotationStates
+	         $6200 = sPieceRotationStates
+	         $6270 = sTGM3Bag
+	         $6293 = sTGM3Droughts
+	         $629a = sGameplayTileMap
+	         $653a = sGameplayTileMapEnd
+	EMPTY: $653a-$7fff ($1ac6 bytes)
+	TOTAL EMPTY: $1ac6 bytes
 
 ROMX bank #6:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_GAMEPLAY_BIG"]
@@ -1707,7 +1736,7 @@ ROMX bank #6:
 	         $5262 = BigClearLines.fixgarbo
 	         $5265 = BigClearLines.fixgarboloop
 	         $5283 = BigWidenField
-	SECTION: $55d3-$6471 ($0e9f bytes) ["Gameplay Function Big Banked"]
+	SECTION: $55d3-$6446 ($0e74 bytes) ["Gameplay Function Big Banked"]
 	         $55d3 = SwitchToGameplayBigB
 	         $55d9 = SwitchToGameplayBigB.wvr_u214
 	         $55e2 = SwitchToGameplayBigB.loadtilemap
@@ -2185,33 +2214,33 @@ ROMX bank #6:
 	         $6325 = GamePlayBigEventLoopHandlerB.noretry
 	         $6332 = GamePlayBigEventLoopHandlerB.pauseMode
 	         $634a = GamePlayBigEventLoopHandlerB.noqr
-	         $6359 = GamePlayBigEventLoopHandlerB.nounpause
-	         $63d1 = GamePlayBigEventLoopHandlerB.drawStaticInfo
-	         $6402 = BigDoHold
-	         $6406 = BigDoHold.checkIRSA
-	         $640d = BigDoHold.ldb3
-	         $6419 = BigDoHold.lda3
-	         $6423 = BigDoHold.cp3
-	         $6431 = BigDoHold.checkIRSB
-	         $6438 = BigDoHold.lda4
-	         $6444 = BigDoHold.ldb4
-	         $644e = BigDoHold.cp4
-	         $645c = BigDoHold.noRotation
-	         $6467 = BigDoHold.doHoldOperation
-	SECTION: $6472-$685d ($03ec bytes) ["Gameplay Big Static Data"]
-	         $6472 = sBigLeftDasSlam
-	         $6478 = sBigRightDasSlam
-	         $647e = sBigLeady
-	         $6488 = sBigGo
-	         $6492 = sBigPause
-	         $64a6 = sBigPieceXOffsets
-	         $64c2 = sBigPieceYOffsets
-	         $64de = sBigPieceFastRotationStates
-	         $654e = sBigPieceRotationStates
-	         $65be = sBigGameplayTileMap
-	         $685e = sBigGameplayTileMapEnd
-	EMPTY: $685e-$7fff ($17a2 bytes)
-	TOTAL EMPTY: $17a2 bytes
+	         $635e = GamePlayBigEventLoopHandlerB.nounpause
+	         $63a6 = GamePlayBigEventLoopHandlerB.drawStaticInfo
+	         $63d7 = BigDoHold
+	         $63db = BigDoHold.checkIRSA
+	         $63e2 = BigDoHold.ldb3
+	         $63ee = BigDoHold.lda3
+	         $63f8 = BigDoHold.cp3
+	         $6406 = BigDoHold.checkIRSB
+	         $640d = BigDoHold.lda4
+	         $6419 = BigDoHold.ldb4
+	         $6423 = BigDoHold.cp4
+	         $6431 = BigDoHold.noRotation
+	         $643c = BigDoHold.doHoldOperation
+	SECTION: $6447-$6846 ($0400 bytes) ["Gameplay Big Static Data"]
+	         $6447 = sBigLeftDasSlam
+	         $644d = sBigRightDasSlam
+	         $6453 = sBigLeady
+	         $645d = sBigGo
+	         $6467 = sBigPause
+	         $648f = sBigPieceXOffsets
+	         $64ab = sBigPieceYOffsets
+	         $64c7 = sBigPieceFastRotationStates
+	         $6537 = sBigPieceRotationStates
+	         $65a7 = sBigGameplayTileMap
+	         $6847 = sBigGameplayTileMapEnd
+	EMPTY: $6847-$7fff ($17b9 bytes)
+	TOTAL EMPTY: $17b9 bytes
 
 SRAM bank #0:
 	SECTION: $a000-$a00d ($000e bytes) ["Persistent Globals"]
@@ -2309,30 +2338,41 @@ WRAM0 bank #0:
 	         $cd9a = wDRate
 	         $cd9b = wTRate
 	         $cd9c = wQRate
-	SECTION: $cd9d-$cda5 ($0009 bytes) ["Globals"]
-	         $cd9d = wSwapABState
-	         $cd9e = wRNGModeState
-	         $cd9f = wRotModeState
-	         $cda0 = wDropModeState
-	         $cda1 = wSpeedCurveState
-	         $cda2 = wAlways20GState
-	         $cda3 = wInitialA
-	         $cda4 = wInitialB
-	         $cda5 = wInitialC
-	SECTION: $cda6-$cda9 ($0004 bytes) ["Banking Variables"]
-	         $cda6 = wBankBackup
-	SECTION: $cdaa-$cdac ($0003 bytes) ["GBC Variables"]
-	         $cdaa = wOuterReps
-	         $cdab = wInnerReps
-	         $cdac = wTitlePal
-	SECTION: $cdad-$cdaf ($0003 bytes) ["Time Variables"]
-	         $cdad = wMinutes
-	         $cdae = wSeconds
-	         $cdaf = wFrames
-	SECTION: $cdb0-$cdb0 ($0001 byte) ["Title Variables"]
-	         $cdb0 = wSelected
-	EMPTY: $cdb1-$cfff ($024f bytes)
-	TOTAL EMPTY: $024f bytes
+	SECTION: $cd9d-$cda6 ($000a bytes) ["Progress Variables"]
+	         $cd9d = wProgress0B1
+	         $cd9e = wProgress0B2
+	         $cd9f = wProgress1B1
+	         $cda0 = wProgress1B2
+	         $cda1 = wProgress2B1
+	         $cda2 = wProgress2B2
+	         $cda3 = wProgress3B1
+	         $cda4 = wProgress3B2
+	         $cda5 = wProgress4B1
+	         $cda6 = wProgress4B2
+	SECTION: $cda7-$cdaf ($0009 bytes) ["Globals"]
+	         $cda7 = wSwapABState
+	         $cda8 = wRNGModeState
+	         $cda9 = wRotModeState
+	         $cdaa = wDropModeState
+	         $cdab = wSpeedCurveState
+	         $cdac = wAlways20GState
+	         $cdad = wInitialA
+	         $cdae = wInitialB
+	         $cdaf = wInitialC
+	SECTION: $cdb0-$cdb3 ($0004 bytes) ["Banking Variables"]
+	         $cdb0 = wBankBackup
+	SECTION: $cdb4-$cdb6 ($0003 bytes) ["GBC Variables"]
+	         $cdb4 = wOuterReps
+	         $cdb5 = wInnerReps
+	         $cdb6 = wTitlePal
+	SECTION: $cdb7-$cdb9 ($0003 bytes) ["Time Variables"]
+	         $cdb7 = wMinutes
+	         $cdb8 = wSeconds
+	         $cdb9 = wFrames
+	SECTION: $cdba-$cdba ($0001 byte) ["Title Variables"]
+	         $cdba = wSelected
+	EMPTY: $cdbb-$cfff ($0245 bytes)
+	TOTAL EMPTY: $0245 bytes
 
 HRAM bank #0:
 	SECTION: $ff80-$ff9a ($001b bytes) ["High Field Variables"]
@@ -2423,8 +2463,8 @@ HRAM bank #0:
 	TOTAL EMPTY: $0003 bytes
 
 SUMMARY:
-	ROM0: 11009 bytes used / 5375 free
-	ROMX: 56581 bytes used / 41723 free in 6 banks
+	ROM0: 11866 bytes used / 4518 free
+	ROMX: 56523 bytes used / 41781 free in 6 banks
 	SRAM: 14 bytes used / 8178 free in 1 bank
-	WRAM0: 3505 bytes used / 591 free
+	WRAM0: 3515 bytes used / 581 free
 	HRAM: 124 bytes used / 3 free

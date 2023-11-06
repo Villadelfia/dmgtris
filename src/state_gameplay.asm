@@ -556,58 +556,41 @@ GamePlayEventLoopHandlerB::
     call FromBackupField
     ldh a, [hPrePause]
     ldh [hMode], a
+    xor a, a
+    ldh [hLeftState], a
+    ldh [hRightState], a
     jp .drawStaticInfo
 
     ; Draw PAUSE all over the field.
 .nounpause
     ld de, sPause
+    ld hl, wField+(0*10)
+    ld bc, 40
+    call UnsafeMemCopy
+    ld de, sPause
     ld hl, wField+(4*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(2*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(6*10)
-    ld bc, 20
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sPause
     ld hl, wField+(8*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(10*10)
-    ld bc, 20
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sPause
     ld hl, wField+(12*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(14*10)
-    ld bc, 20
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sPause
     ld hl, wField+(16*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(18*10)
-    ld bc, 20
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sPause
     ld hl, wField+(20*10)
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sPause
-    ld hl, wField+(22*10)
-    ld bc, 20
+    ld bc, 40
     call UnsafeMemCopy
 
 
     ; Always draw the score, level, next piece, and held piece.
-.drawStaticInfo:
+.drawStaticInfo
     ldh a, [hNextPiece]
     call ApplyNext
 
@@ -1192,49 +1175,36 @@ GamePlayBigEventLoopHandlerB:
     call BigFromBackupField
     ldh a, [hPrePause]
     ldh [hMode], a
+    xor a, a
+    ldh [hLeftState], a
+    ldh [hRightState], a
     jr .drawStaticInfo
 
     ; Draw PAUSE all over the field.
 .nounpause
     ld de, sBigPause
-    ld hl, wWideBlittedField
-    ld bc, 20
+    ld hl, wWideBlittedField+(0*10)
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wWideBlittedField+20
-    ld bc, 20
+    ld hl, wWideBlittedField+(4*10)
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wWideBlittedField+40
-    ld bc, 20
+    ld hl, wWideBlittedField+(8*10)
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wWideBlittedField+60
-    ld bc, 20
+    ld hl, wWideBlittedField+(12*10)
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wWideBlittedField+80
-    ld bc, 20
+    ld hl, wWideBlittedField+(16*10)
+    ld bc, 40
     call UnsafeMemCopy
     ld de, sBigPause
-    ld hl, wWideBlittedField+100
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sBigPause
-    ld hl, wWideBlittedField+120
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sBigPause
-    ld hl, wWideBlittedField+140
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sBigPause
-    ld hl, wWideBlittedField+160
-    ld bc, 20
-    call UnsafeMemCopy
-    ld de, sBigPause
-    ld hl, wWideBlittedField+180
-    ld bc, 20
+    ld hl, wWideBlittedField+(20*10)
+    ld bc, 40
     call UnsafeMemCopy
 
 

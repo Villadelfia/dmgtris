@@ -400,5 +400,6 @@ DEF LEVEL_MULT_3A           EQU $07
 DEF LEVEL_MULT_3B           EQU $50
 
 ; Bone Skin
-DEF BONE                EQU $68
+DEF TILE_BONE                EQU $68
+DEF TILE_QUEUE_BONE          EQU $69
 ENDC

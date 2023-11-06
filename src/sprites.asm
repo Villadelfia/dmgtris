@@ -240,8 +240,26 @@ ApplyNext::
     ld a, [hl]
     add a, NEXT_BASE_Y
     ld [wSPRNext4+0], a
-
-    ; Queue
+.shirasebonenext
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, :+
+    ld a, [hCLevel]
+    cp a, 1
+    jr c, :+
+    ld a, 7
+    ld [wSPRNext1+3], a
+    ld [wSPRNext2+3], a
+    ld [wSPRNext3+3], a
+    ld [wSPRNext4+3], a
+    ld a, TILE_QUEUE_BONE
+    ld [wSPRNext1+2], a
+    ld [wSPRNext2+2], a
+    ld [wSPRNext3+2], a
+    ld [wSPRNext4+2], a
+    ld a, b
+:   ; Queue
     ld a, QUEUE_BASE_Y
     ld [wSPRQueue1A], a
     ld [wSPRQueue1B], a
@@ -276,6 +294,20 @@ ApplyNext::
     ld [wSPRQueue2A+2], a
     inc a
     ld [wSPRQueue2B+2], a
+.shirasebonequeue
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, :+
+    ld a, [hCLevel]
+    cp a, 1
+    jr c, :+
+    ld a, 7
+    ld [wSPRQueue1A+3], a
+    ld [wSPRQueue1B+3], a
+    ld [wSPRQueue2A+3], a
+    ld [wSPRQueue2B+3], a
+:   ld a, b
     jp GradeRendering
 
 
@@ -379,6 +411,26 @@ ApplyHold::
     ld a, [hl]
     add a, HOLD_BASE_Y
     ld [wSPRHold4+0], a
+
+.shirasebonehold
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, :+
+    ld a, [hCLevel]
+    cp a, 1
+    jr c, :+
+    ld a, 7
+    ld [wSPRHold1+3], a
+    ld [wSPRHold2+3], a
+    ld [wSPRHold3+3], a
+    ld [wSPRHold4+3], a
+    ld a, TILE_QUEUE_BONE
+    ld [wSPRHold1+2], a
+    ld [wSPRHold2+2], a
+    ld [wSPRHold3+2], a
+    ld [wSPRHold4+2], a
+:   ld a, b
     ret
 
 

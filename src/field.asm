@@ -1765,12 +1765,12 @@ FieldProcess::
 .postghost
     ; If the lock delay is at the highest value, draw the piece normally.
     ld a, [wSpeedCurveState]
-    cp a, 4
+    cp a, SCURVE_SHIR
     jr nz, :+
     ld a, [hCLevel]
     cp a, 1
     jr c, :+
-    ld a, BONE
+    ld a, TILE_BONE
     ld [hWantedTile], a
     jp .drawpiece 
 :   ldh a, [hCurrentPiece]
@@ -3986,12 +3986,12 @@ BigFieldProcess::
 .postghost
     ; If the lock delay is at the highest value, draw the piece normally.
     ld a, [wSpeedCurveState]
-    cp a, 4
+    cp a, SCURVE_SHIR
     jr nz, :+
     ld a, [hCLevel]
     cp a, 1
     jr c, :+
-    ld a, BONE
+    ld a, TILE_BONE
     ld [hWantedTile], a
     jp .drawpiece 
 :   ldh a, [hCurrentPiece]

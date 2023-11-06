@@ -41,6 +41,8 @@ wQRate:                ds 1
 wPrevCOOL:             ds 3
 wCOOLIsActive:         ds 1    
 wSubgrade:             ds 1
+wREGRETIsActive:       ds 1
+wGradeBoosts:          ds 1
 
 
 SECTION "Grading Data", ROM0
@@ -99,38 +101,70 @@ sTGM3InternalGradeSystem:
     db 10,  2,  12, 13, 30
 
 sTGM3GradeBoosts:
-    db 0 ;9
+    db 0 ;9 (0 = add 0, 1 = add 1)
     db 1 ;8
-    db 2 ;7
-    db 3 ;6
-    db 4 ;5
-    db 5 ;4
-    db 5 ;4
-    db 6 ;3
-    db 6 ;3
-    db 7 ;2
-    db 7 ;2
-    db 7 ;2
-    db 8 ;1
-    db 8 ;1
-    db 8 ;1
-    db 9 ;S1 (yes, here you finally get into the S grades, unless you are very COOL)
-    db 9 ;S1
-    db 10 ;S2
-    db 11 ;S3
-    db 12 ;S4
-    db 12 ;S4
-    db 12 ;S4
-    db 13 ;S5
-    db 13 ;S5
-    db 14 ;S6
-    db 14 ;S6
-    db 15 ;S7
-    db 15 ;S7
-    db 16 ;S8
-    db 16 ;S8
-    db 17 ;S9
+    db 1 ;7
+    db 1 ;6
+    db 1 ;5
+    db 1 ;4
+    db 0 ;4
+    db 1 ;3
+    db 0 ;3
+    db 1 ;2
+    db 0 ;2
+    db 0 ;2
+    db 1 ;1
+    db 0 ;1
+    db 0 ;1
+    db 1 ;S1 (yes, here you finally get into the S grades, unless you are very COOL)
+    db 0 ;S1
+    db 1 ;S2
+    db 1 ;S3
+    db 1 ;S4
+    db 0 ;S4
+    db 0 ;S4
+    db 1 ;S5
+    db 0 ;S5
+    db 1 ;S6
+    db 0 ;S6
+    db 1 ;S7
+    db 0 ;S7
+    db 1 ;S8
+    db 0 ;S8
+    db 1 ;S9
 
+sTGM3HowManyInternalGradesTODecrease:
+    db 0 ;9 (0 = add 0, 1 = add 1)
+    db 1 ;8
+    db 1 ;7
+    db 1 ;6
+    db 1 ;5
+    db 1 ;4
+    db 2 ;4
+    db 1 ;3
+    db 0 ;3
+    db 1 ;2
+    db 0 ;2
+    db 0 ;2
+    db 1 ;1
+    db 0 ;1
+    db 0 ;1
+    db 1 ;S1 (yes, here you finally get into the S grades, unless you are very COOL)
+    db 0 ;S1
+    db 1 ;S2
+    db 1 ;S3
+    db 1 ;S4
+    db 0 ;S4
+    db 0 ;S4
+    db 1 ;S5
+    db 0 ;S5
+    db 1 ;S6
+    db 0 ;S6
+    db 1 ;S7
+    db 0 ;S7
+    db 1 ;S8
+    db 0 ;S8
+    db 1 ;S9
 sTGM3ComboMultipliers:
     db 1,  1, 1, 1, 1   ; Combo size, (Multiplier for: ) Single, Double, Triple, Tetris (Screw the fractional part, x.5 gets rounded down)
     db 2,  1, 1, 1, 1
@@ -1037,8 +1071,11 @@ UpdateGradeTGM3:
     ld b, 0
     ld c, a
     add hl, bc
-    ld a, [hl] ; Load the boosts into a...
-    add a, b ; ...and add them to a.
+    ld a, [hl] ; Load the boosts to add into a...
+    ld hl, wGradeBoosts ; make HL point to the boosts variable
+    add [hl], a ;add the boosts
+    ld a, [hl] ; load the result
+    add a, b ; ...and add them to the grade.
     ld b, a ; Save the result and check if we have the same grade as before
     ld a, [wDisplayedGrade]
     cp a, b
@@ -1096,6 +1133,38 @@ TGM3DecayRate:
 .lpoints
     ld [wInternalGradePoints], a
     ret 
+.COOLHandler
+
+.REGRETHandler ; Check if we took too much time to complete a section
+    ld hl, sTGM3REGRETConditions
+    ld a, [hCLevel+1]
+    add a
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl+]
+    ld b, a
+    ld a, [hl]
+    ld c, a
+    call CheckTorikan
+    cp a, 0
+    ret nz
+.regret
+    ld a, [wInternalGrade]
+    cp a, 0
+    ret z
+    xor a, a
+    ld [wInternalGradePoints], a
+    ld a, [wGradeBoosts]
+    dec a
+    ld [wGradeBoosts], a
+    ld hl, sTGM3GradeBoosts ; Make HL point to the Grade boosts table
+    ld a, [wInternalGrade] ; Get the offset
+    ld b, 0
+    ld c, a
+    add hl, bc
+
+
 
 UpdateGradeCHIL:
     ; Make HL Point to the Staffroll Table

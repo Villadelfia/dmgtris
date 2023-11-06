@@ -1072,8 +1072,9 @@ UpdateGradeTGM3:
     ld c, a
     add hl, bc
     ld a, [hl] ; Load the boosts to add into a...
-    ld hl, wGradeBoosts ; make HL point to the boosts variable
-    add [hl], a ;add the boosts
+    ld b, a
+    ld a, [wGradeBoosts] ; make HL point to the boosts variable
+    add a, b ;add the boosts
     ld a, [hl] ; load the result
     add a, b ; ...and add them to the grade.
     ld b, a ; Save the result and check if we have the same grade as before

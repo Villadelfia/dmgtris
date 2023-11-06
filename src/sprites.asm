@@ -129,8 +129,9 @@ ApplyTells::
     ld a, TELLS_BASE_X
     sub a, b
     ld [wSPRModeRNG+1], a
-    ld [wSPRModeRot+1], a
     ld [wSPRModeDrop+1], a
+    add a, TELLS_X_DIST
+    ld [wSPRModeRot+1], a
     ld [wSPRModeHiG+1], a
 
     ld a, [wRNGModeState]
@@ -274,7 +275,7 @@ ApplyNext::
     ld a, QUEUE_BASE_Y
     ld [wSPRQueue1A], a
     ld [wSPRQueue1B], a
-    add a, 9
+    add a, 12
     ld [wSPRQueue2A], a
     ld [wSPRQueue2B], a
 

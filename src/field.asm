@@ -1435,7 +1435,10 @@ FieldProcess::
     jr z, .noeffect
 
     ; We moved last frame but couldn't move this frame. That means we slammed into a wall.
-    ; First check if either effect is playing.
+    ; First check if either effect is playing and that we're not in 20G.
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr z, .noeffect
     ld a, [wLeftSlamTimer]
     cp a, SLAM_ANIMATION_LEN
     jr nz, .noeffect
@@ -3659,7 +3662,10 @@ BigFieldProcess::
     jr z, .noeffect
 
     ; We moved last frame but couldn't move this frame. That means we slammed into a wall.
-    ; First check if either effect is playing.
+    ; First check if either effect is playing and that we're not in 20G.
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr z, .noeffect
     ld a, [wLeftSlamTimer]
     cp a, SLAM_ANIMATION_LEN
     jr nz, .noeffect

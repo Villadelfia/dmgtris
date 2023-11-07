@@ -72,7 +72,7 @@ INCLUDE "globals.asm"
     ; Field colors
     DEF_RGB555_FROM24 BLACK_F, $20, $20, $20
     DEF_RGB555_FROM24 GOLD_0,  $36, $2C, $05
-    DEF_RGB555_FROM24 GOLD_1,  $5B, $4A, $08
+    DEF_RGB555_FROM24 GOLD_1,  $99, $73, $16
 
 
 SECTION "GBC Shadow Tilemap", WRAM0, ALIGN[8]

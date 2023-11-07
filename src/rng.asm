@@ -39,6 +39,41 @@ wTGM3WorstDroughtIdx: ds 1
 
 section "RNG Functions", ROM0
 HarvestEntropy::
+    ld hl, $D000
+    ld de, $E000
+.loop
+    ldh a, [hRNGSeed]
+    xor a, [hl]
+    ldh [hRNGSeed], a
+    xor a, a
+    ld [hl+], a
+
+    ldh a, [hRNGSeed+1]
+    xor a, [hl]
+    ldh [hRNGSeed+1], a
+    xor a, a
+    ld [hl+], a
+
+    ldh a, [hRNGSeed+2]
+    xor a, [hl]
+    ldh [hRNGSeed+2], a
+    xor a, a
+    ld [hl+], a
+
+    ldh a, [hRNGSeed+3]
+    xor a, [hl]
+    ldh [hRNGSeed+3], a
+    xor a, a
+    ld [hl+], a
+
+    ld a, h
+    cp a, d
+    jr nz, .loop
+
+    ld a, l
+    cp a, e
+    jr nz, .loop
+
     ret
 
     ; Snapshots the initial seed for a game, then initializes the history and piece queue.

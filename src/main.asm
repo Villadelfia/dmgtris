@@ -55,6 +55,17 @@ Main::
     ld a, c
     ld [wInitialC], a
 
+    ; Initialize the mapper.
+    ld a, CART_SRAM_ENABLE
+    ld [rRAMG], a
+    xor a, a
+    ld [rRAMB], a
+    ld a, BANK_OTHER
+    ld [rROMB0], a
+
+    ; Harvest entropy
+    call HarvestEntropy
+
     ; Let the DMG have some fun with the initial screen.
     call DoDMGEffect
 
@@ -78,13 +89,6 @@ Main::
     ldh [rKEY1], a
     stop
 .notgbc
-    ; Initialize the mapper.
-    ld a, CART_SRAM_ENABLE
-    ld [rRAMG], a
-    xor a, a
-    ld [rRAMB], a
-    ld a, BANK_OTHER
-    ld [rROMB0], a
 
     ; Clear OAM.
     call ClearOAM

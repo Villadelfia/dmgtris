@@ -50,6 +50,7 @@ sOption2::
     db "ARS1"
     db "ARS2"
     db " NES"
+    db "MYCO"
 
 sOption3::
     db "FIRM"
@@ -65,6 +66,7 @@ sOption4::
     db "DEAT"
     db "SHIR"
     db "CHIL"
+    db "MYCO"
 
 sOption5::
     db "  NO"

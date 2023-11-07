@@ -104,7 +104,7 @@ ClearOAM::
     ld hl, _OAMRAM
     ld bc, 160
     ld d, 0
-    call SafeMemSet
+    call UnsafeMemSet
     ld hl, wShadowOAM
     ld bc, 160
     ld d, 0
@@ -139,9 +139,16 @@ ApplyTells::
     ld [wSPRModeRNG+2], a
 
     ld a, [wRotModeState]
+    cp a, ROT_MODE_MYCO
+    jr z, .myco
     add a, TILE_ROT_MODE_BASE
     ld [wSPRModeRot+2], a
+    jr .dropmode
+.myco
+    ld a, TILE_ROT_MODE_MYCO
+    ld [wSPRModeRot+2], a
 
+.dropmode
     ld a, [wDropModeState]
     add a, TILE_DROP_MODE_BASE
     ld [wSPRModeDrop+2], a

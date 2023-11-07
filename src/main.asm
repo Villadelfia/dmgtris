@@ -63,25 +63,10 @@ Main::
     ld a, BANK_OTHER
     ld [rROMB0], a
 
-    ; Harvest entropy
-    call HarvestEntropy
-
-    ; Let the DMG have some fun with the initial screen.
-    call DoDMGEffect
-
-    ; Turn off LCD during initialization, but not on DMG.
-    ld a, [wInitialA]
-    cp a, $11
-    jr nz, :+
-
-    wait_vram
-    xor a, a
-    ldh [rLCDC], a
-
     ; Set up stack
-:   ld sp, wStackEnd-1
+    ld sp, wStackEnd-1
 
-    ; GBC? Double speed mode and set up palettes.
+    ; GBC? Double speed.
     ld a, [wInitialA]
     cp a, $11
     jr nz, .notgbc
@@ -89,6 +74,17 @@ Main::
     ldh [rKEY1], a
     stop
 .notgbc
+
+    ; Harvest entropy
+    call HarvestEntropy
+
+    ; Let the DMG have some fun with the initial screen.
+    call DoDMGEffect
+
+    ; Turn off LCD during initialization.
+    wait_vram
+    xor a, a
+    ldh [rLCDC], a
 
     ; Clear OAM.
     call ClearOAM
@@ -101,13 +97,13 @@ Main::
     call IntrInit
     call InputInit
     call SFXInit
+    call BankingInit
+
+    xor a, a
+    ldh [hMode], a
 
     ; Set up the interrupt handlers.
-    ld a, [wInitialA]
-    cp a, $11
-    jr z, :+
-    wait_vblank
-:   call InitializeLCDCInterrupt
+    call InitializeLCDCInterrupt
 
     ; Switch to gameplay state.
     call SwitchToTitle

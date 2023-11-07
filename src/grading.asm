@@ -278,6 +278,7 @@ UpdateGrade::
     jp UpdateGradeDEAT ;DEAT
     jp UpdateGradeSHIR ;SHIR
     no_jump            ;CHIL
+    no_jump            ;MYCO
 
 
     ; Jumps to the grade decay function for the current mode.
@@ -300,6 +301,7 @@ DecayGradeProcess::
     no_jump           ;DEAT
     no_jump           ;SHIR
     no_jump           ;CHIL
+    no_jump           ;MYCO
 
 
 
@@ -324,6 +326,7 @@ DecayGradeDelay::
     no_jump  ;DEAT
     no_jump  ;SHIR
     no_jump  ;CHIL
+    no_jump  ;MYCO
 
 
     ; Get the four most significant figures of the score in BC as BCD.

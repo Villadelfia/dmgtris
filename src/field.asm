@@ -1055,6 +1055,12 @@ FieldProcess::
     cp a, PIECE_O
     jp z, .norot
 
+    ; MYCO always tries to kick.
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_MYCO
+    jp z, .trykickright
+    ldh a, [hCurrentPiece]
+
     ; S/Z always kick.
     cp a, PIECE_S
     jr z, .trykickright
@@ -2187,9 +2193,12 @@ FieldDelay::
     cp a, 0
     ret nz
 
-    ; Add one level if we're not at a breakpoint.
+    ; Add one level if we're not at a breakpoint and not in MYCO speed curve.
     ldh a, [hRequiresLineClear]
     cp a, $FF
+    jr z, .generatenextpiece
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_MYCO
     jr z, .generatenextpiece
     ld e, 1
     call LevelUp
@@ -3282,6 +3291,12 @@ BigFieldProcess::
     ; O pieces never kick, obviously.
     cp a, PIECE_O
     jp z, .norot
+
+    ; MYCO always tries to kick.
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_MYCO
+    jp z, .trykickright
+    ldh a, [hCurrentPiece]
 
     ; S/Z always kick.
     cp a, PIECE_S
@@ -4417,9 +4432,12 @@ BigFieldDelay::
     cp a, 0
     jp nz, BigWidenField
 
-    ; Add one level if we're not at a breakpoint.
+    ; Add one level if we're not at a breakpoint and not in MYCO speed curve.
     ldh a, [hRequiresLineClear]
     cp a, $FF
+    jr z, .generatenextpiece
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_MYCO
     jr z, .generatenextpiece
     ld e, 1
     call LevelUp

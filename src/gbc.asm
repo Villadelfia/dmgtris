@@ -312,6 +312,8 @@ GBCGameplayProcess::
     ld a, [wSpeedCurveState]
     cp a, SCURVE_CHIL
     ld a, $01 ;Green
+    jr z, .goverride
+    ld a, $02 ;Green
 
     ; Are we 20G?
 .goverride
@@ -526,6 +528,8 @@ GBCBigGameplayProcess::
     ld a, [wSpeedCurveState]
     cp a, SCURVE_CHIL
     ld a, $01 ;Green
+    jr z, .goverride
+    ld a, $02 ;Green
 
     ; Are we 20G?
 .goverride

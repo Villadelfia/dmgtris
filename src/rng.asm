@@ -38,22 +38,25 @@ wTGM3WorstDroughtIdx: ds 1
 
 
 section "RNG Functions", ROM0
+HarvestEntropy::
+    ret
+
     ; Snapshots the initial seed for a game, then initializes the history and piece queue.
 RNGInit::
     ; Do some bit fuckery on the seed using the gameboy's free-running timers.
-    ldh a, [rDIV]
+    ld hl, rDIV
+    ldh a, [hRNGSeed]
     xor a, [hl]
     ldh [hRNGSeed], a
-
-    ldh a, [rTIMA]
-    xor a, [hl]
-    ldh [hRNGSeed+1], a
-
-    ldh a, [rDIV]
+    ldh a, [hRNGSeed+2]
     xor a, [hl]
     ldh [hRNGSeed+2], a
 
-    ldh a, [rTIMA]
+    ld hl, rTIMA
+    ldh a, [hRNGSeed+1]
+    xor a, [hl]
+    ldh [hRNGSeed+1], a
+    ldh a, [hRNGSeed+3]
     xor a, [hl]
     ldh [hRNGSeed+3], a
 

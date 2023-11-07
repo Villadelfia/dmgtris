@@ -69,18 +69,10 @@ INCLUDE "globals.asm"
     DEF_RGB555_FROM24 CYAN_2, $3D, $B2, $EB
     DEF_RGB555_FROM24 CYAN_3, $FF, $FF, $FF
 
-DEF B0 EQU %0010000000000000
-DEF B1 EQU %0100000000000000
-DEF B2 EQU %0101000000000000
-DEF B3 EQU %0111110000000000
-DEF G0 EQU %0000000100000000
-DEF G1 EQU %0000001000000000
-DEF G2 EQU %0000001010000000
-DEF G3 EQU %0000001111100000
-DEF R0 EQU %0000000000001000
-DEF R1 EQU %0000000000010000
-DEF R2 EQU %0000000000010100
-DEF R3 EQU %0000000000011111
+    ; Field colors
+    DEF_RGB555_FROM24 BLACK_F, $20, $20, $20
+    DEF_RGB555_FROM24 GOLD_0,  $36, $2C, $05
+    DEF_RGB555_FROM24 GOLD_1,  $99, $73, $16
 
 
 SECTION "GBC Shadow Tilemap", WRAM0, ALIGN[8]
@@ -320,6 +312,8 @@ GBCGameplayProcess::
     ld a, [wSpeedCurveState]
     cp a, SCURVE_CHIL
     ld a, $01 ;Green
+    jr z, .goverride
+    ld a, $02 ;Purple
 
     ; Are we 20G?
 .goverride
@@ -351,45 +345,21 @@ GBCGameplayProcess::
     ld a, d
     DEF row = 0
     REPT 21
-        ld hl, wShadowTileAttrs+(row*32)+10
+        ld hl, wShadowTileAttrs + (row*32) + 31
         ld [hl], a
-        ld hl, wShadowTileAttrs+(row*32)+19
-        ld [hl], a
-        ld hl, wShadowTileAttrs+(row*32)+31
+        ld hl, wShadowTileAttrs + (row*32) + 10
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
         ld [hl], a
         DEF row += 1
     ENDR
-
-    ld hl, wShadowTileAttrs+203
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
-
-    ld hl, wShadowTileAttrs+395
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
-
-    ld hl, wShadowTileAttrs+491
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
-
 
     ; What to copy
 :   ld de, wField + 30
@@ -498,7 +468,7 @@ GBCGameplayProcess::
 .darker
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    ld bc, R1 | G1
+    ld bc, GOLD_0_C
     wait_vram
     ld a, c
     ldh [rOCPD], a
@@ -509,7 +479,7 @@ GBCGameplayProcess::
 .lighter
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    ld bc, R2 | G2
+    ld bc, GOLD_1_C
     wait_vram
     ld a, c
     ldh [rOCPD], a
@@ -520,7 +490,7 @@ GBCGameplayProcess::
 .black
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    ld bc, R2 | B0
+    ld bc, BLACK_F_C
     wait_vram
     ld a, c
     ldh [rOCPD], a
@@ -558,6 +528,8 @@ GBCBigGameplayProcess::
     ld a, [wSpeedCurveState]
     cp a, SCURVE_CHIL
     ld a, $01 ;Green
+    jr z, .goverride
+    ld a, $02 ;Purple
 
     ; Are we 20G?
 .goverride
@@ -588,44 +560,21 @@ GBCBigGameplayProcess::
     ld a, d
     DEF row = 0
     REPT 21
-        ld hl, wShadowTileAttrs+(row*32)+10
+        ld hl, wShadowTileAttrs + (row*32) + 31
         ld [hl], a
-        ld hl, wShadowTileAttrs+(row*32)+19
-        ld [hl], a
-        ld hl, wShadowTileAttrs+(row*32)+31
+        ld hl, wShadowTileAttrs + (row*32) + 10
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
         ld [hl], a
         DEF row += 1
     ENDR
-
-    ld hl, wShadowTileAttrs+203
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
-
-    ld hl, wShadowTileAttrs+395
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
-
-    ld hl, wShadowTileAttrs+491
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl+], a
-    ld [hl], a
 
 
     ; What to copy
@@ -735,7 +684,7 @@ GBCBigGameplayProcess::
 .darker
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    ld bc, R1 | G1
+    ld bc, GOLD_0_C
     wait_vram
     ld a, c
     ldh [rOCPD], a
@@ -746,7 +695,7 @@ GBCBigGameplayProcess::
 .lighter
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    ld bc, R2 | G2
+    ld bc, GOLD_1_C
     wait_vram
     ld a, c
     ldh [rOCPD], a
@@ -757,7 +706,7 @@ GBCBigGameplayProcess::
 .black
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
-    ld bc, R2 | B0
+    ld bc, BLACK_F_C
     wait_vram
     ld a, c
     ldh [rOCPD], a

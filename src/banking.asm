@@ -26,6 +26,16 @@ SECTION "Banking Variables", WRAM0
 wBankBackup: ds 4
 
 
+SECTION "Banking Functions", ROM0
+BankingInit::
+    ld a, BANK_OTHER
+    ld [wBankBackup], a
+    ld [wBankBackup+1], a
+    ld [wBankBackup+2], a
+    ld [wBankBackup+3], a
+    ret
+
+
 SECTION "Switch Bank", ROM0[$08]
     ; Pushes the current bank to the stach, switches to bank in B.
 RSTSwitchBank::

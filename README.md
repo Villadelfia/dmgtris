@@ -41,6 +41,7 @@ Select the rotation rules:
 - ARS1: Classic ARS from TGM1 and TGM2.
 - ARS2: ARS from TGM3.
 - NES: No kicks.
+- MYCO: Like ARS1, but without I, L, J and T restrictions.
 
 ### Drop Mode
 Choose how the up and down buttons act:
@@ -51,7 +52,7 @@ Choose how the up and down buttons act:
 - NONE: Up does nothing. Down locks.
 
 ### Speed Curve
-Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all.
+Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all. The MYCO speed curve mimics the excellent game Tromi by Mycophobia.
 
 Note that all modes use the same scoring and they are all infinite.
 

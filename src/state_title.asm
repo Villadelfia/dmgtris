@@ -33,8 +33,7 @@ SwitchToTitle::
     ld b, BANK_TITLE
     rst RSTSwitchBank
     call SwitchToTitleB
-    rst RSTRestoreBank
-    jp EventLoopPostHandler
+    jp RSTRestoreBank
 
     ; Banks and jumps to the actual handler.
 TitleEventLoopHandler::
@@ -575,7 +574,11 @@ GetEnd:
     jr nz, :+
     ld bc, sSHIRSpeedCurveEnd
     ret
-:   ld bc, sCHILSpeedCurveEnd
+:   cp a, SCURVE_CHIL
+    jr nz, :+
+    ld bc, sCHILSpeedCurveEnd
+    ret
+:   ld bc, sMYCOSpeedCurveEnd
     ret
 
 
@@ -602,7 +605,11 @@ GetStart:
     jr nz, :+
     ld hl, sSHIRSpeedCurve
     ret
-:   ld hl, sCHILSpeedCurve
+:   cp a, SCURVE_CHIL
+    jr nz, :+
+    ld hl, sCHILSpeedCurve
+    ret
+:   ld hl, sMYCOSpeedCurve
     ret
 
 

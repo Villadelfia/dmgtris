@@ -251,6 +251,24 @@ sDMGTGrading:
     db 5,    2,  8, 10, 20 ; Grade MM  — frames/decay, single base, double base, triple base, tetris base
                            ; No entry for GM. We're done there.
 
+sDMGTGaugeLUT:
+    db 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3
+    db 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7
+    db 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 9, 10,10,10
+    db 10,10,11,11,11,11,11,12,12,12,12,13,13,13,13,13
+    db 14,14,14,14,14,15,15,15,15,16,16,16,16,16,17,17
+    db 17,17,17,18,18,18,18,19,19,19,19,19,20,20,20,20
+    db 20,21,21,21,21,21,22,22,22,22,23,23,23,23,23,24
+    db 24,24,24,24,25,25,25,25,26,26,26,26,26,27,27,27
+    db 27,27,28,28,28,28,29,29,29,29,29,30,30,30,30,31
+    db 31,31,31,31,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+
 SECTION "Grading Functions", ROM0
     ; Wipe the grading variables.
 GradeInit::
@@ -307,7 +325,11 @@ UpdateGrade::
     jp UpdateGradeTGM3 ;TGM3
     jp UpdateGradeDEAT ;DEAT
     jp UpdateGradeSHIR ;SHIR
+
     jp UpdateGradeCHIL ;CHIL
+
+
+    no_jump            ;MYCO
 
 
     ; Jumps to the grade decay function for the current mode.
@@ -330,6 +352,7 @@ DecayGradeProcess::
     no_jump           ;DEAT
     no_jump           ;SHIR
     no_jump           ;CHIL
+    no_jump           ;MYCO
 
 
 
@@ -348,12 +371,22 @@ DecayGradeDelay::
     jp hl
 
 .gradejumptable
+
     no_jump           ;DMGT
     no_jump           ;TGM1
     jp TGM3DecayRate  ;TGM3
-    no_jump           ;DEAT
-    no_jump           ;SHIR
-    no_jump           ;CHIL
+
+
+
+
+
+
+
+    no_jump  ;DEAT
+    no_jump  ;SHIR
+    no_jump  ;CHIL
+    no_jump  ;MYCO
+
 
 
     ; Get the four most significant figures of the score in BC as BCD.
@@ -372,16 +405,26 @@ PrepareScore:
     ld b, a
     ret
 
+DrawGradeProgressDMGT::
+    ld hl, sDMGTGaugeLUT
+    ld a, [wGradeGauge]
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl]
+    call SetProgress
+    ret
+
 UpdateGradeDMGT::
     ; Did we have line clears?
     ldh a, [hLineClearCt]
     cp a, 0
-    ret z
+    jp z, DrawGradeProgressDMGT
 
     ; Bail if we're already GM.
     ld a, [wDisplayedGrade]
     cp a, GRADE_GM
-    ret z
+    jp z, DrawGradeProgressDMGT
 
     ; Get grade in BC.
     ld b, 0
@@ -573,7 +616,7 @@ UpdateGradeDMGT::
     call SFXEnqueue
     ld a, $0F
     ld [wEffectTimer], a
-    ret
+    jp DrawGradeProgressDMGT
 
 .increasegrademaybe
     ; Do we have 150 in the gauge?
@@ -613,12 +656,12 @@ DecayGradeDMGT::
     ; Bail if the gauge is empty.
     ld a, [wGradeGauge]
     cp a, 0
-    ret z
+    jp z, DrawGradeProgressDMGT
 
     ; Bail if we're already GM.
     ld a, [wDisplayedGrade]
     cp a, GRADE_GM
-    ret z
+    jp z, DrawGradeProgressDMGT
 
     ; Get grade in BC.
     ld b, 0
@@ -646,7 +689,7 @@ DecayGradeDMGT::
 .nodecay
     ld a, b
     ld [wDecayCounter], a
-    ret
+    jp DrawGradeProgressDMGT
 
     ; Yes, decay.
 .decay
@@ -655,7 +698,7 @@ DecayGradeDMGT::
     ld [wGradeGauge], a
     xor a, a
     ld [wDecayCounter], a
-    ret
+    jp DrawGradeProgressDMGT
 
 
 UpdateGradeTGM1:

@@ -104,7 +104,7 @@ ClearOAM::
     ld hl, _OAMRAM
     ld bc, 160
     ld d, 0
-    call SafeMemSet
+    call UnsafeMemSet
     ld hl, wShadowOAM
     ld bc, 160
     ld d, 0
@@ -129,8 +129,9 @@ ApplyTells::
     ld a, TELLS_BASE_X
     sub a, b
     ld [wSPRModeRNG+1], a
-    ld [wSPRModeRot+1], a
     ld [wSPRModeDrop+1], a
+    add a, TELLS_X_DIST
+    ld [wSPRModeRot+1], a
     ld [wSPRModeHiG+1], a
 
     ld a, [wRNGModeState]
@@ -138,9 +139,16 @@ ApplyTells::
     ld [wSPRModeRNG+2], a
 
     ld a, [wRotModeState]
+    cp a, ROT_MODE_MYCO
+    jr z, .myco
     add a, TILE_ROT_MODE_BASE
     ld [wSPRModeRot+2], a
+    jr .dropmode
+.myco
+    ld a, TILE_ROT_MODE_MYCO
+    ld [wSPRModeRot+2], a
 
+.dropmode
     ld a, [wDropModeState]
     add a, TILE_DROP_MODE_BASE
     ld [wSPRModeDrop+2], a
@@ -163,7 +171,35 @@ ApplyTells::
     ; Draws the next pieces as a sprite.
     ; Index of next piece in A.
 ApplyNext::
+    ; If we're in Shirase mode and past level 1000...
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, .nobone
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
+    cp a, 1
+    jr c, .nobone
+
+.bone
+    ; Color
+    ld a, 7
+    ld [wSPRNext1+3], a
+    ld [wSPRNext2+3], a
+    ld [wSPRNext3+3], a
+    ld [wSPRNext4+3], a
+
+    ; Tile
+    ld a, TILE_QUEUE_BONE
+    ld [wSPRNext1+2], a
+    ld [wSPRNext2+2], a
+    ld [wSPRNext3+2], a
+    ld [wSPRNext4+2], a
+    ld a, b
+    jr .pos
+
+.nobone
     ; Correct color
+    ld a, b
     ld [wSPRNext1+3], a
     ld [wSPRNext2+3], a
     ld [wSPRNext3+3], a
@@ -179,6 +215,7 @@ ApplyNext::
     sub a, TILE_PIECE_0
     sub a, 7
 
+.pos
     ; X positions
     ld b, a
     ldh a, [hGameState]
@@ -263,7 +300,7 @@ ApplyNext::
     ld a, QUEUE_BASE_Y
     ld [wSPRQueue1A], a
     ld [wSPRQueue1B], a
-    add a, 9
+    add a, 12
     ld [wSPRQueue2A], a
     ld [wSPRQueue2B], a
 
@@ -294,27 +331,68 @@ ApplyNext::
     ld [wSPRQueue2A+2], a
     inc a
     ld [wSPRQueue2B+2], a
+
 .shirasebonequeue
-    ld b, a
+
+
+
+
+
+
+
+
+
+    ; Shirase bone colors
     ld a, [wSpeedCurveState]
     cp a, SCURVE_SHIR
-    jr nz, :+
-    ld a, [hCLevel]
+    jr nz, .done
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
     cp a, 1
-    jr c, :+
+    jr c, .done
+
     ld a, 7
     ld [wSPRQueue1A+3], a
     ld [wSPRQueue1B+3], a
     ld [wSPRQueue2A+3], a
     ld [wSPRQueue2B+3], a
-:   ld a, b
+
+.done
+
     jp GradeRendering
 
 
     ; Draws the held piece.
     ; Index of held piece in A.
 ApplyHold::
+    ; If we're in Shirase mode and past level 1000...
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHIR
+    jr nz, .nobone
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
+    cp a, 1
+    jr c, .nobone
+
+.bone
+    ; Color
+    ld a, 7
+    ld [wSPRHold1+3], a
+    ld [wSPRHold2+3], a
+    ld [wSPRHold3+3], a
+    ld [wSPRHold4+3], a
+
+    ; Tile
+    ld a, TILE_QUEUE_BONE
+    ld [wSPRHold1+2], a
+    ld [wSPRHold2+2], a
+    ld [wSPRHold3+2], a
+    ld [wSPRHold4+2], a
+    ld a, b
+    jr .x
+
+.nobone
     ; Correct color
+    ld a, b
     ld [wSPRHold1+3], a
     ld [wSPRHold2+3], a
     ld [wSPRHold3+3], a
@@ -585,91 +663,113 @@ ApplyNumbers8::
     ld bc, 4
 
     ld a, [de]
-    add a, TILE_0
+    cp a, 0
+    jr nz, .one
+    ld a, TILE_BLANK
     ld [hl], a
     add hl, bc
     inc de
 
+    ld a, [de]
+    cp a, 0
+    jr nz, .two
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .three
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .four
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .five
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .six
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .seven
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    jr .eight
+
+.one
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.two
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.three
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.four
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.five
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.six
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    ret
-
-
-    ; Generic function to draw a BCD number (6 digits) as 6 sprites.
-    ; Address of first sprite in hl.
-    ; Address of first digit in de.
-ApplyNumbers6::
-    inc hl
-    inc hl
-    ld bc, 4
-
+.seven
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    add hl, bc
-    inc de
-
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    add hl, bc
-    inc de
-
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    add hl, bc
-    inc de
-
-    ld a, [de]
-    add a, TILE_0
-    ld [hl], a
-    add hl, bc
-    inc de
-
+.eight
     ld a, [de]
     add a, TILE_0
     ld [hl], a
@@ -685,23 +785,53 @@ ApplyNumbers4::
     ld bc, 4
 
     ld a, [de]
-    add a, TILE_0
+    cp a, 0
+    jr nz, .one
+    ld a, TILE_BLANK
     ld [hl], a
     add hl, bc
     inc de
 
+    ld a, [de]
+    cp a, 0
+    jr nz, .two
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    ld a, [de]
+    cp a, 0
+    jr nz, .three
+    ld a, TILE_BLANK
+    ld [hl], a
+    add hl, bc
+    inc de
+
+    jr .four
+
+.one
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.two
     ld a, [de]
     add a, TILE_0
     ld [hl], a
     add hl, bc
     inc de
 
+.three
+    ld a, [de]
+    add a, TILE_0
+    ld [hl], a
+    add hl, bc
+    inc de
+
+.four
     ld a, [de]
     add a, TILE_0
     ld [hl], a

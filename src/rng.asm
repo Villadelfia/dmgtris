@@ -38,22 +38,56 @@ wTGM3WorstDroughtIdx: ds 1
 
 
 section "RNG Functions", ROM0
+HarvestEntropy::
+    ld hl, $C000
+    ld de, $E000
+.loop
+    ldh a, [hRNGSeed]
+    xor a, [hl]
+    inc hl
+    ldh [hRNGSeed], a
+
+    ldh a, [hRNGSeed+1]
+    xor a, [hl]
+    inc hl
+    ldh [hRNGSeed+1], a
+
+    ldh a, [hRNGSeed+2]
+    xor a, [hl]
+    inc hl
+    ldh [hRNGSeed+2], a
+
+    ldh a, [hRNGSeed+3]
+    xor a, [hl]
+    inc hl
+    ldh [hRNGSeed+3], a
+
+    ld a, h
+    cp a, d
+    jr nz, .loop
+
+    ld a, l
+    cp a, e
+    jr nz, .loop
+
+    ret
+
     ; Snapshots the initial seed for a game, then initializes the history and piece queue.
 RNGInit::
     ; Do some bit fuckery on the seed using the gameboy's free-running timers.
-    ldh a, [rDIV]
+    ld hl, rDIV
+    ldh a, [hRNGSeed]
     xor a, [hl]
     ldh [hRNGSeed], a
-
-    ldh a, [rTIMA]
-    xor a, [hl]
-    ldh [hRNGSeed+1], a
-
-    ldh a, [rDIV]
+    ldh a, [hRNGSeed+2]
     xor a, [hl]
     ldh [hRNGSeed+2], a
 
-    ldh a, [rTIMA]
+    ld hl, rTIMA
+    ldh a, [hRNGSeed+1]
+    xor a, [hl]
+    ldh [hRNGSeed+1], a
+    ldh a, [hRNGSeed+3]
     xor a, [hl]
     ldh [hRNGSeed+3], a
 
@@ -84,6 +118,15 @@ RNGInit::
     jr nz, .complexinit
     call Next7Piece
     ld [hUpcomingPiece2], a
+    call Next7Piece
+    ld [hUpcomingPiece1], a
+    call Next7Piece
+    ld [hNextPiece], a
+    xor a, a
+    ldh [hPieceHistory], a
+    ldh [hPieceHistory+1], a
+    ldh [hPieceHistory+2], a
+    ldh [hPieceHistory+3], a
     ret
 
     ; Otherwise do complex init.
@@ -112,7 +155,8 @@ RNGInit::
 
     ; Save the generated piece and put it in the history.
     ldh [hPieceHistory], a
-    ld [hUpcomingPiece2], a
+    ldh [hUpcomingPiece1], a
+    ldh [hUpcomingPiece2], a
 
     ; Generate the next 2 to fill up the queue.
     call GetNextPiece
@@ -260,7 +304,7 @@ GetNextTGM3Piece:
     inc [hl]
 
     ; Set the drought of our most recently drawn piece to 0.
-:   ldh a, [hCurrentPiece]
+:   ldh a, [hUpcomingPiece2]
     ld c, a
     xor a, a
     ld b, a

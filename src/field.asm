@@ -1055,6 +1055,12 @@ FieldProcess::
     cp a, PIECE_O
     jp z, .norot
 
+    ; MYCO always tries to kick.
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_MYCO
+    jp z, .trykickright
+    ldh a, [hCurrentPiece]
+
     ; S/Z always kick.
     cp a, PIECE_S
     jr z, .trykickright
@@ -1435,7 +1441,10 @@ FieldProcess::
     jr z, .noeffect
 
     ; We moved last frame but couldn't move this frame. That means we slammed into a wall.
-    ; First check if either effect is playing.
+    ; First check if either effect is playing and that we're not in 20G.
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr z, .noeffect
     ld a, [wLeftSlamTimer]
     cp a, SLAM_ANIMATION_LEN
     jr nz, .noeffect
@@ -1763,17 +1772,22 @@ FieldProcess::
     call DrawPiece
 
 .postghost
-    ; If the lock delay is at the highest value, draw the piece normally.
+    ; Draw pieces as bones past 1000 when in Shirase.
     ld a, [wSpeedCurveState]
     cp a, SCURVE_SHIR
-    jr nz, :+
-    ld a, [hCLevel]
+    jr nz, .nobone
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
     cp a, 1
-    jr c, :+
+    jr c, .nobone
     ld a, TILE_BONE
     ld [hWantedTile], a
-    jp .drawpiece 
-:   ldh a, [hCurrentPiece]
+    jp .drawpiece
+
+    ; If the lock delay is at the highest value, draw the piece normally.
+
+.nobone
+    ldh a, [hCurrentPiece]
+
     ld b, TILE_PIECE_0
     add a, b
     ldh [hWantedTile], a
@@ -2181,9 +2195,12 @@ FieldDelay::
     cp a, 0
     ret nz
 
-    ; Add one level if we're not at a breakpoint.
+    ; Add one level if we're not at a breakpoint and not in MYCO speed curve.
     ldh a, [hRequiresLineClear]
     cp a, $FF
+    jr z, .generatenextpiece
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_MYCO
     jr z, .generatenextpiece
     ld e, 1
     call LevelUp
@@ -3277,6 +3294,12 @@ BigFieldProcess::
     cp a, PIECE_O
     jp z, .norot
 
+    ; MYCO always tries to kick.
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_MYCO
+    jp z, .trykickright
+    ldh a, [hCurrentPiece]
+
     ; S/Z always kick.
     cp a, PIECE_S
     jr z, .trykickright
@@ -3656,7 +3679,10 @@ BigFieldProcess::
     jr z, .noeffect
 
     ; We moved last frame but couldn't move this frame. That means we slammed into a wall.
-    ; First check if either effect is playing.
+    ; First check if either effect is playing and that we're not in 20G.
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr z, .noeffect
     ld a, [wLeftSlamTimer]
     cp a, SLAM_ANIMATION_LEN
     jr nz, .noeffect
@@ -3984,17 +4010,22 @@ BigFieldProcess::
     call BigDrawPiece
 
 .postghost
-    ; If the lock delay is at the highest value, draw the piece normally.
+    ; Draw pieces as bones past 1000 when in Shirase.
     ld a, [wSpeedCurveState]
     cp a, SCURVE_SHIR
-    jr nz, :+
-    ld a, [hCLevel]
+    jr nz, .nobone
+    ld a, [hCLevel+CLEVEL_THOUSANDS]
     cp a, 1
-    jr c, :+
+    jr c, .nobone
     ld a, TILE_BONE
     ld [hWantedTile], a
-    jp .drawpiece 
-:   ldh a, [hCurrentPiece]
+    jp .drawpiece
+
+    ; If the lock delay is at the highest value, draw the piece normally.
+
+.nobone
+    ldh a, [hCurrentPiece]
+
     ld b, TILE_PIECE_0
     add a, b
     ldh [hWantedTile], a
@@ -4406,9 +4437,12 @@ BigFieldDelay::
     cp a, 0
     jp nz, BigWidenField
 
-    ; Add one level if we're not at a breakpoint.
+    ; Add one level if we're not at a breakpoint and not in MYCO speed curve.
     ldh a, [hRequiresLineClear]
     cp a, $FF
+    jr z, .generatenextpiece
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_MYCO
     jr z, .generatenextpiece
     ld e, 1
     call LevelUp

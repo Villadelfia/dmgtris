@@ -313,7 +313,7 @@ GBCGameplayProcess::
     cp a, SCURVE_CHIL
     ld a, $01 ;Green
     jr z, .goverride
-    ld a, $02 ;Green
+    ld a, $02 ;Purple
 
     ; Are we 20G?
 .goverride
@@ -529,7 +529,7 @@ GBCBigGameplayProcess::
     cp a, SCURVE_CHIL
     ld a, $01 ;Green
     jr z, .goverride
-    ld a, $02 ;Green
+    ld a, $02 ;Purple
 
     ; Are we 20G?
 .goverride
@@ -557,9 +557,24 @@ GBCBigGameplayProcess::
     ld d, a
 
 .colorfield
-    ld hl, wShadowTileAttrs
-    ld bc, 32*21
-    call UnsafeMemSet
+    ld a, d
+    DEF row = 0
+    REPT 21
+        ld hl, wShadowTileAttrs + (row*32) + 31
+        ld [hl], a
+        ld hl, wShadowTileAttrs + (row*32) + 10
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl+], a
+        ld [hl], a
+        DEF row += 1
+    ENDR
 
 
     ; What to copy

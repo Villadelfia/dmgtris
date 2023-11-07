@@ -625,11 +625,6 @@ sSHIRSpeedCurve::
 sSHIRSpeedCurveEnd::
     dw $FFFF
 
-
-
-    ;   dw BCD_START_LEVEL, START_LEVEL, BCD_NEXT_100_LEVEL_BREAKPOINT
-;   db GRID_CELLS_PER_MOVE_ON_OVERFLOW, INCREMENT_PER_FRAME (0 means overflow each frame)
-;   db NORMAL_ARE, LINE_ARE, DAS, LOCK_DELAY, CLEAR_DELAY
 sMYCOSpeedCurve::
     dw $0000, 0, $0100
     db 1, 4

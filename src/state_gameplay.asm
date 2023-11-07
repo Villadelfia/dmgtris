@@ -43,16 +43,14 @@ SwitchToGameplay::
     ld b, BANK_GAMEPLAY
     rst RSTSwitchBank
     call SwitchToGameplayB
-    rst RSTRestoreBank
-    jp EventLoopPostHandler
+    jp RSTRestoreBank
 
     ; Trampolines to the banked function.
 SwitchToGameplayBig::
     ld b, BANK_GAMEPLAY_BIG
     rst RSTSwitchBank
     call SwitchToGameplayBigB
-    rst RSTRestoreBank
-    jp EventLoopPostHandler
+    jp RSTRestoreBank
 
     ; Banks and jumps to the actual handler.
 GamePlayEventLoopHandler::
@@ -530,8 +528,7 @@ GamePlayEventLoopHandlerB::
     ldh a, [hBState]
     cp a, 10 ; 10 frame hold
     jp nz, .drawStaticInfo
-    call SwitchToTitle
-    jp EventLoopPostHandler
+    jp SwitchToTitle
 
 
 .pauseMode
@@ -545,8 +542,7 @@ GamePlayEventLoopHandlerB::
     ldh a, [hSelectState]
     cp a, 0
     jr z, .noqr
-    call SwitchToTitle
-    jp EventLoopPostHandler
+    jp SwitchToTitle
 
     ; Unpause
 .noqr
@@ -766,6 +762,7 @@ SwitchToGameplayBigB:
     wait_vblank
     wait_vblank_end
     ret
+
 
     ; Main gameplay event loop.
 GamePlayBigEventLoopHandlerB:
@@ -1149,8 +1146,7 @@ GamePlayBigEventLoopHandlerB:
     ldh a, [hBState]
     cp a, 10 ; 10 frame hold
     jp nz, .drawStaticInfo
-    call SwitchToTitle
-    jp EventLoopPostHandler
+    jp SwitchToTitle
 
 
 .pauseMode
@@ -1164,8 +1160,7 @@ GamePlayBigEventLoopHandlerB:
     ldh a, [hSelectState]
     cp a, 0
     jr z, .noqr
-    call SwitchToTitle
-    jp EventLoopPostHandler
+    jp SwitchToTitle
 
     ; Unpause
 .noqr
@@ -1204,7 +1199,7 @@ GamePlayBigEventLoopHandlerB:
     call UnsafeMemCopy
     ld de, sBigPause
     ld hl, wWideBlittedField+(20*10)
-    ld bc, 40
+    ld bc, 20
     call UnsafeMemCopy
 
 

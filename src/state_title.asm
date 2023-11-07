@@ -33,8 +33,7 @@ SwitchToTitle::
     ld b, BANK_TITLE
     rst RSTSwitchBank
     call SwitchToTitleB
-    rst RSTRestoreBank
-    jp EventLoopPostHandler
+    jp RSTRestoreBank
 
     ; Banks and jumps to the actual handler.
 TitleEventLoopHandler::

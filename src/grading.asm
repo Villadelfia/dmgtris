@@ -28,7 +28,7 @@ wGradePoints:          ds 1
 wInternalGrade:        ds 1
 wDisplayedGrade::      ds 1
 wEffectTimer::         ds 1
-wRankingDisqualified:  ds 1
+wRankingDisqualified:: ds 1
 wDecayCounter:         ds 1
 wGradeGauge:           ds 1
 wSMult:                ds 1

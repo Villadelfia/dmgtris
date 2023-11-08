@@ -67,6 +67,18 @@ sBigKill::
     db "          "
     db " QUIT [B] "
 
+sBigYouAreGM::
+    db " YOU  ARE "
+    db "          "
+    db " GRAND    "
+    db "          "
+    db " MASTER!  "
+    db "          "
+    db "          "
+    db " RETRY[A] "
+    db "          "
+    db " QUIT [B] "
+
 sBigPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
     db 0, 8, 16, 24 ; I
     db 0, 8, 8, 16  ; Z

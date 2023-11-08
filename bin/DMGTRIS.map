@@ -466,38 +466,38 @@ ROM0 bank #0:
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]
-	SECTION: $4008-$7293 ($328c bytes) ["Static Global data"]
+	SECTION: $4008-$7315 ($330e bytes) ["Static Global data"]
 	         $4008 = sDMGTSpeedCurve
 	         $4203 = sDMGTSpeedCurveEnd
 	         $4205 = sDMGTSpeedCurveSpecialData
 	         $420b = sTGM1SpeedCurve
-	         $4391 = sTGM1SpeedCurveEnd
-	         $4393 = sTGM1SpeedCurveSpecialData
-	         $4399 = sCHILSpeedCurve
-	         $44b7 = sCHILSpeedCurveEnd
-	         $44b9 = sCHILSpeedCurveSpecialData
-	         $44bf = sTGM3SpeedCurve
-	         $46a0 = sTGM3SpeedCurveEnd
-	         $46a2 = sTGM3SpeedCurveSpecialData
-	         $46a8 = sDEATSpeedCurve
-	         $46f6 = sDEATSpeedCurveEnd
-	         $46f8 = sDEATSpeedCurveSpecialData
-	         $46fe = sSHIRSpeedCurve
-	         $4759 = sSHIRSpeedCurveEnd
-	         $475b = sSHIRSpeedCurveSpecialData
-	         $4761 = sMYCOSpeedCurve
-	         $488c = sMYCOSpeedCurveEnd
-	         $488e = sMYCOSpeedCurveSpecialData
-	         $4894 = sSharedTiles
-	         $4b94 = sTitleTiles
-	         $4b94 = sSharedTilesEnd
-	         $5894 = sTitleTilesEnd
-	         $5894 = sGameplayTilesM
-	         $6594 = sGameplayTilesMEnd
-	         $6594 = sGameplayTilesC
-	         $7294 = sGameplayTilesCEnd
-	EMPTY: $7294-$7fff ($0d6c bytes)
-	TOTAL EMPTY: $0d6c bytes
+	         $43c5 = sTGM1SpeedCurveEnd
+	         $43c7 = sTGM1SpeedCurveSpecialData
+	         $43cd = sCHILSpeedCurve
+	         $44eb = sCHILSpeedCurveEnd
+	         $44ed = sCHILSpeedCurveSpecialData
+	         $44f3 = sTGM3SpeedCurve
+	         $46d4 = sTGM3SpeedCurveEnd
+	         $46d6 = sTGM3SpeedCurveSpecialData
+	         $46dc = sDEATSpeedCurve
+	         $475e = sDEATSpeedCurveEnd
+	         $4760 = sDEATSpeedCurveSpecialData
+	         $4766 = sSHIRSpeedCurve
+	         $47c1 = sSHIRSpeedCurveEnd
+	         $47c3 = sSHIRSpeedCurveSpecialData
+	         $47c9 = sMYCOSpeedCurve
+	         $490e = sMYCOSpeedCurveEnd
+	         $4910 = sMYCOSpeedCurveSpecialData
+	         $4916 = sSharedTiles
+	         $4c16 = sTitleTiles
+	         $4c16 = sSharedTilesEnd
+	         $5916 = sTitleTilesEnd
+	         $5916 = sGameplayTilesM
+	         $6616 = sGameplayTilesMEnd
+	         $6616 = sGameplayTilesC
+	         $7316 = sGameplayTilesCEnd
+	EMPTY: $7316-$7fff ($0cea bytes)
+	TOTAL EMPTY: $0cea bytes
 
 ROMX bank #2:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_SFX"]
@@ -2512,7 +2512,7 @@ HRAM bank #0:
 
 SUMMARY:
 	ROM0: 12620 bytes used / 3764 free
-	ROMX: 57326 bytes used / 40978 free in 6 banks
+	ROMX: 57456 bytes used / 40848 free in 6 banks
 	SRAM: 14 bytes used / 8178 free in 1 bank
 	WRAM0: 3524 bytes used / 572 free
 	HRAM: 124 bytes used / 3 free

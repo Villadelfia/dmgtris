@@ -385,10 +385,14 @@ UpdateGradeDMGT::
     ld [wLockLevel], a
     ld a, 5
     ldh [hCLevel+1], a
+    ldh [hNLevel+1], a
     xor a, a
     ldh [hCLevel], a
+    ldh [hNLevel], a
     ldh [hCLevel+2], a
+    ldh [hNLevel+2], a
     ldh [hCLevel+3], a
+    ldh [hNLevel+3], a
     jp TriggerKillScreen
 
 
@@ -849,10 +853,14 @@ UpdateGradeDEAT:
     ld [wRankingDisqualified], a
     ld a, 5
     ldh [hCLevel+1], a
+    ldh [hNLevel+1], a
     xor a, a
     ldh [hCLevel], a
+    ldh [hNLevel], a
     ldh [hCLevel+2], a
+    ldh [hNLevel+2], a
     ldh [hCLevel+3], a
+    ldh [hNLevel+3], a
     jp TriggerKillScreen
 
 
@@ -951,19 +959,27 @@ UpdateGradeSHIR:
 .l1000
     ld a, 1
     ldh [hCLevel], a
+    ldh [hNLevel], a
     xor a, a
     ldh [hCLevel+1], a
+    ldh [hNLevel+1], a
     ldh [hCLevel+2], a
+    ldh [hNLevel+2], a
     ldh [hCLevel+3], a
+    ldh [hNLevel+3], a
     jp TriggerKillScreen
 
 .l500
     ld a, 5
     ldh [hCLevel+1], a
+    ldh [hNLevel+1], a
     xor a, a
     ldh [hCLevel], a
+    ldh [hNLevel], a
     ldh [hCLevel+2], a
+    ldh [hNLevel+2], a
     ldh [hCLevel+3], a
+    ldh [hNLevel+3], a
     jp TriggerKillScreen
 
 ENDC

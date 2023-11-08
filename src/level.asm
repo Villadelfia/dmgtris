@@ -43,6 +43,7 @@ SECTION "Level Variables", WRAM0
 wBoneActivationLevel: ds 2
 wInvisActivationLevel: ds 2
 wKillScreenActivationLevel: ds 2
+wKillScreenActivationLevelBCD: ds 2
 wBonesActive:: ds 1
 wInvisActive:: ds 1
 wKillScreenActive:: ds 1
@@ -183,8 +184,12 @@ SpecialLevelInit:
     ld [wInvisActivationLevel+1], a
     ld a, [hl+]
     ld [wKillScreenActivationLevel], a
-    ld a, [hl]
+    ld a, [hl+]
     ld [wKillScreenActivationLevel+1], a
+    ld a, [hl+]
+    ld [wKillScreenActivationLevelBCD], a
+    ld a, [hl]
+    ld [wKillScreenActivationLevelBCD+1], a
     ret
 
 
@@ -563,6 +568,28 @@ CheckSpecialLevelConditions:
 
     ld a, $FF
     ld [wKillScreenActive], a
+
+    ld hl, wKillScreenActivationLevelBCD
+    ld a, [hl]
+    and a, $0F
+    ldh [hCLevel+3], a
+    ldh [hNLevel+3], a
+    ld a, [hl+]
+    swap a
+    and a, $0F
+    ldh [hCLevel+2], a
+    ldh [hNLevel+2], a
+    ld a, [hl]
+    and a, $0F
+    ldh [hCLevel+1], a
+    ldh [hNLevel+1], a
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ldh [hCLevel], a
+    ldh [hNLevel], a
+    ld a, $FF
+    ld [wLockLevel], a
     ret
 
 

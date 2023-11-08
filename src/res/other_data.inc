@@ -195,6 +195,7 @@ sDMGTSpeedCurveSpecialData::
     dw 2000     ; When do we get bones?
     dw $FFFF    ; When do blocks turn invisible?
     dw 9999     ; When is the hard kill screen?
+    dw $9999    ; Same but in BCD.
 
 
 sTGM1SpeedCurve::
@@ -341,6 +342,7 @@ sTGM1SpeedCurveSpecialData::
     dw 1000     ; When do we get bones?
     dw $FFFF    ; When do blocks turn invisible?
     dw 1199     ; When is the hard kill screen?
+    dw $1199    ; Same but in BCD.
 
 
 sCHILSpeedCurve::
@@ -439,6 +441,7 @@ sCHILSpeedCurveSpecialData::
     dw $FFFF    ; When do we get bones?
     dw $FFFF    ; When do blocks turn invisible?
     dw 9999     ; When is the hard kill screen?
+    dw $9999    ; Same but in BCD.
 
 
 sTGM3SpeedCurve::
@@ -597,6 +600,7 @@ sTGM3SpeedCurveSpecialData::
     dw $FFFF    ; When do we get bones?
     dw 1300     ; When do blocks turn invisible?
     dw 1499     ; When is the hard kill screen?
+    dw $1499    ; Same but in BCD.
 
 sDEATSpeedCurve::
     dw $0000, 0, $0100
@@ -646,6 +650,7 @@ sDEATSpeedCurveSpecialData::
     dw $FFFF    ; When do we get bones?
     dw 1000     ; When do blocks turn invisible?
     dw 1199     ; When is the hard kill screen?
+    dw $1199    ; Same but in BCD.
 
 
 sSHIRSpeedCurve::
@@ -684,6 +689,7 @@ sSHIRSpeedCurveSpecialData::
     dw 900     ; When do we get bones?
     dw 1300    ; When do blocks turn invisible?
     dw 1499    ; When is the hard kill screen?
+    dw $1499   ; Same but in BCD.
 
 
 sMYCOSpeedCurve::
@@ -794,6 +800,7 @@ sMYCOSpeedCurveSpecialData::
     dw $FFFF    ; When do we get bones?
     dw $FFFF    ; When do blocks turn invisible?
     dw 300      ; When is the hard kill screen?
+    dw $0300    ; Same but in BCD.
 
 
 sSharedTiles::

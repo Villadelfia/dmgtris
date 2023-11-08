@@ -119,6 +119,9 @@ HandleTimers::
     ret z
     cp a, MODE_PRE_GAME_OVER
     ret z
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    ret z
 
     ld a, [wMinutes]
     cp a, 99

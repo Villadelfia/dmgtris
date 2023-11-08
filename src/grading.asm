@@ -346,7 +346,12 @@ PrepareScore:
     ret
 
 DrawGradeProgressDMGT::
-    ld hl, sDMGTGaugeLUT
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    jr nz, :+
+    ld a, $FF
+    ld [wGradeGauge], a
+:   ld hl, sDMGTGaugeLUT
     ld a, [wGradeGauge]
     ld b, 0
     ld c, a
@@ -552,6 +557,7 @@ UpdateGradeDMGT::
     jr z, .gotgm
 
     ; No, play the normal jingle.
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
     ld a, $0F
@@ -578,6 +584,7 @@ UpdateGradeDMGT::
     jr z, .gotgm
 
     ; No, play the normal jingle.
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
     ld a, $0F
@@ -585,6 +592,7 @@ UpdateGradeDMGT::
     ret
 
 .gotgm
+    call SFXKill
     ld a, SFX_RANKGM
     call SFXEnqueue
     ld a, $0F
@@ -700,6 +708,7 @@ UpdateGradeTGM1:
     ldh a, [hCurrentlyPlaying]
     cp a, SFX_RANKUP
     jr z, .skipjingle
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
 
@@ -725,6 +734,7 @@ UpdateGradeTGM1:
     ld [wDisplayedGrade], a
 
     ; Sound effect
+    call SFXKill
     ld a, SFX_RANKGM
     jp SFXEnqueue
 
@@ -762,6 +772,7 @@ UpdateGradeDEAT:
     ld [wDisplayedGrade], a
 
     ; Play the jingle.
+    call SFXKill
     ld a, SFX_RANKGM
     call SFXEnqueue
 
@@ -790,6 +801,7 @@ UpdateGradeDEAT:
     ld [wDisplayedGrade], a
 
     ; Play the jingle.
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
 
@@ -850,6 +862,7 @@ UpdateGradeSHIR:
     ld [wDisplayedGrade], a ; Otherwise, set the grade.
 
     ; Play the jingle.
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
 

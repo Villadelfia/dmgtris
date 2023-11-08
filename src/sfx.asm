@@ -92,6 +92,8 @@ SFXProcessQueue:
     xor a, a
     ldh [hPlayhead], a
     ldh [hPlayhead+1], a
+    ld a, $FF
+    ldh [hCurrentlyPlaying], a
 
     ; Music will just repeat.
     ldh a, [hPlayQueue]
@@ -100,10 +102,7 @@ SFXProcessQueue:
     jr SFXEnqueue
 
     ; Try 4 times to pop a sound effect off the queue.
-:   ld a, $FF
-    ldh [hCurrentlyPlaying], a
-
-    call SFXPopQueue
+:   call SFXPopQueue
     cp a, $FF
     jr nz, :+
     call SFXPopQueue
@@ -117,7 +116,7 @@ SFXProcessQueue:
     ret z
 
     ; If we got a valid sound effect, then play it.
-    jr SFXEnqueue
+:   jr SFXEnqueue
 
 
     ; Noise effects use their own playhead that can play at the same time as the normal queue.
@@ -341,7 +340,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXLevelUp)
     ldh [hPlayhead+1], a
-    jr SFXPlay
+    jp SFXPlay
 
     ; Other
 :   cp a, SFX_RANKUP
@@ -395,6 +394,7 @@ SFXKill::
     ldh [hPlayQueue+1], a
     ldh [hPlayQueue+2], a
     ldh [hPlayQueue+3], a
+    ldh [hCurrentlyPlaying], a
     xor a, a
     ldh [hPlayhead], a
     ldh [hPlayhead+1], a

@@ -432,6 +432,8 @@ Next35Piece:
 
     ; Tries generating bytes until it gets one in [0; 7)
 Next7Piece:
+    xor a, a
+    ret
 :   call NextByte
     and a, $07
     cp a, 7

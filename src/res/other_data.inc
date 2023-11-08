@@ -186,14 +186,16 @@ sDMGTSpeedCurve::       ; Speed curve of the game.
 
     dw $6666, 6666, $6700 ; Level 6666
     db 20, $00
-    db 1, 1, 1, 2, 1
-
-    dw $9999, 9999, $9999 ; Level 9999
-    db 20, $00
-    db 1, 1, 1, 1, 1
+    db 1, 1, 1, 3, 1
 
 sDMGTSpeedCurveEnd::
     dw $FFFF              ; End.
+
+sDMGTSpeedCurveSpecialData::
+    dw $FFFF    ; When do we get bones?
+    dw $2000    ; When do blocks turn invisible?
+    dw $9999    ; When is the hard kill screen?
+
 
 sTGM1SpeedCurve::
     dw $0000, 0, $0100
@@ -319,6 +321,11 @@ sTGM1SpeedCurve::
 sTGM1SpeedCurveEnd::
     dw $FFFF
 
+sTGM1SpeedCurveSpecialData::
+    dw $FFFF    ; When do we get bones?
+    dw $FFFF    ; When do blocks turn invisible?
+    dw $0999    ; When is the hard kill screen?
+
 
 sCHILSpeedCurve::
     dw $0000, 0, $0100
@@ -411,6 +418,11 @@ sCHILSpeedCurve::
 
 sCHILSpeedCurveEnd::
     dw $FFFF
+
+sCHILSpeedCurveSpecialData::
+    dw $FFFF    ; When do we get bones?
+    dw $FFFF    ; When do blocks turn invisible?
+    dw $9999    ; When is the hard kill screen?
 
 
 sTGM3SpeedCurve::
@@ -565,6 +577,11 @@ sTGM3SpeedCurve::
 sTGM3SpeedCurveEnd::
     dw $FFFF
 
+sTGM3SpeedCurveSpecialData::
+    dw $FFFF    ; When do we get bones?
+    dw $1300    ; When do blocks turn invisible?
+    dw $1500    ; When is the hard kill screen?
+
 sDEATSpeedCurve::
     dw $0000, 0, $0100
     db 20, $00
@@ -592,6 +609,12 @@ sDEATSpeedCurve::
 
 sDEATSpeedCurveEnd::
     dw $FFFF
+
+sDEATSpeedCurveSpecialData::
+    dw $FFFF    ; When do we get bones?
+    dw $0999    ; When do blocks turn invisible?
+    dw $1200    ; When is the hard kill screen?
+
 
 sSHIRSpeedCurve::
     dw $0000, 0, $0100
@@ -624,6 +647,12 @@ sSHIRSpeedCurve::
 
 sSHIRSpeedCurveEnd::
     dw $FFFF
+
+sSHIRSpeedCurveSpecialData::
+    dw $0900    ; When do we get bones?
+    dw $1300    ; When do blocks turn invisible?
+    dw $1500    ; When is the hard kill screen?
+
 
 sMYCOSpeedCurve::
     dw $0000, 0, $0100
@@ -718,12 +747,14 @@ sMYCOSpeedCurve::
     db 20, $00
     db 20, 20, 8, 30, 20
 
-    dw $0300, 300, $0400
-    db 20, $00
-    db 1, 1, 1, 1, 1
-
 sMYCOSpeedCurveEnd::
     dw $FFFF
+
+sMYCOSpeedCurveSpecialData::
+    dw $FFFF    ; When do we get bones?
+    dw $FFFF    ; When do blocks turn invisible?
+    dw $0300    ; When is the hard kill screen?
+
 
 sSharedTiles::
     DB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF

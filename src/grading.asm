@@ -199,12 +199,12 @@ sDMGTGrading:
     db 15,   2, 12, 15, 30 ; Grade m5  — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 12, 15, 30 ; Grade m6  — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 12, 15, 30 ; Grade m7  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 12, 15, 30 ; Grade m8  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 12, 15, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
-    db 10,   2, 12, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
-    db 10,   2, 12, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
-    db 10,   2, 12, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
-    db 10,   2, 12, 13, 30 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 15, 30 ; Grade m8  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 15, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 13, 30 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
     db 5,    2,  8, 10, 20 ; Grade MM  — frames/decay, single base, double base, triple base, tetris base
                            ; No entry for GM. We're done there.
 
@@ -302,8 +302,6 @@ DecayGradeProcess::
     no_jump           ;SHIR
     no_jump           ;CHIL
     no_jump           ;MYCO
-
-
 
 
     ; Jumps to the grade decay function for the current mode.

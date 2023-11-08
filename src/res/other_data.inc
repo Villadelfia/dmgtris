@@ -192,9 +192,9 @@ sDMGTSpeedCurveEnd::
     dw $FFFF              ; End.
 
 sDMGTSpeedCurveSpecialData::
-    dw $FFFF    ; When do we get bones?
-    dw $2000    ; When do blocks turn invisible?
-    dw $9999    ; When is the hard kill screen?
+    dw 2000     ; When do we get bones?
+    dw $FFFF    ; When do blocks turn invisible?
+    dw 9999     ; When is the hard kill screen?
 
 
 sTGM1SpeedCurve::
@@ -322,9 +322,9 @@ sTGM1SpeedCurveEnd::
     dw $FFFF
 
 sTGM1SpeedCurveSpecialData::
-    dw $FFFF    ; When do we get bones?
+    dw 1000     ; When do we get bones?
     dw $FFFF    ; When do blocks turn invisible?
-    dw $0999    ; When is the hard kill screen?
+    dw 1199     ; When is the hard kill screen?
 
 
 sCHILSpeedCurve::
@@ -422,7 +422,7 @@ sCHILSpeedCurveEnd::
 sCHILSpeedCurveSpecialData::
     dw $FFFF    ; When do we get bones?
     dw $FFFF    ; When do blocks turn invisible?
-    dw $9999    ; When is the hard kill screen?
+    dw 9999     ; When is the hard kill screen?
 
 
 sTGM3SpeedCurve::
@@ -579,8 +579,8 @@ sTGM3SpeedCurveEnd::
 
 sTGM3SpeedCurveSpecialData::
     dw $FFFF    ; When do we get bones?
-    dw $1300    ; When do blocks turn invisible?
-    dw $1500    ; When is the hard kill screen?
+    dw 1300     ; When do blocks turn invisible?
+    dw 1499     ; When is the hard kill screen?
 
 sDEATSpeedCurve::
     dw $0000, 0, $0100
@@ -612,8 +612,8 @@ sDEATSpeedCurveEnd::
 
 sDEATSpeedCurveSpecialData::
     dw $FFFF    ; When do we get bones?
-    dw $0999    ; When do blocks turn invisible?
-    dw $1200    ; When is the hard kill screen?
+    dw 1000     ; When do blocks turn invisible?
+    dw 1199     ; When is the hard kill screen?
 
 
 sSHIRSpeedCurve::
@@ -649,9 +649,9 @@ sSHIRSpeedCurveEnd::
     dw $FFFF
 
 sSHIRSpeedCurveSpecialData::
-    dw $0900    ; When do we get bones?
-    dw $1300    ; When do blocks turn invisible?
-    dw $1500    ; When is the hard kill screen?
+    dw 900     ; When do we get bones?
+    dw 1300    ; When do blocks turn invisible?
+    dw 1499    ; When is the hard kill screen?
 
 
 sMYCOSpeedCurve::
@@ -753,7 +753,7 @@ sMYCOSpeedCurveEnd::
 sMYCOSpeedCurveSpecialData::
     dw $FFFF    ; When do we get bones?
     dw $FFFF    ; When do blocks turn invisible?
-    dw $0300    ; When is the hard kill screen?
+    dw 300      ; When is the hard kill screen?
 
 
 sSharedTiles::
@@ -845,14 +845,14 @@ sSharedTiles::
     DB $00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$00,$18,$18,$18,$18,$08,$08
     DB $10,$10,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
+    DB $FF,$FF,$C3,$C3,$00,$00,$3C,$3C
+    DB $00,$00,$C3,$C3,$FF,$FF,$00,$00
+    DB $18,$18,$7E,$7E,$DB,$DB,$DB,$DB
+    DB $DB,$DB,$7E,$7E,$18,$18,$00,$00
+    DB $7E,$7E,$C3,$C3,$C3,$C3,$C3,$C3
+    DB $66,$66,$A5,$A5,$E7,$E7,$00,$00
+    DB $DB,$DB,$DB,$DB,$DB,$DB,$DB,$DB
+    DB $7E,$7E,$18,$18,$18,$18,$00,$00
 sSharedTilesEnd::
 
 sTitleTiles::
@@ -956,10 +956,10 @@ sTitleTiles::
     DB $82,$82,$82,$82,$EC,$EC,$00,$00
     DB $44,$44,$CC,$CC,$44,$44,$44,$44
     DB $44,$44,$44,$44,$EE,$EE,$00,$00
-    DB $4E,$4E,$A2,$A2,$A2,$A2,$A4,$A4
-    DB $A4,$A4,$A4,$A4,$44,$44,$00,$00
-    DB $7F,$7F,$22,$22,$14,$14,$08,$08
-    DB $14,$14,$22,$22,$7F,$7F,$00,$00
+    DB $44,$44,$AA,$AA,$AA,$AA,$A4,$A4
+    DB $AA,$AA,$AA,$AA,$44,$44,$00,$00
+    DB $7F,$7F,$22,$22,$22,$22,$14,$14
+    DB $14,$14,$08,$08,$7F,$7F,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
@@ -1689,7 +1689,7 @@ sGameplayTilesM::
     DB $24,$3C,$24,$3C,$18,$18,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
+    DB $00,$00,$00,$00,$00,$00,$10,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
 sGameplayTilesMEnd::
 
@@ -2108,7 +2108,7 @@ sGameplayTilesC::
     DB $24,$3C,$24,$3C,$18,$18,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$00,$00
+    DB $00,$00,$00,$00,$00,$00,$10,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00
 sGameplayTilesCEnd::
 

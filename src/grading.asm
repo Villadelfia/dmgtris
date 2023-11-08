@@ -380,7 +380,16 @@ UpdateGradeDMGT::
 
     ; If we failed it: DIE.
     cp a, $FF
-    jp nz, TriggerKillScreen
+    jp z, .checklineclears
+    ld a, $FF
+    ld [wLockLevel], a
+    ld a, 5
+    ldh [hCLevel+1], a
+    xor a, a
+    ldh [hCLevel], a
+    ldh [hCLevel+2], a
+    ldh [hCLevel+3], a
+    jp TriggerKillScreen
 
 
     ; Did we have line clears?
@@ -836,9 +845,15 @@ UpdateGradeDEAT:
 .disqualify
     ; Disqualify from ranking.
     ld a, $FF
+    ld [wLockLevel], a
     ld [wRankingDisqualified], a
-    call TriggerKillScreen
-    ret
+    ld a, 5
+    ldh [hCLevel+1], a
+    xor a, a
+    ldh [hCLevel], a
+    ldh [hCLevel+2], a
+    ldh [hCLevel+3], a
+    jp TriggerKillScreen
 
 
 UpdateGradeSHIR:
@@ -925,9 +940,30 @@ UpdateGradeSHIR:
     ret
 
 .disqualify
+    ; Disqualify from ranking.
     ld a, $FF
+    ld [wLockLevel], a
     ld [wRankingDisqualified], a
-    call TriggerKillScreen
-    ret
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_S5
+    jr z, .l500
+
+.l1000
+    ld a, 1
+    ldh [hCLevel], a
+    xor a, a
+    ldh [hCLevel+1], a
+    ldh [hCLevel+2], a
+    ldh [hCLevel+3], a
+    jp TriggerKillScreen
+
+.l500
+    ld a, 5
+    ldh [hCLevel+1], a
+    xor a, a
+    ldh [hCLevel], a
+    ldh [hCLevel+2], a
+    ldh [hCLevel+3], a
+    jp TriggerKillScreen
 
 ENDC

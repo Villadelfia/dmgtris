@@ -46,6 +46,7 @@ wKillScreenActivationLevel: ds 2
 wBonesActive:: ds 1
 wInvisActive:: ds 1
 wKillScreenActive:: ds 1
+wLockLevel:: ds 1
 
 
 SECTION "Level Functions", ROM0
@@ -60,6 +61,7 @@ LevelInit::
     ld [wBonesActive], a
     ld [wInvisActive], a
     ld [wKillScreenActive], a
+    ld [wLockLevel], a
 
     ldh a, [hStartSpeed]
     ld l, a
@@ -189,6 +191,11 @@ SpecialLevelInit:
     ; Increment level and speed up if necessary. Level increment in E.
     ; Levels may only increment by single digits.
 LevelUp::
+    ; Return if our level is hard locked.
+    ld a, [wLockLevel]
+    cp a, $FF
+    ret z
+
     ; Return if we're maxed out.
     ld hl, hCLevel
     ld a, $09

@@ -1771,17 +1771,26 @@ FieldProcess::
     pop de
     call DrawPiece
 
+    ; Bones?
 .postghost
-    ; Draw pieces as bones past 1000 when in Shirase.
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_SHIR
+    ld a, [wBonesActive]
+    cp a, $FF
     jr nz, .nobone
-    ldh a, [hCLevel+CLEVEL_THOUSANDS]
-    cp a, 1
-    jr c, .nobone
     ld a, TILE_BONE
     ld [hWantedTile], a
-    jp .drawpiece
+
+    ; Is lock delay 0 and is invis mode active?
+    ld a, [wInvisActive]
+    cp a, $FF
+    jr nz, .drawpiece
+    ldh a, [hCurrentLockDelayRemaining]
+    cp a, 0
+    jr nz, .drawpiece
+
+    ; Then bones are made invis.
+    ld a, TILE_INVIS
+    ld [hWantedTile], a
+    jr .drawpiece
 
     ; If the lock delay is at the highest value, draw the piece normally.
 
@@ -1808,9 +1817,18 @@ FieldProcess::
     ldh [hWantedTile], a
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
-    jr z, .drawpiece
+    jr nz, .notlocked
+
+    ; This might be invisible!
+    ld a, [wInvisActive]
+    cp a, $FF
+    jr nz, .drawpiece
+    ld a, TILE_INVIS
+    ld [hWantedTile], a
+    jr .drawpiece
 
     ; Otherwise, look it up.
+.notlocked
     call GetTileShade
 
 .drawpiece
@@ -4009,17 +4027,26 @@ BigFieldProcess::
     pop de
     call BigDrawPiece
 
+    ; Bones?
 .postghost
-    ; Draw pieces as bones past 1000 when in Shirase.
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_SHIR
+    ld a, [wBonesActive]
+    cp a, $FF
     jr nz, .nobone
-    ld a, [hCLevel+CLEVEL_THOUSANDS]
-    cp a, 1
-    jr c, .nobone
     ld a, TILE_BONE
     ld [hWantedTile], a
-    jp .drawpiece
+
+    ; Is lock delay 0 and is invis mode active?
+    ld a, [wInvisActive]
+    cp a, $FF
+    jr nz, .drawpiece
+    ldh a, [hCurrentLockDelayRemaining]
+    cp a, 0
+    jr nz, .drawpiece
+
+    ; Then bones are made invis.
+    ld a, TILE_INVIS
+    ld [hWantedTile], a
+    jr .drawpiece
 
     ; If the lock delay is at the highest value, draw the piece normally.
 
@@ -4046,9 +4073,18 @@ BigFieldProcess::
     ldh [hWantedTile], a
     ldh a, [hCurrentLockDelayRemaining]
     cp a, 0
-    jr z, .drawpiece
+    jr nz, .notlocked
+
+    ; This might be invisible!
+    ld a, [wInvisActive]
+    cp a, $FF
+    jr nz, .drawpiece
+    ld a, TILE_INVIS
+    ld [hWantedTile], a
+    jr .drawpiece
 
     ; Otherwise, look it up.
+.notlocked
     call BigGetTileShade
 
 .drawpiece

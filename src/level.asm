@@ -39,6 +39,13 @@ hCLevel:: ds 4
 hNLevel:: ds 6 ; The extra 2 bytes will be clobbered by the sprite drawing functions.
 hPrevHundreds:: ds 1
 
+SECTION "Level Variables", WRAM0
+wBoneActivationLevel: ds 2
+wInvisActivationLevel: ds 2
+wKillScreenActivationLevel: ds 2
+wBonesActive:: ds 1
+wInvisActive:: ds 1
+
 
 SECTION "Level Functions", ROM0
     ; Loads the initial state of the speed curve.
@@ -49,6 +56,8 @@ LevelInit::
 
     xor a, a
     ldh [hRequiresLineClear], a
+    ld [wBonesActive], a
+    ld [wInvisActive], a
 
     ldh a, [hStartSpeed]
     ld l, a
@@ -102,10 +111,77 @@ LevelInit::
     and a, $0F
     ldh [hNLevel], a
 
+    ; Get special data.
+    call SpecialLevelInit
+
     ; Restore the bank before returning.
     rst RSTRestoreBank
 
     jp DoSpeedUp
+
+
+SpecialLevelInit:
+    ld a, [wSpeedCurveState]
+    ld b, a
+    add a, b
+    add a, b
+    ld b, 0
+    ld c, a
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .dmgt
+    jp .tgm1
+    jp .tgm3
+    jp .deat
+    jp .shir
+    jp .chil
+    jp .myco
+
+.dmgt
+    ld hl, sDMGTSpeedCurveSpecialData
+    jr .loaddata
+
+.tgm1
+    ld hl, sTGM1SpeedCurveSpecialData
+    jr .loaddata
+
+.tgm3
+    ld hl, sTGM3SpeedCurveSpecialData
+    jr .loaddata
+
+.deat
+    ld hl, sDEATSpeedCurveSpecialData
+    jr .loaddata
+
+.shir
+    ld hl, sSHIRSpeedCurveSpecialData
+    jr .loaddata
+
+.chil
+    ld hl, sCHILSpeedCurveSpecialData
+    jr .loaddata
+
+.myco
+    ld hl, sMYCOSpeedCurveSpecialData
+    jr .loaddata
+
+.loaddata
+    ld a, [hl+]
+    ld [wBoneActivationLevel], a
+    ld a, [hl+]
+    ld [wBoneActivationLevel+1], a
+    ld a, [hl+]
+    ld [wInvisActivationLevel], a
+    ld a, [hl+]
+    ld [wInvisActivationLevel+1], a
+    ld a, [hl+]
+    ld [wKillScreenActivationLevel], a
+    ld a, [hl]
+    ld [wKillScreenActivationLevel+1], a
+    ret
 
 
     ; Increment level and speed up if necessary. Level increment in E.
@@ -194,6 +270,8 @@ LevelUp::
     ld a, h
     ldh [hLevel+1], a
     call DoSpeedUp
+    call CheckSpecialLevelConditions
+    call SFXKill
     ld a, SFX_RANKGM
     jp SFXEnqueue
 
@@ -271,6 +349,7 @@ LevelUp::
     call SFXEnqueue
 
 .checkspeedup
+    call CheckSpecialLevelConditions
     ldh a, [hNextSpeedUp]
     and a, $F0
     jr z, :+
@@ -361,6 +440,118 @@ DoSpeedUp:
     ld a, $00
     ldh [hCurrentFractionalGravity], a
     jp RSTRestoreBank
+
+
+CheckSpecialLevelConditions:
+    ; Get our level in bc
+    ldh a, [hLevel]
+    ld c, a
+    ldh a, [hLevel+1]
+    ld b, a
+
+    ; Bones?
+.bones
+    ld hl, wBoneActivationLevel
+    ld a, [hl+]
+    cp a, $FF ; $FF means never.
+    jp z, .invis
+
+    ; Load the level, binary in de.
+    ld e, a
+    ld d, [hl]
+
+    ; Check if BC >= DE...
+    ; Skip if B < D.
+    ld a, b
+    cp a, d
+    jr c, .invis
+
+    ; We can confidently enter the bone zone if B > D.
+    jr nz, .enterthebonezone
+
+    ; If B == D, we need to check C and E...
+
+    ; Skip if C < E. Otherwise enter the bone zone.
+    ld a, c
+    cp a, e
+    jr c, .invis
+
+.enterthebonezone
+    ld a, $FF
+    ld [wBonesActive], a
+
+    ; Invis?
+.invis
+    ld hl, wInvisActivationLevel
+    ld a, [hl+]
+    cp a, $FF ; $FF means never.
+    jp z, .killscreen
+
+    ; Load the level, binary in de.
+    ld e, a
+    ld d, [hl]
+
+    ; Check if BC >= DE...
+    ; Skip if B < D.
+    ld a, b
+    cp a, d
+    jr c, .killscreen
+
+    ; We can confidently vanish if B > D.
+    jr nz, .vanishoxyaction
+
+    ; If B == D, we need to check C and E...
+
+    ; Skip if C < E. Otherwise vanish.
+    ld a, c
+    cp a, e
+    jr c, .killscreen
+
+.vanishoxyaction
+    ld a, $FF
+    ld [wInvisActive], a
+
+    ; Kill screen?
+.killscreen
+    ld hl, wKillScreenActivationLevel
+    ld a, [hl+]
+    cp a, $FF
+    ret z
+
+    ; Load the level, binary in de.
+    ld e, a
+    ld d, [hl]
+
+    ; Check if BC >= DE...
+    ; Ret if B < D.
+    ld a, b
+    cp a, d
+    ret c
+
+    ; We can confidently rip if B > D.
+    jr nz, .rip
+
+    ; If B == D, we need to check C and E...
+
+    ; Skip if C < E. Otherwise rip.
+    ld a, c
+    cp a, e
+    ret c
+
+.rip
+    ld a, 1
+    ldh [hCurrentARE], a
+    ldh [hCurrentLineARE], a
+    ldh [hCurrentDAS], a
+    ldh [hCurrentLockDelay], a
+    ldh [hCurrentLineClearDelay], a
+
+    ld a, 20
+    ldh [hCurrentIntegerGravity], a
+
+    xor a, a
+    ldh [hCurrentFractionalGravity], a
+    ret
 
 
 ENDC

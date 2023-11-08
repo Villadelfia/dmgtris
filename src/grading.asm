@@ -242,12 +242,12 @@ sDMGTGrading:
     db 15,   2, 12, 15, 30 ; Grade m5  — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 12, 15, 30 ; Grade m6  — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 12, 15, 30 ; Grade m7  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 12, 15, 30 ; Grade m8  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 12, 15, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
-    db 10,   2, 12, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
-    db 10,   2, 12, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
-    db 10,   2, 12, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
-    db 10,   2, 12, 13, 30 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 15, 30 ; Grade m8  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 15, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2, 12, 13, 30 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
     db 5,    2,  8, 10, 20 ; Grade MM  — frames/decay, single base, double base, triple base, tetris base
                            ; No entry for GM. We're done there.
 
@@ -355,8 +355,6 @@ DecayGradeProcess::
     no_jump           ;MYCO
 
 
-
-
     ; Jumps to the grade decay function for the current mode.
     ; Called once per frame during ARE and line clear delay.
 DecayGradeDelay::
@@ -406,7 +404,12 @@ PrepareScore:
     ret
 
 DrawGradeProgressDMGT::
-    ld hl, sDMGTGaugeLUT
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    jr nz, :+
+    ld a, $FF
+    ld [wGradeGauge], a
+:   ld hl, sDMGTGaugeLUT
     ld a, [wGradeGauge]
     ld b, 0
     ld c, a
@@ -612,6 +615,7 @@ UpdateGradeDMGT::
     jr z, .gotgm
 
     ; No, play the normal jingle.
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
     ld a, $0F
@@ -638,6 +642,7 @@ UpdateGradeDMGT::
     jr z, .gotgm
 
     ; No, play the normal jingle.
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
     ld a, $0F
@@ -645,6 +650,7 @@ UpdateGradeDMGT::
     ret
 
 .gotgm
+    call SFXKill
     ld a, SFX_RANKGM
     call SFXEnqueue
     ld a, $0F
@@ -760,6 +766,7 @@ UpdateGradeTGM1:
     ldh a, [hCurrentlyPlaying]
     cp a, SFX_RANKUP
     jr z, .skipjingle
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
 
@@ -785,6 +792,7 @@ UpdateGradeTGM1:
     ld [wDisplayedGrade], a
 
     ; Sound effect
+    call SFXKill
     ld a, SFX_RANKGM
     jp SFXEnqueue
 
@@ -822,6 +830,7 @@ UpdateGradeDEAT:
     ld [wDisplayedGrade], a
 
     ; Play the jingle.
+    call SFXKill
     ld a, SFX_RANKGM
     call SFXEnqueue
 
@@ -850,6 +859,7 @@ UpdateGradeDEAT:
     ld [wDisplayedGrade], a
 
     ; Play the jingle.
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
 
@@ -910,6 +920,7 @@ UpdateGradeSHIR:
     ld [wDisplayedGrade], a ; Otherwise, set the grade.
 
     ; Play the jingle.
+    call SFXKill
     ld a, SFX_RANKUP
     call SFXEnqueue
 

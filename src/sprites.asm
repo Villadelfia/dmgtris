@@ -173,12 +173,9 @@ ApplyTells::
 ApplyNext::
     ; If we're in Shirase mode and past level 1000...
     ld b, a
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_SHIR
+    ld a, [wBonesActive]
+    cp a, $FF
     jr nz, .nobone
-    ldh a, [hCLevel+CLEVEL_THOUSANDS]
-    cp a, 1
-    jr c, .nobone
 
 .bone
     ; Color
@@ -366,12 +363,9 @@ ApplyNext::
 ApplyHold::
     ; If we're in Shirase mode and past level 1000...
     ld b, a
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_SHIR
+    ld a, [wBonesActive]
+    cp a, $FF
     jr nz, .nobone
-    ldh a, [hCLevel+CLEVEL_THOUSANDS]
-    cp a, 1
-    jr c, .nobone
 
 .bone
     ; Color
@@ -1172,22 +1166,22 @@ GradeRendering::
     jr .mm
 
 .mk
-    ld a, "K"
+    ld a, "k"
     ld [wSPRGrade2+2], a
     ret
 
 .mv
-    ld a, "V"
+    ld a, "v"
     ld [wSPRGrade2+2], a
     ret
 
 .mo
-    ld a, "O"
+    ld a, "o"
     ld [wSPRGrade2+2], a
     ret
 
 .mm
-    ld a, "M"
+    ld a, "n"
     ld [wSPRGrade2+2], a
     ret
 

@@ -34,13 +34,13 @@ Choose between a few randomizer options:
 - TGM2: 4 history, 6 rerolls.
 - TGM3: The TGM3 RNG system.
 - HELL: Pure Random.
-- NES: Reroll once if you get the same piece as the previous one.
+- 1ROL: Reroll once if you get the same piece as the previous one.
 
 ### Rot Mode
 Select the rotation rules:
 - ARS1: Classic ARS from TGM1 and TGM2.
 - ARS2: ARS from TGM3.
-- NES: No kicks.
+- SEGA: No kicks.
 - MYCO: Like ARS1, but without I, L, J and T restrictions.
 
 ### Drop Mode

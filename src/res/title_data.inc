@@ -44,12 +44,12 @@ sOption1::
     db "TGM2"
     db "TGM3"
     db "HELL"
-    db " NES"
+    db "1ROL"
 
 sOption2::
     db "ARS1"
     db "ARS2"
-    db " NES"
+    db "SEGA"
     db "MYCO"
 
 sOption3::

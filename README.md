@@ -13,6 +13,7 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - A speed curve reminiscent of TGM, starting slightly faster and skipping the awkward speed reset. The game continues infinitely... But so does the speed increase.
 - A rock solid 60FPS with a traditional 20x10 grid.
 - Game boy color mode.
+- Invisible rolls, big mode, bone pieces, and even torikans!
 
 ## Playing
 Try the game online [here](https://villadelfia.org/dmgtris/). Controls are arrow keys, Z, X, Space, and Enter. The online version has no sound though, so the better thing would be to run it in an emulator locally.
@@ -90,6 +91,7 @@ ScoreIncrement points are then awarded.
 - A/B/Start — Start the game
 - Up/Down — Change which option is selected
 - Left/Right — Change the value of the option
+- Select — Hold when pressing A/B/Start to begin the game in big mode
 
 ### Gameplay
 - A — Rotate 1

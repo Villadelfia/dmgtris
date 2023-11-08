@@ -404,6 +404,22 @@ GamePlayEventLoopHandlerB::
 
 
 .preGameOverMode
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    jr nz, .regular
+
+    call FieldInit
+    ld de, sKill
+    ld hl, wField+(5*10)
+    ld bc, 160
+    call UnsafeMemCopy
+
+    ld a, MODE_GAME_OVER
+    ldh [hMode], a
+
+    jp .gameOverMode
+
+.regular
     ; Spawn the failed piece.
     call ForceSpawnPiece
 
@@ -1021,6 +1037,22 @@ GamePlayBigEventLoopHandlerB:
 
 
 .preGameOverMode
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    jr nz, .regular
+
+    call BigFieldInit
+    ld de, sBigKill
+    ld hl, wWideBlittedField+(3*10)
+    ld bc, 160
+    call UnsafeMemCopy
+
+    ld a, MODE_GAME_OVER
+    ldh [hMode], a
+
+    jp .gameOverMode
+
+.regular
     ; Spawn the failed piece.
     call BigForceSpawnPiece
     call BigWidenField

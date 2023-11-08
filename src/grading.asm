@@ -28,7 +28,7 @@ wGradePoints:          ds 1
 wInternalGrade:        ds 1
 wDisplayedGrade::      ds 1
 wEffectTimer::         ds 1
-wRankingDisqualified:: ds 1
+wRankingDisqualified:  ds 1
 wDecayCounter:         ds 1
 wGradeGauge:           ds 1
 wSMult:                ds 1
@@ -359,7 +359,32 @@ DrawGradeProgressDMGT::
     ret
 
 UpdateGradeDMGT::
+    ; Check if the torikan hasn't been calculated.
+    ld a, [wRankingDisqualified]
+    cp a, $FF
+    jr z, .checklineclears
+
+    ; Have we hit the torikan level?
+    ldh a, [hCLevel+CLEVEL_HUNDREDS]
+    cp a, 5
+    jr nz, .checklineclears
+
+    ; Mark it as checked and do the check.
+    ld a, $FF
+    ld [wRankingDisqualified], a
+
+    ; There's a 8:00 torikan at 500.
+    ld b, 8
+    ld c, 0
+    call CheckTorikan
+
+    ; If we failed it: DIE.
+    cp a, $FF
+    jp nz, TriggerKillScreen
+
+
     ; Did we have line clears?
+.checklineclears
     ldh a, [hLineClearCt]
     cp a, 0
     jp z, DrawGradeProgressDMGT
@@ -812,6 +837,7 @@ UpdateGradeDEAT:
     ; Disqualify from ranking.
     ld a, $FF
     ld [wRankingDisqualified], a
+    call TriggerKillScreen
     ret
 
 
@@ -901,6 +927,7 @@ UpdateGradeSHIR:
 .disqualify
     ld a, $FF
     ld [wRankingDisqualified], a
+    call TriggerKillScreen
     ret
 
 ENDC

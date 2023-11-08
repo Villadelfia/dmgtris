@@ -45,6 +45,7 @@ wInvisActivationLevel: ds 2
 wKillScreenActivationLevel: ds 2
 wBonesActive:: ds 1
 wInvisActive:: ds 1
+wKillScreenActive:: ds 1
 
 
 SECTION "Level Functions", ROM0
@@ -58,6 +59,7 @@ LevelInit::
     ldh [hRequiresLineClear], a
     ld [wBonesActive], a
     ld [wInvisActive], a
+    ld [wKillScreenActive], a
 
     ldh a, [hStartSpeed]
     ld l, a
@@ -551,6 +553,30 @@ CheckSpecialLevelConditions:
 
     xor a, a
     ldh [hCurrentFractionalGravity], a
+
+    ld a, $FF
+    ld [wKillScreenActive], a
+    ret
+
+
+TriggerKillScreen::
+    ld a, 1
+    ldh [hCurrentARE], a
+    ldh [hCurrentLineARE], a
+    ldh [hCurrentDAS], a
+    ldh [hCurrentLockDelay], a
+    ldh [hCurrentLineClearDelay], a
+
+    ld a, 20
+    ldh [hCurrentIntegerGravity], a
+
+    xor a, a
+    ldh [hCurrentFractionalGravity], a
+    ld [wKillScreenActivationLevel], a
+    ld [wKillScreenActivationLevel+1], a
+
+    ld a, $FF
+    ld [wKillScreenActive], a
     ret
 
 

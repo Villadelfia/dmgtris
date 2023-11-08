@@ -49,6 +49,24 @@ sBigPause::
     db " P A U S E"
     db "          "
 
+sBigKill::
+    db "EXCELLENT!"
+    db "          "
+    db "          "
+    db "  BUT...  "
+    db "          "
+    db "          "
+    db " LET'S GO "
+    db "          "
+    db "  BETTER  "
+    db "          "
+    db "NEXT TIME!"
+    db "          "
+    db "          "
+    db " RETRY[A] "
+    db "          "
+    db " QUIT [B] "
+
 sBigPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
     db 0, 8, 16, 24 ; I
     db 0, 8, 8, 16  ; Z

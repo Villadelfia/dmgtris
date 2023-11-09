@@ -2010,6 +2010,11 @@ FieldDelay::
     add a, 4
     ldh [hBravo], a
 
+    ; Kill screen?
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    jr z, .skip
+
     ; Are there line clears?
     call ToShadowField
     call FindClearedLines
@@ -4266,6 +4271,11 @@ BigFieldDelay::
     ldh a, [hBravo]
     add a, 4
     ldh [hBravo], a
+
+    ; Kill screen?
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    jr z, .skip
 
     ; Are there line clears?
     call BigToShadowField

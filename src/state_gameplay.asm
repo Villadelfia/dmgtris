@@ -404,6 +404,50 @@ GamePlayEventLoopHandlerB::
 
 
 .preGameOverMode
+    ; Is it just a regular game over?
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    jr nz, .regular
+
+    ; GM congratulations?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    jr z, .gm
+
+    ; Condescend if we're not NONE grade.
+    cp a, GRADE_NONE
+    jr nz, .condescend
+
+    ; And if we're DQeq.
+    ld a, [wRankingDisqualified]
+    cp a, $FF
+    jr z, .condescend
+
+.gm
+    call FieldInit
+    ld de, sYouAreGM
+    ld hl, wField+(5*10)
+    ld bc, 100
+    call UnsafeMemCopy
+
+    ld a, MODE_GAME_OVER
+    ldh [hMode], a
+
+    jp .gameOverMode
+
+.condescend
+    call FieldInit
+    ld de, sKill
+    ld hl, wField+(5*10)
+    ld bc, 160
+    call UnsafeMemCopy
+
+    ld a, MODE_GAME_OVER
+    ldh [hMode], a
+
+    jp .gameOverMode
+
+.regular
     ; Spawn the failed piece.
     call ForceSpawnPiece
 
@@ -1021,6 +1065,50 @@ GamePlayBigEventLoopHandlerB:
 
 
 .preGameOverMode
+    ; Is it just a regular game over?
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    jr nz, .regular
+
+    ; GM congratulations?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    jr z, .gm
+
+    ; Condescend if we're not NONE grade.
+    cp a, GRADE_NONE
+    jr nz, .condescend
+
+    ; And if we're DQeq.
+    ld a, [wRankingDisqualified]
+    cp a, $FF
+    jr z, .condescend
+
+.gm
+    call BigFieldInit
+    ld de, sBigYouAreGM
+    ld hl, wWideBlittedField+(3*10)
+    ld bc, 100
+    call UnsafeMemCopy
+
+    ld a, MODE_GAME_OVER
+    ldh [hMode], a
+
+    jp .gameOverMode
+
+.condescend
+    call BigFieldInit
+    ld de, sBigKill
+    ld hl, wWideBlittedField+(3*10)
+    ld bc, 160
+    call UnsafeMemCopy
+
+    ld a, MODE_GAME_OVER
+    ldh [hMode], a
+
+    jp .gameOverMode
+
+.regular
     ; Spawn the failed piece.
     call BigForceSpawnPiece
     call BigWidenField

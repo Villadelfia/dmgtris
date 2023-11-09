@@ -388,6 +388,7 @@ DEF MODE_DELAY              EQU 18
 DEF MODE_GAME_OVER          EQU 21
 DEF MODE_PRE_GAME_OVER      EQU 24
 DEF MODE_PAUSED             EQU 27
+DEF MODE_PREROLL            EQU 30
 
 ; Helpers to avoid magic numbers
 DEF SCORE_ONES              EQU 7

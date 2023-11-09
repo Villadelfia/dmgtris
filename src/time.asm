@@ -31,6 +31,8 @@ SECTION "Time Variables", WRAM0
 wMinutes:: ds 1
 wSeconds:: ds 1
 wFrames:: ds 1
+wCountDown:: ds 2
+wCountDownZero:: ds 1
 
 
 SECTION "Time Data", ROM0
@@ -57,8 +59,24 @@ TimeInit::
     ld [wMinutes], a
     ld [wSeconds], a
     ld [wFrames], a
+    ld [wCountDown], a
+    ld [wCountDown+1], a
+    ld a , $FF
+    ld [wCountDownZero], a
     ld a, TACF_262KHZ | TACF_START
     ldh [rTAC], a
+    ret
+
+
+    ; Set the countdown timer (in frames) to start at the number in BC.
+StartCountdown::
+    xor a, a
+    ld [wCountDownZero], a
+    dec bc
+    ld a, c
+    ld [wCountDown], a
+    ld a, b
+    ld [wCountDown+1], a
     ret
 
 
@@ -119,6 +137,30 @@ HandleTimers::
     ret z
     cp a, MODE_PRE_GAME_OVER
     ret z
+
+    ; Get countdown in BC
+    ld a, [wCountDown]
+    ld c, a
+    ld a, [wCountDown+1]
+    ld b, a
+
+    ; Is it zero?
+    or a, c
+    jr nz, .reduce
+    ld a , $FF
+    ld [wCountDownZero], a
+    jr .clock
+
+.reduce
+    xor a, a
+    ld [wCountDownZero], a
+    dec bc
+    ld a, c
+    ld [wCountDown], a
+    ld a, b
+    ld [wCountDown+1], a
+
+.clock
     ld a, [wKillScreenActive]
     cp a, $FF
     ret z

@@ -79,6 +79,29 @@ sBigYouAreGM::
     db "          "
     db " QUIT [B] "
 
+
+sBigFinalChallenge::
+    db "          "
+    db "          "
+    db "          "
+    db "EXCELLENT!"
+    db "          "
+    db "          "
+    db " BUT  NOW "
+    db "          "
+    db "TRY  FINAL"
+    db "          "
+    db "CHALLENGE!"
+    db "          "
+    db "          "
+    db "          "
+    db "          "
+    db "          "
+    db "          "
+    db "          "
+    db "          "
+    db "          "
+
 sBigPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
     db 0, 8, 16, 24 ; I
     db 0, 8, 8, 16  ; Z

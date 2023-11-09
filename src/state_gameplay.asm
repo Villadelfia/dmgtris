@@ -37,6 +37,11 @@ hPrePause: ds 1
 hRequestedJingle: ds 1
 
 
+SECTION "Gameplay Variables", WRAM0
+wRollLine: ds 1
+wInStaffRoll:: ds 1
+
+
 SECTION "Gameplay Function Trampolines", ROM0
     ; Trampolines to the banked function.
 SwitchToGameplay::
@@ -118,6 +123,7 @@ SwitchToGameplayB:
     ; We don't start with hold spent.
     xor a, a
     ldh [hHoldSpent], a
+    ld [wInStaffRoll], a
 
     ; Leady mode.
     ld a, MODE_LEADY
@@ -147,7 +153,23 @@ SwitchToGameplayB:
 
     ; Main gameplay event loop.
 GamePlayEventLoopHandlerB::
+    ; Are we in staff roll?
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr nz, .normalevent
+
+    ; Are we in a non-game over mode?
+    ldh a, [hMode]
+    cp a, MODE_GAME_OVER
+    jr z, .normalevent
+
+    ; Did we run out of time?
+    ld a, [wCountDownZero]
+    cp a, $FF
+    jp z, .preGameOverMode
+
     ; What mode are we in?
+.normalevent
     ld hl, .modejumps
     ldh a, [hMode]
     ld b, 0
@@ -166,6 +188,7 @@ GamePlayEventLoopHandlerB::
     jp .gameOverMode
     jp .preGameOverMode
     jp .pauseMode
+    jp .preRollMode
 
 
     ; Draw "READY" and wait a bit.
@@ -174,6 +197,8 @@ GamePlayEventLoopHandlerB::
     ldh a, [hModeCounter]
     cp a, LEADY_TIME
     jr nz, .firstleadyiterskip
+    xor a, a
+    ld [wInStaffRoll], a
     call SFXKill
     ld a, SFX_READYGO
     call SFXEnqueue
@@ -398,8 +423,23 @@ GamePlayEventLoopHandlerB::
     ldh a, [hRemainingDelay]
     cp a, 0
     jp nz, .drawStaticInfo
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .next
+    ld a, [wShouldGoStaffRoll]
+    cp a, $FF
+    jr z, .goroll
+.next
     ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
+    jp .drawStaticInfo
+.goroll
+    ld a, MODE_PREROLL
+    ldh [hMode], a
+    xor a, a
+    ld [wRollLine], a
+    ld a, 10
+    ldh [hModeCounter], a
     jp .drawStaticInfo
 
 
@@ -561,6 +601,7 @@ GamePlayEventLoopHandlerB::
     call GradeInit
     xor a, a
     ldh [hHoldSpent], a
+    ld [wInStaffRoll], a
     ld a, MODE_LEADY
     ldh [hMode], a
     ld a, LEADY_TIME
@@ -627,6 +668,54 @@ GamePlayEventLoopHandlerB::
     ld hl, wField+(20*10)
     ld bc, 40
     call UnsafeMemCopy
+
+
+    ; Prepare for staff roll.
+.preRollMode
+    ldh a, [hModeCounter]
+    dec a
+    ldh [hModeCounter], a
+    jr nz, .drawStaticInfo
+
+    ; Copy one more line onto the field.
+    ld b, 0
+    ld a, [wRollLine]
+    ld c, a
+    ld hl, sFinalChallenge
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, wField+(3*10)
+    add hl, bc
+    ld bc, 10
+    call UnsafeMemCopy
+
+    ; Update the offset.
+    ld a, [wRollLine]
+    add a, 10
+    cp a, 210 ; Done?
+    jr z, .predone
+    ld [wRollLine], a
+    ld a, 10
+    ldh [hModeCounter], a
+    jr .drawStaticInfo
+
+.predone
+    call FieldClear
+    call ToShadowField
+    ld a, MODE_PREFETCHED_PIECE
+    ldh [hMode], a
+    ld a, $FF
+    ld [wInStaffRoll], a
+    ldh a, [hNextPiece]
+    ldh [hCurrentPiece], a
+    call GetNextPiece
+    call SFXKill
+    ld hl, wStaffRollDuration
+    ld a, [hl+]
+    ld c, a
+    ld b, [hl]
+    call StartCountdown
 
 
     ; Always draw the score, level, next piece, and held piece.
@@ -781,6 +870,7 @@ SwitchToGameplayBigB:
     ; We don't start with hold spent.
     xor a, a
     ldh [hHoldSpent], a
+    ld [wInStaffRoll], a
 
     ; Leady mode.
     ld a, MODE_LEADY
@@ -810,7 +900,23 @@ SwitchToGameplayBigB:
 
     ; Main gameplay event loop.
 GamePlayBigEventLoopHandlerB:
+    ; Are we in staff roll?
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr nz, .normalevent
+
+    ; Are we in a non-game over mode?
+    ldh a, [hMode]
+    cp a, MODE_GAME_OVER
+    jr z, .normalevent
+
+    ; Did we run out of time?
+    ld a, [wCountDownZero]
+    cp a, $FF
+    jp z, .preGameOverMode
+
     ; What mode are we in?
+.normalevent
     ld hl, .modejumps
     ldh a, [hMode]
     ld b, 0
@@ -829,6 +935,7 @@ GamePlayBigEventLoopHandlerB:
     jp .gameOverMode
     jp .preGameOverMode
     jp .pauseMode
+    jp .preRollMode
 
 
     ; Draw "READY" and wait a bit.
@@ -837,6 +944,8 @@ GamePlayBigEventLoopHandlerB:
     ldh a, [hModeCounter]
     cp a, LEADY_TIME
     jr nz, .firstleadyiterskip
+    xor a, a
+    ld [wInStaffRoll], a
     call SFXKill
     ld a, SFX_READYGO
     call SFXEnqueue
@@ -1059,8 +1168,23 @@ GamePlayBigEventLoopHandlerB:
     ldh a, [hRemainingDelay]
     cp a, 0
     jp nz, .drawStaticInfo
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .next
+    ld a, [wShouldGoStaffRoll]
+    cp a, $FF
+    jr z, .goroll
+.next
     ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
+    jp .drawStaticInfo
+.goroll
+    ld a, MODE_PREROLL
+    ldh [hMode], a
+    xor a, a
+    ld [wRollLine], a
+    ld a, 10
+    ldh [hModeCounter], a
     jp .drawStaticInfo
 
 
@@ -1223,6 +1347,7 @@ GamePlayBigEventLoopHandlerB:
     call GradeInit
     xor a, a
     ldh [hHoldSpent], a
+    ld [wInStaffRoll], a
     ld a, MODE_LEADY
     ldh [hMode], a
     ld a, LEADY_TIME
@@ -1261,7 +1386,7 @@ GamePlayBigEventLoopHandlerB:
     xor a, a
     ldh [hLeftState], a
     ldh [hRightState], a
-    jr .drawStaticInfo
+    jp .drawStaticInfo
 
     ; Draw PAUSE all over the field.
 .nounpause
@@ -1289,6 +1414,54 @@ GamePlayBigEventLoopHandlerB:
     ld hl, wWideBlittedField+(20*10)
     ld bc, 20
     call UnsafeMemCopy
+
+
+    ; Prepare for staff roll.
+.preRollMode
+    ldh a, [hModeCounter]
+    dec a
+    ldh [hModeCounter], a
+    jr nz, .drawStaticInfo
+
+    ; Copy one more line onto the field.
+    ld b, 0
+    ld a, [wRollLine]
+    ld c, a
+    ld hl, sBigFinalChallenge
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, wWideBlittedField+(1*10)
+    add hl, bc
+    ld bc, 10
+    call UnsafeMemCopy
+
+    ; Update the offset.
+    ld a, [wRollLine]
+    add a, 10
+    cp a, 210 ; Done?
+    jr z, .predone
+    ld [wRollLine], a
+    ld a, 10
+    ldh [hModeCounter], a
+    jr .drawStaticInfo
+
+.predone
+    call BigFieldClear
+    call BigToShadowField
+    ld a, MODE_PREFETCHED_PIECE
+    ldh [hMode], a
+    ld a, $FF
+    ld [wInStaffRoll], a
+    ldh a, [hNextPiece]
+    ldh [hCurrentPiece], a
+    call GetNextPiece
+    call SFXKill
+    ld hl, wStaffRollDuration
+    ld a, [hl+]
+    ld c, a
+    ld b, [hl]
+    call StartCountdown
 
 
     ; Always draw the score, level, next piece, and held piece.

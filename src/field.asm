@@ -2009,11 +2009,15 @@ FieldDelay::
     ldh [hBravo], a
 
     ; Kill screen?
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .noskip
     ld a, [wKillScreenActive]
     cp a, $FF
     jr z, .skip
 
     ; Are there line clears?
+.noskip
     call ToShadowField
     call FindClearedLines
     ldh a, [hClearedLines]
@@ -2228,6 +2232,14 @@ FieldDelay::
 
     ; Cycle the RNG.
 .generatenextpiece
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .doit
+    ld a, [wShouldGoStaffRoll]
+    cp a, $FF
+    ret z
+
+.doit
     ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
@@ -4269,11 +4281,15 @@ BigFieldDelay::
     ldh [hBravo], a
 
     ; Kill screen?
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .noskip
     ld a, [wKillScreenActive]
     cp a, $FF
     jr z, .skip
 
     ; Are there line clears?
+.noskip
     call BigToShadowField
     call BigFindClearedLines
     ldh a, [hClearedLines]
@@ -4490,6 +4506,14 @@ BigFieldDelay::
 
     ; Cycle the RNG.
 .generatenextpiece
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .doit
+    ld a, [wShouldGoStaffRoll]
+    cp a, $FF
+    ret z
+
+.doit
     ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece

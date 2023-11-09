@@ -114,6 +114,35 @@ CheckTorikan::
     ld a, $FF
     ret
 
+CheckCOOL_REGRET::
+    ; Okay if minutes are less than max minutes.
+    ld a, [wSectionMinutes]
+    cp a, b
+    jr c, .success
+
+    ; Check seconds if minutes are equal.
+    jr nz, .failure
+
+    ; Okay if seconds are less than max seconds.
+    ld a, [wSectionSeconds]
+    cp a, c
+    jr c, .success
+
+    ; Check frames if seconds are equal.
+    jr nz, .failure
+
+    ; Okay if frames are exactly 0.
+    ld a, [wSectionFrames]
+    cp a, 0
+    jr z, .success
+
+.failure
+    xor a, a
+    ret
+
+.success
+    ld a, $FF
+    ret
 
     ; Increments the global timer. Also saves whether we're on an even frame.
 HandleTimers::
@@ -161,6 +190,26 @@ HandleTimers::
     ld a, [wMinutes]
     inc a
     ld [wMinutes], a
+
+    ld a, [wSectionFrames]
+    inc a
+    ld [wSectionFrames], a
+    cp a, 60
+    ret nz
+
+    xor a, a
+    ld [wSectionFrames], a
+    ld a, [wSectionSeconds]
+    inc a
+    ld [wSectionSeconds], a
+    cp a, 60
+    ret nz
+
+    xor a, a
+    ld [wSectionSeconds], a
+    ld a, [wSectionMinutes]
+    inc a
+    ld [wSectionMinutes], a
     ret
 
 

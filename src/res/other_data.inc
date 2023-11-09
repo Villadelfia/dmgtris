@@ -338,10 +338,6 @@ sTGM1SpeedCurve::
     db 20, $00
     db 30, 30, 16, 30, 41
 
-    dw $0995, 995, $0999
-    db 20, $00
-    db 30, 30, 16, 30, 41
-
 sTGM1SpeedCurveEnd::
     dw $FFFF
 

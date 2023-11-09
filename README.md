@@ -13,7 +13,10 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - A speed curve reminiscent of TGM, starting slightly faster and skipping the awkward speed reset. The game continues infinitely... But so does the speed increase.
 - A rock solid 60FPS with a traditional 20x10 grid.
 - Game boy color mode.
-- Invisible rolls, big mode, bone pieces, and even torikans!
+- Invisible rolls, big mode, including big mode rolls, bone pieces, and even torikans!
+- Grading systems that are inspired by, but do not exactly mimic, those in the TGM series of games in many of the speed curves.
+- A challenging final challenge awaits you at the end of all the finite modes.
+
 
 ## Playing
 Try the game online [here](https://villadelfia.org/dmgtris/). Controls are arrow keys, Z, X, Space, and Enter. The online version has no sound though, so the better thing would be to run it in an emulator locally.
@@ -55,7 +58,7 @@ Choose how the up and down buttons act:
 ### Speed Curve
 Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all. The MYCO speed curve mimics the excellent game Tromi by Mycophobia.
 
-Note that all modes use the same scoring and they are all infinite.
+Note that all modes use the same scoring.
 
 ### Always 20G
 Whether you want instant-drop gravity to be active at any level.

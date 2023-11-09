@@ -14,6 +14,7 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - A rock solid 60FPS with a traditional 20x10 grid.
 - Game boy color mode.
 - Invisible rolls, big mode, bone pieces, and even torikans!
+- Grading systems!
 
 ## Playing
 Try the game online [here](https://villadelfia.org/dmgtris/). Controls are arrow keys, Z, X, Space, and Enter. The online version has no sound though, so the better thing would be to run it in an emulator locally.
@@ -56,6 +57,15 @@ Choose how the up and down buttons act:
 Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all. The MYCO speed curve mimics the excellent game Tromi by Mycophobia.
 
 Note that all modes use the same scoring and they are all infinite.
+
+Some curves have their own grading system
+
+- DMGT: It's like the TAP Grading system, but you keep the remainder of the grade points and you need to reach 150 points instead of 100
+- TGM1: The Score-Based TGM1 Grading system, the Score thresholds have been reduced to compensate for the different scoring
+- TGM3: The Ti grading system with cools and regrets, although cools don't skip a section here
+- DEAT: The T.A Death grading system awards you the M grade at level 500 if you beat the torikan, and GM at level 1000
+- SHIR: The Shirase Level-Based grading system, it has no regrets here tho...
+- CHIL: A chill grading system to get a GM without any effort, just clear lines and you will eventually reach it
 
 ### Always 20G
 Whether you want instant-drop gravity to be active at any level.

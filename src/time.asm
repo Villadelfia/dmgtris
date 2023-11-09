@@ -31,6 +31,11 @@ SECTION "Time Variables", WRAM0
 wMinutes:: ds 1
 wSeconds:: ds 1
 wFrames:: ds 1
+wSectionMinutes:: ds 1
+wSectionSeconds:: ds 1
+wSectionFrames:: ds 1
+
+
 
 
 SECTION "Time Data", ROM0
@@ -57,6 +62,9 @@ TimeInit::
     ld [wMinutes], a
     ld [wSeconds], a
     ld [wFrames], a
+    ld [wSectionMinutes], a
+    ld [wSectionSeconds], a
+    ld [wSectionFrames], a
     ld a, TACF_262KHZ | TACF_START
     ldh [rTAC], a
     ret
@@ -68,6 +76,9 @@ ResetGameTime::
     ld [wMinutes], a
     ld [wSeconds], a
     ld [wFrames], a
+    ld [wSectionMinutes], a
+    ld [wSectionSeconds], a
+    ld [wSectionFrames], a
     ret
 
     ; Checks if the minute-second timer has reached a certain value.
@@ -118,9 +129,6 @@ HandleTimers::
     cp a, MODE_GAME_OVER
     ret z
     cp a, MODE_PRE_GAME_OVER
-    ret z
-    ld a, [wKillScreenActive]
-    cp a, $FF
     ret z
 
     ld a, [wMinutes]

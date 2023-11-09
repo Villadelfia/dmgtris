@@ -39,9 +39,9 @@ wDRate:                ds 1
 wTRate:                ds 1
 wQRate:                ds 1
 wPrevCOOL:             ds 3
-wCOOLIsActive:         ds 1    
+wCOOLIsActive::        ds 1    
 wSubgrade:             ds 1
-wREGRETIsActive:       ds 1
+wREGRETIsActive::      ds 1
 wGradeBoosts:          ds 1
 
 
@@ -133,8 +133,8 @@ sTGM3GradeBoosts:
     db 0 ;S8
     db 1 ;S9
 
-sTGM3HowManyInternalGradesTODecrease:
-    db 0 ;9 (0 = add 0, 1 = add 1)
+sTGM3HowManyInternalGradesToDecrease:
+    db 0 ;9 (0 = substract 0, 1 = substract 1, etc.)
     db 1 ;8
     db 1 ;7
     db 1 ;6
@@ -142,28 +142,60 @@ sTGM3HowManyInternalGradesTODecrease:
     db 1 ;4
     db 2 ;4
     db 1 ;3
-    db 0 ;3
+    db 2 ;3
     db 1 ;2
-    db 0 ;2
-    db 0 ;2
+    db 2 ;2
+    db 3 ;2
     db 1 ;1
-    db 0 ;1
-    db 0 ;1
-    db 1 ;S1 (yes, here you finally get into the S grades, unless you are very COOL)
-    db 0 ;S1
+    db 2 ;1
+    db 3 ;1
+    db 1 ;S1
+    db 2 ;S1
     db 1 ;S2
     db 1 ;S3
     db 1 ;S4
-    db 0 ;S4
-    db 0 ;S4
+    db 2 ;S4
+    db 3 ;S4
     db 1 ;S5
-    db 0 ;S5
+    db 2;S5
     db 1 ;S6
-    db 0 ;S6
+    db 2 ;S6
     db 1 ;S7
-    db 0 ;S7
+    db 2 ;S7
     db 1 ;S8
-    db 0 ;S8
+    db 2 ;S8
+    db 1 ;S9
+sTGM3HowManyInternalGradesToIncrease:
+    db 1 ;9 (0 = add 0, 1 = add 1, etc.)
+    db 1 ;8
+    db 1 ;7
+    db 1 ;6
+    db 1 ;5
+    db 2 ;4
+    db 1 ;4
+    db 2 ;3
+    db 1 ;3
+    db 3 ;2
+    db 2 ;2
+    db 1 ;2
+    db 3 ;1
+    db 2 ;1
+    db 1 ;1
+    db 2 ;S1
+    db 1 ;S1
+    db 1 ;S2
+    db 1 ;S3
+    db 3 ;S4
+    db 2 ;S4
+    db 1 ;S4
+    db 2 ;S5
+    db 1 ;S5
+    db 2 ;S6
+    db 1 ;S6
+    db 2 ;S7
+    db 1 ;S7
+    db 2 ;S8
+    db 1 ;S8
     db 1 ;S9
 sTGM3ComboMultipliers:
     db 1,  1, 1, 1, 1   ; Combo size, (Multiplier for: ) Single, Double, Triple, Tetris (Screw the fractional part, x.5 gets rounded down)
@@ -282,6 +314,12 @@ GradeInit::
     ld [wDecayCounter], a
     ld [wGradeGauge], a
     ld [wSubgrade], a
+    ld [wGradeBoosts], a
+    ld [wCOOLIsActive], a
+    ld [wREGRETIsActive], a
+    ld [wPrevCOOL], a
+    ld [wPrevCOOL+1], a
+    ld [wPrevCOOL+2], a
 
     ; Most modes begin ungraded.
     ld a, GRADE_NONE
@@ -419,45 +457,7 @@ DrawGradeProgressDMGT::
     ret
 
 UpdateGradeDMGT::
-    ; Check if the torikan hasn't been calculated.
-    ld a, [wRankingDisqualified]
-    cp a, $FF
-    jr z, .checklineclears
-
-    ; Have we hit the torikan level?
-    ldh a, [hCLevel+CLEVEL_HUNDREDS]
-    cp a, 5
-    jr nz, .checklineclears
-
-    ; Mark it as checked and do the check.
-    ld a, $FF
-    ld [wRankingDisqualified], a
-
-    ; There's a 8:00 torikan at 500.
-    ld b, 8
-    ld c, 0
-    call CheckTorikan
-
-    ; If we failed it: DIE.
-    cp a, $FF
-    jp z, .checklineclears
-    ld a, $FF
-    ld [wLockLevel], a
-    ld a, 5
-    ldh [hCLevel+1], a
-    ldh [hNLevel+1], a
-    xor a, a
-    ldh [hCLevel], a
-    ldh [hNLevel], a
-    ldh [hCLevel+2], a
-    ldh [hNLevel+2], a
-    ldh [hCLevel+3], a
-    ldh [hNLevel+3], a
-    jp TriggerKillScreen
-
-
     ; Did we have line clears?
-.checklineclears
     ldh a, [hLineClearCt]
     cp a, 0
     jp z, DrawGradeProgressDMGT
@@ -909,19 +909,8 @@ UpdateGradeDEAT:
 .disqualify
     ; Disqualify from ranking.
     ld a, $FF
-    ld [wLockLevel], a
     ld [wRankingDisqualified], a
-    ld a, 5
-    ldh [hCLevel+1], a
-    ldh [hNLevel+1], a
-    xor a, a
-    ldh [hCLevel], a
-    ldh [hNLevel], a
-    ldh [hCLevel+2], a
-    ldh [hNLevel+2], a
-    ldh [hCLevel+3], a
-    ldh [hNLevel+3], a
-    jp TriggerKillScreen
+    ret
 
 
 UpdateGradeSHIR:
@@ -1008,39 +997,9 @@ UpdateGradeSHIR:
     ret
 
 .disqualify
-    ; Disqualify from ranking.
     ld a, $FF
-    ld [wLockLevel], a
     ld [wRankingDisqualified], a
-    ld a, [wDisplayedGrade]
-    cp a, GRADE_S5
-    jr z, .l500
-
-.l1000
-    ld a, 1
-    ldh [hCLevel], a
-    ldh [hNLevel], a
-    xor a, a
-    ldh [hCLevel+1], a
-    ldh [hNLevel+1], a
-    ldh [hCLevel+2], a
-    ldh [hNLevel+2], a
-    ldh [hCLevel+3], a
-    ldh [hNLevel+3], a
-    jp TriggerKillScreen
-
-.l500
-    ld a, 5
-    ldh [hCLevel+1], a
-    ldh [hNLevel+1], a
-    xor a, a
-    ldh [hCLevel], a
-    ldh [hNLevel], a
-    ldh [hCLevel+2], a
-    ldh [hNLevel+2], a
-    ldh [hCLevel+3], a
-    ldh [hNLevel+3], a
-    jp TriggerKillScreen
+    ret
 
 UpdateGradeTGM3:
     ; First things first, Update our grade points.
@@ -1196,7 +1155,7 @@ UpdateGradeTGM3:
     ld a, [wInternalGrade]
     inc a
     ld [wInternalGrade], a
-.IncreaseDisplayedGrade
+TGM3UpdateDisplayedGrade:
     ld a, GRADE_9 ; Load the lowest grade into a
     ld b, a ; Then save it into b
     ld hl, sTGM3GradeBoosts ; Make HL point to the Grade boosts table
@@ -1206,22 +1165,54 @@ UpdateGradeTGM3:
     add hl, bc
     ld a, [hl] ; Load the boosts to add into a...
     ld b, a
-    ld a, [wGradeBoosts] ; make HL point to the boosts variable
-    add a, b ;add the boosts
-    ld a, [hl] ; load the result
-    add a, b ; ...and add them to the grade.
-    ld b, a ; Save the result and check if we have the same grade as before
+.update
+    ld a, [wGradeBoosts] ; Load the boosts variable into A
+    add a, b ;Add the boosts
+    ld b, a
+    ; HOLD IT!
+    ld a, [wCOOLIsActive] ; Did the player get a cool on this section?
+    cp a, 1
+    jp nz, .nocool ; If not, proceed as normal
+    ; If it did, check if we are at level *00
+    ld a, [hCLevel+CLEVEL_TENS]
+    cp a, 0 
+    jr nz, .nocool
+    ld a, [hCLevel+CLEVEL_ONES]
+    cp a, 0 
+    jr nz, .nocool ; If not, proceed as normal
+.cool
+    ld hl, sTGM3HowManyInternalGradesToIncrease ; Make HL point to the..., yeah.
+    ld a, [wInternalGrade] ; Get the offset
+    ld d, a ; save the internal grade because we need it later 
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl] ; Load the amount of internal grades to increase into a
+    add a, d ; Increase the internal grades
+    ld [wInternalGrade], a ; Load them
+    ld a, [wGradeBoosts] ; Load the boosts variable into A
+    inc a
+    ld [wGradeBoosts], a
+    ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
+    xor a, a
+    ld [wCOOLIsActive], a ; Make the cool no longer be active
+    ret
+.nocool
+    ;ld [wDisplayedGrade], a ; HOLD IT!
     ld a, [wDisplayedGrade]
     cp a, b
     ret z ; If the grade is the same, return.
     ld a, b
     ld [wDisplayedGrade], a ; Otherwise, set the grade.
+    ld [wGradeBoosts], a ; And the grade boosts too.
     ; ...Play the jingle.
     ld a, SFX_RANKUP
     call SFXEnqueue
     ; Prepare the effect stuff
     ld a, $0f
     ld [wEffectTimer], a
+    ret
+
 TGM3DecayRate:
     ; Check if we can decrease the Grade points, if not, decrease the timer
     ld a, [wDecayRate]
@@ -1267,9 +1258,66 @@ TGM3DecayRate:
 .lpoints
     ld [wInternalGradePoints], a
     ret 
-.COOLHandler
+TGM3COOLHandler::
+    ; First check our previous cool
+    ld a, [wPrevCOOL] ; Are the minutes 0?
+    cp a, 0 
+    jr nz, .checkCOOL
+    ; If so, check the seconds
+    ld a, [wPrevCOOL+1]
+    cp a, 0
+    jr nz, .checkCOOL
+    ; The seconds are 0 too?, hmm, check the frames
+    ld a, [wPrevCOOL+2]
+    cp a, 0
+    jr nz, .checkCOOL
+    ; No cool???, check the baseline cool then...
+    ld hl, sTGM3BaselineCOOL
+    ld a, [hCLevel+1]
+    add a
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl+]
+    ld b, a
+    ld a, [hl]
+    ld c, a
+    jp .checkBaselineCOOL
+.checkCOOL
+    ld a, [wPrevCOOL]
+    ld b, a
+    ld a, [wPrevCOOL+1]
+    ; Give the player 2 seconds to spare
+    dec a
+    dec a
+    ld c, a
+.checkBaselineCOOL
+    call CheckTorikan
+    cp a, $ff
+    jp nz, .nocool
+.cool ; If the player got a cool, set the active cool variable to 1, also set the previous cool variables to the correct value
+    ld a, 1
+    ld [wCOOLIsActive], a
+    ld a, [wMinutes]
+    ld [wPrevCOOL], a
+    ld a, [wSeconds]
+    ld [wPrevCOOL+1], a
+    ld a, [wFrames]
+    ld [wPrevCOOL+2], a
+    ld a, 1 ; Leave a value in A so we know if the code ran
+    ret ; Done
+.nocool ; If the player misses a cool, set the previous cool variables to 0, then return
+    ld [wPrevCOOL], a
+    ld [wPrevCOOL+1], a
+    ld [wPrevCOOL+2], a
+    ld a, 1 ; Leave a value in A so we know if the code ran
+    ret
+    
 
-.REGRETHandler ; Check if we took too much time to complete a section
+TGM3REGRETHandler:: ; Check if we took too much time to complete a section
+    ld a, [wREGRETIsActive] ; First, make sure we haven't checked before
+    cp a, 1
+    ret ; If we did, just return
     ld hl, sTGM3REGRETConditions
     ld a, [hCLevel+1]
     add a
@@ -1292,11 +1340,18 @@ TGM3DecayRate:
     ld a, [wGradeBoosts]
     dec a
     ld [wGradeBoosts], a
-    ld hl, sTGM3GradeBoosts ; Make HL point to the Grade boosts table
+    ld hl, sTGM3HowManyInternalGradesToDecrease ; Make HL point to the..., yeah.
     ld a, [wInternalGrade] ; Get the offset
+    ld d, a ; save the internal grade because we need it later 
     ld b, 0
     ld c, a
     add hl, bc
+    ld a, [hl] ; Load the amount of internal grades to decrease into a
+    sub a, d ; Decrease the internal grades
+    ld [wInternalGrade], a ; Load them
+    ld a, [wGradeBoosts] ; Load the boosts variable into A
+    ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
+    ret ; Done
 
 
 

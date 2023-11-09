@@ -88,12 +88,29 @@ SwitchToGameplayB:
 
     ; Load the gameplay tilemap.
 .loadtilemap
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_CHIL
+    jr z, .ungraded
+    cp a, SCURVE_MYCO
+    jr z, .ungraded
+    cp a, SCURVE_TGM3 ; TODO: Remove when this one has grades.
+    jr z, .ungraded
+
+.graded
     ld de, sGameplayTileMap
     ld hl, $9800
     ld bc, sGameplayTileMapEnd - sGameplayTileMap
     call UnsafeMemCopy
+    jr .loadtiles
+
+.ungraded
+    ld de, sGameplayUngradedTileMap
+    ld hl, $9800
+    ld bc, sGameplayUngradedTileMapEnd - sGameplayUngradedTileMap
+    call UnsafeMemCopy
 
     ; And the tiles.
+.loadtiles
     call LoadGameplayTiles
 
     ; Zero out SCX.
@@ -845,12 +862,29 @@ SwitchToGameplayBigB:
 
     ; Load the gameplay tilemap.
 .loadtilemap
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_CHIL
+    jr z, .ungraded
+    cp a, SCURVE_MYCO
+    jr z, .ungraded
+    cp a, SCURVE_TGM3 ; TODO: Remove when this one has grades.
+    jr z, .ungraded
+
+.graded
     ld de, sBigGameplayTileMap
     ld hl, $9800
     ld bc, sBigGameplayTileMapEnd - sBigGameplayTileMap
     call UnsafeMemCopy
+    jr .loadtiles
+
+.ungraded
+    ld de, sBigGameplayUngradedTileMap
+    ld hl, $9800
+    ld bc, sBigGameplayUngradedTileMapEnd - sBigGameplayUngradedTileMap
+    call UnsafeMemCopy
 
     ; And the tiles.
+.loadtiles
     call LoadGameplayTiles
 
     ; Zero out SCX.

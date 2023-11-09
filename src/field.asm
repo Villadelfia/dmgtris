@@ -237,6 +237,26 @@ FromBackupField::
     ld bc, 10*24
     jp UnsafeMemCopy
 
+GoBig::
+    ld hl, wWideBlittedField
+    ld bc, 10*22
+    ld d, TILE_BLANK
+    call UnsafeMemSet
+    ld hl, wField
+    ld bc, 10*24
+    ld d, 0
+    call UnsafeMemSet
+    DEF row = 0
+    REPT 14
+        ld hl, wField + (row*10)
+        ld bc, 5
+        ld d, TILE_FIELD_EMPTY
+        call UnsafeMemSet
+        DEF row += 1
+    ENDR
+    ld a, STATE_GAMEPLAY_BIG
+    ldh [hGameState], a
+    ret
 
     ; Copies the field to the shadow field.
     ; This shadow field is used to calculate whether or not the piece can fit.

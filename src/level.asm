@@ -46,6 +46,7 @@ wKillScreenActivationLevel: ds 2
 wKillScreenActivationLevelBCD: ds 2
 wLastLockLevel: ds 2
 wStaffRollDuration:: ds 2
+wBigStaffRoll:: ds 1
 wBonesActive:: ds 1
 wInvisActive:: ds 1
 wKillScreenActive:: ds 1
@@ -202,8 +203,10 @@ SpecialLevelInit:
     ld [wLastLockLevel+1], a
     ld a, [hl+]
     ld [wStaffRollDuration], a
-    ld a, [hl]
+    ld a, [hl+]
     ld [wStaffRollDuration+1], a
+    ld a, [hl]
+    ld [wBigStaffRoll], a
     ret
 
 

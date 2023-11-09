@@ -198,6 +198,7 @@ sDMGTSpeedCurveSpecialData::
     dw $9999    ; Same but in BCD.
     dw 9998     ; If the last level lock isn't at x99, where is it?
     dw 3600     ; How long does the staff roll last after the kill screen, in frames.
+    db $FF      ; Big mode in staff roll?
 
 
 sTGM1SpeedCurve::
@@ -337,6 +338,10 @@ sTGM1SpeedCurve::
     db 20, $00
     db 30, 30, 16, 30, 41
 
+    dw $0995, 995, $0999
+    db 20, $00
+    db 30, 30, 16, 30, 41
+
 sTGM1SpeedCurveEnd::
     dw $FFFF
 
@@ -347,6 +352,7 @@ sTGM1SpeedCurveSpecialData::
     dw $0999    ; Same but in BCD.
     dw 998      ; If the last level lock isn't at x99, where is it?
     dw 3600     ; How long does the staff roll last after the kill screen, in frames.
+    db $FF      ; Big mode in staff roll?
 
 
 sCHILSpeedCurve::
@@ -448,6 +454,7 @@ sCHILSpeedCurveSpecialData::
     dw $9999    ; Same but in BCD.
     dw 9998     ; If the last level lock isn't at x99, where is it?
     dw $FFFF    ; How long does the staff roll last after the kill screen, in frames.
+    db $00      ; Big mode in staff roll?
 
 
 sTGM3SpeedCurve::
@@ -607,8 +614,9 @@ sTGM3SpeedCurveSpecialData::
     dw 1299     ; When do blocks turn invisible?
     dw 1299     ; When is the hard kill screen?
     dw $1299    ; Same but in BCD.
-    dw 1298    ; If the last level lock isn't at x99, where is it?
+    dw 1298     ; If the last level lock isn't at x99, where is it?
     dw 3600     ; How long does the staff roll last after the kill screen, in frames.
+    db $00      ; Big mode in staff roll?
 
 sDEATSpeedCurve::
     dw $0000, 0, $0100
@@ -661,6 +669,7 @@ sDEATSpeedCurveSpecialData::
     dw $0999   ; Same but in BCD.
     dw 998     ; If the last level lock isn't at x99, where is it?
     dw 3600    ; How long does the staff roll last after the kill screen, in frames.
+    db $00     ; Big mode in staff roll?
 
 
 sSHIRSpeedCurve::
@@ -697,11 +706,12 @@ sSHIRSpeedCurveEnd::
 
 sSHIRSpeedCurveSpecialData::
     dw 900     ; When do we get bones?
-    dw 1300    ; When do blocks turn invisible?
+    dw $FFFF   ; When do blocks turn invisible?
     dw 1300    ; When is the hard kill screen?
     dw $1300   ; Same but in BCD.
     dw $FFFF   ; If the last level lock isn't at x99, where is it?
     dw 3600    ; How long does the staff roll last after the kill screen, in frames.
+    db $FF     ; Big mode in staff roll?
 
 
 sMYCOSpeedCurve::
@@ -815,6 +825,7 @@ sMYCOSpeedCurveSpecialData::
     dw $0300    ; Same but in BCD.
     dw $FFFF    ; If the last level lock isn't at x99, where is it?
     dw $FFFF    ; How long does the staff roll last after the kill screen, in frames.
+    db $00      ; Big mode in staff roll?
 
 
 sSharedTiles::

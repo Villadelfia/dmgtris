@@ -40,6 +40,7 @@ hRequestedJingle: ds 1
 SECTION "Gameplay Variables", WRAM0
 wRollLine: ds 1
 wInStaffRoll:: ds 1
+wBigModeTransfered: ds 1
 
 
 SECTION "Gameplay Function Trampolines", ROM0
@@ -444,6 +445,10 @@ GamePlayEventLoopHandlerB::
 
 
 .preGameOverMode
+    xor a, a
+    ldh [hAState], a
+    ldh [hBState], a
+
     ; Is it just a regular game over?
     ld a, [wKillScreenActive]
     cp a, $FF
@@ -668,6 +673,7 @@ GamePlayEventLoopHandlerB::
     ld hl, wField+(20*10)
     ld bc, 40
     call UnsafeMemCopy
+    jr .drawStaticInfo
 
 
     ; Prepare for staff roll.
@@ -702,11 +708,16 @@ GamePlayEventLoopHandlerB::
 
 .predone
     call FieldClear
-    call ToShadowField
     ld a, MODE_PREFETCHED_PIECE
     ldh [hMode], a
     ld a, $FF
     ld [wInStaffRoll], a
+    ld a, [wBigStaffRoll]
+    cp a, $FF
+    jr nz, .staysmall
+    call GoBig
+.staysmall
+    call ToShadowField
     ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
@@ -715,7 +726,7 @@ GamePlayEventLoopHandlerB::
     ld a, [hl+]
     ld c, a
     ld b, [hl]
-    call StartCountdown
+    jp StartCountdown
 
 
     ; Always draw the score, level, next piece, and held piece.
@@ -1189,6 +1200,10 @@ GamePlayBigEventLoopHandlerB:
 
 
 .preGameOverMode
+    xor a, a
+    ldh [hAState], a
+    ldh [hBState], a
+
     ; Is it just a regular game over?
     ld a, [wKillScreenActive]
     cp a, $FF
@@ -1414,6 +1429,7 @@ GamePlayBigEventLoopHandlerB:
     ld hl, wWideBlittedField+(20*10)
     ld bc, 20
     call UnsafeMemCopy
+    jp .drawStaticInfo
 
 
     ; Prepare for staff roll.

@@ -74,7 +74,6 @@ CHARMAP "c", 209
 CHARMAP "d", 210
 CHARMAP "m", 211
 CHARMAP ":", 212
-CHARMAP ".", 254
 CHARMAP "k", 47
 CHARMAP "v", 45
 CHARMAP "o", 44
@@ -413,6 +412,5 @@ DEF LEVEL_MULT_3A           EQU $07
 DEF LEVEL_MULT_3B           EQU $50
 
 ; Bone Skin
-DEF TILE_BONE                EQU $68
-DEF TILE_QUEUE_BONE          EQU $69
+
 ENDC

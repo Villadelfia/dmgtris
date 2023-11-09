@@ -1292,17 +1292,17 @@ TGM3COOLHandler::
     dec a
     ld c, a
 .checkBaselineCOOL
-    call CheckTorikan
+    call CheckCOOL_REGRET
     cp a, $ff
     jp nz, .nocool
 .cool ; If the player got a cool, set the active cool variable to 1, also set the previous cool variables to the correct value
     ld a, 1
     ld [wCOOLIsActive], a
-    ld a, [wMinutes]
+    ld a, [wSectionMinutes]
     ld [wPrevCOOL], a
-    ld a, [wSeconds]
+    ld a, [wSectionSeconds]
     ld [wPrevCOOL+1], a
-    ld a, [wFrames]
+    ld a, [wSectionFrames]
     ld [wPrevCOOL+2], a
     ld a, 1 ; Leave a value in A so we know if the code ran
     ret ; Done
@@ -1328,7 +1328,7 @@ TGM3REGRETHandler:: ; Check if we took too much time to complete a section
     ld b, a
     ld a, [hl]
     ld c, a
-    call CheckTorikan
+    call CheckCOOL_REGRET
     cp a, 0
     ret nz
 .regret

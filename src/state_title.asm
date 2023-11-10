@@ -771,7 +771,7 @@ MainHandleDown:
 SettingsHandleA:
     ld a, [wSelected]
     cp a, TITLE_SETTINGS_SEL_BACK
-    ret nz
+    jp nz, SettingsHandleRight
     ld a, TITLE_MAIN
     jp SwitchTitleMode
 

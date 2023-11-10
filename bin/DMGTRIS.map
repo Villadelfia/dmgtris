@@ -583,7 +583,7 @@ ROMX bank #3:
 
 ROMX bank #4:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_TITLE"]
-	SECTION: $4008-$4756 ($074f bytes) ["Title Functions Banked"]
+	SECTION: $4008-$4758 ($0751 bytes) ["Title Functions Banked"]
 	         $4008 = SwitchToTitleB
 	         $400e = SwitchToTitleB.wvr_u1
 	         $4017 = !0
@@ -674,81 +674,81 @@ ROMX bank #4:
 	         $44a8 = MainHandleDown
 	         $44b4 = !3
 	         $44b9 = SettingsHandleA
-	         $44c4 = SettingsHandleB
-	         $44c9 = SettingsHandleDown
-	         $44d5 = !4
-	         $44da = SettingsHandleUp
-	         $44e6 = !5
-	         $44ec = SettingsHandleLeft
-	         $44fd = SettingsHandleLeft.jumps
-	         $4515 = SettingsHandleLeft.buttons
-	         $4524 = !6
-	         $452d = SettingsHandleLeft.rng
-	         $453c = !7
-	         $4545 = SettingsHandleLeft.rot
-	         $4554 = !8
-	         $455d = SettingsHandleLeft.drop
-	         $456c = !9
-	         $4575 = SettingsHandleLeft.curve
-	         $4587 = !10
-	         $4593 = SettingsHandleLeft.hig
-	         $45a2 = !11
-	         $45ab = SettingsHandleRight
-	         $45bc = SettingsHandleRight.jumps
-	         $45d4 = SettingsHandleRight.buttons
-	         $45e3 = !12
-	         $45eb = SettingsHandleRight.rng
-	         $45fa = !13
-	         $4602 = SettingsHandleRight.rot
-	         $4611 = !14
-	         $4619 = SettingsHandleRight.drop
-	         $4628 = !15
-	         $4630 = SettingsHandleRight.curve
-	         $4642 = !16
-	         $464d = SettingsHandleRight.hig
-	         $465c = !17
-	         $4664 = DecrementLevel
-	         $467d = IncrementLevel
-	         $4696 = InitSpeedCurve
-	         $46a9 = GetEnd
-	         $46b4 = !18
-	         $46bc = !19
-	         $46c4 = !20
-	         $46cc = !21
-	         $46d4 = !22
-	         $46dc = !23
-	         $46e0 = GetStart
-	         $46eb = !24
-	         $46f3 = !25
-	         $46fb = !26
-	         $4703 = !27
-	         $470b = !28
-	         $4713 = !29
-	         $4717 = CheckLevelRange
-	         $4733 = CheckLevelRange.notatend
-	         $4756 = CheckLevelRange.notatstart
-	SECTION: $4757-$4d3e ($05e8 bytes) ["Title Screen Static Data"]
-	         $4757 = sEasterM0
-	         $475c = sEasterM1
-	         $4761 = sEasterC0
-	         $476c = sEasterC1
-	         $4777 = sEasterA0
-	         $4782 = sEasterA1
-	         $478d = sEasterS0
-	         $4792 = sEasterS1
-	         $4797 = sBUTTONSMode
-	         $479f = sRNGMode
-	         $47b3 = sROTMode
-	         $47c3 = sDROPMode
-	         $47d7 = sCURVEMode
-	         $47f3 = sHIGMode
-	         $47fb = sDisabled
-	         $47ff = sTitleScreenMainMap
-	         $4a9f = sTitleScreenSettingsMap
-	         $4a9f = sTitleScreenMainMapEnd
-	         $4d3f = sTitleScreenSettingsMapEnd
-	EMPTY: $4d3f-$7fff ($32c1 bytes)
-	TOTAL EMPTY: $32c1 bytes
+	         $44c6 = SettingsHandleB
+	         $44cb = SettingsHandleDown
+	         $44d7 = !4
+	         $44dc = SettingsHandleUp
+	         $44e8 = !5
+	         $44ee = SettingsHandleLeft
+	         $44ff = SettingsHandleLeft.jumps
+	         $4517 = SettingsHandleLeft.buttons
+	         $4526 = !6
+	         $452f = SettingsHandleLeft.rng
+	         $453e = !7
+	         $4547 = SettingsHandleLeft.rot
+	         $4556 = !8
+	         $455f = SettingsHandleLeft.drop
+	         $456e = !9
+	         $4577 = SettingsHandleLeft.curve
+	         $4589 = !10
+	         $4595 = SettingsHandleLeft.hig
+	         $45a4 = !11
+	         $45ad = SettingsHandleRight
+	         $45be = SettingsHandleRight.jumps
+	         $45d6 = SettingsHandleRight.buttons
+	         $45e5 = !12
+	         $45ed = SettingsHandleRight.rng
+	         $45fc = !13
+	         $4604 = SettingsHandleRight.rot
+	         $4613 = !14
+	         $461b = SettingsHandleRight.drop
+	         $462a = !15
+	         $4632 = SettingsHandleRight.curve
+	         $4644 = !16
+	         $464f = SettingsHandleRight.hig
+	         $465e = !17
+	         $4666 = DecrementLevel
+	         $467f = IncrementLevel
+	         $4698 = InitSpeedCurve
+	         $46ab = GetEnd
+	         $46b6 = !18
+	         $46be = !19
+	         $46c6 = !20
+	         $46ce = !21
+	         $46d6 = !22
+	         $46de = !23
+	         $46e2 = GetStart
+	         $46ed = !24
+	         $46f5 = !25
+	         $46fd = !26
+	         $4705 = !27
+	         $470d = !28
+	         $4715 = !29
+	         $4719 = CheckLevelRange
+	         $4735 = CheckLevelRange.notatend
+	         $4758 = CheckLevelRange.notatstart
+	SECTION: $4759-$4d40 ($05e8 bytes) ["Title Screen Static Data"]
+	         $4759 = sEasterM0
+	         $475e = sEasterM1
+	         $4763 = sEasterC0
+	         $476e = sEasterC1
+	         $4779 = sEasterA0
+	         $4784 = sEasterA1
+	         $478f = sEasterS0
+	         $4794 = sEasterS1
+	         $4799 = sBUTTONSMode
+	         $47a1 = sRNGMode
+	         $47b5 = sROTMode
+	         $47c5 = sDROPMode
+	         $47d9 = sCURVEMode
+	         $47f5 = sHIGMode
+	         $47fd = sDisabled
+	         $4801 = sTitleScreenMainMap
+	         $4aa1 = sTitleScreenSettingsMap
+	         $4aa1 = sTitleScreenMainMapEnd
+	         $4d41 = sTitleScreenSettingsMapEnd
+	EMPTY: $4d41-$7fff ($32bf bytes)
+	TOTAL EMPTY: $32bf bytes
 
 ROMX bank #5:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_GAMEPLAY"]
@@ -2654,7 +2654,7 @@ HRAM bank #0:
 
 SUMMARY:
 	ROM0: 13160 bytes used / 3224 free
-	ROMX: 61487 bytes used / 36817 free in 6 banks
+	ROMX: 61489 bytes used / 36815 free in 6 banks
 	SRAM: 14 bytes used / 8178 free in 1 bank
 	WRAM0: 3541 bytes used / 555 free
 	HRAM: 124 bytes used / 3 free

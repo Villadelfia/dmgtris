@@ -636,7 +636,7 @@ GamePlayEventLoopHandlerB::
     ; Retry?
 .checkretry
     ldh a, [hAState]
-    cp a, 1
+    cp a, 20
     jr nz, .noretry
     call CheckAndAddHiscore
     call RNGInit
@@ -656,7 +656,7 @@ GamePlayEventLoopHandlerB::
     ; Quit
 .noretry
     ldh a, [hBState]
-    cp a, 1
+    cp a, 20
     jp nz, .drawStaticInfo
     call CheckAndAddHiscore
     jp SwitchToTitle
@@ -1432,7 +1432,7 @@ GamePlayBigEventLoopHandlerB:
     ; Retry?
 .checkretry
     ldh a, [hAState]
-    cp a, 1
+    cp a, 20
     jr nz, .noretry
     ld a, [wReturnToSmall]
     cp a, $FF
@@ -1472,7 +1472,7 @@ GamePlayBigEventLoopHandlerB:
     ; Quit
 .noretry
     ldh a, [hBState]
-    cp a, 1
+    cp a, 20
     jp nz, .drawStaticInfo
     call CheckAndAddHiscore
     jp SwitchToTitle

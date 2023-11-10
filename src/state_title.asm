@@ -711,7 +711,32 @@ TitleVBlankHandlerB:
     call UnsafeMemCopy
 
     ; START level.
-    jp DrawSpeedSettings
+    call DrawSpeedSettings
+
+    ; Tetry!
+    ld a, [wSelected]
+    ld hl, sTetryButtons
+    ld bc, 64
+:   cp a, 0
+    jr z, .donetetry
+    dec a
+    add hl, bc
+    jr :-
+.donetetry
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_TETRY
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_SETTINGS_TETRY+(1*32)
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_SETTINGS_TETRY+(2*32)
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_SETTINGS_TETRY+(3*32)
+    ld bc, 16
+    jp SafeMemCopy
 
 .vblankRecords
     ret

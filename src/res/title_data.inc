@@ -75,6 +75,54 @@ sHIGMode::
 sDisabled::
     db "----"
 
+sTetryButtons::
+    db "THIS OPTION WILL"
+    db "CHANGE WHICH WAY"
+    db "THE BUTTONS RO- "
+    db "TATE THE PIECE  "
+
+sTetryRNG::
+    db "THIS OPTION WILL"
+    db "CHANGE THE WAY  "
+    db "PIECES ARE RAN- "
+    db "DOMIZED         "
+
+sTetryROT::
+    db "THIS OPTION WILL"
+    db "CHANGE THE WAY  "
+    db "PIECES ROTATE   "
+    db "                "
+
+sTetryDROP::
+    db "THIS OPTION WILL"
+    db "CHANGE THE WAY  "
+    db "THE UP AND DOWN "
+    db "ARROWS ACT      "
+
+sTetryCURVE::
+    db "THIS OPTION WILL"
+    db "SELECT A SPEED  "
+    db "CURVE TO PLAY ON"
+    db "                "
+
+sTetryHIG::
+    db "THIS OPTION WILL"
+    db "FORCE PIECES TO "
+    db "DROP AT THE HI- "
+    db "GHEST SPEED     "
+
+sTetrySTART::
+    db "THIS OPTION WILL"
+    db "CHANGE WHERE YOU"
+    db "START IN THE SP-"
+    db "EED CURVE       "
+
+sTetryEXIT::
+    db "OH OKAY THEN-   "
+    db "BYE BYE!        "
+    db "                "
+    db "                "
+
 sTitleScreenMainMap::
     DB $70,$01,$01,$01,$72,$01,$01,$01,$01,$01
     DB $01,$01,$01,$01,$01,$01,$01,$FD,$FE,$FF

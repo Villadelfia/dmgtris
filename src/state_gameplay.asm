@@ -619,6 +619,7 @@ GamePlayEventLoopHandlerB::
     ldh a, [hAState]
     cp a, 10 ; 10 frame hold
     jr nz, .noretry
+    call CheckAndAddHiscore
     call RNGInit
     call ScoreInit
     call LevelInit
@@ -638,6 +639,7 @@ GamePlayEventLoopHandlerB::
     ldh a, [hBState]
     cp a, 10 ; 10 frame hold
     jp nz, .drawStaticInfo
+    call CheckAndAddHiscore
     jp SwitchToTitle
 
 
@@ -1395,6 +1397,7 @@ GamePlayBigEventLoopHandlerB:
     ldh a, [hAState]
     cp a, 10 ; 10 frame hold
     jr nz, .noretry
+    call CheckAndAddHiscore
     call RNGInit
     call ScoreInit
     call LevelInit
@@ -1414,6 +1417,7 @@ GamePlayBigEventLoopHandlerB:
     ldh a, [hBState]
     cp a, 10 ; 10 frame hold
     jp nz, .drawStaticInfo
+    call CheckAndAddHiscore
     jp SwitchToTitle
 
 

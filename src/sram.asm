@@ -65,6 +65,14 @@ ENDU
     PROFILE 7
     PROFILE 8
     PROFILE 9
+rScoreTableDMGT:: ds (10 * (8+3+1))
+rScoreTableTGM1:: ds (10 * (8+3+1))
+rScoreTableTGM3:: ds (10 * (8+3+1))
+rScoreTableDEAT:: ds (10 * (8+3+1))
+rScoreTableSHIR:: ds (10 * (8+3+1))
+rScoreTableCHIL:: ds (10 * (8+3+1))
+rScoreTableMYCO:: ds (10 * (8+3+1))
+
 
 SECTION "SRAM Variables", WRAM0
 wTarget:: ds 1
@@ -90,7 +98,7 @@ RestoreSRAM::
     cp a, 0
     jp nz, InitializeSRAM
     ld a, [rCheck+5]
-    cp a, 1
+    cp a, 2
     jp nz, InitializeSRAM
 
     ; SRAM is initialized and for this build, so we can load the data.
@@ -220,7 +228,7 @@ InitializeSRAM:
     ld [rCheck+3], a
     ld a, 0
     ld [rCheck+4], a
-    ld a, 1
+    ld a, 2
     ld [rCheck+5], a
 
     xor a, a
@@ -331,7 +339,36 @@ InitializeSRAM:
     ld [rProfileName8+2], a
     ld a, "9"
     ld [rProfileName9+2], a
-    ret
+
+    ; Set the default scores.
+    ld hl, rScoreTableDMGT
+    ld de, sHiscoreDefaultData
+    ld bc, (10 * (8+3+1))
+    call UnsafeMemCopy
+    ld hl, rScoreTableTGM1
+    ld de, sHiscoreDefaultData
+    ld bc, (10 * (8+3+1))
+    call UnsafeMemCopy
+    ld hl, rScoreTableTGM3
+    ld de, sHiscoreDefaultData
+    ld bc, (10 * (8+3+1))
+    call UnsafeMemCopy
+    ld hl, rScoreTableDEAT
+    ld de, sHiscoreDefaultData
+    ld bc, (10 * (8+3+1))
+    call UnsafeMemCopy
+    ld hl, rScoreTableSHIR
+    ld de, sHiscoreDefaultData
+    ld bc, (10 * (8+3+1))
+    call UnsafeMemCopy
+    ld hl, rScoreTableCHIL
+    ld de, sHiscoreDefaultData
+    ld bc, (10 * (8+3+1))
+    call UnsafeMemCopy
+    ld hl, rScoreTableMYCO
+    ld de, sHiscoreDefaultData
+    ld bc, (10 * (8+3+1))
+    jp UnsafeMemCopy
 
 NextProfile::
     ld a, [rLastProfile]

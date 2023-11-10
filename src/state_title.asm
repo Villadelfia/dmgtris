@@ -324,6 +324,10 @@ SwitchTitleMode:
     ret
 
 .switchProfile
+    ld de, sTitleScreenProfileMap
+    ld hl, $9800
+    ld bc, sTitleScreenProfileMapEnd - sTitleScreenProfileMap
+    call UnsafeMemCopy
     call GBCTitleInit
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
     ldh [rLCDC], a
@@ -413,6 +417,63 @@ TitleEventLoopHandlerB:
     jp MainHandleDown
 
 .eventLoopProfile
+    ; A/Start?
+    ldh a, [hAState]
+    cp a, 1
+    jp z, ProfileHandleA
+    ldh a, [hStartState]
+    cp a, 1
+    jp z, ProfileHandleA
+
+    ; B?
+    ldh a, [hBState]
+    cp a, 1
+    jp z, ProfileHandleB
+
+    ; Directions?
+    ldh a, [hUpState]
+    cp a, 1
+    jp z, ProfileHandleUp
+    cp a, 16
+    jp c, .d2
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
+    jp z, ProfileHandleUp
+
+.d2
+    ldh a, [hDownState]
+    cp a, 1
+    jp z, ProfileHandleDown
+    cp a, 16
+    jp c, .l2
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
+    jp z, ProfileHandleDown
+
+.l2
+    ldh a, [hLeftState]
+    cp a, 1
+    jp z, ProfileHandleLeft
+    cp a, 16
+    jp c, .r2
+    ldh a, [hLeftState]
+    and 3
+    cp a, 3
+    jp z, ProfileHandleLeft
+
+.r2
+    ldh a, [hRightState]
+    cp a, 1
+    jp z, ProfileHandleRight
+    cp a, 16
+    ret c
+    ldh a, [hRightState]
+    and 3
+    cp a, 3
+    ret nz
+    jp ProfileHandleRight
     ret
 
 .eventLoopSettings
@@ -625,7 +686,42 @@ TitleVBlankHandlerB:
     jp DrawSpeedMain
 
 .vblankProfile
+    ; What is the current option?
+    DEF option = 0
+    REPT TITLE_PROFILE_OPTIONS
+        ld hl, TITLE_PROFILE_OPTION_BASE+(32*option)
+        ld a, [wSelected]
+        cp a, option
+        jr z, .selected\@
+.notselected\@:
+        ld a, TILE_UNSELECTED
+        ld [hl], a
+        jr .done\@
+.selected\@:
+        ld a, TILE_SELECTED
+        ld [hl], a
+.done\@:
+        DEF option += 1
+    ENDR
+
+    ; Which profile.
+    ld a, [rLastProfile]
+    add a, "0"
+    ld hl, TITLE_PROFILE_INDEX
+    ld [hl], a
+
+    ; Name.
+    ld a, [wProfileName+0]
+    ld hl, TITLE_PROFILE_NAME_0
+    ld [hl], a
+    ld a, [wProfileName+1]
+    ld hl, TITLE_PROFILE_NAME_1
+    ld [hl], a
+    ld a, [wProfileName+2]
+    ld hl, TITLE_PROFILE_NAME_2
+    ld [hl], a
     ret
+
 
 .vblankSettings
     ; What is the current option?
@@ -791,7 +887,7 @@ MainHandleA:
 .jumps
     jp SwitchToGameplay
     jp SwitchToGameplayBig
-    no_jump
+    jp .toprofile
     jp .tosettings
     no_jump
     jp .tocredits
@@ -802,6 +898,10 @@ MainHandleA:
 
 .tocredits
     ld a, TITLE_CREDITS
+    jp SwitchTitleMode
+
+.toprofile
+    ld a, TITLE_PROFILE
     jp SwitchTitleMode
 
 
@@ -837,6 +937,7 @@ SettingsHandleA:
     jp SwitchTitleMode
 
 
+ProfileHandleB:
 SettingsHandleB:
     ld a, TITLE_MAIN
     jp SwitchTitleMode
@@ -1073,6 +1174,173 @@ SettingsHandleRight:
 :   xor a, a
     ld [wAlways20GState], a
     ld [rAlways20GState], a
+    ret
+
+ProfileHandleA:
+    ld a, [wSelected]
+    cp a, TITLE_PROFILE_SEL_BACK
+    ld b, a
+    ld a, TITLE_MAIN
+    jp z, SwitchTitleMode
+    ld a, b
+    cp a, TITLE_PROFILE_SEL_RESET
+    jp z, ResetProfile
+    jp ProfileHandleRight
+
+
+ProfileHandleRight:
+    ld a, [wSelected]
+    cp a, TITLE_PROFILE_SEL_BACK
+    ret z
+    cp a, TITLE_PROFILE_SEL_RESET
+    ret z
+
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .idx
+    jp .l0
+    jp .l1
+    jp .l2
+    no_jump
+
+.idx
+    ld a, [rLastProfile]
+    inc a
+    cp a, PROFILE_COUNT
+    jr nz, .doit
+    xor a, a
+.doit
+    jp ChangeProfile
+
+.l0
+    ld a, [wProfileName+0]
+    inc a
+    cp a, "Z"+1
+    jr nz, .doit1
+    ld a, "0"-1
+.doit1
+    ld [wProfileName+0], a
+    ld [rProfileName+0], a
+    ret
+
+.l1
+    ld a, [wProfileName+1]
+    inc a
+    cp a, "Z"+1
+    jr nz, .doit2
+    ld a, "0"-1
+.doit2
+    ld [wProfileName+1], a
+    ld [rProfileName+1], a
+    ret
+
+.l2
+    ld a, [wProfileName+2]
+    inc a
+    cp a, "Z"+1
+    jr nz, .doit3
+    ld a, "0"-1
+.doit3
+    ld [wProfileName+2], a
+    ld [rProfileName+2], a
+    ret
+
+
+ProfileHandleLeft:
+    ld a, [wSelected]
+    cp a, TITLE_PROFILE_SEL_BACK
+    ret z
+    cp a, TITLE_PROFILE_SEL_RESET
+    ret z
+
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .idx
+    jp .l0
+    jp .l1
+    jp .l2
+    no_jump
+
+.idx
+    ld a, [rLastProfile]
+    dec a
+    cp a, $FF
+    jr nz, .doit
+    ld a, PROFILE_COUNT-1
+.doit
+    jp ChangeProfile
+
+.l0
+    ld a, [wProfileName+0]
+    dec a
+    cp a, "0"-2
+    jr nz, .doit1
+    ld a, "Z"
+.doit1
+    ld [wProfileName+0], a
+    ld [rProfileName+0], a
+    ret
+
+.l1
+    ld a, [wProfileName+1]
+    dec a
+    cp a, "0"-2
+    jr nz, .doit2
+    ld a, "Z"
+.doit2
+    ld [wProfileName+1], a
+    ld [rProfileName+1], a
+    ret
+
+.l2
+    ld a, [wProfileName+2]
+    dec a
+    cp a, "0"-2
+    jr nz, .doit3
+    ld a, "Z"
+.doit3
+    ld [wProfileName+2], a
+    ld [rProfileName+2], a
+    ret
+
+
+ProfileHandleDown:
+    ld a, [wSelected]
+    cp a, TITLE_PROFILE_OPTIONS-1
+    jr z, :+
+    inc a
+    ld [wSelected], a
+    ret
+:   xor a, a
+    ld [wSelected], a
+    ret
+
+
+ProfileHandleUp:
+    ld a, [wSelected]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wSelected], a
+    ret
+:   ld a, TITLE_PROFILE_OPTIONS-1
+    ld [wSelected], a
     ret
 
 

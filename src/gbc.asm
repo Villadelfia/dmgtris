@@ -294,7 +294,39 @@ GBCTitleProcess::
     jp UnsafeMemSet
 
 .eventLoopProfile
-    ret
+    ; Palette for the title?
+    ldh a, [hFrameCtr]
+    and $0F
+    cp a, $01
+    jr nz, .noinc3
+    ld a, [wTitlePal]
+    inc a
+    cp a, $07
+    jr c, .nores3
+    ld a, $00
+.nores3
+    ld [wTitlePal], a
+.noinc3
+
+    ; Set the palette for the title.
+    ld a, [wTitlePal]
+    ld d, a
+    ld hl, wShadowTileAttrs + (0*32)
+    ld bc, (1*32)
+    call UnsafeMemSet
+
+    ; And the selected row.
+    ld a, [wSelected]
+    inc a
+    ld hl, wShadowTileAttrs + (1*32)
+    ld bc, 32
+:   add hl, bc
+    dec a
+    jr nz, :-
+    ld a, 3
+    ld d, a
+    ld bc, 32
+    jp UnsafeMemSet
 
 .eventLoopSettings
     ; Palette for the title?

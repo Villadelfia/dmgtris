@@ -535,4 +535,53 @@ ChangeProfile::
     jp TrustedLoad
 
 
+ResetProfile::
+    ld a, "P"
+    ld [rProfileName], a
+    ld [wProfileName], a
+    ld a, "R"
+    ld [rProfileName+1], a
+    ld [wProfileName+1], a
+    ld a, [rLastProfile]
+    add a, "0"
+    ld [rProfileName+2], a
+    ld [wProfileName+2], a
+
+    ld a, BUTTON_MODE_NORM
+    ld [rSwapABState], a
+    ld [wSwapABState], a
+
+    ld a, RNG_MODE_TGM3
+    ld [rRNGModeState], a
+    ld [wRNGModeState], a
+
+    ld a, ROT_MODE_ARSTI
+    ld [rRotModeState], a
+    ld [wRotModeState], a
+
+    ld a, DROP_MODE_FIRM
+    ld [rDropModeState], a
+    ld [wDropModeState], a
+
+    ld a, SCURVE_DMGT
+    ld [rSpeedCurveState], a
+    ld [wSpeedCurveState], a
+
+    ld a, HIG_MODE_OFF
+    ld [rAlways20GState], a
+    ld [wAlways20GState], a
+
+    ; Set to the default start level.
+    ld hl, sDMGTSpeedCurve
+    ld a, l
+    ldh [hStartSpeed], a
+    ld a, h
+    ldh [hStartSpeed+1], a
+
+    xor a, a
+    ld [rSelectedStartLevel], a
+    ld [rSelectedStartLevel+1], a
+    ret
+
+
 ENDC

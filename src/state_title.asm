@@ -384,6 +384,11 @@ TitleEventLoopHandlerB:
     cp a, 1
     jp z, MainHandleA
 
+    ; Select?
+    ldh a, [hSelectState]
+    cp a, 1
+    jp z, NextProfile
+
     ; Directions?
     ldh a, [hUpState]
     cp a, 1

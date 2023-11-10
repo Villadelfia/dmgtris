@@ -366,146 +366,149 @@ ROM0 bank #0:
 	         $2bb3 = Next7Piece
 	         $2bb3 = !20
 	         $2bbd = NextByte
-	SECTION: $2bdd-$2df1 ($0215 bytes) ["SRAM Functions"]
+	SECTION: $2bdd-$2e06 ($022a bytes) ["SRAM Functions"]
 	         $2bdd = RestoreSRAM
-	         $2c5f = RestoreSRAM.jumps
-	         $2c77 = RestoreSRAM.dmgt
-	         $2c7d = RestoreSRAM.tgm1
-	         $2c83 = RestoreSRAM.tgm3
-	         $2c89 = RestoreSRAM.deat
-	         $2c8f = RestoreSRAM.shir
-	         $2c95 = RestoreSRAM.chil
-	         $2c9b = RestoreSRAM.myco
-	         $2ca1 = RestoreSRAM.search
-	         $2cb3 = RestoreSRAM.notfound
-	         $2cba = RestoreSRAM.fallback
+	         $2c0d = TrustedLoad
+	         $2c5f = TrustedLoad.jumps
+	         $2c77 = TrustedLoad.dmgt
+	         $2c7d = TrustedLoad.tgm1
+	         $2c83 = TrustedLoad.tgm3
+	         $2c89 = TrustedLoad.deat
+	         $2c8f = TrustedLoad.shir
+	         $2c95 = TrustedLoad.chil
+	         $2c9b = TrustedLoad.myco
+	         $2ca1 = TrustedLoad.search
+	         $2cb3 = TrustedLoad.notfound
+	         $2cba = TrustedLoad.fallback
 	         $2cd5 = InitializeSRAM
-	         $2d7e = ChangeProfile
-	         $2d7e = ChangeProfile.backup
-	         $2d91 = ChangeProfile.first
-	         $2d9f = ChangeProfile.second
-	         $2dad = ChangeProfile.third
-	         $2dbb = ChangeProfile.restore
-	         $2dce = ChangeProfile.lfirst
-	         $2dda = ChangeProfile.lsecond
-	         $2de6 = ChangeProfile.lthird
-	SECTION: $2df2-$2f3b ($014a bytes) ["Progress Data"]
-	         $2df2 = sProgressData
-	SECTION: $2f3c-$301b ($00e0 bytes) ["Score Functions"]
-	         $2f3c = ScoreInit
-	         $2f64 = IncreaseScore
-	         $2f9c = IncreaseScore.doConvert
-	         $2f9e = !0
-	         $2fb4 = IncreaseScore.carry
-	         $2fb6 = IncreaseScore.postConvert
-	         $2fc3 = !1
-	         $2fca = IncreaseScore.preAddDigit
-	         $2ff2 = IncreaseScore.addDigit
-	         $3008 = IncreaseScore.nextDigit
-	SECTION: $301c-$30e8 ($00cd bytes) ["Input Functions"]
-	         $301c = InputInit
-	         $302e = GetInput
-	         $302e = GetInput.btns
-	         $303b = GetInput.readA
-	         $303f = GetInput.setA
-	         $304a = GetInput.clearA
-	         $304d = GetInput.readB
-	         $3051 = GetInput.setB
-	         $305c = GetInput.clearB
-	         $305f = GetInput.readSelect
-	         $3063 = GetInput.setSelect
-	         $306e = GetInput.clearSelect
-	         $3071 = GetInput.readStart
-	         $3075 = GetInput.setStart
-	         $3080 = GetInput.clearStart
-	         $3083 = GetInput.dpad
-	         $3090 = GetInput.readUp
-	         $3094 = GetInput.setUp
-	         $309f = GetInput.clearUp
-	         $30a2 = GetInput.readDown
-	         $30a6 = GetInput.setDown
-	         $30b1 = GetInput.clearDown
-	         $30b4 = GetInput.readLeft
-	         $30b8 = GetInput.setLeft
-	         $30c3 = GetInput.clearLeft
-	         $30c6 = GetInput.readRight
-	         $30ca = GetInput.setRight
-	         $30d5 = GetInput.clearRight
-	         $30d8 = GetInput.priorities
-	         $30e3 = GetInput.zero
-	SECTION: $30e9-$31b3 ($00cb bytes) ["Title Function Trampolines"]
-	         $30e9 = SwitchToTitle
-	         $30f2 = TitleEventLoopHandler
-	         $30fc = TitleVBlankHandler
-	         $3106 = PersistLevel
-	         $3114 = DrawSpeedMain
-	         $3164 = DrawSpeedSettings
-	SECTION: $31b4-$3279 ($00c6 bytes) ["Time Functions"]
-	         $31b4 = TimeInit
-	         $31d4 = StartCountdown
-	         $31e2 = ResetGameTime
-	         $31ed = CheckTorikan
-	         $3204 = CheckTorikan.failure
-	         $3206 = CheckTorikan.success
-	         $3209 = HandleTimers
-	         $322f = HandleTimers.reduce
-	         $323c = HandleTimers.clock
-	         $3256 = HandleTimers.go
-	SECTION: $327a-$332b ($00b2 bytes) ["Progress Functions"]
-	         $327a = SetProgress
-	         $3285 = SetProgress.loop
-	         $3289 = SetProgress.correct
-	         $32b0 = SetProgress.wvr_u1
-	         $32bc = SetProgress.wvr_u2
-	         $32ca = SetProgress.wvr_u3
-	         $32d6 = SetProgress.wvr_u4
-	         $32e4 = SetProgress.wvr_u5
-	         $32f0 = SetProgress.wvr_u6
-	         $32fe = SetProgress.wvr_u7
-	         $330a = SetProgress.wvr_u8
-	         $3318 = SetProgress.wvr_u9
-	         $3324 = SetProgress.wvr_u10
-	SECTION: $332c-$33bd ($0092 bytes) ["Code Entry Point"]
-	         $332c = Main
-	         $3355 = Main.notgbc
-	         $335b = Main.wvr_u1
-	         $3382 = EventLoop
-	         $3398 = EventLoop.eventloopjumps
-	         $33a1 = EventLoopPostHandler
-	         $33a3 = EventLoopPostHandler.wvb_u2
-	         $33b5 = EventLoopPostHandler.vblankjumps
-	SECTION: $33be-$340f ($0052 bytes) ["Tile Functions"]
-	         $33be = LoadTitleTiles
-	         $33dc = LoadGameplayTiles
-	         $33f2 = LoadGameplayTiles.gbc
-	         $3401 = LoadGameplayTiles.dmg
-	SECTION: $3410-$344b ($003c bytes) ["Time Data"]
-	         $3410 = sFramesToCS
-	SECTION: $344c-$3479 ($002e bytes) ["Memory Functions"]
-	         $344c = UnsafeMemCopy
-	         $3455 = SafeMemCopy.wvr_u1
-	         $3455 = SafeMemCopy
-	         $3464 = UnsafeMemSet
-	         $346c = SafeMemSet
-	         $346c = SafeMemSet.wvr_u2
-	SECTION: $347a-$349f ($0026 bytes) ["Gameplay Function Trampolines"]
-	         $347a = SwitchToGameplay
-	         $3483 = SwitchToGameplayBig
-	         $348c = GamePlayEventLoopHandler
-	         $3496 = GamePlayBigEventLoopHandler
-	SECTION: $34a0-$34c4 ($0025 bytes) ["Interrupt Initialization Functions"]
-	         $34a0 = EnableScreenSquish
-	         $34ba = DisableScreenSquish
-	SECTION: $34c5-$34e6 ($0022 bytes) ["OAM Functions"]
-	         $34c5 = CopyOAMHandler
-	         $34d1 = ClearOAM
-	SECTION: $34e7-$34f5 ($000f bytes) ["Banking Functions"]
-	         $34e7 = BankingInit
-	SECTION: $34f6-$34ff ($000a bytes) ["OAM DMA Code"]
-	         $34f6 = OAMDMA
-	         $3500 = OAMDMAEnd
-	EMPTY: $3500-$3fff ($0b00 bytes)
-	TOTAL EMPTY: $0b0b bytes
+	         $2d7e = NextProfile
+	         $2d87 = NextProfile.update
+	         $2d8a = ChangeProfile
+	         $2d8a = ChangeProfile.backup
+	         $2d9d = ChangeProfile.first
+	         $2dab = ChangeProfile.second
+	         $2db9 = ChangeProfile.third
+	         $2dc7 = ChangeProfile.restore
+	         $2dda = ChangeProfile.lfirst
+	         $2de9 = ChangeProfile.lsecond
+	         $2df8 = ChangeProfile.lthird
+	SECTION: $2e07-$2f50 ($014a bytes) ["Progress Data"]
+	         $2e07 = sProgressData
+	SECTION: $2f51-$3030 ($00e0 bytes) ["Score Functions"]
+	         $2f51 = ScoreInit
+	         $2f79 = IncreaseScore
+	         $2fb1 = IncreaseScore.doConvert
+	         $2fb3 = !0
+	         $2fc9 = IncreaseScore.carry
+	         $2fcb = IncreaseScore.postConvert
+	         $2fd8 = !1
+	         $2fdf = IncreaseScore.preAddDigit
+	         $3007 = IncreaseScore.addDigit
+	         $301d = IncreaseScore.nextDigit
+	SECTION: $3031-$30fd ($00cd bytes) ["Input Functions"]
+	         $3031 = InputInit
+	         $3043 = GetInput
+	         $3043 = GetInput.btns
+	         $3050 = GetInput.readA
+	         $3054 = GetInput.setA
+	         $305f = GetInput.clearA
+	         $3062 = GetInput.readB
+	         $3066 = GetInput.setB
+	         $3071 = GetInput.clearB
+	         $3074 = GetInput.readSelect
+	         $3078 = GetInput.setSelect
+	         $3083 = GetInput.clearSelect
+	         $3086 = GetInput.readStart
+	         $308a = GetInput.setStart
+	         $3095 = GetInput.clearStart
+	         $3098 = GetInput.dpad
+	         $30a5 = GetInput.readUp
+	         $30a9 = GetInput.setUp
+	         $30b4 = GetInput.clearUp
+	         $30b7 = GetInput.readDown
+	         $30bb = GetInput.setDown
+	         $30c6 = GetInput.clearDown
+	         $30c9 = GetInput.readLeft
+	         $30cd = GetInput.setLeft
+	         $30d8 = GetInput.clearLeft
+	         $30db = GetInput.readRight
+	         $30df = GetInput.setRight
+	         $30ea = GetInput.clearRight
+	         $30ed = GetInput.priorities
+	         $30f8 = GetInput.zero
+	SECTION: $30fe-$31c8 ($00cb bytes) ["Title Function Trampolines"]
+	         $30fe = SwitchToTitle
+	         $3107 = TitleEventLoopHandler
+	         $3111 = TitleVBlankHandler
+	         $311b = PersistLevel
+	         $3129 = DrawSpeedMain
+	         $3179 = DrawSpeedSettings
+	SECTION: $31c9-$328e ($00c6 bytes) ["Time Functions"]
+	         $31c9 = TimeInit
+	         $31e9 = StartCountdown
+	         $31f7 = ResetGameTime
+	         $3202 = CheckTorikan
+	         $3219 = CheckTorikan.failure
+	         $321b = CheckTorikan.success
+	         $321e = HandleTimers
+	         $3244 = HandleTimers.reduce
+	         $3251 = HandleTimers.clock
+	         $326b = HandleTimers.go
+	SECTION: $328f-$3340 ($00b2 bytes) ["Progress Functions"]
+	         $328f = SetProgress
+	         $329a = SetProgress.loop
+	         $329e = SetProgress.correct
+	         $32c5 = SetProgress.wvr_u1
+	         $32d1 = SetProgress.wvr_u2
+	         $32df = SetProgress.wvr_u3
+	         $32eb = SetProgress.wvr_u4
+	         $32f9 = SetProgress.wvr_u5
+	         $3305 = SetProgress.wvr_u6
+	         $3313 = SetProgress.wvr_u7
+	         $331f = SetProgress.wvr_u8
+	         $332d = SetProgress.wvr_u9
+	         $3339 = SetProgress.wvr_u10
+	SECTION: $3341-$33d2 ($0092 bytes) ["Code Entry Point"]
+	         $3341 = Main
+	         $336a = Main.notgbc
+	         $3370 = Main.wvr_u1
+	         $3397 = EventLoop
+	         $33ad = EventLoop.eventloopjumps
+	         $33b6 = EventLoopPostHandler
+	         $33b8 = EventLoopPostHandler.wvb_u2
+	         $33ca = EventLoopPostHandler.vblankjumps
+	SECTION: $33d3-$3424 ($0052 bytes) ["Tile Functions"]
+	         $33d3 = LoadTitleTiles
+	         $33f1 = LoadGameplayTiles
+	         $3407 = LoadGameplayTiles.gbc
+	         $3416 = LoadGameplayTiles.dmg
+	SECTION: $3425-$3460 ($003c bytes) ["Time Data"]
+	         $3425 = sFramesToCS
+	SECTION: $3461-$348e ($002e bytes) ["Memory Functions"]
+	         $3461 = UnsafeMemCopy
+	         $346a = SafeMemCopy.wvr_u1
+	         $346a = SafeMemCopy
+	         $3479 = UnsafeMemSet
+	         $3481 = SafeMemSet
+	         $3481 = SafeMemSet.wvr_u2
+	SECTION: $348f-$34b4 ($0026 bytes) ["Gameplay Function Trampolines"]
+	         $348f = SwitchToGameplay
+	         $3498 = SwitchToGameplayBig
+	         $34a1 = GamePlayEventLoopHandler
+	         $34ab = GamePlayBigEventLoopHandler
+	SECTION: $34b5-$34d9 ($0025 bytes) ["Interrupt Initialization Functions"]
+	         $34b5 = EnableScreenSquish
+	         $34cf = DisableScreenSquish
+	SECTION: $34da-$34fb ($0022 bytes) ["OAM Functions"]
+	         $34da = CopyOAMHandler
+	         $34e6 = ClearOAM
+	SECTION: $34fc-$350a ($000f bytes) ["Banking Functions"]
+	         $34fc = BankingInit
+	SECTION: $350b-$3514 ($000a bytes) ["OAM DMA Code"]
+	         $350b = OAMDMA
+	         $3515 = OAMDMAEnd
+	EMPTY: $3515-$3fff ($0aeb bytes)
+	TOTAL EMPTY: $0af6 bytes
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]
@@ -636,7 +639,7 @@ ROMX bank #4:
 	         $47f0 = sTitleScreenCreditsMap
 	         $47f0 = sTitleScreenSettingsMapEnd
 	         $4a90 = sTitleScreenCreditsMapEnd
-	SECTION: $4a90-$5232 ($07a3 bytes) ["Title Functions Banked"]
+	SECTION: $4a90-$5239 ($07aa bytes) ["Title Functions Banked"]
 	         $4a90 = SwitchToTitleB
 	         $4a96 = SwitchToTitleB.wvr_u1
 	         $4a9f = !0
@@ -658,134 +661,134 @@ ROMX bank #4:
 	         $4bd3 = TitleEventLoopHandlerB
 	         $4be1 = TitleEventLoopHandlerB.jumps
 	         $4bf0 = TitleEventLoopHandlerB.eventLoopMain
-	         $4c13 = TitleEventLoopHandlerB.d0
-	         $4c27 = TitleEventLoopHandlerB.eventLoopProfile
-	         $4c28 = TitleEventLoopHandlerB.eventLoopSettings
-	         $4c52 = TitleEventLoopHandlerB.d1
-	         $4c67 = TitleEventLoopHandlerB.l1
-	         $4c7c = TitleEventLoopHandlerB.r1
-	         $4c90 = TitleEventLoopHandlerB.eventLoopRecords
-	         $4c91 = TitleEventLoopHandlerB.eventLoopCredits
-	         $4ca7 = TitleEventLoopHandlerB.quitcredits
-	         $4cac = TitleVBlankHandlerB
-	         $4cba = TitleVBlankHandlerB.jumps
-	         $4cc9 = TitleVBlankHandlerB.vblankMain
-	         $4cd3 = TitleVBlankHandlerB.notselected_u5
-	         $4cd8 = TitleVBlankHandlerB.selected_u5
-	         $4cdb = TitleVBlankHandlerB.done_u5
-	         $4ce5 = TitleVBlankHandlerB.notselected_u6
-	         $4cea = TitleVBlankHandlerB.selected_u6
-	         $4ced = TitleVBlankHandlerB.done_u6
-	         $4cf7 = TitleVBlankHandlerB.notselected_u7
-	         $4cfc = TitleVBlankHandlerB.selected_u7
-	         $4cff = TitleVBlankHandlerB.done_u7
-	         $4d09 = TitleVBlankHandlerB.notselected_u8
-	         $4d0e = TitleVBlankHandlerB.selected_u8
-	         $4d11 = TitleVBlankHandlerB.done_u8
-	         $4d1b = TitleVBlankHandlerB.notselected_u9
-	         $4d20 = TitleVBlankHandlerB.selected_u9
-	         $4d23 = TitleVBlankHandlerB.done_u9
-	         $4d2d = TitleVBlankHandlerB.notselected_u10
-	         $4d32 = TitleVBlankHandlerB.selected_u10
-	         $4d35 = TitleVBlankHandlerB.done_u10
-	         $4dbf = TitleVBlankHandlerB.disabled
-	         $4dcb = TitleVBlankHandlerB.profile
-	         $4dda = TitleVBlankHandlerB.vblankProfile
-	         $4ddb = TitleVBlankHandlerB.vblankSettings
-	         $4de5 = TitleVBlankHandlerB.notselected_u11
-	         $4dea = TitleVBlankHandlerB.selected_u11
-	         $4ded = TitleVBlankHandlerB.done_u11
-	         $4df7 = TitleVBlankHandlerB.notselected_u12
-	         $4dfc = TitleVBlankHandlerB.selected_u12
-	         $4dff = TitleVBlankHandlerB.done_u12
-	         $4e09 = TitleVBlankHandlerB.notselected_u13
-	         $4e0e = TitleVBlankHandlerB.selected_u13
-	         $4e11 = TitleVBlankHandlerB.done_u13
-	         $4e1b = TitleVBlankHandlerB.notselected_u14
-	         $4e20 = TitleVBlankHandlerB.selected_u14
-	         $4e23 = TitleVBlankHandlerB.done_u14
-	         $4e2d = TitleVBlankHandlerB.notselected_u15
-	         $4e32 = TitleVBlankHandlerB.selected_u15
-	         $4e35 = TitleVBlankHandlerB.done_u15
-	         $4e3f = TitleVBlankHandlerB.notselected_u16
-	         $4e44 = TitleVBlankHandlerB.selected_u16
-	         $4e47 = TitleVBlankHandlerB.done_u16
-	         $4e51 = TitleVBlankHandlerB.notselected_u17
-	         $4e56 = TitleVBlankHandlerB.selected_u17
-	         $4e59 = TitleVBlankHandlerB.done_u17
-	         $4e63 = TitleVBlankHandlerB.notselected_u18
-	         $4e68 = TitleVBlankHandlerB.selected_u18
-	         $4e6b = TitleVBlankHandlerB.done_u18
-	         $4ef5 = TitleVBlankHandlerB.disabled1
-	         $4f01 = TitleVBlankHandlerB.buttons
-	         $4f26 = !2
-	         $4f2e = TitleVBlankHandlerB.donetetry
-	         $4f54 = TitleVBlankHandlerB.vblankRecords
-	         $4f55 = TitleVBlankHandlerB.vblankCredits
-	         $4f56 = MainHandleA
-	         $4f64 = MainHandleA.jumps
-	         $4f76 = MainHandleA.tosettings
-	         $4f7b = MainHandleA.tocredits
-	         $4f80 = MainHandleUp
-	         $4f8c = !3
-	         $4f92 = MainHandleDown
-	         $4f9e = !4
-	         $4fa3 = SettingsHandleA
-	         $4fb0 = SettingsHandleB
-	         $4fb5 = SettingsHandleDown
-	         $4fc1 = !5
-	         $4fc6 = SettingsHandleUp
-	         $4fd2 = !6
-	         $4fd8 = SettingsHandleLeft
-	         $4fe9 = SettingsHandleLeft.jumps
-	         $5001 = SettingsHandleLeft.buttons
-	         $5010 = !7
-	         $5019 = SettingsHandleLeft.rng
-	         $5028 = !8
-	         $5031 = SettingsHandleLeft.rot
-	         $5040 = !9
-	         $5049 = SettingsHandleLeft.drop
-	         $5058 = !10
-	         $5061 = SettingsHandleLeft.curve
-	         $5073 = !11
-	         $507f = SettingsHandleLeft.hig
-	         $508e = !12
-	         $5097 = SettingsHandleRight
-	         $50a8 = SettingsHandleRight.jumps
-	         $50c0 = SettingsHandleRight.buttons
-	         $50cf = !13
-	         $50d7 = SettingsHandleRight.rng
-	         $50e6 = !14
-	         $50ee = SettingsHandleRight.rot
-	         $50fd = !15
-	         $5105 = SettingsHandleRight.drop
-	         $5114 = !16
-	         $511c = SettingsHandleRight.curve
-	         $512e = !17
-	         $5139 = SettingsHandleRight.hig
-	         $5148 = !18
-	         $5150 = DecrementLevel
-	         $5166 = IncrementLevel
-	         $517c = InitSpeedCurve
-	         $518b = GetEnd
-	         $5196 = !19
-	         $519e = !20
-	         $51a6 = !21
-	         $51ae = !22
-	         $51b6 = !23
-	         $51be = !24
-	         $51c2 = GetStart
-	         $51cd = !25
-	         $51d5 = !26
-	         $51dd = !27
-	         $51e5 = !28
-	         $51ed = !29
-	         $51f5 = !30
-	         $51f9 = CheckLevelRange
-	         $5212 = CheckLevelRange.notatend
-	         $5232 = CheckLevelRange.notatstart
-	EMPTY: $5233-$7fff ($2dcd bytes)
-	TOTAL EMPTY: $2dcd bytes
+	         $4c1a = TitleEventLoopHandlerB.d0
+	         $4c2e = TitleEventLoopHandlerB.eventLoopProfile
+	         $4c2f = TitleEventLoopHandlerB.eventLoopSettings
+	         $4c59 = TitleEventLoopHandlerB.d1
+	         $4c6e = TitleEventLoopHandlerB.l1
+	         $4c83 = TitleEventLoopHandlerB.r1
+	         $4c97 = TitleEventLoopHandlerB.eventLoopRecords
+	         $4c98 = TitleEventLoopHandlerB.eventLoopCredits
+	         $4cae = TitleEventLoopHandlerB.quitcredits
+	         $4cb3 = TitleVBlankHandlerB
+	         $4cc1 = TitleVBlankHandlerB.jumps
+	         $4cd0 = TitleVBlankHandlerB.vblankMain
+	         $4cda = TitleVBlankHandlerB.notselected_u5
+	         $4cdf = TitleVBlankHandlerB.selected_u5
+	         $4ce2 = TitleVBlankHandlerB.done_u5
+	         $4cec = TitleVBlankHandlerB.notselected_u6
+	         $4cf1 = TitleVBlankHandlerB.selected_u6
+	         $4cf4 = TitleVBlankHandlerB.done_u6
+	         $4cfe = TitleVBlankHandlerB.notselected_u7
+	         $4d03 = TitleVBlankHandlerB.selected_u7
+	         $4d06 = TitleVBlankHandlerB.done_u7
+	         $4d10 = TitleVBlankHandlerB.notselected_u8
+	         $4d15 = TitleVBlankHandlerB.selected_u8
+	         $4d18 = TitleVBlankHandlerB.done_u8
+	         $4d22 = TitleVBlankHandlerB.notselected_u9
+	         $4d27 = TitleVBlankHandlerB.selected_u9
+	         $4d2a = TitleVBlankHandlerB.done_u9
+	         $4d34 = TitleVBlankHandlerB.notselected_u10
+	         $4d39 = TitleVBlankHandlerB.selected_u10
+	         $4d3c = TitleVBlankHandlerB.done_u10
+	         $4dc6 = TitleVBlankHandlerB.disabled
+	         $4dd2 = TitleVBlankHandlerB.profile
+	         $4de1 = TitleVBlankHandlerB.vblankProfile
+	         $4de2 = TitleVBlankHandlerB.vblankSettings
+	         $4dec = TitleVBlankHandlerB.notselected_u11
+	         $4df1 = TitleVBlankHandlerB.selected_u11
+	         $4df4 = TitleVBlankHandlerB.done_u11
+	         $4dfe = TitleVBlankHandlerB.notselected_u12
+	         $4e03 = TitleVBlankHandlerB.selected_u12
+	         $4e06 = TitleVBlankHandlerB.done_u12
+	         $4e10 = TitleVBlankHandlerB.notselected_u13
+	         $4e15 = TitleVBlankHandlerB.selected_u13
+	         $4e18 = TitleVBlankHandlerB.done_u13
+	         $4e22 = TitleVBlankHandlerB.notselected_u14
+	         $4e27 = TitleVBlankHandlerB.selected_u14
+	         $4e2a = TitleVBlankHandlerB.done_u14
+	         $4e34 = TitleVBlankHandlerB.notselected_u15
+	         $4e39 = TitleVBlankHandlerB.selected_u15
+	         $4e3c = TitleVBlankHandlerB.done_u15
+	         $4e46 = TitleVBlankHandlerB.notselected_u16
+	         $4e4b = TitleVBlankHandlerB.selected_u16
+	         $4e4e = TitleVBlankHandlerB.done_u16
+	         $4e58 = TitleVBlankHandlerB.notselected_u17
+	         $4e5d = TitleVBlankHandlerB.selected_u17
+	         $4e60 = TitleVBlankHandlerB.done_u17
+	         $4e6a = TitleVBlankHandlerB.notselected_u18
+	         $4e6f = TitleVBlankHandlerB.selected_u18
+	         $4e72 = TitleVBlankHandlerB.done_u18
+	         $4efc = TitleVBlankHandlerB.disabled1
+	         $4f08 = TitleVBlankHandlerB.buttons
+	         $4f2d = !2
+	         $4f35 = TitleVBlankHandlerB.donetetry
+	         $4f5b = TitleVBlankHandlerB.vblankRecords
+	         $4f5c = TitleVBlankHandlerB.vblankCredits
+	         $4f5d = MainHandleA
+	         $4f6b = MainHandleA.jumps
+	         $4f7d = MainHandleA.tosettings
+	         $4f82 = MainHandleA.tocredits
+	         $4f87 = MainHandleUp
+	         $4f93 = !3
+	         $4f99 = MainHandleDown
+	         $4fa5 = !4
+	         $4faa = SettingsHandleA
+	         $4fb7 = SettingsHandleB
+	         $4fbc = SettingsHandleDown
+	         $4fc8 = !5
+	         $4fcd = SettingsHandleUp
+	         $4fd9 = !6
+	         $4fdf = SettingsHandleLeft
+	         $4ff0 = SettingsHandleLeft.jumps
+	         $5008 = SettingsHandleLeft.buttons
+	         $5017 = !7
+	         $5020 = SettingsHandleLeft.rng
+	         $502f = !8
+	         $5038 = SettingsHandleLeft.rot
+	         $5047 = !9
+	         $5050 = SettingsHandleLeft.drop
+	         $505f = !10
+	         $5068 = SettingsHandleLeft.curve
+	         $507a = !11
+	         $5086 = SettingsHandleLeft.hig
+	         $5095 = !12
+	         $509e = SettingsHandleRight
+	         $50af = SettingsHandleRight.jumps
+	         $50c7 = SettingsHandleRight.buttons
+	         $50d6 = !13
+	         $50de = SettingsHandleRight.rng
+	         $50ed = !14
+	         $50f5 = SettingsHandleRight.rot
+	         $5104 = !15
+	         $510c = SettingsHandleRight.drop
+	         $511b = !16
+	         $5123 = SettingsHandleRight.curve
+	         $5135 = !17
+	         $5140 = SettingsHandleRight.hig
+	         $514f = !18
+	         $5157 = DecrementLevel
+	         $516d = IncrementLevel
+	         $5183 = InitSpeedCurve
+	         $5192 = GetEnd
+	         $519d = !19
+	         $51a5 = !20
+	         $51ad = !21
+	         $51b5 = !22
+	         $51bd = !23
+	         $51c5 = !24
+	         $51c9 = GetStart
+	         $51d4 = !25
+	         $51dc = !26
+	         $51e4 = !27
+	         $51ec = !28
+	         $51f4 = !29
+	         $51fc = !30
+	         $5200 = CheckLevelRange
+	         $5219 = CheckLevelRange.notatend
+	         $5239 = CheckLevelRange.notatstart
+	EMPTY: $523a-$7fff ($2dc6 bytes)
+	TOTAL EMPTY: $2dc6 bytes
 
 ROMX bank #5:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_GAMEPLAY"]
@@ -2727,8 +2730,8 @@ HRAM bank #0:
 	TOTAL EMPTY: $0003 bytes
 
 SUMMARY:
-	ROM0: 13557 bytes used / 2827 free
-	ROMX: 62755 bytes used / 35549 free in 6 banks
+	ROM0: 13578 bytes used / 2806 free
+	ROMX: 62762 bytes used / 35542 free in 6 banks
 	SRAM: 263 bytes used / 7929 free in 1 bank
 	WRAM0: 3545 bytes used / 551 free
 	HRAM: 124 bytes used / 3 free

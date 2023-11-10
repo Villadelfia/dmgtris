@@ -106,6 +106,7 @@ RestoreSRAM::
     jp nz, InitializeSRAM
 
     ; SRAM is initialized and for this build, so we can load the data.
+TrustedLoad:
     ld a, [rSwapABState]
     ld [wSwapABState], a
     ld a, [rRNGModeState]
@@ -126,13 +127,13 @@ RestoreSRAM::
     ld [wProfileName+2], a
 
     ; Restore the start level.
+    ld b, BANK_OTHER
+    rst RSTSwitchBank
+
     ld a, [rSelectedStartLevel]
     ld c, a
     ld a, [rSelectedStartLevel+1]
     ld b, a
-
-    ld b, BANK_OTHER
-    rst RSTSwitchBank
 
     ld a, [rSpeedCurveState]
     ld d, a
@@ -302,6 +303,14 @@ InitializeSRAM:
     ld [rProfileName2+2], a
     ret
 
+NextProfile::
+    ld a, [rLastProfile]
+    inc a
+    cp a, 3
+    jr nz, .update
+    xor a, a
+.update
+    jp ChangeProfile
 
     ; Change to profile number in A.
 ChangeProfile::
@@ -352,19 +361,22 @@ ChangeProfile::
     ld hl, rProfileData
     ld de, rProfileData0
     ld bc, 64
-    jp UnsafeMemCopy
+    call UnsafeMemCopy
+    jp TrustedLoad
 
 .lsecond
     ld hl, rProfileData
     ld de, rProfileData1
     ld bc, 64
-    jp UnsafeMemCopy
+    call UnsafeMemCopy
+    jp TrustedLoad
 
 .lthird
     ld hl, rProfileData
     ld de, rProfileData2
     ld bc, 64
-    jp UnsafeMemCopy
+    call UnsafeMemCopy
+    jp TrustedLoad
 
 
 ENDC

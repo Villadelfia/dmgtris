@@ -41,6 +41,7 @@ SECTION "Gameplay Variables", WRAM0
 wRollLine: ds 1
 wInStaffRoll:: ds 1
 wBigModeTransfered: ds 1
+wGameOverIgnoreInput: ds 1
 
 
 SECTION "Gameplay Function Trampolines", ROM0
@@ -467,9 +468,8 @@ GamePlayEventLoopHandlerB::
 
 
 .preGameOverMode
-    xor a, a
-    ldh [hAState], a
-    ldh [hBState], a
+    ld a, $FF
+    ld [wGameOverIgnoreInput], a
 
     ; Is it just a regular game over?
     ld a, [wKillScreenActive]
@@ -617,9 +617,26 @@ GamePlayEventLoopHandlerB::
 
 
 .gameOverMode
-    ; Retry?
+    ; Wait for A and B to not be held down.
+    ld a, [wGameOverIgnoreInput]
+    cp a, 0
+    jr z, .checkretry
+
     ldh a, [hAState]
-    cp a, 10 ; 10 frame hold
+    cp a, 0
+    jp nz, .drawStaticInfo
+    ldh a, [hBState]
+    cp a, 0
+    jp nz, .drawStaticInfo
+
+    xor a, a
+    ld [wGameOverIgnoreInput], a
+    jp .drawStaticInfo
+
+    ; Retry?
+.checkretry
+    ldh a, [hAState]
+    cp a, 1
     jr nz, .noretry
     call CheckAndAddHiscore
     call RNGInit
@@ -639,7 +656,7 @@ GamePlayEventLoopHandlerB::
     ; Quit
 .noretry
     ldh a, [hBState]
-    cp a, 10 ; 10 frame hold
+    cp a, 1
     jp nz, .drawStaticInfo
     call CheckAndAddHiscore
     jp SwitchToTitle
@@ -1246,9 +1263,8 @@ GamePlayBigEventLoopHandlerB:
 
 
 .preGameOverMode
-    xor a, a
-    ldh [hAState], a
-    ldh [hBState], a
+    ld a, $FF
+    ld [wGameOverIgnoreInput], a
 
     ; Is it just a regular game over?
     ld a, [wKillScreenActive]
@@ -1397,9 +1413,26 @@ GamePlayBigEventLoopHandlerB:
 
 
 .gameOverMode
-    ; Retry?
+    ; Wait for A and B to not be held down.
+    ld a, [wGameOverIgnoreInput]
+    cp a, 0
+    jr z, .checkretry
+
     ldh a, [hAState]
-    cp a, 10 ; 10 frame hold
+    cp a, 0
+    jp nz, .drawStaticInfo
+    ldh a, [hBState]
+    cp a, 0
+    jp nz, .drawStaticInfo
+
+    xor a, a
+    ld [wGameOverIgnoreInput], a
+    jp .drawStaticInfo
+
+    ; Retry?
+.checkretry
+    ldh a, [hAState]
+    cp a, 1
     jr nz, .noretry
     ld a, [wReturnToSmall]
     cp a, $FF
@@ -1439,7 +1472,7 @@ GamePlayBigEventLoopHandlerB:
     ; Quit
 .noretry
     ldh a, [hBState]
-    cp a, 10 ; 10 frame hold
+    cp a, 1
     jp nz, .drawStaticInfo
     call CheckAndAddHiscore
     jp SwitchToTitle

@@ -1204,7 +1204,7 @@ ROMX bank #5:
 	         $540f = ClearLines.r_u48
 	         $540f = ClearLines.fixgarbo
 	         $5412 = ClearLines.fixgarboloop
-	SECTION: $541c-$6318 ($0efd bytes) ["Gameplay Function Banked"]
+	SECTION: $541c-$6334 ($0f19 bytes) ["Gameplay Function Banked"]
 	         $541c = SwitchToGameplayB
 	         $5422 = SwitchToGameplayB.wvr_u1
 	         $542b = SwitchToGameplayB.loadtilemap
@@ -1668,46 +1668,47 @@ ROMX bank #5:
 	         $616c = GamePlayEventLoopHandlerB.notempty7_u213
 	         $616f = GamePlayEventLoopHandlerB.skip7_u213
 	         $6173 = GamePlayEventLoopHandlerB.gameOverMode
-	         $619c = GamePlayEventLoopHandlerB.noretry
-	         $61a9 = GamePlayEventLoopHandlerB.pauseMode
-	         $61be = GamePlayEventLoopHandlerB.noqr
-	         $61d3 = GamePlayEventLoopHandlerB.nounpause
-	         $621d = GamePlayEventLoopHandlerB.preRollMode
-	         $624c = GamePlayEventLoopHandlerB.predone
-	         $6262 = GamePlayEventLoopHandlerB.staysmall
-	         $6278 = GamePlayEventLoopHandlerB.drawStaticInfo
-	         $62a9 = DoHold
-	         $62ad = DoHold.checkIRSA
-	         $62b4 = DoHold.ldb3
-	         $62c0 = DoHold.lda3
-	         $62ca = DoHold.cp3
-	         $62d8 = DoHold.checkIRSB
-	         $62df = DoHold.lda4
-	         $62eb = DoHold.ldb4
-	         $62f5 = DoHold.cp4
-	         $6303 = DoHold.noRotation
-	         $630e = DoHold.doHoldOperation
-	SECTION: $6319-$6bae ($0896 bytes) ["Gameplay Static Data"]
-	         $6319 = sLeftDasSlam
-	         $631f = sRightDasSlam
-	         $6325 = sLeady
-	         $632f = sGo
-	         $6339 = sPause
-	         $6361 = sKill
-	         $6401 = sYouAreGM
-	         $6465 = sFinalChallenge
-	         $652d = sPieceXOffsets
-	         $6549 = sPieceYOffsets
-	         $6565 = sPieceFastRotationStates
-	         $65d5 = sPieceRotationStates
-	         $6645 = sTGM3Bag
-	         $6668 = sTGM3Droughts
-	         $666f = sGameplayTileMap
-	         $690f = sGameplayUngradedTileMap
-	         $690f = sGameplayTileMapEnd
-	         $6baf = sGameplayUngradedTileMapEnd
-	EMPTY: $6baf-$7fff ($1451 bytes)
-	TOTAL EMPTY: $1451 bytes
+	         $618f = GamePlayEventLoopHandlerB.checkretry
+	         $61b8 = GamePlayEventLoopHandlerB.noretry
+	         $61c5 = GamePlayEventLoopHandlerB.pauseMode
+	         $61da = GamePlayEventLoopHandlerB.noqr
+	         $61ef = GamePlayEventLoopHandlerB.nounpause
+	         $6239 = GamePlayEventLoopHandlerB.preRollMode
+	         $6268 = GamePlayEventLoopHandlerB.predone
+	         $627e = GamePlayEventLoopHandlerB.staysmall
+	         $6294 = GamePlayEventLoopHandlerB.drawStaticInfo
+	         $62c5 = DoHold
+	         $62c9 = DoHold.checkIRSA
+	         $62d0 = DoHold.ldb3
+	         $62dc = DoHold.lda3
+	         $62e6 = DoHold.cp3
+	         $62f4 = DoHold.checkIRSB
+	         $62fb = DoHold.lda4
+	         $6307 = DoHold.ldb4
+	         $6311 = DoHold.cp4
+	         $631f = DoHold.noRotation
+	         $632a = DoHold.doHoldOperation
+	SECTION: $6335-$6bca ($0896 bytes) ["Gameplay Static Data"]
+	         $6335 = sLeftDasSlam
+	         $633b = sRightDasSlam
+	         $6341 = sLeady
+	         $634b = sGo
+	         $6355 = sPause
+	         $637d = sKill
+	         $641d = sYouAreGM
+	         $6481 = sFinalChallenge
+	         $6549 = sPieceXOffsets
+	         $6565 = sPieceYOffsets
+	         $6581 = sPieceFastRotationStates
+	         $65f1 = sPieceRotationStates
+	         $6661 = sTGM3Bag
+	         $6684 = sTGM3Droughts
+	         $668b = sGameplayTileMap
+	         $692b = sGameplayUngradedTileMap
+	         $692b = sGameplayTileMapEnd
+	         $6bcb = sGameplayUngradedTileMapEnd
+	EMPTY: $6bcb-$7fff ($1435 bytes)
+	TOTAL EMPTY: $1435 bytes
 
 ROMX bank #6:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_GAMEPLAY_BIG"]
@@ -2010,7 +2011,7 @@ ROMX bank #6:
 	         $52e0 = BigClearLines.fixgarbo
 	         $52e3 = BigClearLines.fixgarboloop
 	         $5301 = BigWidenField
-	SECTION: $5651-$65f0 ($0fa0 bytes) ["Gameplay Function Big Banked"]
+	SECTION: $5651-$660c ($0fbc bytes) ["Gameplay Function Big Banked"]
 	         $5651 = SwitchToGameplayBigB
 	         $5657 = SwitchToGameplayBigB.wvr_u214
 	         $5660 = SwitchToGameplayBigB.loadtilemap
@@ -2494,44 +2495,45 @@ ROMX bank #6:
 	         $6423 = GamePlayBigEventLoopHandlerB.notempty7_u436
 	         $6426 = GamePlayBigEventLoopHandlerB.skip7_u436
 	         $642a = GamePlayBigEventLoopHandlerB.gameOverMode
-	         $645a = GamePlayBigEventLoopHandlerB.gosmall
-	         $647d = GamePlayBigEventLoopHandlerB.noretry
-	         $648a = GamePlayBigEventLoopHandlerB.pauseMode
-	         $649f = GamePlayBigEventLoopHandlerB.noqr
-	         $64b4 = GamePlayBigEventLoopHandlerB.nounpause
-	         $64ff = GamePlayBigEventLoopHandlerB.preRollMode
-	         $652e = GamePlayBigEventLoopHandlerB.predone
-	         $6550 = GamePlayBigEventLoopHandlerB.drawStaticInfo
-	         $6581 = BigDoHold
-	         $6585 = BigDoHold.checkIRSA
-	         $658c = BigDoHold.ldb3
-	         $6598 = BigDoHold.lda3
-	         $65a2 = BigDoHold.cp3
-	         $65b0 = BigDoHold.checkIRSB
-	         $65b7 = BigDoHold.lda4
-	         $65c3 = BigDoHold.ldb4
-	         $65cd = BigDoHold.cp4
-	         $65db = BigDoHold.noRotation
-	         $65e6 = BigDoHold.doHoldOperation
-	SECTION: $65f1-$6e5c ($086c bytes) ["Gameplay Big Static Data"]
-	         $65f1 = sBigLeftDasSlam
-	         $65f7 = sBigRightDasSlam
-	         $65fd = sBigLeady
-	         $6607 = sBigGo
-	         $6611 = sBigPause
-	         $6639 = sBigKill
-	         $66d9 = sBigYouAreGM
-	         $673d = sBigFinalChallenge
-	         $6805 = sBigPieceXOffsets
-	         $6821 = sBigPieceYOffsets
-	         $683d = sBigPieceFastRotationStates
-	         $68ad = sBigPieceRotationStates
-	         $691d = sBigGameplayTileMap
-	         $6bbd = sBigGameplayUngradedTileMap
-	         $6bbd = sBigGameplayTileMapEnd
-	         $6e5d = sBigGameplayUngradedTileMapEnd
-	EMPTY: $6e5d-$7fff ($11a3 bytes)
-	TOTAL EMPTY: $11a3 bytes
+	         $6446 = GamePlayBigEventLoopHandlerB.checkretry
+	         $6476 = GamePlayBigEventLoopHandlerB.gosmall
+	         $6499 = GamePlayBigEventLoopHandlerB.noretry
+	         $64a6 = GamePlayBigEventLoopHandlerB.pauseMode
+	         $64bb = GamePlayBigEventLoopHandlerB.noqr
+	         $64d0 = GamePlayBigEventLoopHandlerB.nounpause
+	         $651b = GamePlayBigEventLoopHandlerB.preRollMode
+	         $654a = GamePlayBigEventLoopHandlerB.predone
+	         $656c = GamePlayBigEventLoopHandlerB.drawStaticInfo
+	         $659d = BigDoHold
+	         $65a1 = BigDoHold.checkIRSA
+	         $65a8 = BigDoHold.ldb3
+	         $65b4 = BigDoHold.lda3
+	         $65be = BigDoHold.cp3
+	         $65cc = BigDoHold.checkIRSB
+	         $65d3 = BigDoHold.lda4
+	         $65df = BigDoHold.ldb4
+	         $65e9 = BigDoHold.cp4
+	         $65f7 = BigDoHold.noRotation
+	         $6602 = BigDoHold.doHoldOperation
+	SECTION: $660d-$6e78 ($086c bytes) ["Gameplay Big Static Data"]
+	         $660d = sBigLeftDasSlam
+	         $6613 = sBigRightDasSlam
+	         $6619 = sBigLeady
+	         $6623 = sBigGo
+	         $662d = sBigPause
+	         $6655 = sBigKill
+	         $66f5 = sBigYouAreGM
+	         $6759 = sBigFinalChallenge
+	         $6821 = sBigPieceXOffsets
+	         $683d = sBigPieceYOffsets
+	         $6859 = sBigPieceFastRotationStates
+	         $68c9 = sBigPieceRotationStates
+	         $6939 = sBigGameplayTileMap
+	         $6bd9 = sBigGameplayUngradedTileMap
+	         $6bd9 = sBigGameplayTileMapEnd
+	         $6e79 = sBigGameplayUngradedTileMapEnd
+	EMPTY: $6e79-$7fff ($1187 bytes)
+	TOTAL EMPTY: $1187 bytes
 
 SRAM bank #0:
 	SECTION: $a000-$a60e ($060f bytes) ["Persistent Globals"]
@@ -2794,18 +2796,19 @@ WRAM0 bank #0:
 	         $ce55 = wProfileName
 	SECTION: $ce58-$ce5b ($0004 bytes) ["Banking Variables"]
 	         $ce58 = wBankBackup
-	SECTION: $ce5c-$ce5e ($0003 bytes) ["GBC Variables"]
-	         $ce5c = wOuterReps
-	         $ce5d = wInnerReps
-	         $ce5e = wTitlePal
-	SECTION: $ce5f-$ce61 ($0003 bytes) ["Gameplay Variables"]
-	         $ce5f = wRollLine
-	         $ce60 = wInStaffRoll
-	         $ce61 = wBigModeTransfered
-	SECTION: $ce62-$ce62 ($0001 byte) ["SRAM Variables"]
-	         $ce62 = wTarget
-	EMPTY: $ce63-$cfff ($019d bytes)
-	TOTAL EMPTY: $019d bytes
+	SECTION: $ce5c-$ce5f ($0004 bytes) ["Gameplay Variables"]
+	         $ce5c = wRollLine
+	         $ce5d = wInStaffRoll
+	         $ce5e = wBigModeTransfered
+	         $ce5f = wGameOverIgnoreInput
+	SECTION: $ce60-$ce62 ($0003 bytes) ["GBC Variables"]
+	         $ce60 = wOuterReps
+	         $ce61 = wInnerReps
+	         $ce62 = wTitlePal
+	SECTION: $ce63-$ce63 ($0001 byte) ["SRAM Variables"]
+	         $ce63 = wTarget
+	EMPTY: $ce64-$cfff ($019c bytes)
+	TOTAL EMPTY: $019c bytes
 
 HRAM bank #0:
 	SECTION: $ff80-$ff9a ($001b bytes) ["High Field Variables"]
@@ -2897,7 +2900,7 @@ HRAM bank #0:
 
 SUMMARY:
 	ROM0: 14470 bytes used / 1914 free
-	ROMX: 64070 bytes used / 34234 free in 6 banks
+	ROMX: 64126 bytes used / 34178 free in 6 banks
 	SRAM: 1551 bytes used / 6641 free in 1 bank
-	WRAM0: 3683 bytes used / 413 free
+	WRAM0: 3684 bytes used / 412 free
 	HRAM: 124 bytes used / 3 free

@@ -26,6 +26,7 @@ INCLUDE "res/title_data.inc"
 SECTION "Title Variables", WRAM0
 wSelected::  ds 1
 wTitleMode:: ds 1
+wProfileName:: ds 3
 
 
 SECTION "Title Function Trampolines", ROM0
@@ -51,6 +52,15 @@ TitleVBlankHandler::
     call TitleVBlankHandlerB
     rst RSTRestoreBank
     jp EventLoop
+
+PersistLevel:
+    ld b, BANK_OTHER
+    rst RSTSwitchBank
+    ld a, [hl+]
+    ld [rSelectedStartLevel], a
+    ld a, [hl]
+    ld [rSelectedStartLevel+1], a
+    jp RSTRestoreBank
 
 DrawSpeedMain:
     ld b, BANK_OTHER
@@ -584,7 +594,7 @@ TitleVBlankHandlerB:
 
     ; PROFILE name.
 .profile
-    ld de, sDisabled
+    ld de, wProfileName
     ld hl, TITLE_MAIN_PROFILE
     ld bc, 3
     call UnsafeMemCopy
@@ -1051,10 +1061,9 @@ DecrementLevel:
     add hl, bc
     ld a, l
     ldh [hStartSpeed], a
-    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
-    ld [rSelectedStartLevel+1], a
+    call PersistLevel
     jp CheckLevelRange
 
 
@@ -1069,10 +1078,9 @@ IncrementLevel:
     add hl, bc
     ld a, l
     ldh [hStartSpeed], a
-    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
-    ld [rSelectedStartLevel+1], a
+    call PersistLevel
     jp CheckLevelRange
 
 
@@ -1082,11 +1090,9 @@ InitSpeedCurve:
     call GetStart
     ld a, l
     ldh [hStartSpeed], a
-    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
-    ld [rSelectedStartLevel+1], a
-    ret
+    jp PersistLevel
 
 
     ; Gets the end of a speed curve.
@@ -1163,11 +1169,10 @@ CheckLevelRange:
     jr nz, .notatend
     call GetStart
     ld a, l
-    ld [rSelectedStartLevel], a
     ldh [hStartSpeed], a
     ld a, h
-    ld [rSelectedStartLevel+1], a
     ldh [hStartSpeed+1], a
+    call PersistLevel
 
 .notatend
     ld de, -SCURVE_ENTRY_SIZE
@@ -1186,11 +1191,10 @@ CheckLevelRange:
     ld l, c
     add hl, de
     ld a, l
-    ld [rSelectedStartLevel], a
     ldh [hStartSpeed], a
     ld a, h
-    ld [rSelectedStartLevel+1], a
     ldh [hStartSpeed+1], a
+    call PersistLevel
 
 .notatstart
     ret

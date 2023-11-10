@@ -301,10 +301,7 @@ LevelUp::
     ld a, h
     ldh [hLevel+1], a
     call DoSpeedUp
-    call CheckSpecialLevelConditions
-    call SFXKill
-    ld a, SFX_RANKGM
-    jp SFXEnqueue
+    jp CheckSpecialLevelConditions
 
 .checknlevel
     ; Make wNLevel make sense.
@@ -331,6 +328,7 @@ LevelUp::
     jr nz, .checkspeedup
     ld a, $FF
     ldh [hRequiresLineClear], a
+    call SFXKill
     ld a, SFX_LEVELLOCK
     call SFXEnqueue
     jr .leveljinglemaybe
@@ -370,6 +368,7 @@ LevelUp::
     jr z, .checkspeedup
     ld a, $FF
     ldh [hRequiresLineClear], a
+    call SFXKill
     ld a, SFX_LEVELLOCK
     call SFXEnqueue
 
@@ -379,6 +378,7 @@ LevelUp::
     ldh a, [hCLevel+1]
     cp a, b
     jr z, .checkspeedup
+    call SFXKill
     ld a, SFX_LEVELUP
     call SFXEnqueue
 
@@ -556,8 +556,9 @@ CheckSpecialLevelConditions:
     ld a, $FF
     ldh [hRequiresLineClear], a
     ld [wNoMoreLocks], a
-    ld a, SFX_LEVELLOCK
     push bc
+    call SFXKill
+    ld a, SFX_LEVELLOCK
     call SFXEnqueue
     pop bc
 

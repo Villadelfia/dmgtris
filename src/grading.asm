@@ -173,39 +173,39 @@ sDMGTGrading:
     db 125, 10, 20, 40, 50 ; Grade 9   — frames/decay, single base, double base, triple base, tetris base
     db 80,  10, 20, 30, 40 ; Grade 8   — frames/decay, single base, double base, triple base, tetris base
     db 80,  10, 20, 30, 40 ; Grade 7   — frames/decay, single base, double base, triple base, tetris base
-    db 50,  10, 20, 30, 40 ; Grade 6   — frames/decay, single base, double base, triple base, tetris base
-    db 45,   5, 20, 30, 40 ; Grade 5   — frames/decay, single base, double base, triple base, tetris base
-    db 45,   5, 20, 30, 40 ; Grade 4   — frames/decay, single base, double base, triple base, tetris base
-    db 45,   5, 20, 30, 40 ; Grade 3   — frames/decay, single base, double base, triple base, tetris base
-    db 40,   5, 20, 20, 30 ; Grade 2   — frames/decay, single base, double base, triple base, tetris base
-    db 40,   5, 20, 20, 30 ; Grade 1   — frames/decay, single base, double base, triple base, tetris base
-    db 40,   2, 20, 20, 30 ; Grade S1  — frames/decay, single base, double base, triple base, tetris base
-    db 40,   2, 20, 20, 30 ; Grade S2  — frames/decay, single base, double base, triple base, tetris base
-    db 40,   2, 20, 20, 30 ; Grade S3  — frames/decay, single base, double base, triple base, tetris base
-    db 30,   2, 20, 20, 30 ; Grade S4  — frames/decay, single base, double base, triple base, tetris base
-    db 30,   2, 15, 20, 30 ; Grade S5  — frames/decay, single base, double base, triple base, tetris base
-    db 30,   2, 15, 20, 30 ; Grade S6  — frames/decay, single base, double base, triple base, tetris base
+    db 40,  10, 20, 30, 40 ; Grade 6   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   5, 20, 30, 40 ; Grade 5   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   5, 20, 30, 40 ; Grade 4   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   5, 20, 30, 40 ; Grade 3   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   2, 20, 20, 30 ; Grade 2   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   2, 15, 20, 30 ; Grade 1   — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S1  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S2  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S3  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S4  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S5  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S6  — frames/decay, single base, double base, triple base, tetris base
     db 20,   2, 15, 20, 30 ; Grade S7  — frames/decay, single base, double base, triple base, tetris base
     db 20,   2, 15, 20, 30 ; Grade S8  — frames/decay, single base, double base, triple base, tetris base
-    db 20,   2, 15, 20, 30 ; Grade S9  — frames/decay, single base, double base, triple base, tetris base
-    db 20,   2, 15, 20, 30 ; Grade S10 — frames/decay, single base, double base, triple base, tetris base
-    db 20,   2, 15, 20, 30 ; Grade S11 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 20, 30 ; Grade S9  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 20, 30 ; Grade S10 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 20, 30 ; Grade S11 — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 15, 20, 30 ; Grade S12 — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 20, 30 ; Grade S13 — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 15, 30 ; Grade m1  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 15, 30 ; Grade m2  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 15, 30 ; Grade m3  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 15, 30 ; Grade m4  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade S13 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m1  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m2  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m3  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m4  — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 12, 15, 30 ; Grade m5  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 12, 15, 30 ; Grade m6  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 12, 15, 30 ; Grade m7  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 15, 30 ; Grade m6  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 15, 30 ; Grade m7  — frames/decay, single base, double base, triple base, tetris base
     db 10,   2, 12, 15, 30 ; Grade m8  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 15, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 13, 30 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2,  8, 10, 20 ; Grade MM  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2,  8, 13, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2,  8, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2,  8, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    1,  8, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    1,  8, 13, 20 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
+    db 4,    1,  4, 10, 20 ; Grade MM  — frames/decay, single base, double base, triple base, tetris base
                            ; No entry for GM. We're done there.
 
 sDMGTGaugeLUT:
@@ -531,23 +531,15 @@ UpdateGradeDMGT::
 .levelmult
     ld a, [hCLevel+CLEVEL_THOUSANDS] ; thousands
     cp a, 1
-    jr nc, .mult5
+    jr nc, .mult4
     ld a, [hCLevel+CLEVEL_HUNDREDS] ; hundreds
-    cp a, 7
+    cp a, 9
     jr nc, .mult4
     cp a, 5
     jr nc, .mult3
     cp a, 2
     jr nc, .mult2
     jr .mult1
-
-.mult5
-    ld a, d
-    add a, d
-    add a, d
-    add a, d
-    add a, d
-    jr .processgrade
 
 .mult4
     ld a, d

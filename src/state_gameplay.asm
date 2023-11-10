@@ -117,6 +117,9 @@ SwitchToGameplayB:
     ld a, -2
     ldh [rSCX], a
 
+    ; Screen squish for title.
+    call EnableScreenSquish
+
     ; Clear OAM.
     call ClearOAM
     call SetNumberSpritePositions
@@ -890,6 +893,9 @@ SwitchToGameplayBigB:
     ; Zero out SCX.
     ld a, -2
     ldh [rSCX], a
+
+    ; Screen squish for title.
+    call EnableScreenSquish
 
     ; Clear OAM.
     call ClearOAM

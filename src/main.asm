@@ -94,7 +94,6 @@ Main::
     ; Other initialization.
     call RestoreSRAM
     call TimeInit
-    call IntrInit
     call InputInit
     call SFXInit
     call BankingInit
@@ -102,10 +101,7 @@ Main::
     xor a, a
     ldh [hMode], a
 
-    ; Set up the interrupt handlers.
-    call InitializeLCDCInterrupt
-
-    ; Switch to gameplay state.
+    ; Switch to title state.
     call SwitchToTitle
 
 

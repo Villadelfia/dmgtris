@@ -22,6 +22,23 @@ DEF SRAM_ASM EQU 1
 INCLUDE "globals.asm"
 
 
+MACRO PROFILE
+UNION
+rProfileData\1:: ds 64
+NEXTU
+rProfileName\1:: ds 3
+rSwapABState\1:: ds 1
+rRNGModeState\1:: ds 1
+rRotModeState\1:: ds 1
+rDropModeState\1:: ds 1
+rSpeedCurveState\1:: ds 1
+rAlways20GState\1:: ds 1
+rSelectedStartLevel\1:: ds 2
+rUnused\1:: ds (64-11)
+ENDU
+ENDM
+
+
 SECTION "Persistent Globals", SRAM
 rCheck:: ds 6
 rLastProfile:: ds 1
@@ -38,45 +55,16 @@ rAlways20GState:: ds 1
 rSelectedStartLevel:: ds 2
 rUnused:: ds (64-11)
 ENDU
-UNION
-rProfileData0:: ds 64
-NEXTU
-rProfileName0:: ds 3
-rSwapABState0:: ds 1
-rRNGModeState0:: ds 1
-rRotModeState0:: ds 1
-rDropModeState0:: ds 1
-rSpeedCurveState0:: ds 1
-rAlways20GState0:: ds 1
-rSelectedStartLevel0:: ds 2
-rUnused0:: ds (64-11)
-ENDU
-UNION
-rProfileData1:: ds 64
-NEXTU
-rProfileName1:: ds 3
-rSwapABState1:: ds 1
-rRNGModeState1:: ds 1
-rRotModeState1:: ds 1
-rDropModeState1:: ds 1
-rSpeedCurveState1:: ds 1
-rAlways20GState1:: ds 1
-rSelectedStartLevel1:: ds 2
-rUnused1:: ds (64-11)
-ENDU
-UNION
-rProfileData2:: ds 64
-NEXTU
-rProfileName2:: ds 3
-rSwapABState2:: ds 1
-rRNGModeState2:: ds 1
-rRotModeState2:: ds 1
-rDropModeState2:: ds 1
-rSpeedCurveState2:: ds 1
-rAlways20GState2:: ds 1
-rSelectedStartLevel2:: ds 2
-rUnused2:: ds (64-11)
-ENDU
+    PROFILE 0
+    PROFILE 1
+    PROFILE 2
+    PROFILE 3
+    PROFILE 4
+    PROFILE 5
+    PROFILE 6
+    PROFILE 7
+    PROFILE 8
+    PROFILE 9
 
 SECTION "SRAM Variables", WRAM0
 wTarget:: ds 1
@@ -102,7 +90,7 @@ RestoreSRAM::
     cp a, 0
     jp nz, InitializeSRAM
     ld a, [rCheck+5]
-    cp a, 0
+    cp a, 1
     jp nz, InitializeSRAM
 
     ; SRAM is initialized and for this build, so we can load the data.
@@ -232,7 +220,7 @@ InitializeSRAM:
     ld [rCheck+3], a
     ld a, 0
     ld [rCheck+4], a
-    ld a, 0
+    ld a, 1
     ld [rCheck+5], a
 
     xor a, a
@@ -297,16 +285,58 @@ InitializeSRAM:
     ld de, rProfileData
     ld bc, 64
     call UnsafeMemCopy
+    ld hl, rProfileData3
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    ld hl, rProfileData4
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    ld hl, rProfileData5
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    ld hl, rProfileData6
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    ld hl, rProfileData7
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    ld hl, rProfileData8
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    ld hl, rProfileData9
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
     ld a, "1"
     ld [rProfileName1+2], a
     ld a, "2"
     ld [rProfileName2+2], a
+    ld a, "3"
+    ld [rProfileName3+2], a
+    ld a, "4"
+    ld [rProfileName4+2], a
+    ld a, "5"
+    ld [rProfileName5+2], a
+    ld a, "6"
+    ld [rProfileName6+2], a
+    ld a, "7"
+    ld [rProfileName7+2], a
+    ld a, "8"
+    ld [rProfileName8+2], a
+    ld a, "9"
+    ld [rProfileName9+2], a
     ret
 
 NextProfile::
     ld a, [rLastProfile]
     inc a
-    cp a, 3
+    cp a, 10
     jr nz, .update
     xor a, a
 .update
@@ -323,6 +353,20 @@ ChangeProfile::
     jr z, .second
     cp a, 2
     jr z, .third
+    cp a, 3
+    jr z, .fourth
+    cp a, 4
+    jr z, .fifth
+    cp a, 5
+    jr z, .sixth
+    cp a, 6
+    jr z, .seventh
+    cp a, 7
+    jr z, .eighth
+    cp a, 8
+    jr z, .ninth
+    cp a, 9
+    jr z, .tenth
     ret
 
 .first
@@ -346,6 +390,55 @@ ChangeProfile::
     call UnsafeMemCopy
     jr .restore
 
+.fourth
+    ld hl, rProfileData3
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    jr .restore
+
+.fifth
+    ld hl, rProfileData4
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    jr .restore
+
+.sixth
+    ld hl, rProfileData5
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    jr .restore
+
+.seventh
+    ld hl, rProfileData6
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    jr .restore
+
+.eighth
+    ld hl, rProfileData7
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    jr .restore
+
+.ninth
+    ld hl, rProfileData8
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    jr .restore
+
+.tenth
+    ld hl, rProfileData9
+    ld de, rProfileData
+    ld bc, 64
+    call UnsafeMemCopy
+    jr .restore
+
 .restore
     ld a, [wTarget]
     ld [rLastProfile], a
@@ -355,6 +448,20 @@ ChangeProfile::
     jr z, .lsecond
     cp a, 2
     jr z, .lthird
+    cp a, 3
+    jr z, .lfourth
+    cp a, 4
+    jr z, .lfifth
+    cp a, 5
+    jr z, .lsixth
+    cp a, 6
+    jr z, .lseventh
+    cp a, 7
+    jr z, .leighth
+    cp a, 8
+    jr z, .lninth
+    cp a, 9
+    jp z, .ltenth
     ret
 
 .lfirst
@@ -374,6 +481,55 @@ ChangeProfile::
 .lthird
     ld hl, rProfileData
     ld de, rProfileData2
+    ld bc, 64
+    call UnsafeMemCopy
+    jp TrustedLoad
+
+.lfourth
+    ld hl, rProfileData
+    ld de, rProfileData3
+    ld bc, 64
+    call UnsafeMemCopy
+    jp TrustedLoad
+
+.lfifth
+    ld hl, rProfileData
+    ld de, rProfileData4
+    ld bc, 64
+    call UnsafeMemCopy
+    jp TrustedLoad
+
+.lsixth
+    ld hl, rProfileData
+    ld de, rProfileData5
+    ld bc, 64
+    call UnsafeMemCopy
+    jp TrustedLoad
+
+.lseventh
+    ld hl, rProfileData
+    ld de, rProfileData6
+    ld bc, 64
+    call UnsafeMemCopy
+    jp TrustedLoad
+
+.leighth
+    ld hl, rProfileData
+    ld de, rProfileData7
+    ld bc, 64
+    call UnsafeMemCopy
+    jp TrustedLoad
+
+.lninth
+    ld hl, rProfileData
+    ld de, rProfileData8
+    ld bc, 64
+    call UnsafeMemCopy
+    jp TrustedLoad
+
+.ltenth
+    ld hl, rProfileData
+    ld de, rProfileData9
     ld bc, 64
     call UnsafeMemCopy
     jp TrustedLoad

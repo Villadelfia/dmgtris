@@ -223,6 +223,8 @@ GamePlayEventLoopHandlerB::
     call SFXKill
     ld a, SFX_READYGO
     call SFXEnqueue
+    xor a, a
+    ld [wReturnToSmall], a
     ldh a, [hModeCounter]
 .firstleadyiterskip
     dec a
@@ -1002,6 +1004,8 @@ GamePlayBigEventLoopHandlerB:
     call SFXKill
     ld a, SFX_READYGO
     call SFXEnqueue
+    xor a, a
+    ld [wReturnToSmall], a
     ldh a, [hModeCounter]
 .firstleadyiterskip
     dec a
@@ -1397,6 +1401,9 @@ GamePlayBigEventLoopHandlerB:
     ldh a, [hAState]
     cp a, 10 ; 10 frame hold
     jr nz, .noretry
+    ld a, [wReturnToSmall]
+    cp a, $FF
+    jr z, .gosmall
     call CheckAndAddHiscore
     call RNGInit
     call ScoreInit
@@ -1411,6 +1418,23 @@ GamePlayBigEventLoopHandlerB:
     ld a, LEADY_TIME
     ldh [hModeCounter], a
     jp .drawStaticInfo
+
+.gosmall
+    call CheckAndAddHiscore
+    call RNGInit
+    call ScoreInit
+    call LevelInit
+    call GoSmall
+    call GradeInit
+    xor a, a
+    ldh [hHoldSpent], a
+    ld [wInStaffRoll], a
+    ld a, MODE_LEADY
+    ldh [hMode], a
+    ld a, LEADY_TIME
+    ldh [hModeCounter], a
+    jp .drawStaticInfo
+
 
     ; Quit
 .noretry

@@ -40,6 +40,7 @@ wDelayState: ds 1
 wLeftSlamTimer: ds 1
 wRightSlamTimer: ds 1
 wMovementLastFrame: ds 1
+wReturnToSmall:: ds 1
 
 
 SECTION "High Field Variables", HRAM
@@ -238,6 +239,8 @@ FromBackupField::
     jp UnsafeMemCopy
 
 GoBig::
+    ld a, $FF
+    ld [wReturnToSmall], a
     ld hl, wWideBlittedField
     ld bc, 10*22
     ld d, TILE_BLANK
@@ -2511,6 +2514,33 @@ BigFieldClear::
         call UnsafeMemSet
         DEF row += 1
     ENDR
+    ret
+
+
+GoSmall::
+    xor a, a
+    ldh [hBravo], a
+    ldh [hLineClearCt], a
+    ld [wMovementLastFrame], a
+    ld a, 1
+    ldh [hComboCt], a
+    ld hl, wField
+    ld bc, 10*24
+    ld d, TILE_BLANK
+    call UnsafeMemSet
+    ld hl, wShadowField
+    ld bc, 14*26
+    ld d, $FF
+    call UnsafeMemSet
+    ld hl, wPreShadowField
+    ld bc, 14*2
+    ld d, $FF
+    call UnsafeMemSet
+    ld a, SLAM_ANIMATION_LEN
+    ld [wLeftSlamTimer], a
+    ld [wRightSlamTimer], a
+    ld a, STATE_GAMEPLAY
+    ldh [hGameState], a
     ret
 
 

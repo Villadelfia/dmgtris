@@ -23,21 +23,24 @@ INCLUDE "globals.asm"
 
 
 SECTION "Grade Variables", WRAM0
-wDecayRate:            ds 1
-wGradePoints:          ds 1
-wInternalGrade:        ds 1
-wDisplayedGrade::      ds 1
-wEffectTimer::         ds 1
-wRankingDisqualified:: ds 1
-wDecayCounter:         ds 1
-wGradeGauge:           ds 1
-wSMult:                ds 1
-wDMult:                ds 1
-wTMult:                ds 1
-wSRate:                ds 1
-wDRate:                ds 1
-wTRate:                ds 1
-wQRate:                ds 1
+wDecayRate:                     ds 1
+wGradePoints:                   ds 1
+wInternalGrade:                 ds 1
+wDisplayedGrade::               ds 1
+wEffectTimer::                  ds 1
+wRankingDisqualified::          ds 1
+wDecayCounter:                  ds 1
+wGradeGauge:                    ds 1
+wSMult:                         ds 1
+wDMult:                         ds 1
+wTMult:                         ds 1
+wSRate:                         ds 1
+wDRate:                         ds 1
+wTRate:                         ds 1
+wQRate:                         ds 1
+wTGM1level300RequirementMet:    ds 1
+wTGM1level500RequirementMet:    ds 1
+wTGM1level999RequirementMet:    ds 1
 
 
 SECTION "Grading Data", ROM0
@@ -238,6 +241,9 @@ GradeInit::
     ld [wEffectTimer], a
     ld [wDecayCounter], a
     ld [wGradeGauge], a
+    ld [wTGM1level300RequirementMet], a
+    ld [wTGM1level500RequirementMet], a
+    ld [wTGM1level999RequirementMet], a
 
     ; Most modes begin ungraded.
     ld a, GRADE_NONE
@@ -683,9 +689,14 @@ UpdateGradeTGM1:
     cp a, GRADE_GM
     ret z
 
+    ; Bail if we didn't make the 999 check.
+    ld a, [wTGM1level999RequirementMet]
+    cp a, 0
+    ret nz
+
     ; Skip to GM check if already S9.
     cp a, GRADE_S9
-    jr nc, .maybegm
+    jp nc, .check999
 
 .trygradeup
     ; Otherwise, check if we can increase the grade.
@@ -724,7 +735,7 @@ UpdateGradeTGM1:
     ; Return if C < E. Otherwise increase the grade.
     ld a, c
     cp a, e
-    ret c
+    jr c, .check300
 
 .increasegrade
     ; Add 1 to the grade.
@@ -748,14 +759,117 @@ UpdateGradeTGM1:
     ; Loop and see if we can increment more grades.
     ld a, [wDisplayedGrade]
     cp a, GRADE_S9 ; Don't go past S9.
-    ret z
-    jr .trygradeup
+    jr nz, .trygradeup
 
-.maybegm
-    ; Level needs to be 1000 or greater.
-    ld a, [hCLevel+CLEVEL_THOUSANDS] ; Level, thousands digit.
-    cp a, 1
+
+.check300
+    ; Are we at level 300?
+    ld a, [hCLevel+CLEVEL_HUNDREDS]
+    cp a, 3
     ret c
+
+    ; Have we judged the requirement before?
+    ld a, [wTGM1level300RequirementMet]
+    cp a, 0
+    jr nz, .check500
+
+    ; Rank?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_1
+    jr c, .fail300
+
+    ; Time?
+    ld b, 4
+    ld c, 15
+    call CheckTorikan
+    cp a, $FF
+    jr nz, .fail300
+
+.success300
+    ld a, $FF
+    ld [wTGM1level300RequirementMet], a
+    jr .check500
+
+.fail300
+    ld a, $01
+    ld [wTGM1level300RequirementMet], a
+    jr .check500
+
+
+.check500
+    ; Are we at level 500?
+    ld a, [hCLevel+CLEVEL_HUNDREDS]
+    cp a, 5
+    ret c
+
+    ; Have we judged the requirement before?
+    ld a, [wTGM1level500RequirementMet]
+    cp a, 0
+    jr nz, .check999
+
+    ; Rank?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_S4
+    jr c, .fail500
+
+    ; Time?
+    ld b, 7
+    ld c, 30
+    call CheckTorikan
+    cp a, $FF
+    jr nz, .fail500
+
+.success500
+    ld a, $FF
+    ld [wTGM1level500RequirementMet], a
+    jr .check999
+
+.fail500
+    ld a, $01
+    ld [wTGM1level500RequirementMet], a
+    jr .check999
+
+
+.check999
+    ; Level needs to be 999.
+    ld a, [hCLevel+CLEVEL_HUNDREDS]
+    cp a, 9
+    ret nz
+    ld a, [hCLevel+CLEVEL_TENS]
+    cp a, 9
+    ret nz
+    ld a, [hCLevel+CLEVEL_ONES]
+    cp a, 9
+    ret nz
+
+    ; Have we judged the requirement before?
+    ld a, [wTGM1level999RequirementMet]
+    cp a, 0
+    ret nz
+
+    ; Did both other checks succeed?
+    ld a, [wTGM1level300RequirementMet]
+    cp a, $FF
+    jr nz, .fail999
+    ld a, [wTGM1level500RequirementMet]
+    cp a, $FF
+    jr nz, .fail999
+
+    ; Rank? (This is technically slightly wrong but it's nearly impossible to miss the real requirement but make this one, 6000 points.)
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_S9
+    jr c, .fail999
+
+    ; Time?
+    ld b, 13
+    ld c, 30
+    call CheckTorikan
+    cp a, $FF
+    jr nz, .fail999
+
+.success999
+    ld a, $FF
+    ld [wTGM1level999RequirementMet], a
 
     ; Set the grade to GM
     ld a, GRADE_GM
@@ -771,6 +885,11 @@ UpdateGradeTGM1:
     ld [wEffectTimer], a
 
     ; Return
+    ret
+
+.fail999
+    ld a, $01
+    ld [wTGM1level999RequirementMet], a
     ret
 
 

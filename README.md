@@ -91,10 +91,10 @@ ScoreIncrement points are then awarded.
 
 ## Controls
 ### Menu
-- A/B/Start — Start the game
+- A/B/Start — Navigate the menus
 - Up/Down — Change which option is selected
 - Left/Right — Change the value of the option
-- Select — Hold when pressing A/B/Start to begin the game in big mode
+- Select — Switch profiles while on the main menu
 
 ### Gameplay
 - A — Rotate 1

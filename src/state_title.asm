@@ -346,6 +346,10 @@ SwitchTitleMode:
     ret
 
 .switchCredits
+    ld de, sTitleScreenCreditsMap
+    ld hl, $9800
+    ld bc, sTitleScreenCreditsMapEnd - sTitleScreenCreditsMap
+    call UnsafeMemCopy
     call GBCTitleInit
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
     ldh [rLCDC], a
@@ -469,7 +473,20 @@ TitleEventLoopHandlerB:
     ret
 
 .eventLoopCredits
+    ldh a, [hAState]
+    cp a, 1
+    jp z, .quitcredits
+    ldh a, [hBState]
+    cp a, 1
+    jp z, .quitcredits
+    ldh a, [hStartState]
+    cp a, 1
+    jp z, .quitcredits
     ret
+
+.quitcredits
+    ld a, TITLE_MAIN
+    jp SwitchTitleMode
 
 
     ; VBLank handlers for title screen.
@@ -772,10 +789,14 @@ MainHandleA:
     no_jump
     jp .tosettings
     no_jump
-    no_jump
+    jp .tocredits
 
 .tosettings
     ld a, TITLE_SETTINGS
+    jp SwitchTitleMode
+
+.tocredits
+    ld a, TITLE_CREDITS
     jp SwitchTitleMode
 
 

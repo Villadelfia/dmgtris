@@ -335,7 +335,26 @@ GBCTitleProcess::
     ret
 
 .eventLoopCredits
-    ret
+    ; Palette for the title?
+    ldh a, [hFrameCtr]
+    and $0F
+    cp a, $01
+    jr nz, .noinc2
+    ld a, [wTitlePal]
+    inc a
+    cp a, $07
+    jr c, .nores2
+    ld a, $00
+.nores2
+    ld [wTitlePal], a
+.noinc2
+
+    ; Set the palette for the title.
+    ld a, [wTitlePal]
+    ld d, a
+    ld hl, wShadowTileAttrs + (0*32)
+    ld bc, (1*32)
+    jp UnsafeMemSet
 
 
     ; Additional GBC effects for the gameplay process state.

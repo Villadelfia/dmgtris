@@ -113,9 +113,7 @@ ScoreIncrement points are then awarded.
 
 
 ## Screenshots
-![DMG Title Screen](https://villadelfia.org/i/Yrn98MBz.png)
 ![DMG Gameplay](https://villadelfia.org/i/xAAHfqDw.png)
-![GBC Title Screen](https://villadelfia.org/i/3BWaT6mB.png)
 ![GBC Gameplay](https://villadelfia.org/i/Hj2P8Pk5.png)
 
 

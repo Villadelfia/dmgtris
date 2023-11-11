@@ -43,7 +43,7 @@ SECTION "Persistent Globals", SRAM
 rCheck:: ds 6
 rLastProfile:: ds 1
 UNION
-rProfileData:: ds 64
+rProfileData:: ds PROFILE_SIZE
 NEXTU
 rProfileName:: ds 3
 rSwapABState:: ds 1
@@ -53,7 +53,7 @@ rDropModeState:: ds 1
 rSpeedCurveState:: ds 1
 rAlways20GState:: ds 1
 rSelectedStartLevel:: ds 2
-rUnused:: ds (64-11)
+rUnused:: ds (PROFILE_SIZE - 11) ; 11 = sum of the above
 ENDU
     PROFILE 0
     PROFILE 1
@@ -65,13 +65,13 @@ ENDU
     PROFILE 7
     PROFILE 8
     PROFILE 9
-rScoreTableDMGT:: ds (10 * (8+3+1))
-rScoreTableTGM1:: ds (10 * (8+3+1))
-rScoreTableTGM3:: ds (10 * (8+3+1))
-rScoreTableDEAT:: ds (10 * (8+3+1))
-rScoreTableSHIR:: ds (10 * (8+3+1))
-rScoreTableCHIL:: ds (10 * (8+3+1))
-rScoreTableMYCO:: ds (10 * (8+3+1))
+rScoreTableDMGT:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
+rScoreTableTGM1:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
+rScoreTableTGM3:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
+rScoreTableDEAT:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
+rScoreTableSHIR:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
+rScoreTableCHIL:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
+rScoreTableMYCO:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
 
 
 SECTION "SRAM Variables", WRAM0
@@ -98,7 +98,7 @@ RestoreSRAM::
     cp a, 0
     jp nz, InitializeSRAM
     ld a, [rCheck+5]
-    cp a, 2
+    cp a, 3
     jp nz, InitializeSRAM
 
     ; SRAM is initialized and for this build, so we can load the data.
@@ -228,7 +228,7 @@ InitializeSRAM:
     ld [rCheck+3], a
     ld a, 0
     ld [rCheck+4], a
-    ld a, 2
+    ld a, 3
     ld [rCheck+5], a
 
     xor a, a
@@ -343,31 +343,31 @@ InitializeSRAM:
     ; Set the default scores.
     ld hl, rScoreTableDMGT
     ld de, sHiscoreDefaultData
-    ld bc, (10 * (8+3+1))
+    ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
     call UnsafeMemCopy
     ld hl, rScoreTableTGM1
     ld de, sHiscoreDefaultData
-    ld bc, (10 * (8+3+1))
+    ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
     call UnsafeMemCopy
     ld hl, rScoreTableTGM3
     ld de, sHiscoreDefaultData
-    ld bc, (10 * (8+3+1))
+    ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
     call UnsafeMemCopy
     ld hl, rScoreTableDEAT
     ld de, sHiscoreDefaultData
-    ld bc, (10 * (8+3+1))
+    ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
     call UnsafeMemCopy
     ld hl, rScoreTableSHIR
     ld de, sHiscoreDefaultData
-    ld bc, (10 * (8+3+1))
+    ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
     call UnsafeMemCopy
     ld hl, rScoreTableCHIL
     ld de, sHiscoreDefaultData
-    ld bc, (10 * (8+3+1))
+    ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
     call UnsafeMemCopy
     ld hl, rScoreTableMYCO
     ld de, sHiscoreDefaultData
-    ld bc, (10 * (8+3+1))
+    ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
     jp UnsafeMemCopy
 
 NextProfile::

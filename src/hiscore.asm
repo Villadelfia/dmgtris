@@ -24,21 +24,31 @@ INCLUDE "globals.asm"
 
 SECTION "Hi Score Data", ROM0
 sHiscoreDefaultData::
-    db 0, 0, 0, 0, 0, 0, 0, 0, "DMG", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "TRI", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "SDM", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "GTR", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "ISD", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "MGT", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "RIS", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "DMG", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "TRI", GRADE_NONE
-    db 0, 0, 0, 0, 0, 0, 0, 0, "SDM", GRADE_NONE
+    db 0, 0, 0, 0, 0, 0, 0, 0, "DMG", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "TRI", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "SDM", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "GTR", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "ISD", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "MGT", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "RIS", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "DMG", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "TRI", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 0, 0, 0, "SDM", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
+    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 
 SECTION "Hi Score Variables", WRAM0
 wTargetHSTable:: ds 2
-wWorkingCopy:: ds (11*(8+3+1))
+wWorkingCopy:: ds ((HISCORE_ENTRY_COUNT+1)*(HISCORE_ENTRY_SIZE))
 
 
 SECTION "Hi Score Functions", ROM0

@@ -341,30 +341,63 @@ InitializeSRAM:
     ld [rProfileName9+2], a
 
     ; Set the default scores.
+ResetScores::
+    ld a, [wSelected]
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .dmgt
+    jp .tgm1
+    jp .tgm3
+    jp .deat
+    jp .shir
+    jp .chil
+    jp .myco
+
+.dmgt
     ld hl, rScoreTableDMGT
     ld de, sHiscoreDefaultData
     ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
-    call UnsafeMemCopy
+    jp UnsafeMemCopy
+
+.tgm1
     ld hl, rScoreTableTGM1
     ld de, sHiscoreDefaultData
     ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
-    call UnsafeMemCopy
+    jp UnsafeMemCopy
+
+.tgm3
     ld hl, rScoreTableTGM3
     ld de, sHiscoreDefaultData
     ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
-    call UnsafeMemCopy
+    jp UnsafeMemCopy
+
+.deat
     ld hl, rScoreTableDEAT
     ld de, sHiscoreDefaultData
     ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
-    call UnsafeMemCopy
+    jp UnsafeMemCopy
+
+.shir
     ld hl, rScoreTableSHIR
     ld de, sHiscoreDefaultData
     ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
-    call UnsafeMemCopy
+    jp UnsafeMemCopy
+
+.chil
     ld hl, rScoreTableCHIL
     ld de, sHiscoreDefaultData
     ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
-    call UnsafeMemCopy
+    jp UnsafeMemCopy
+
+.myco
     ld hl, rScoreTableMYCO
     ld de, sHiscoreDefaultData
     ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
@@ -619,6 +652,5 @@ ResetProfile::
     ld [rSelectedStartLevel], a
     ld [rSelectedStartLevel+1], a
     ret
-
 
 ENDC

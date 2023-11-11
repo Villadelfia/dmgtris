@@ -344,10 +344,14 @@ SwitchTitleMode:
     ret
 
 .switchRecords
+    ld de, sTitleScreenRecordsMap
+    ld hl, $9800
+    ld bc, sTitleScreenRecordsMapEnd - sTitleScreenRecordsMap
+    call UnsafeMemCopy
     call GBCTitleInit
-    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
-    ldh [rLCDC], a
-    ret
+    xor a, a
+    ldh [hSelectState], a
+    jp RenderScores
 
 .switchCredits
     ld de, sTitleScreenCreditsMap
@@ -536,7 +540,24 @@ TitleEventLoopHandlerB:
     jp SettingsHandleRight
 
 .eventLoopRecords
-    ret
+    ; B?
+    ldh a, [hBState]
+    cp a, 1
+    jp z, .quitrecords
+
+    ; L/R?
+    ldh a, [hLeftState]
+    cp a, 1
+    jp z, RecordsHandleLeft
+    ldh a, [hRightState]
+    cp a, 1
+    jp z, RecordsHandleRight
+
+    ; Select
+    ldh a, [hSelectState]
+    cp a, 255 ; Max hold duraction
+    ret nz
+    jp RecordsHandleSelect
 
 .eventLoopCredits
     ldh a, [hAState]
@@ -551,6 +572,7 @@ TitleEventLoopHandlerB:
     ret
 
 .quitcredits
+.quitrecords
     ld a, TITLE_MAIN
     jp SwitchTitleMode
 
@@ -889,7 +911,7 @@ MainHandleA:
     jp SwitchToGameplayBig
     jp .toprofile
     jp .tosettings
-    no_jump
+    jp .torecords
     jp .tocredits
 
 .tosettings
@@ -902,6 +924,10 @@ MainHandleA:
 
 .toprofile
     ld a, TITLE_PROFILE
+    jp SwitchTitleMode
+
+.torecords
+    ld a, TITLE_RECORDS
     jp SwitchTitleMode
 
 
@@ -1493,6 +1519,171 @@ CheckLevelRange:
 .notatstart
     ret
 
+RecordsHandleLeft:
+    xor a, a
+    ldh [hSelectState], a
+    ld a, [wSelected]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wSelected], a
+    jp RenderScores
+:   ld a, SCURVE_COUNT-1
+    ld [wSelected], a
+    jp RenderScores
+
+RecordsHandleRight:
+    xor a, a
+    ldh [hSelectState], a
+    ld a, [wSelected]
+    cp a, SCURVE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wSelected], a
+    jp RenderScores
+:   xor a, a
+    ld [wSelected], a
+    jp RenderScores
+
+RecordsHandleSelect:
+    xor a, a
+    ldh [hSelectState], a
+    call ResetScores
+    jp RenderScores
+
+RenderScores:
+    ; Turn the screen off if it's on.
+    ldh a, [rLCDC]
+    and LCDCF_ON
+    jr z, :+ ; Screen is already off.
+    wait_vram
+    xor a, a
+    ldh [rLCDC], a
+
+    ; Draw the mode.
+:   ld b, 0
+    ld a, [wSelected]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sCURVEMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_RECORDS_MODE
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Get the correct speed curve.
+    ld a, [wSelected]
+    call InitTargetHSTable
+
+    ; Start of table is at HL. Put it in DE.
+    ld d, h
+    ld e, l
+
+    ld hl, TITLE_RECORDS_SCORE_BASE+4
+
+    REPT 10
+        ; Render score.
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+
+        ; Jump back to Name.
+        ld bc, -12
+        add hl, bc
+
+        ; Render it.
+        ld a, [de]
+        inc de
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        ld [hl+], a
+
+        ; Jump to tells.
+        ld bc, 10
+        add hl, bc
+
+        ; Render them.
+        ld a, [de]
+        inc de
+        cp a, GRADE_NONE
+        jr nz, .grade\@
+.nograde\@
+        ld a, TILE_BLANK
+        ld [hl+], a
+        jr .postgrade\@
+.grade\@
+        add a, TITLE_RECORDS_GRADE_BASE
+        ld [hl+], a
+.postgrade\@
+        ld a, [de]
+        inc de
+        add a, TITLE_RECORDS_RNG_BASE
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, TITLE_RECORDS_ROT_BASE
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, TITLE_RECORDS_DROP_BASE
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, TITLE_RECORDS_HIG_BASE
+        ld [hl+], a
+
+        ; Jump to next line.
+        push hl
+        ld h, d
+        ld l, e
+        ld bc, 16
+        add hl, bc
+        ld d, h
+        ld e, l
+        pop hl
+        ld bc, 18
+        add hl, bc
+    ENDR
+
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
+    ldh [rLCDC], a
+    ret
 
 
 ENDC

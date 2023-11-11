@@ -16,6 +16,7 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - Invisible rolls, big mode, including big mode rolls, bone pieces, and even torikans!
 - Grading systems that are inspired by, but do not exactly mimic, those in the TGM series of games in many of the speed curves.
 - A challenging final challenge awaits you at the end of all the finite modes.
+- High scores.
 
 
 ## Playing
@@ -94,7 +95,7 @@ ScoreIncrement points are then awarded.
 - A/B/Start — Navigate the menus
 - Up/Down — Change which option is selected
 - Left/Right — Change the value of the option
-- Select — Switch profiles while on the main menu
+- Select — Switch profiles while on the main menu, hold for 5 seconds to wipe the score table currently displayed when on the records screen.
 
 ### Gameplay
 - A — Rotate 1

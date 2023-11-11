@@ -1402,7 +1402,7 @@ FieldProcess::
 .wantleft
     ldh a, [hCurrentPieceX]
     cp a, 0
-    jr z, .wantright
+    jr z, .precheckright
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
@@ -1420,6 +1420,11 @@ FieldProcess::
     dec a
     ldh [hWantX], a
     jr .trymove
+
+.precheckright
+    ldh a, [hRightState]
+    cp a, 0
+    jr z, .nomove
 
     ; Do we want to move right?
 .wantright
@@ -3700,7 +3705,7 @@ BigFieldProcess::
 .wantleft
     ldh a, [hCurrentPieceX]
     cp a, 0
-    jr z, .wantright
+    jr z, .precheckright
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
@@ -3718,6 +3723,11 @@ BigFieldProcess::
     dec a
     ldh [hWantX], a
     jr .trymove
+
+.precheckright
+    ldh a, [hRightState]
+    cp a, 0
+    jr z, .nomove
 
     ; Do we want to move right?
 .wantright

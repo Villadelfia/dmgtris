@@ -1338,8 +1338,8 @@ sTitleTiles::
     DB $50,$50,$20,$20,$24,$24,$00,$00
     DB $40,$40,$C0,$C0,$40,$40,$40,$40
     DB $40,$40,$40,$40,$E4,$E4,$00,$00
-    DB $44,$44,$AA,$AA,$AA,$AA,$AA,$AA
-    DB $AA,$AA,$AA,$AA,$44,$44,$00,$00
+    DB $44,$44,$AC,$AC,$A4,$A4,$A4,$A4
+    DB $A4,$A4,$A4,$A4,$4E,$4E,$00,$00
 sTitleTilesEnd::
 
 sGameplayTilesM::

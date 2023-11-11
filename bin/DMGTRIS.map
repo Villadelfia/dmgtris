@@ -2,10 +2,7 @@ ROM0 bank #0:
 	SECTION: $0000-$0007 ($0008 bytes) ["Bank ID BANK_MAIN"]
 	SECTION: $0008-$0024 ($001d bytes) ["Switch Bank"]
 	         $0008 = RSTSwitchBank
-	SECTION: $0025-$0026 ($0002 bytes) ["Hi Score Functions"]
-	         $0025 = CheckAndAddHiscore
-	         $0026 = GetTargetHSTable
-	EMPTY: $0027-$0027 ($0001 byte)
+	EMPTY: $0025-$0027 ($0003 bytes)
 	SECTION: $0028-$0042 ($001b bytes) ["Restore Bank"]
 	         $0028 = RSTRestoreBank
 	EMPTY: $0043-$0047 ($0005 bytes)
@@ -420,125 +417,151 @@ ROM0 bank #0:
 	         $30e9 = Next7Piece
 	         $30e9 = !20
 	         $30f3 = NextByte
-	SECTION: $3113-$325c ($014a bytes) ["Progress Data"]
-	         $3113 = sProgressData
-	SECTION: $325d-$339c ($0140 bytes) ["Hi Score Data"]
-	         $325d = sHiscoreDefaultData
-	SECTION: $339d-$347c ($00e0 bytes) ["Score Functions"]
-	         $339d = ScoreInit
-	         $33c5 = IncreaseScore
-	         $33fd = IncreaseScore.doConvert
-	         $33ff = !0
-	         $3415 = IncreaseScore.carry
-	         $3417 = IncreaseScore.postConvert
-	         $3424 = !1
-	         $342b = IncreaseScore.preAddDigit
-	         $3453 = IncreaseScore.addDigit
-	         $3469 = IncreaseScore.nextDigit
-	SECTION: $347d-$3549 ($00cd bytes) ["Input Functions"]
-	         $347d = InputInit
-	         $348f = GetInput
-	         $348f = GetInput.btns
-	         $349c = GetInput.readA
-	         $34a0 = GetInput.setA
-	         $34ab = GetInput.clearA
-	         $34ae = GetInput.readB
-	         $34b2 = GetInput.setB
-	         $34bd = GetInput.clearB
-	         $34c0 = GetInput.readSelect
-	         $34c4 = GetInput.setSelect
-	         $34cf = GetInput.clearSelect
-	         $34d2 = GetInput.readStart
-	         $34d6 = GetInput.setStart
-	         $34e1 = GetInput.clearStart
-	         $34e4 = GetInput.dpad
-	         $34f1 = GetInput.readUp
-	         $34f5 = GetInput.setUp
-	         $3500 = GetInput.clearUp
-	         $3503 = GetInput.readDown
-	         $3507 = GetInput.setDown
-	         $3512 = GetInput.clearDown
-	         $3515 = GetInput.readLeft
-	         $3519 = GetInput.setLeft
-	         $3524 = GetInput.clearLeft
-	         $3527 = GetInput.readRight
-	         $352b = GetInput.setRight
-	         $3536 = GetInput.clearRight
-	         $3539 = GetInput.priorities
-	         $3544 = GetInput.zero
-	SECTION: $354a-$3614 ($00cb bytes) ["Title Function Trampolines"]
-	         $354a = SwitchToTitle
-	         $3553 = TitleEventLoopHandler
-	         $355d = TitleVBlankHandler
-	         $3567 = PersistLevel
-	         $3575 = DrawSpeedMain
-	         $35c5 = DrawSpeedSettings
-	SECTION: $3615-$36da ($00c6 bytes) ["Time Functions"]
-	         $3615 = TimeInit
-	         $3635 = StartCountdown
-	         $3643 = ResetGameTime
-	         $364e = CheckTorikan
-	         $3665 = CheckTorikan.failure
-	         $3667 = CheckTorikan.success
-	         $366a = HandleTimers
-	         $3690 = HandleTimers.reduce
-	         $369d = HandleTimers.clock
-	         $36b7 = HandleTimers.go
-	SECTION: $36db-$378c ($00b2 bytes) ["Progress Functions"]
-	         $36db = SetProgress
-	         $36e6 = SetProgress.loop
-	         $36ea = SetProgress.correct
-	         $3711 = SetProgress.wvr_u1
-	         $371d = SetProgress.wvr_u2
-	         $372b = SetProgress.wvr_u3
-	         $3737 = SetProgress.wvr_u4
-	         $3745 = SetProgress.wvr_u5
-	         $3751 = SetProgress.wvr_u6
-	         $375f = SetProgress.wvr_u7
-	         $376b = SetProgress.wvr_u8
-	         $3779 = SetProgress.wvr_u9
-	         $3785 = SetProgress.wvr_u10
-	SECTION: $378d-$381e ($0092 bytes) ["Code Entry Point"]
-	         $378d = Main
-	         $37b6 = Main.notgbc
-	         $37bc = Main.wvr_u1
-	         $37e3 = EventLoop
-	         $37f9 = EventLoop.eventloopjumps
-	         $3802 = EventLoopPostHandler
-	         $3804 = EventLoopPostHandler.wvb_u2
-	         $3816 = EventLoopPostHandler.vblankjumps
-	SECTION: $381f-$3870 ($0052 bytes) ["Tile Functions"]
-	         $381f = LoadTitleTiles
-	         $383d = LoadGameplayTiles
-	         $3853 = LoadGameplayTiles.gbc
-	         $3862 = LoadGameplayTiles.dmg
-	SECTION: $3871-$38ac ($003c bytes) ["Time Data"]
-	         $3871 = sFramesToCS
-	SECTION: $38ad-$38da ($002e bytes) ["Memory Functions"]
-	         $38ad = UnsafeMemCopy
-	         $38b6 = SafeMemCopy.wvr_u1
-	         $38b6 = SafeMemCopy
-	         $38c5 = UnsafeMemSet
-	         $38cd = SafeMemSet
-	         $38cd = SafeMemSet.wvr_u2
-	SECTION: $38db-$3900 ($0026 bytes) ["Gameplay Function Trampolines"]
-	         $38db = SwitchToGameplay
-	         $38e4 = SwitchToGameplayBig
-	         $38ed = GamePlayEventLoopHandler
-	         $38f7 = GamePlayBigEventLoopHandler
-	SECTION: $3901-$3925 ($0025 bytes) ["Interrupt Initialization Functions"]
-	         $3901 = EnableScreenSquish
-	         $391b = DisableScreenSquish
-	SECTION: $3926-$3947 ($0022 bytes) ["OAM Functions"]
-	         $3926 = CopyOAMHandler
-	         $3932 = ClearOAM
-	SECTION: $3948-$3956 ($000f bytes) ["Banking Functions"]
-	         $3948 = BankingInit
-	SECTION: $3957-$3960 ($000a bytes) ["OAM DMA Code"]
-	         $3957 = OAMDMA
-	         $3961 = OAMDMAEnd
-	EMPTY: $3961-$3fff ($069f bytes)
-	TOTAL EMPTY: $06a8 bytes
+	SECTION: $3113-$3281 ($016f bytes) ["Hi Score Functions"]
+	         $3113 = CheckAndAddHiscore
+	         $311d = CheckAndAddHiscore.checkloop
+	         $3161 = CheckAndAddHiscore.notbetter
+	         $316d = CheckAndAddHiscore.better
+	         $316f = InsertHiScore
+	         $316f = InsertHiScore.copylower
+	         $3180 = InsertHiScore.copyupper
+	         $318d = !0
+	         $31a1 = InsertHiScore.findrow
+	         $31ae = !1
+	         $31b2 = InsertHiScore.insert
+	         $31fb = InsertHiScore.persist
+	         $320c = GetHiScoreEntry
+	         $3221 = !2
+	         $3225 = GetHiScoreEntry.store
+	         $322e = InitTargetHSTable
+	         $3239 = InitTargetHSTable.jumps
+	         $324e = InitTargetHSTable.dmgt
+	         $3253 = InitTargetHSTable.tgm1
+	         $3258 = InitTargetHSTable.tgm3
+	         $325d = InitTargetHSTable.deat
+	         $3262 = InitTargetHSTable.shir
+	         $3267 = InitTargetHSTable.chil
+	         $326c = InitTargetHSTable.myco
+	         $326f = InitTargetHSTable.store
+	SECTION: $3282-$33cb ($014a bytes) ["Progress Data"]
+	         $3282 = sProgressData
+	SECTION: $33cc-$350b ($0140 bytes) ["Hi Score Data"]
+	         $33cc = sHiscoreDefaultData
+	SECTION: $350c-$35eb ($00e0 bytes) ["Score Functions"]
+	         $350c = ScoreInit
+	         $3534 = IncreaseScore
+	         $356c = IncreaseScore.doConvert
+	         $356e = !0
+	         $3584 = IncreaseScore.carry
+	         $3586 = IncreaseScore.postConvert
+	         $3593 = !1
+	         $359a = IncreaseScore.preAddDigit
+	         $35c2 = IncreaseScore.addDigit
+	         $35d8 = IncreaseScore.nextDigit
+	SECTION: $35ec-$36b8 ($00cd bytes) ["Input Functions"]
+	         $35ec = InputInit
+	         $35fe = GetInput
+	         $35fe = GetInput.btns
+	         $360b = GetInput.readA
+	         $360f = GetInput.setA
+	         $361a = GetInput.clearA
+	         $361d = GetInput.readB
+	         $3621 = GetInput.setB
+	         $362c = GetInput.clearB
+	         $362f = GetInput.readSelect
+	         $3633 = GetInput.setSelect
+	         $363e = GetInput.clearSelect
+	         $3641 = GetInput.readStart
+	         $3645 = GetInput.setStart
+	         $3650 = GetInput.clearStart
+	         $3653 = GetInput.dpad
+	         $3660 = GetInput.readUp
+	         $3664 = GetInput.setUp
+	         $366f = GetInput.clearUp
+	         $3672 = GetInput.readDown
+	         $3676 = GetInput.setDown
+	         $3681 = GetInput.clearDown
+	         $3684 = GetInput.readLeft
+	         $3688 = GetInput.setLeft
+	         $3693 = GetInput.clearLeft
+	         $3696 = GetInput.readRight
+	         $369a = GetInput.setRight
+	         $36a5 = GetInput.clearRight
+	         $36a8 = GetInput.priorities
+	         $36b3 = GetInput.zero
+	SECTION: $36b9-$3783 ($00cb bytes) ["Title Function Trampolines"]
+	         $36b9 = SwitchToTitle
+	         $36c2 = TitleEventLoopHandler
+	         $36cc = TitleVBlankHandler
+	         $36d6 = PersistLevel
+	         $36e4 = DrawSpeedMain
+	         $3734 = DrawSpeedSettings
+	SECTION: $3784-$3849 ($00c6 bytes) ["Time Functions"]
+	         $3784 = TimeInit
+	         $37a4 = StartCountdown
+	         $37b2 = ResetGameTime
+	         $37bd = CheckTorikan
+	         $37d4 = CheckTorikan.failure
+	         $37d6 = CheckTorikan.success
+	         $37d9 = HandleTimers
+	         $37ff = HandleTimers.reduce
+	         $380c = HandleTimers.clock
+	         $3826 = HandleTimers.go
+	SECTION: $384a-$38fb ($00b2 bytes) ["Progress Functions"]
+	         $384a = SetProgress
+	         $3855 = SetProgress.loop
+	         $3859 = SetProgress.correct
+	         $3880 = SetProgress.wvr_u1
+	         $388c = SetProgress.wvr_u2
+	         $389a = SetProgress.wvr_u3
+	         $38a6 = SetProgress.wvr_u4
+	         $38b4 = SetProgress.wvr_u5
+	         $38c0 = SetProgress.wvr_u6
+	         $38ce = SetProgress.wvr_u7
+	         $38da = SetProgress.wvr_u8
+	         $38e8 = SetProgress.wvr_u9
+	         $38f4 = SetProgress.wvr_u10
+	SECTION: $38fc-$398d ($0092 bytes) ["Code Entry Point"]
+	         $38fc = Main
+	         $3925 = Main.notgbc
+	         $392b = Main.wvr_u1
+	         $3952 = EventLoop
+	         $3968 = EventLoop.eventloopjumps
+	         $3971 = EventLoopPostHandler
+	         $3973 = EventLoopPostHandler.wvb_u2
+	         $3985 = EventLoopPostHandler.vblankjumps
+	SECTION: $398e-$39df ($0052 bytes) ["Tile Functions"]
+	         $398e = LoadTitleTiles
+	         $39ac = LoadGameplayTiles
+	         $39c2 = LoadGameplayTiles.gbc
+	         $39d1 = LoadGameplayTiles.dmg
+	SECTION: $39e0-$3a1b ($003c bytes) ["Time Data"]
+	         $39e0 = sFramesToCS
+	SECTION: $3a1c-$3a49 ($002e bytes) ["Memory Functions"]
+	         $3a1c = UnsafeMemCopy
+	         $3a25 = SafeMemCopy.wvr_u1
+	         $3a25 = SafeMemCopy
+	         $3a34 = UnsafeMemSet
+	         $3a3c = SafeMemSet
+	         $3a3c = SafeMemSet.wvr_u2
+	SECTION: $3a4a-$3a6f ($0026 bytes) ["Gameplay Function Trampolines"]
+	         $3a4a = SwitchToGameplay
+	         $3a53 = SwitchToGameplayBig
+	         $3a5c = GamePlayEventLoopHandler
+	         $3a66 = GamePlayBigEventLoopHandler
+	SECTION: $3a70-$3a94 ($0025 bytes) ["Interrupt Initialization Functions"]
+	         $3a70 = EnableScreenSquish
+	         $3a8a = DisableScreenSquish
+	SECTION: $3a95-$3ab6 ($0022 bytes) ["OAM Functions"]
+	         $3a95 = CopyOAMHandler
+	         $3aa1 = ClearOAM
+	SECTION: $3ab7-$3ac5 ($000f bytes) ["Banking Functions"]
+	         $3ab7 = BankingInit
+	SECTION: $3ac6-$3acf ($000a bytes) ["OAM DMA Code"]
+	         $3ac6 = OAMDMA
+	         $3ad0 = OAMDMAEnd
+	EMPTY: $3ad0-$3fff ($0530 bytes)
+	TOTAL EMPTY: $053b bytes
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]
@@ -2719,96 +2742,99 @@ WRAM0 bank #0:
 	         $cd1f = wRightSlamTimer
 	         $cd20 = wMovementLastFrame
 	         $cd21 = wReturnToSmall
-	SECTION: $cd22-$ce83 ($0162 bytes) ["Hi Score Variables"]
+	SECTION: $cd22-$ce86 ($0165 bytes) ["Hi Score Variables"]
 	         $cd22 = wTargetHSTable
-	         $cd24 = wWorkingCopy
-	SECTION: $ce84-$cec4 ($0041 bytes) ["Stack"]
-	         $ce84 = wStack
-	         $cec5 = wStackEnd
-	SECTION: $cec5-$cef0 ($002c bytes) ["TGM3 RNG Variables"]
-	         $cec5 = wTGM3Bag
-	         $cee8 = wTGM3Droughts
-	         $ceef = wTGM3GeneratedIdx
-	         $cef0 = wTGM3WorstDroughtIdx
-	SECTION: $cef1-$cf03 ($0013 bytes) ["Level Variables"]
-	         $cef1 = wBoneActivationLevel
-	         $cef3 = wInvisActivationLevel
-	         $cef5 = wKillScreenActivationLevel
-	         $cef7 = wKillScreenActivationLevelBCD
-	         $cef9 = wLastLockLevel
-	         $cefb = wStaffRollDuration
-	         $cefd = wBigStaffRoll
-	         $cefe = wBonesActive
-	         $ceff = wInvisActive
-	         $cf00 = wKillScreenActive
-	         $cf01 = wLockLevel
-	         $cf02 = wShouldGoStaffRoll
-	         $cf03 = wNoMoreLocks
-	SECTION: $cf04-$cf15 ($0012 bytes) ["Grade Variables"]
-	         $cf04 = wDecayRate
-	         $cf05 = wGradePoints
-	         $cf06 = wInternalGrade
-	         $cf07 = wDisplayedGrade
-	         $cf08 = wEffectTimer
-	         $cf09 = wRankingDisqualified
-	         $cf0a = wDecayCounter
-	         $cf0b = wGradeGauge
-	         $cf0c = wSMult
-	         $cf0d = wDMult
-	         $cf0e = wTMult
-	         $cf0f = wSRate
-	         $cf10 = wDRate
-	         $cf11 = wTRate
-	         $cf12 = wQRate
-	         $cf13 = wTGM1level300RequirementMet
-	         $cf14 = wTGM1level500RequirementMet
-	         $cf15 = wTGM1level999RequirementMet
-	SECTION: $cf16-$cf1f ($000a bytes) ["Progress Variables"]
-	         $cf16 = wProgress0B1
-	         $cf17 = wProgress0B2
-	         $cf18 = wProgress1B1
-	         $cf19 = wProgress1B2
-	         $cf1a = wProgress2B1
-	         $cf1b = wProgress2B2
-	         $cf1c = wProgress3B1
-	         $cf1d = wProgress3B2
-	         $cf1e = wProgress4B1
-	         $cf1f = wProgress4B2
-	SECTION: $cf20-$cf28 ($0009 bytes) ["Globals"]
-	         $cf20 = wSwapABState
-	         $cf21 = wRNGModeState
-	         $cf22 = wRotModeState
-	         $cf23 = wDropModeState
-	         $cf24 = wSpeedCurveState
-	         $cf25 = wAlways20GState
-	         $cf26 = wInitialA
-	         $cf27 = wInitialB
-	         $cf28 = wInitialC
-	SECTION: $cf29-$cf2e ($0006 bytes) ["Time Variables"]
-	         $cf29 = wMinutes
-	         $cf2a = wSeconds
-	         $cf2b = wFrames
-	         $cf2c = wCountDown
-	         $cf2e = wCountDownZero
-	SECTION: $cf2f-$cf33 ($0005 bytes) ["Title Variables"]
-	         $cf2f = wSelected
-	         $cf30 = wTitleMode
-	         $cf31 = wProfileName
-	SECTION: $cf34-$cf37 ($0004 bytes) ["Banking Variables"]
-	         $cf34 = wBankBackup
-	SECTION: $cf38-$cf3b ($0004 bytes) ["Gameplay Variables"]
-	         $cf38 = wRollLine
-	         $cf39 = wInStaffRoll
-	         $cf3a = wBigModeTransfered
-	         $cf3b = wGameOverIgnoreInput
-	SECTION: $cf3c-$cf3e ($0003 bytes) ["GBC Variables"]
-	         $cf3c = wOuterReps
-	         $cf3d = wInnerReps
-	         $cf3e = wTitlePal
-	SECTION: $cf3f-$cf3f ($0001 byte) ["SRAM Variables"]
-	         $cf3f = wTarget
-	EMPTY: $cf40-$cfff ($00c0 bytes)
-	TOTAL EMPTY: $00c0 bytes
+	         $cd24 = wWorkingIdx
+	         $cd25 = wWorkingPtr
+	         $cd26 = wWorkingCopy
+	         $ce86 = wInsertTarget
+	SECTION: $ce87-$cec7 ($0041 bytes) ["Stack"]
+	         $ce87 = wStack
+	         $cec8 = wStackEnd
+	SECTION: $cec8-$cef3 ($002c bytes) ["TGM3 RNG Variables"]
+	         $cec8 = wTGM3Bag
+	         $ceeb = wTGM3Droughts
+	         $cef2 = wTGM3GeneratedIdx
+	         $cef3 = wTGM3WorstDroughtIdx
+	SECTION: $cef4-$cf06 ($0013 bytes) ["Level Variables"]
+	         $cef4 = wBoneActivationLevel
+	         $cef6 = wInvisActivationLevel
+	         $cef8 = wKillScreenActivationLevel
+	         $cefa = wKillScreenActivationLevelBCD
+	         $cefc = wLastLockLevel
+	         $cefe = wStaffRollDuration
+	         $cf00 = wBigStaffRoll
+	         $cf01 = wBonesActive
+	         $cf02 = wInvisActive
+	         $cf03 = wKillScreenActive
+	         $cf04 = wLockLevel
+	         $cf05 = wShouldGoStaffRoll
+	         $cf06 = wNoMoreLocks
+	SECTION: $cf07-$cf18 ($0012 bytes) ["Grade Variables"]
+	         $cf07 = wDecayRate
+	         $cf08 = wGradePoints
+	         $cf09 = wInternalGrade
+	         $cf0a = wDisplayedGrade
+	         $cf0b = wEffectTimer
+	         $cf0c = wRankingDisqualified
+	         $cf0d = wDecayCounter
+	         $cf0e = wGradeGauge
+	         $cf0f = wSMult
+	         $cf10 = wDMult
+	         $cf11 = wTMult
+	         $cf12 = wSRate
+	         $cf13 = wDRate
+	         $cf14 = wTRate
+	         $cf15 = wQRate
+	         $cf16 = wTGM1level300RequirementMet
+	         $cf17 = wTGM1level500RequirementMet
+	         $cf18 = wTGM1level999RequirementMet
+	SECTION: $cf19-$cf22 ($000a bytes) ["Progress Variables"]
+	         $cf19 = wProgress0B1
+	         $cf1a = wProgress0B2
+	         $cf1b = wProgress1B1
+	         $cf1c = wProgress1B2
+	         $cf1d = wProgress2B1
+	         $cf1e = wProgress2B2
+	         $cf1f = wProgress3B1
+	         $cf20 = wProgress3B2
+	         $cf21 = wProgress4B1
+	         $cf22 = wProgress4B2
+	SECTION: $cf23-$cf2b ($0009 bytes) ["Globals"]
+	         $cf23 = wSwapABState
+	         $cf24 = wRNGModeState
+	         $cf25 = wRotModeState
+	         $cf26 = wDropModeState
+	         $cf27 = wSpeedCurveState
+	         $cf28 = wAlways20GState
+	         $cf29 = wInitialA
+	         $cf2a = wInitialB
+	         $cf2b = wInitialC
+	SECTION: $cf2c-$cf31 ($0006 bytes) ["Time Variables"]
+	         $cf2c = wMinutes
+	         $cf2d = wSeconds
+	         $cf2e = wFrames
+	         $cf2f = wCountDown
+	         $cf31 = wCountDownZero
+	SECTION: $cf32-$cf36 ($0005 bytes) ["Title Variables"]
+	         $cf32 = wSelected
+	         $cf33 = wTitleMode
+	         $cf34 = wProfileName
+	SECTION: $cf37-$cf3a ($0004 bytes) ["Banking Variables"]
+	         $cf37 = wBankBackup
+	SECTION: $cf3b-$cf3e ($0004 bytes) ["Gameplay Variables"]
+	         $cf3b = wRollLine
+	         $cf3c = wInStaffRoll
+	         $cf3d = wBigModeTransfered
+	         $cf3e = wGameOverIgnoreInput
+	SECTION: $cf3f-$cf41 ($0003 bytes) ["GBC Variables"]
+	         $cf3f = wOuterReps
+	         $cf40 = wInnerReps
+	         $cf41 = wTitlePal
+	SECTION: $cf42-$cf42 ($0001 byte) ["SRAM Variables"]
+	         $cf42 = wTarget
+	EMPTY: $cf43-$cfff ($00bd bytes)
+	TOTAL EMPTY: $00bd bytes
 
 HRAM bank #0:
 	SECTION: $ff80-$ff9a ($001b bytes) ["High Field Variables"]
@@ -2899,8 +2925,8 @@ HRAM bank #0:
 	TOTAL EMPTY: $0003 bytes
 
 SUMMARY:
-	ROM0: 14680 bytes used / 1704 free
+	ROM0: 15045 bytes used / 1339 free
 	ROMX: 64126 bytes used / 34178 free in 6 banks
 	SRAM: 2951 bytes used / 5241 free in 1 bank
-	WRAM0: 3904 bytes used / 192 free
+	WRAM0: 3907 bytes used / 189 free
 	HRAM: 124 bytes used / 3 free

@@ -238,15 +238,27 @@ GBCTitleProcess::
     ret nz
 
     ; Wipe the palettes.
-    ld d, $03
-    ld hl, wShadowTileAttrs
-    ld bc, 32
-    call UnsafeMemSet
     ld d, $07
     ld hl, wShadowTileAttrs
     ld bc, (32*32)
     call UnsafeMemSet
 
+    ; Jump to the correct eventloop handler.
+    ld b, 0
+    ld a, [wTitleMode]
+    ld c, a
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .eventLoopMain
+    jp .eventLoopProfile
+    jp .eventLoopSettings
+    jp .eventLoopRecords
+    jp .eventLoopCredits
+
+.eventLoopMain
     ; Palette for the title?
     ldh a, [hFrameCtr]
     and $0F
@@ -264,21 +276,135 @@ GBCTitleProcess::
     ; Set the palette for the title.
     ld a, [wTitlePal]
     ld d, a
-    ld hl, wShadowTileAttrs + (3*32)
-    ld bc, (4*32)
+    ld hl, wShadowTileAttrs + (2*32)
+    ld bc, (3*32)
     call UnsafeMemSet
 
     ; And the selected row.
     ld a, [wSelected]
     inc a
-    ld hl, wShadowTileAttrs + (6*32)
-    ld bc, 64
+    ld hl, wShadowTileAttrs + (5*32)
+    ld bc, 32
 :   add hl, bc
     dec a
     jr nz, :-
     ld a, 3
     ld d, a
     ld bc, 32
+    jp UnsafeMemSet
+
+.eventLoopProfile
+    ; Palette for the title?
+    ldh a, [hFrameCtr]
+    and $0F
+    cp a, $01
+    jr nz, .noinc3
+    ld a, [wTitlePal]
+    inc a
+    cp a, $07
+    jr c, .nores3
+    ld a, $00
+.nores3
+    ld [wTitlePal], a
+.noinc3
+
+    ; Set the palette for the title.
+    ld a, [wTitlePal]
+    ld d, a
+    ld hl, wShadowTileAttrs + (0*32)
+    ld bc, (1*32)
+    call UnsafeMemSet
+
+    ; And the selected row.
+    ld a, [wSelected]
+    inc a
+    ld hl, wShadowTileAttrs + (1*32)
+    ld bc, 32
+:   add hl, bc
+    dec a
+    jr nz, :-
+    ld a, 3
+    ld d, a
+    ld bc, 32
+    jp UnsafeMemSet
+
+.eventLoopSettings
+    ; Palette for the title?
+    ldh a, [hFrameCtr]
+    and $0F
+    cp a, $01
+    jr nz, .noinc1
+    ld a, [wTitlePal]
+    inc a
+    cp a, $07
+    jr c, .nores1
+    ld a, $00
+.nores1
+    ld [wTitlePal], a
+.noinc1
+
+    ; Set the palette for the title.
+    ld a, [wTitlePal]
+    ld d, a
+    ld hl, wShadowTileAttrs + (0*32)
+    ld bc, (1*32)
+    call UnsafeMemSet
+
+    ; And the selected row.
+    ld a, [wSelected]
+    inc a
+    ld hl, wShadowTileAttrs + (1*32)
+    ld bc, 32
+:   add hl, bc
+    dec a
+    jr nz, :-
+    ld a, 3
+    ld d, a
+    ld bc, 32
+    jp UnsafeMemSet
+
+.eventLoopRecords
+    ; Palette for the title?
+    ldh a, [hFrameCtr]
+    and $0F
+    cp a, $01
+    jr nz, .noinc4
+    ld a, [wTitlePal]
+    inc a
+    cp a, $07
+    jr c, .nores4
+    ld a, $00
+.nores4
+    ld [wTitlePal], a
+.noinc4
+
+    ; Set the palette for the title.
+    ld a, [wTitlePal]
+    ld d, a
+    ld hl, wShadowTileAttrs + (0*32)
+    ld bc, (1*32)
+    jp UnsafeMemSet
+
+.eventLoopCredits
+    ; Palette for the title?
+    ldh a, [hFrameCtr]
+    and $0F
+    cp a, $01
+    jr nz, .noinc2
+    ld a, [wTitlePal]
+    inc a
+    cp a, $07
+    jr c, .nores2
+    ld a, $00
+.nores2
+    ld [wTitlePal], a
+.noinc2
+
+    ; Set the palette for the title.
+    ld a, [wTitlePal]
+    ld d, a
+    ld hl, wShadowTileAttrs + (0*32)
+    ld bc, (1*32)
     jp UnsafeMemSet
 
 

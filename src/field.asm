@@ -40,6 +40,7 @@ wDelayState: ds 1
 wLeftSlamTimer: ds 1
 wRightSlamTimer: ds 1
 wMovementLastFrame: ds 1
+wReturnToSmall:: ds 1
 
 
 SECTION "High Field Variables", HRAM
@@ -237,6 +238,28 @@ FromBackupField::
     ld bc, 10*24
     jp UnsafeMemCopy
 
+GoBig::
+    ld a, $FF
+    ld [wReturnToSmall], a
+    ld hl, wWideBlittedField
+    ld bc, 10*22
+    ld d, TILE_BLANK
+    call UnsafeMemSet
+    ld hl, wField
+    ld bc, 10*24
+    ld d, 0
+    call UnsafeMemSet
+    DEF row = 0
+    REPT 14
+        ld hl, wField + (row*10)
+        ld bc, 5
+        ld d, TILE_FIELD_EMPTY
+        call UnsafeMemSet
+        DEF row += 1
+    ENDR
+    ld a, STATE_GAMEPLAY_BIG
+    ldh [hGameState], a
+    ret
 
     ; Copies the field to the shadow field.
     ; This shadow field is used to calculate whether or not the piece can fit.
@@ -1379,7 +1402,7 @@ FieldProcess::
 .wantleft
     ldh a, [hCurrentPieceX]
     cp a, 0
-    jr z, .wantright
+    jr z, .precheckright
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
@@ -1397,6 +1420,11 @@ FieldProcess::
     dec a
     ldh [hWantX], a
     jr .trymove
+
+.precheckright
+    ldh a, [hRightState]
+    cp a, 0
+    jr z, .nomove
 
     ; Do we want to move right?
 .wantright
@@ -2011,11 +2039,15 @@ FieldDelay::
     ldh [hBravo], a
 
     ; Kill screen?
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .noskip
     ld a, [wKillScreenActive]
     cp a, $FF
     jr z, .skip
 
     ; Are there line clears?
+.noskip
     call ToShadowField
     call FindClearedLines
     ldh a, [hClearedLines]
@@ -2230,6 +2262,14 @@ FieldDelay::
 
     ; Cycle the RNG.
 .generatenextpiece
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .doit
+    ld a, [wShouldGoStaffRoll]
+    cp a, $FF
+    ret z
+
+.doit
     ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece
@@ -2481,6 +2521,33 @@ BigFieldClear::
         call UnsafeMemSet
         DEF row += 1
     ENDR
+    ret
+
+
+GoSmall::
+    xor a, a
+    ldh [hBravo], a
+    ldh [hLineClearCt], a
+    ld [wMovementLastFrame], a
+    ld a, 1
+    ldh [hComboCt], a
+    ld hl, wField
+    ld bc, 10*24
+    ld d, TILE_BLANK
+    call UnsafeMemSet
+    ld hl, wShadowField
+    ld bc, 14*26
+    ld d, $FF
+    call UnsafeMemSet
+    ld hl, wPreShadowField
+    ld bc, 14*2
+    ld d, $FF
+    call UnsafeMemSet
+    ld a, SLAM_ANIMATION_LEN
+    ld [wLeftSlamTimer], a
+    ld [wRightSlamTimer], a
+    ld a, STATE_GAMEPLAY
+    ldh [hGameState], a
     ret
 
 
@@ -3640,7 +3707,7 @@ BigFieldProcess::
 .wantleft
     ldh a, [hCurrentPieceX]
     cp a, 0
-    jr z, .wantright
+    jr z, .precheckright
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
@@ -3658,6 +3725,11 @@ BigFieldProcess::
     dec a
     ldh [hWantX], a
     jr .trymove
+
+.precheckright
+    ldh a, [hRightState]
+    cp a, 0
+    jr z, .nomove
 
     ; Do we want to move right?
 .wantright
@@ -4273,11 +4345,15 @@ BigFieldDelay::
     ldh [hBravo], a
 
     ; Kill screen?
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .noskip
     ld a, [wKillScreenActive]
     cp a, $FF
     jr z, .skip
 
     ; Are there line clears?
+.noskip
     call BigToShadowField
     call BigFindClearedLines
     ldh a, [hClearedLines]
@@ -4495,6 +4571,14 @@ BigFieldDelay::
 
     ; Cycle the RNG.
 .generatenextpiece
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jr z, .doit
+    ld a, [wShouldGoStaffRoll]
+    cp a, $FF
+    ret z
+
+.doit
     ldh a, [hNextPiece]
     ldh [hCurrentPiece], a
     call GetNextPiece

@@ -24,7 +24,9 @@ INCLUDE "res/title_data.inc"
 
 
 SECTION "Title Variables", WRAM0
-wSelected:: ds 1
+wSelected::  ds 1
+wTitleMode:: ds 1
+wProfileName:: ds 3
 
 
 SECTION "Title Function Trampolines", ROM0
@@ -51,7 +53,16 @@ TitleVBlankHandler::
     rst RSTRestoreBank
     jp EventLoop
 
-DrawOption6:
+PersistLevel:
+    ld b, BANK_OTHER
+    rst RSTSwitchBank
+    ld a, [hl+]
+    ld [rSelectedStartLevel], a
+    ld a, [hl]
+    ld [rSelectedStartLevel+1], a
+    jp RSTRestoreBank
+
+DrawSpeedMain:
     ld b, BANK_OTHER
     rst RSTSwitchBank
 
@@ -65,7 +76,7 @@ DrawOption6:
     ld b, a
     ld a, TILE_0
     add a, b
-    ld hl, TITLE_OPTION_6+TITLE_OPTION_OFFSET+2
+    ld hl, TITLE_MAIN_START+2
     ld [hl], a
 
     ldh a, [hStartSpeed]
@@ -77,7 +88,7 @@ DrawOption6:
     ld b, a
     ld a, TILE_0
     add a, b
-    ld hl, TITLE_OPTION_6+TITLE_OPTION_OFFSET+3
+    ld hl, TITLE_MAIN_START+3
     ld [hl], a
 
     ldh a, [hStartSpeed]
@@ -91,7 +102,7 @@ DrawOption6:
     ld b, a
     ld a, TILE_0
     add a, b
-    ld hl, TITLE_OPTION_6+TITLE_OPTION_OFFSET+0
+    ld hl, TITLE_MAIN_START+0
     ld [hl], a
 
     ldh a, [hStartSpeed]
@@ -104,7 +115,65 @@ DrawOption6:
     ld b, a
     ld a, TILE_0
     add a, b
-    ld hl, TITLE_OPTION_6+TITLE_OPTION_OFFSET+1
+    ld hl, TITLE_MAIN_START+1
+    ld [hl], a
+
+    jp RSTRestoreBank
+
+DrawSpeedSettings:
+    ld b, BANK_OTHER
+    rst RSTSwitchBank
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_SETTINGS_START+2
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld a, [hl]
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_SETTINGS_START+3
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    inc hl
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_SETTINGS_START+0
+    ld [hl], a
+
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    inc hl
+    ld a, [hl]
+    and a, $0F
+    ld b, a
+    ld a, TILE_0
+    add a, b
+    ld hl, TITLE_SETTINGS_START+1
     ld [hl], a
 
     jp RSTRestoreBank
@@ -120,18 +189,76 @@ SwitchToTitleB:
     xor a, a
     ldh [rLCDC], a
 
-    ; Load the gameplay tilemap.
-:   ld de, sTitleScreenTileMap
-    ld hl, $9800
-    ld bc, sTitleScreenTileMapEnd - sTitleScreenTileMap
-    call UnsafeMemCopy
-
     ; And the tiles.
-    call LoadTitleTiles
+:   call LoadTitleTiles
 
     ; Zero out SCX.
     xor a, a
     ldh [rSCX], a
+
+    ; No screen squish for title.
+    call DisableScreenSquish
+
+    ; Clear OAM.
+    call ClearOAM
+
+    ; Set up the palettes.
+    ld a, PALETTE_INVERTED
+    set_bg_palette
+    set_obj0_palette
+    set_obj1_palette
+
+    ; Go to the correct title screen mode.
+    ld a, TITLE_MAIN
+    call SwitchTitleMode
+
+    ; Music start
+    call SFXKill
+    ld a, MUSIC_MENU
+    call SFXEnqueue
+
+    ; Make sure the first game loop starts just like all the future ones.
+    wait_vblank
+    wait_vblank_end
+    ret
+
+SwitchTitleMode:
+    ; Set title to mode in A.
+    ld [wTitleMode], a
+    ld a, STATE_TITLE
+    ldh [hGameState], a
+    xor a, a
+    ld [wSelected], a
+
+    ; Turn the screen off if it's on.
+    ldh a, [rLCDC]
+    and LCDCF_ON
+    jr z, :+ ; Screen is already off.
+    wait_vram
+    xor a, a
+    ldh [rLCDC], a
+
+    ; Jump to correct handler.
+:   ld b, 0
+    ld a, [wTitleMode]
+    ld c, a
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .switchMain
+    jp .switchProfile
+    jp .switchSettings
+    jp .switchRecords
+    jp .switchCredits
+
+
+.switchMain
+    ld de, sTitleScreenMainMap
+    ld hl, $9800
+    ld bc, sTitleScreenMainMapEnd - sTitleScreenMainMap
+    call UnsafeMemCopy
 
     ; Title screen easter egg.
     ld a, [wInitialC]
@@ -145,7 +272,7 @@ SwitchToTitleB:
     ld hl, EASTER_1
     ld bc, 5
     call UnsafeMemCopy
-    jr .oam
+    jr .done
 
 .notsgb
     ld a, [wInitialA]
@@ -159,114 +286,666 @@ SwitchToTitleB:
     ld hl, EASTER_1
     ld bc, 5
     call UnsafeMemCopy
-    jr .oam
+    jr .done
 
 .notmgb
     ld a, [wInitialA]
     cp a, $11
-    jr nz, .noegg
+    jr nz, .done
 
     ld a, [wInitialB]
     bit 0, a
     jr nz, .agb
     ld de, sEasterC0
     ld hl, EASTER_0-1
-    ld bc, 12
+    ld bc, 11
     call UnsafeMemCopy
     ld de, sEasterC1
     ld hl, EASTER_1-1
-    ld bc, 12
+    ld bc, 11
     call UnsafeMemCopy
-    jr .oam
+    jr .done
 
 .agb
     ld de, sEasterA0
     ld hl, EASTER_0-1
-    ld bc, 12
+    ld bc, 11
     call UnsafeMemCopy
     ld de, sEasterA1
     ld hl, EASTER_1-1
-    ld bc, 12
+    ld bc, 11
     call UnsafeMemCopy
-    jr .oam
-.noegg
+    jr .done
 
-    ; Clear OAM.
-.oam
-    call ClearOAM
-    call SetNumberSpritePositions
-
-    ; Set up the palettes.
-    ld a, PALETTE_INVERTED
-    set_bg_palette
-    set_obj0_palette
-    set_obj1_palette
-
-    ; GBC init
+.done
     call GBCTitleInit
-
-    ; Install the event loop handlers.
-    ld a, STATE_TITLE
-    ldh [hGameState], a
-
-    xor a, a
-    ld [wSelected], a
-
-    ; And turn the LCD back on before we start.
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
     ldh [rLCDC], a
-
-    ; Music start
-    call SFXKill
-    ld a, MUSIC_MENU
-    call SFXEnqueue
-
-    ; Make sure the first game loop starts just like all the future ones.
-    wait_vblank
-    wait_vblank_end
     ret
 
-    ; Handles title screen input.
+.switchProfile
+    ld de, sTitleScreenProfileMap
+    ld hl, $9800
+    ld bc, sTitleScreenProfileMapEnd - sTitleScreenProfileMap
+    call UnsafeMemCopy
+    call GBCTitleInit
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
+    ldh [rLCDC], a
+    ret
+
+.switchSettings
+    ld de, sTitleScreenSettingsMap
+    ld hl, $9800
+    ld bc, sTitleScreenSettingsMapEnd - sTitleScreenSettingsMap
+    call UnsafeMemCopy
+    call GBCTitleInit
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
+    ldh [rLCDC], a
+    ret
+
+.switchRecords
+    ld de, sTitleScreenRecordsMap
+    ld hl, $9800
+    ld bc, sTitleScreenRecordsMapEnd - sTitleScreenRecordsMap
+    call UnsafeMemCopy
+    call GBCTitleInit
+    xor a, a
+    ldh [hSelectState], a
+    jp RenderScores
+
+.switchCredits
+    ld de, sTitleScreenCreditsMap
+    ld hl, $9800
+    ld bc, sTitleScreenCreditsMapEnd - sTitleScreenCreditsMap
+    call UnsafeMemCopy
+    call GBCTitleInit
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
+    ldh [rLCDC], a
+    ret
+
+
+    ; Event loop handlers for title screen.
 TitleEventLoopHandlerB:
     call GBCTitleProcess
 
-    ; Start game?
-.abstart
-    ldh a, [hStartState]
-    ld b, a
-    ldh a, [hAState]
+    ; Jump to the correct eventloop handler.
+    ld b, 0
+    ld a, [wTitleMode]
     ld c, a
-    ldh a, [hBState]
-    or a, b
-    or a, c
-    cp a, 1
-    jr nz, .up
-    ldh a, [hSelectState]
-    cp a, 0
-    jp z, SwitchToGameplay
-    jp SwitchToGameplayBig
+    ld hl, .jumps
+    add hl, bc
+    jp hl
 
-    ; Change menu selection?
-.up
+.jumps
+    jp .eventLoopMain
+    jp .eventLoopProfile
+    jp .eventLoopSettings
+    jp .eventLoopRecords
+    jp .eventLoopCredits
+
+.eventLoopMain
+    ; A/Start?
+    ldh a, [hAState]
+    cp a, 1
+    jp z, MainHandleA
+    ldh a, [hStartState]
+    cp a, 1
+    jp z, MainHandleA
+
+    ; Select?
+    ldh a, [hSelectState]
+    cp a, 1
+    jp z, NextProfile
+
+    ; Directions?
     ldh a, [hUpState]
     cp a, 1
-    jr nz, .down
+    jp z, MainHandleUp
+    cp a, 16
+    jp c, .d0
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
+    jp z, MainHandleUp
+
+.d0
+    ldh a, [hDownState]
+    cp a, 1
+    jp z, MainHandleDown
+    cp a, 16
+    ret c
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
+    ret nz
+    jp MainHandleDown
+
+.eventLoopProfile
+    ; A/Start?
+    ldh a, [hAState]
+    cp a, 1
+    jp z, ProfileHandleA
+    ldh a, [hStartState]
+    cp a, 1
+    jp z, ProfileHandleA
+
+    ; B?
+    ldh a, [hBState]
+    cp a, 1
+    jp z, ProfileHandleB
+
+    ; Directions?
+    ldh a, [hUpState]
+    cp a, 1
+    jp z, ProfileHandleUp
+    cp a, 16
+    jp c, .d2
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
+    jp z, ProfileHandleUp
+
+.d2
+    ldh a, [hDownState]
+    cp a, 1
+    jp z, ProfileHandleDown
+    cp a, 16
+    jp c, .l2
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
+    jp z, ProfileHandleDown
+
+.l2
+    ldh a, [hLeftState]
+    cp a, 1
+    jp z, ProfileHandleLeft
+    cp a, 16
+    jp c, .r2
+    ldh a, [hLeftState]
+    and 3
+    cp a, 3
+    jp z, ProfileHandleLeft
+
+.r2
+    ldh a, [hRightState]
+    cp a, 1
+    jp z, ProfileHandleRight
+    cp a, 16
+    ret c
+    ldh a, [hRightState]
+    and 3
+    cp a, 3
+    ret nz
+    jp ProfileHandleRight
+    ret
+
+.eventLoopSettings
+    ; A/Start?
+    ldh a, [hAState]
+    cp a, 1
+    jp z, SettingsHandleA
+    ldh a, [hStartState]
+    cp a, 1
+    jp z, SettingsHandleA
+
+    ; B?
+    ldh a, [hBState]
+    cp a, 1
+    jp z, SettingsHandleB
+
+    ; Directions?
+    ldh a, [hUpState]
+    cp a, 1
+    jp z, SettingsHandleUp
+    cp a, 16
+    jp c, .d1
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
+    jp z, SettingsHandleUp
+
+.d1
+    ldh a, [hDownState]
+    cp a, 1
+    jp z, SettingsHandleDown
+    cp a, 16
+    jp c, .l1
+    ldh a, [hFrameCtr]
+    and 3
+    cp a, 3
+    jp z, SettingsHandleDown
+
+.l1
+    ldh a, [hLeftState]
+    cp a, 1
+    jp z, SettingsHandleLeft
+    cp a, 16
+    jp c, .r1
+    ldh a, [hLeftState]
+    and 3
+    cp a, 3
+    jp z, SettingsHandleLeft
+
+.r1
+    ldh a, [hRightState]
+    cp a, 1
+    jp z, SettingsHandleRight
+    cp a, 16
+    ret c
+    ldh a, [hRightState]
+    and 3
+    cp a, 3
+    ret nz
+    jp SettingsHandleRight
+
+.eventLoopRecords
+    ; B?
+    ldh a, [hBState]
+    cp a, 1
+    jp z, .quitrecords
+
+    ; L/R?
+    ldh a, [hLeftState]
+    cp a, 1
+    jp z, RecordsHandleLeft
+    ldh a, [hRightState]
+    cp a, 1
+    jp z, RecordsHandleRight
+
+    ; Select
+    ldh a, [hSelectState]
+    cp a, 255 ; Max hold duraction
+    ret nz
+    jp RecordsHandleSelect
+
+.eventLoopCredits
+    ldh a, [hAState]
+    cp a, 1
+    jp z, .quitcredits
+    ldh a, [hBState]
+    cp a, 1
+    jp z, .quitcredits
+    ldh a, [hStartState]
+    cp a, 1
+    jp z, .quitcredits
+    ret
+
+.quitcredits
+.quitrecords
+    ld a, TITLE_MAIN
+    jp SwitchTitleMode
+
+
+    ; VBLank handlers for title screen.
+TitleVBlankHandlerB:
+    call ToATTR
+
+    ; Jump to the correct vblank handler.
+    ld b, 0
+    ld a, [wTitleMode]
+    ld c, a
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .vblankMain
+    jp .vblankProfile
+    jp .vblankSettings
+    jp .vblankRecords
+    jp .vblankCredits
+
+.vblankMain
+    ; What is the current option?
+    DEF option = 0
+    REPT TITLE_MAIN_OPTIONS
+        ld hl, TITLE_MAIN_OPTION_BASE+(32*option)
+        ld a, [wSelected]
+        cp a, option
+        jr z, .selected\@
+.notselected\@:
+        ld a, TILE_UNSELECTED
+        ld [hl], a
+        jr .done\@
+.selected\@:
+        ld a, TILE_SELECTED
+        ld [hl], a
+.done\@:
+        DEF option += 1
+    ENDR
+
+    ; RNG mode.
+    ld b, 0
+    ld a, [wRNGModeState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sRNGMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_MAIN_RNG
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; ROT mode.
+    ld b, 0
+    ld a, [wRotModeState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sROTMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_MAIN_ROT
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; DROP mode.
+    ld b, 0
+    ld a, [wDropModeState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sDROPMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_MAIN_DROP
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; CURVE mode.
+    ld b, 0
+    ld a, [wSpeedCurveState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sCURVEMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_MAIN_SCURVE
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; HIG mode.
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_DEAT
+    jr z, .disabled
+    cp a, SCURVE_SHIR
+    jr z, .disabled
+    xor a, a
+    ld b, a
+    ld a, [wAlways20GState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sHIGMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_MAIN_HIG
+    ld bc, 4
+    call UnsafeMemCopy
+    jr .profile
+.disabled
+    ld de, sDisabled
+    ld hl, TITLE_MAIN_HIG
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; PROFILE name.
+.profile
+    ld de, wProfileName
+    ld hl, TITLE_MAIN_PROFILE
+    ld bc, 3
+    call UnsafeMemCopy
+
+    ; START level.
+    jp DrawSpeedMain
+
+.vblankProfile
+    ; What is the current option?
+    DEF option = 0
+    REPT TITLE_PROFILE_OPTIONS
+        ld hl, TITLE_PROFILE_OPTION_BASE+(32*option)
+        ld a, [wSelected]
+        cp a, option
+        jr z, .selected\@
+.notselected\@:
+        ld a, TILE_UNSELECTED
+        ld [hl], a
+        jr .done\@
+.selected\@:
+        ld a, TILE_SELECTED
+        ld [hl], a
+.done\@:
+        DEF option += 1
+    ENDR
+
+    ; Which profile.
+    ld a, [rLastProfile]
+    add a, "0"
+    ld hl, TITLE_PROFILE_INDEX
+    ld [hl], a
+
+    ; Name.
+    ld a, [wProfileName+0]
+    ld hl, TITLE_PROFILE_NAME_0
+    ld [hl], a
+    ld a, [wProfileName+1]
+    ld hl, TITLE_PROFILE_NAME_1
+    ld [hl], a
+    ld a, [wProfileName+2]
+    ld hl, TITLE_PROFILE_NAME_2
+    ld [hl], a
+    ret
+
+
+.vblankSettings
+    ; What is the current option?
+    DEF option = 0
+    REPT TITLE_SETTINGS_OPTIONS
+        ld hl, TITLE_SETTINGS_OPTION_BASE+(32*option)
+        ld a, [wSelected]
+        cp a, option
+        jr z, .selected\@
+.notselected\@:
+        ld a, TILE_UNSELECTED
+        ld [hl], a
+        jr .done\@
+.selected\@:
+        ld a, TILE_SELECTED
+        ld [hl], a
+.done\@:
+        DEF option += 1
+    ENDR
+
+    ; RNG mode.
+    ld b, 0
+    ld a, [wRNGModeState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sRNGMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_RNG
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; ROT mode.
+    ld b, 0
+    ld a, [wRotModeState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sROTMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_ROT
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; DROP mode.
+    ld b, 0
+    ld a, [wDropModeState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sDROPMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_DROP
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; CURVE mode.
+    ld b, 0
+    ld a, [wSpeedCurveState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sCURVEMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_SCURVE
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; HIG mode.
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_DEAT
+    jr z, .disabled1
+    cp a, SCURVE_SHIR
+    jr z, .disabled1
+    xor a, a
+    ld b, a
+    ld a, [wAlways20GState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sHIGMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_HIG
+    ld bc, 4
+    call UnsafeMemCopy
+    jr .buttons
+.disabled1
+    ld de, sDisabled
+    ld hl, TITLE_SETTINGS_HIG
+    ld bc, 4
+    call UnsafeMemCopy
+
+.buttons
+    ld b, 0
+    ld a, [wSwapABState]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sBUTTONSMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_BUTTONS
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; START level.
+    call DrawSpeedSettings
+
+    ; Tetry!
+    ld a, [wSelected]
+    ld hl, sTetryButtons
+    ld bc, 64
+:   cp a, 0
+    jr z, .donetetry
+    dec a
+    add hl, bc
+    jr :-
+.donetetry
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_TETRY
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_SETTINGS_TETRY+(1*32)
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_SETTINGS_TETRY+(2*32)
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_SETTINGS_TETRY+(3*32)
+    ld bc, 16
+    jp SafeMemCopy
+
+.vblankRecords
+    ret
+
+.vblankCredits
+    ret
+
+
+MainHandleA:
+    ld a, [wSelected]
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp SwitchToGameplay
+    jp SwitchToGameplayBig
+    jp .toprofile
+    jp .tosettings
+    jp .torecords
+    jp .tocredits
+
+.tosettings
+    ld a, TITLE_SETTINGS
+    jp SwitchTitleMode
+
+.tocredits
+    ld a, TITLE_CREDITS
+    jp SwitchTitleMode
+
+.toprofile
+    ld a, TITLE_PROFILE
+    jp SwitchTitleMode
+
+.torecords
+    ld a, TITLE_RECORDS
+    jp SwitchTitleMode
+
+
+MainHandleUp:
     ld a, [wSelected]
     cp a, 0
     jr z, :+
     dec a
     ld [wSelected], a
     ret
-:   ld a, TITLE_OPTIONS-1
+:   ld a, TITLE_MAIN_OPTIONS-1
     ld [wSelected], a
     ret
 
-.down
-    ldh a, [hDownState]
-    cp a, 1
-    jr nz, .left
+
+MainHandleDown:
     ld a, [wSelected]
-    cp a, TITLE_OPTIONS-1
+    cp a, TITLE_MAIN_OPTIONS-1
     jr z, :+
     inc a
     ld [wSelected], a
@@ -275,41 +954,70 @@ TitleEventLoopHandlerB:
     ld [wSelected], a
     ret
 
-.left
-    ldh a, [hLeftState]
-    cp a, 1
-    jp z, DecrementOption
-    cp a, 16
-    jr c, .right
-    ldh a, [hFrameCtr]
-    and 3
-    cp a, 3
-    jr nz, .right
-    call DecrementOption
+
+SettingsHandleA:
+    ld a, [wSelected]
+    cp a, TITLE_SETTINGS_SEL_BACK
+    jp nz, SettingsHandleRight
+    ld a, TITLE_MAIN
+    jp SwitchTitleMode
+
+
+ProfileHandleB:
+SettingsHandleB:
+    ld a, TITLE_MAIN
+    jp SwitchTitleMode
+
+
+SettingsHandleDown:
+    ld a, [wSelected]
+    cp a, TITLE_SETTINGS_OPTIONS-1
+    jr z, :+
+    inc a
+    ld [wSelected], a
+    ret
+:   xor a, a
+    ld [wSelected], a
     ret
 
-.right
-    ldh a, [hRightState]
-    cp a, 1
-    jp z, IncrementOption
-    cp a, 16
-    jr c, .done
-    ldh a, [hFrameCtr]
-    and 3
-    cp a, 3
-    jr nz, .done
-    call IncrementOption
 
-.done
-    ret
-
-
-    ; Decrements the currently selected option.
-DecrementOption:
-.opt0
+SettingsHandleUp:
     ld a, [wSelected]
     cp a, 0
-    jr nz, .opt1
+    jr z, :+
+    dec a
+    ld [wSelected], a
+    ret
+:   ld a, TITLE_SETTINGS_OPTIONS-1
+    ld [wSelected], a
+    ret
+
+
+SettingsHandleLeft:
+    ld a, [wSelected]
+    cp a, TITLE_SETTINGS_SEL_BACK
+    ret z
+
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .buttons
+    jp .rng
+    jp .rot
+    jp .drop
+    jp .curve
+    jp .hig
+    jp DecrementLevel
+    no_jump
+
+.buttons
     ld a, [wSwapABState]
     cp a, 0
     jr z, :+
@@ -322,9 +1030,7 @@ DecrementOption:
     ld [rSwapABState], a
     ret
 
-.opt1
-    cp a, 1
-    jr nz, .opt2
+.rng
     ld a, [wRNGModeState]
     cp a, 0
     jr z, :+
@@ -337,9 +1043,7 @@ DecrementOption:
     ld [rRNGModeState], a
     ret
 
-.opt2
-    cp a, 2
-    jr nz, .opt3
+.rot
     ld a, [wRotModeState]
     cp a, 0
     jr z, :+
@@ -352,9 +1056,7 @@ DecrementOption:
     ld [rRotModeState], a
     ret
 
-.opt3
-    cp a, 3
-    jr nz, .opt4
+.drop
     ld a, [wDropModeState]
     cp a, 0
     jr z, :+
@@ -367,9 +1069,7 @@ DecrementOption:
     ld [rDropModeState], a
     ret
 
-.opt4
-    cp a, 4
-    jr nz, .opt5
+.curve
     ld a, [wSpeedCurveState]
     cp a, 0
     jr z, :+
@@ -384,9 +1084,7 @@ DecrementOption:
     call InitSpeedCurve
     ret
 
-.opt5
-    cp a, 5
-    jr nz, .opt6
+.hig
     ld a, [wAlways20GState]
     cp a, 0
     jr z, :+
@@ -399,34 +1097,32 @@ DecrementOption:
     ld [rAlways20GState], a
     ret
 
-.opt6
-    jr DecrementLevel
 
-
-    ; Decrements start level.
-DecrementLevel:
-    ; Decrement
-    ldh a, [hStartSpeed]
-    ld l, a
-    ldh a, [hStartSpeed+1]
-    ld h, a
-    ld bc, -SCURVE_ENTRY_SIZE
-    add hl, bc
-    ld a, l
-    ldh [hStartSpeed], a
-    ld [rSelectedStartLevel], a
-    ld a, h
-    ldh [hStartSpeed+1], a
-    ld [rSelectedStartLevel+1], a
-    jp CheckLevelRange
-
-
-    ; Increments the selected option.
-IncrementOption:
-.opt0
+SettingsHandleRight:
     ld a, [wSelected]
-    cp a, 0
-    jr nz, .opt1
+    cp a, TITLE_SETTINGS_SEL_BACK
+    ret z
+
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .buttons
+    jp .rng
+    jp .rot
+    jp .drop
+    jp .curve
+    jp .hig
+    jp IncrementLevel
+    no_jump
+
+.buttons
     ld a, [wSwapABState]
     cp a, BUTTON_MODE_COUNT-1
     jr z, :+
@@ -439,9 +1135,7 @@ IncrementOption:
     ld [rSwapABState], a
     ret
 
-.opt1
-    cp a, 1
-    jr nz, .opt2
+.rng
     ld a, [wRNGModeState]
     cp a, RNG_MODE_COUNT-1
     jr z, :+
@@ -454,9 +1148,7 @@ IncrementOption:
     ld [rRNGModeState], a
     ret
 
-.opt2
-    cp a, 2
-    jr nz, .opt3
+.rot
     ld a, [wRotModeState]
     cp a, ROT_MODE_COUNT-1
     jr z, :+
@@ -469,9 +1161,7 @@ IncrementOption:
     ld [rRotModeState], a
     ret
 
-.opt3
-    cp a, 3
-    jr nz, .opt4
+.drop
     ld a, [wDropModeState]
     cp a, DROP_MODE_COUNT-1
     jr z, :+
@@ -484,9 +1174,7 @@ IncrementOption:
     ld [rDropModeState], a
     ret
 
-.opt4
-    cp a, 4
-    jr nz, .opt5
+.curve
     ld a, [wSpeedCurveState]
     cp a, SCURVE_COUNT-1
     jr z, :+
@@ -501,9 +1189,7 @@ IncrementOption:
     call InitSpeedCurve
     ret
 
-.opt5
-    cp a, 5
-    jr nz, .opt6
+.hig
     ld a, [wAlways20GState]
     cp a, HIG_MODE_COUNT-1
     jr z, :+
@@ -516,8 +1202,189 @@ IncrementOption:
     ld [rAlways20GState], a
     ret
 
-.opt6
-    jr IncrementLevel
+ProfileHandleA:
+    ld a, [wSelected]
+    cp a, TITLE_PROFILE_SEL_BACK
+    ld b, a
+    ld a, TITLE_MAIN
+    jp z, SwitchTitleMode
+    ld a, b
+    cp a, TITLE_PROFILE_SEL_RESET
+    jp z, ResetProfile
+    jp ProfileHandleRight
+
+
+ProfileHandleRight:
+    ld a, [wSelected]
+    cp a, TITLE_PROFILE_SEL_BACK
+    ret z
+    cp a, TITLE_PROFILE_SEL_RESET
+    ret z
+
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .idx
+    jp .l0
+    jp .l1
+    jp .l2
+    no_jump
+
+.idx
+    ld a, [rLastProfile]
+    inc a
+    cp a, PROFILE_COUNT
+    jr nz, .doit
+    xor a, a
+.doit
+    jp ChangeProfile
+
+.l0
+    ld a, [wProfileName+0]
+    inc a
+    cp a, "Z"+1
+    jr nz, .doit1
+    ld a, "0"-1
+.doit1
+    ld [wProfileName+0], a
+    ld [rProfileName+0], a
+    ret
+
+.l1
+    ld a, [wProfileName+1]
+    inc a
+    cp a, "Z"+1
+    jr nz, .doit2
+    ld a, "0"-1
+.doit2
+    ld [wProfileName+1], a
+    ld [rProfileName+1], a
+    ret
+
+.l2
+    ld a, [wProfileName+2]
+    inc a
+    cp a, "Z"+1
+    jr nz, .doit3
+    ld a, "0"-1
+.doit3
+    ld [wProfileName+2], a
+    ld [rProfileName+2], a
+    ret
+
+
+ProfileHandleLeft:
+    ld a, [wSelected]
+    cp a, TITLE_PROFILE_SEL_BACK
+    ret z
+    cp a, TITLE_PROFILE_SEL_RESET
+    ret z
+
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .idx
+    jp .l0
+    jp .l1
+    jp .l2
+    no_jump
+
+.idx
+    ld a, [rLastProfile]
+    dec a
+    cp a, $FF
+    jr nz, .doit
+    ld a, PROFILE_COUNT-1
+.doit
+    jp ChangeProfile
+
+.l0
+    ld a, [wProfileName+0]
+    dec a
+    cp a, "0"-2
+    jr nz, .doit1
+    ld a, "Z"
+.doit1
+    ld [wProfileName+0], a
+    ld [rProfileName+0], a
+    ret
+
+.l1
+    ld a, [wProfileName+1]
+    dec a
+    cp a, "0"-2
+    jr nz, .doit2
+    ld a, "Z"
+.doit2
+    ld [wProfileName+1], a
+    ld [rProfileName+1], a
+    ret
+
+.l2
+    ld a, [wProfileName+2]
+    dec a
+    cp a, "0"-2
+    jr nz, .doit3
+    ld a, "Z"
+.doit3
+    ld [wProfileName+2], a
+    ld [rProfileName+2], a
+    ret
+
+
+ProfileHandleDown:
+    ld a, [wSelected]
+    cp a, TITLE_PROFILE_OPTIONS-1
+    jr z, :+
+    inc a
+    ld [wSelected], a
+    ret
+:   xor a, a
+    ld [wSelected], a
+    ret
+
+
+ProfileHandleUp:
+    ld a, [wSelected]
+    cp a, 0
+    jr z, :+
+    dec a
+    ld [wSelected], a
+    ret
+:   ld a, TITLE_PROFILE_OPTIONS-1
+    ld [wSelected], a
+    ret
+
+
+    ; Decrements start level.
+DecrementLevel:
+    ; Decrement
+    ldh a, [hStartSpeed]
+    ld l, a
+    ldh a, [hStartSpeed+1]
+    ld h, a
+    ld bc, -SCURVE_ENTRY_SIZE
+    add hl, bc
+    ld a, l
+    ldh [hStartSpeed], a
+    ld a, h
+    ldh [hStartSpeed+1], a
+    call PersistLevel
+    jp CheckLevelRange
 
 
     ; Increments start level.
@@ -531,10 +1398,9 @@ IncrementLevel:
     add hl, bc
     ld a, l
     ldh [hStartSpeed], a
-    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
-    ld [rSelectedStartLevel+1], a
+    call PersistLevel
     jp CheckLevelRange
 
 
@@ -544,11 +1410,9 @@ InitSpeedCurve:
     call GetStart
     ld a, l
     ldh [hStartSpeed], a
-    ld [rSelectedStartLevel], a
     ld a, h
     ldh [hStartSpeed+1], a
-    ld [rSelectedStartLevel+1], a
-    ret
+    jp PersistLevel
 
 
     ; Gets the end of a speed curve.
@@ -625,11 +1489,10 @@ CheckLevelRange:
     jr nz, .notatend
     call GetStart
     ld a, l
-    ld [rSelectedStartLevel], a
     ldh [hStartSpeed], a
     ld a, h
-    ld [rSelectedStartLevel+1], a
     ldh [hStartSpeed+1], a
+    call PersistLevel
 
 .notatend
     ld de, -SCURVE_ENTRY_SIZE
@@ -648,164 +1511,179 @@ CheckLevelRange:
     ld l, c
     add hl, de
     ld a, l
-    ld [rSelectedStartLevel], a
     ldh [hStartSpeed], a
     ld a, h
-    ld [rSelectedStartLevel+1], a
     ldh [hStartSpeed+1], a
+    call PersistLevel
 
 .notatstart
     ret
 
-
-    ; Handles the display of the menu.
-TitleVBlankHandlerB:
-    call ToATTR
-
-    ld a, TILE_UNSELECTED
-    ld hl, TITLE_OPTION_0
-    ld [hl], a
-    ld hl, TITLE_OPTION_1
-    ld [hl], a
-    ld hl, TITLE_OPTION_2
-    ld [hl], a
-    ld hl, TITLE_OPTION_3
-    ld [hl], a
-    ld hl, TITLE_OPTION_4
-    ld [hl], a
-    ld hl, TITLE_OPTION_5
-    ld [hl], a
-    ld hl, TITLE_OPTION_6
-    ld [hl], a
-
+RecordsHandleLeft:
+    xor a, a
+    ldh [hSelectState], a
     ld a, [wSelected]
-    ld hl, TITLE_OPTION_0
     cp a, 0
     jr z, :+
-    ld hl, TITLE_OPTION_1
-    cp a, 1
+    dec a
+    ld [wSelected], a
+    jp RenderScores
+:   ld a, SCURVE_COUNT-1
+    ld [wSelected], a
+    jp RenderScores
+
+RecordsHandleRight:
+    xor a, a
+    ldh [hSelectState], a
+    ld a, [wSelected]
+    cp a, SCURVE_COUNT-1
     jr z, :+
-    ld hl, TITLE_OPTION_2
-    cp a, 2
-    jr z, :+
-    ld hl, TITLE_OPTION_3
-    cp a, 3
-    jr z, :+
-    ld hl, TITLE_OPTION_4
-    cp a, 4
-    jr z, :+
-    ld hl, TITLE_OPTION_5
-    cp a, 5
-    jr z, :+
-    ld hl, TITLE_OPTION_6
+    inc a
+    ld [wSelected], a
+    jp RenderScores
+:   xor a, a
+    ld [wSelected], a
+    jp RenderScores
 
-:   ld a, TILE_SELECTED
-    ld [hl], a
-
-    ; Draw option 0.
+RecordsHandleSelect:
     xor a, a
-    ld b, a
-    ld a, [wSwapABState]
+    ldh [hSelectState], a
+    call ResetScores
+    jp RenderScores
+
+RenderScores:
+    ; Turn the screen off if it's on.
+    ldh a, [rLCDC]
+    and LCDCF_ON
+    jr z, :+ ; Screen is already off.
+    wait_vram
+    xor a, a
+    ldh [rLCDC], a
+
+    ; Draw the mode.
+:   ld b, 0
+    ld a, [wSelected]
     sla a
     sla a
     ld c, a
-    ld hl, sOption0
+    ld hl, sCURVEMode
     add hl, bc
     ld d, h
     ld e, l
-    ld hl, TITLE_OPTION_0+TITLE_OPTION_OFFSET
+    ld hl, TITLE_RECORDS_MODE
     ld bc, 4
     call UnsafeMemCopy
 
-    ; Draw option 1.
-    xor a, a
-    ld b, a
-    ld a, [wRNGModeState]
-    sla a
-    sla a
-    ld c, a
-    ld hl, sOption1
-    add hl, bc
+    ; Get the correct speed curve.
+    ld a, [wSelected]
+    call InitTargetHSTable
+
+    ; Start of table is at HL. Put it in DE.
     ld d, h
     ld e, l
-    ld hl, TITLE_OPTION_1+TITLE_OPTION_OFFSET
-    ld bc, 4
-    call UnsafeMemCopy
 
-    ; Draw option 2.
-    xor a, a
-    ld b, a
-    ld a, [rRotModeState]
-    sla a
-    sla a
-    ld c, a
-    ld hl, sOption2
-    add hl, bc
-    ld d, h
-    ld e, l
-    ld hl, TITLE_OPTION_2+TITLE_OPTION_OFFSET
-    ld bc, 4
-    call UnsafeMemCopy
+    ld hl, TITLE_RECORDS_SCORE_BASE+4
 
-    ; Draw option 3.
-    xor a, a
-    ld b, a
-    ld a, [rDropModeState]
-    sla a
-    sla a
-    ld c, a
-    ld hl, sOption3
-    add hl, bc
-    ld d, h
-    ld e, l
-    ld hl, TITLE_OPTION_3+TITLE_OPTION_OFFSET
-    ld bc, 4
-    call UnsafeMemCopy
+    REPT 10
+        ; Render score.
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
 
-    ; Draw option 5.
-    xor a, a
-    ld b, a
-    ld a, [wSpeedCurveState]
-    sla a
-    sla a
-    ld c, a
-    ld hl, sOption4
-    add hl, bc
-    ld d, h
-    ld e, l
-    ld hl, TITLE_OPTION_4+TITLE_OPTION_OFFSET
-    ld bc, 4
-    call UnsafeMemCopy
+        ; Jump back to Name.
+        ld bc, -12
+        add hl, bc
 
-    ; Draw option 5.
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_DEAT
-    jr z, .disabled
-    cp a, SCURVE_SHIR
-    jr z, .disabled
-    xor a, a
-    ld b, a
-    ld a, [wAlways20GState]
-    sla a
-    sla a
-    ld c, a
-    ld hl, sOption5
-    add hl, bc
-    ld d, h
-    ld e, l
-    ld hl, TITLE_OPTION_5+TITLE_OPTION_OFFSET
-    ld bc, 4
-    call UnsafeMemCopy
-    jr .opt6
-.disabled
-    ld de, sDisabled
-    ld hl, TITLE_OPTION_5+TITLE_OPTION_OFFSET
-    ld bc, 4
-    call UnsafeMemCopy
+        ; Render it.
+        ld a, [de]
+        inc de
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        ld [hl+], a
 
-    ; Draw option 6.
-.opt6
-    jp DrawOption6
+        ; Jump to tells.
+        ld bc, 10
+        add hl, bc
+
+        ; Render them.
+        ld a, [de]
+        inc de
+        cp a, GRADE_NONE
+        jr nz, .grade\@
+.nograde\@
+        ld a, TILE_BLANK
+        ld [hl+], a
+        jr .postgrade\@
+.grade\@
+        add a, TITLE_RECORDS_GRADE_BASE
+        ld [hl+], a
+.postgrade\@
+        ld a, [de]
+        inc de
+        add a, TITLE_RECORDS_RNG_BASE
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, TITLE_RECORDS_ROT_BASE
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, TITLE_RECORDS_DROP_BASE
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, TITLE_RECORDS_HIG_BASE
+        ld [hl+], a
+
+        ; Jump to next line.
+        push hl
+        ld h, d
+        ld l, e
+        ld bc, 16
+        add hl, bc
+        ld d, h
+        ld e, l
+        pop hl
+        ld bc, 18
+        add hl, bc
+    ENDR
+
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
+    ldh [rLCDC], a
+    ret
 
 
 ENDC

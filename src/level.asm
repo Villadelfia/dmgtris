@@ -43,8 +43,16 @@ SECTION "Level Variables", WRAM0
 wBoneActivationLevel: ds 2
 wInvisActivationLevel: ds 2
 wKillScreenActivationLevel: ds 2
+wKillScreenActivationLevelBCD: ds 2
+wLastLockLevel: ds 2
+wStaffRollDuration:: ds 2
+wBigStaffRoll:: ds 1
 wBonesActive:: ds 1
 wInvisActive:: ds 1
+wKillScreenActive:: ds 1
+wLockLevel:: ds 1
+wShouldGoStaffRoll:: ds 1
+wNoMoreLocks:: ds 1
 
 
 SECTION "Level Functions", ROM0
@@ -58,6 +66,10 @@ LevelInit::
     ldh [hRequiresLineClear], a
     ld [wBonesActive], a
     ld [wInvisActive], a
+    ld [wKillScreenActive], a
+    ld [wLockLevel], a
+    ld [wShouldGoStaffRoll], a
+    ld [wNoMoreLocks], a
 
     ldh a, [hStartSpeed]
     ld l, a
@@ -179,8 +191,22 @@ SpecialLevelInit:
     ld [wInvisActivationLevel+1], a
     ld a, [hl+]
     ld [wKillScreenActivationLevel], a
-    ld a, [hl]
+    ld a, [hl+]
     ld [wKillScreenActivationLevel+1], a
+    ld a, [hl+]
+    ld [wKillScreenActivationLevelBCD], a
+    ld a, [hl+]
+    ld [wKillScreenActivationLevelBCD+1], a
+    ld a, [hl+]
+    ld [wLastLockLevel], a
+    ld a, [hl+]
+    ld [wLastLockLevel+1], a
+    ld a, [hl+]
+    ld [wStaffRollDuration], a
+    ld a, [hl+]
+    ld [wStaffRollDuration+1], a
+    ld a, [hl]
+    ld [wBigStaffRoll], a
     ret
 
 
@@ -270,10 +296,7 @@ LevelUp::
     ld a, h
     ldh [hLevel+1], a
     call DoSpeedUp
-    call CheckSpecialLevelConditions
-    call SFXKill
-    ld a, SFX_RANKGM
-    jp SFXEnqueue
+    jp CheckSpecialLevelConditions
 
 .checknlevel
     ; Make wNLevel make sense.
@@ -300,6 +323,7 @@ LevelUp::
     jr nz, .checkspeedup
     ld a, $FF
     ldh [hRequiresLineClear], a
+    call SFXKill
     ld a, SFX_LEVELLOCK
     call SFXEnqueue
     jr .leveljinglemaybe
@@ -350,8 +374,12 @@ LevelUp::
     and a, [hl]
     cp a, 9
     jr nz, .leveljinglemaybe
+    ld a, [wNoMoreLocks]
+    cp a, $FF
+    jr z, .checkspeedup
     ld a, $FF
     ldh [hRequiresLineClear], a
+    call SFXKill
     ld a, SFX_LEVELLOCK
     call SFXEnqueue
 
@@ -361,6 +389,7 @@ LevelUp::
     ldh a, [hCLevel+1]
     cp a, b
     jr z, .checkspeedup
+    call SFXKill
     ld a, SFX_LEVELUP
     call SFXEnqueue
 
@@ -459,11 +488,90 @@ DoSpeedUp:
 
 
 CheckSpecialLevelConditions:
+    ; Is our nlevel > our kill screen?
+    ld hl, wKillScreenActivationLevelBCD+1
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ld b, a
+    ldh a, [hNLevel]
+    cp a, b
+    jr c, .nooverride
+    jr nz, .override
+    ld a, [hl-]
+    and a, $0F
+    ld b, a
+    ldh a, [hNLevel+1]
+    cp a, b
+    jr c, .nooverride
+    jr nz, .override
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ld b, a
+    ldh a, [hNLevel+2]
+    cp a, b
+    jr c, .nooverride
+    jr nz, .override
+    ld a, [hl]
+    and a, $0F
+    ld b, a
+    ldh a, [hNLevel+3]
+    cp a, b
+    jr c, .nooverride
+
+.override
+    ld hl, wKillScreenActivationLevelBCD
+    ld a, [hl]
+    and a, $0F
+    ldh [hNLevel+3], a
+    ld a, [hl+]
+    swap a
+    and a, $0F
+    ldh [hNLevel+2], a
+    ld a, [hl]
+    and a, $0F
+    ldh [hNLevel+1], a
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ldh [hNLevel], a
+
     ; Get our level in bc
+.nooverride
     ldh a, [hLevel]
     ld c, a
     ldh a, [hLevel+1]
     ld b, a
+
+    ; Do we need to do a special lock?
+.speciallock
+    ld hl, wLastLockLevel
+    ld a, [hl+]
+    cp a, $FF ; $FF means never.
+    jp z, .bones
+
+    ; Load the level, binary in de.
+    ld e, a
+    ld d, [hl]
+
+    ; Check if BC == DE...
+    ld a, b
+    cp a, d
+    jr nz, .bones
+    ld a, c
+    cp a, e
+    jr nz, .bones
+
+    ; Jingle and level lock.
+    ld a, $FF
+    ldh [hRequiresLineClear], a
+    ld [wNoMoreLocks], a
+    push bc
+    call SFXKill
+    ld a, SFX_LEVELLOCK
+    call SFXEnqueue
+    pop bc
 
     ; Bones?
 .bones
@@ -555,6 +663,46 @@ CheckSpecialLevelConditions:
     ret c
 
 .rip
+    call SFXKill
+
+    ld a, $FF
+    ld [wKillScreenActive], a
+
+    ld hl, wKillScreenActivationLevelBCD
+    ld a, [hl]
+    and a, $0F
+    ldh [hCLevel+3], a
+    ldh [hNLevel+3], a
+    ld a, [hl+]
+    swap a
+    and a, $0F
+    ldh [hCLevel+2], a
+    ldh [hNLevel+2], a
+    ld a, [hl]
+    and a, $0F
+    ldh [hCLevel+1], a
+    ldh [hNLevel+1], a
+    ld a, [hl]
+    swap a
+    and a, $0F
+    ldh [hCLevel], a
+    ldh [hNLevel], a
+    ld a, $FF
+    ld [wLockLevel], a
+
+    ; Since we triggered a kill screen, does this mean the game now just ends, or do we transition to the staff roll?
+.staffroll
+    ld hl, wStaffRollDuration
+    ld a, [hl+]
+    cp a, $FF
+    jr z, .justkill
+
+    ; Yes, tell the game that we should go to staff roll instead.
+    ld a, $FF
+    ld [wShouldGoStaffRoll], a
+    ret
+
+.justkill
     ld a, 1
     ldh [hCurrentARE], a
     ldh [hCurrentLineARE], a
@@ -567,6 +715,28 @@ CheckSpecialLevelConditions:
 
     xor a, a
     ldh [hCurrentFractionalGravity], a
+    ret
+
+
+TriggerKillScreen::
+    call SFXKill
+    ld a, 1
+    ldh [hCurrentARE], a
+    ldh [hCurrentLineARE], a
+    ldh [hCurrentDAS], a
+    ldh [hCurrentLockDelay], a
+    ldh [hCurrentLineClearDelay], a
+
+    ld a, 20
+    ldh [hCurrentIntegerGravity], a
+
+    xor a, a
+    ldh [hCurrentFractionalGravity], a
+    ld [wKillScreenActivationLevel], a
+    ld [wKillScreenActivationLevel+1], a
+
+    ld a, $FF
+    ld [wKillScreenActive], a
     ret
 
 

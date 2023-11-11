@@ -13,8 +13,10 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - A speed curve reminiscent of TGM, starting slightly faster and skipping the awkward speed reset. The game continues infinitely... But so does the speed increase.
 - A rock solid 60FPS with a traditional 20x10 grid.
 - Game boy color mode.
-- Invisible rolls, big mode, bone pieces, and even torikans!
-- Grading systems!
+- Invisible rolls, big mode, including big mode rolls, bone pieces, and even torikans!
+- Grading systems that are inspired by, but do not exactly mimic, those in the TGM series of games in many of the speed curves.
+- A challenging final challenge awaits you at the end of all the finite modes.
+- High scores.
 
 ## Playing
 Try the game online [here](https://villadelfia.org/dmgtris/). Controls are arrow keys, Z, X, Space, and Enter. The online version has no sound though, so the better thing would be to run it in an emulator locally.
@@ -56,7 +58,7 @@ Choose how the up and down buttons act:
 ### Speed Curve
 Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all. The MYCO speed curve mimics the excellent game Tromi by Mycophobia.
 
-Note that all modes use the same scoring and they are all infinite.
+Note that all modes use the same scoring.
 
 Some curves have their own grading system
 
@@ -98,10 +100,10 @@ ScoreIncrement points are then awarded.
 
 ## Controls
 ### Menu
-- A/B/Start — Start the game
+- A/B/Start — Navigate the menus
 - Up/Down — Change which option is selected
 - Left/Right — Change the value of the option
-- Select — Hold when pressing A/B/Start to begin the game in big mode
+- Select — Switch profiles while on the main menu, hold for 5 seconds to wipe the score table currently displayed when on the records screen.
 
 ### Gameplay
 - A — Rotate 1
@@ -119,10 +121,8 @@ ScoreIncrement points are then awarded.
 
 
 ## Screenshots
-![DMG Title Screen](https://villadelfia.org/i/uvnJKLWR.png)
-![DMG Gameplay](https://villadelfia.org/i/GK_r3R_C.png)
-![GBC Title Screen](https://villadelfia.org/i/WYvFGaN8.png)
-![GBC Gameplay](https://villadelfia.org/i/D6NHvBsP.png)
+![DMG Gameplay](https://villadelfia.org/i/xAAHfqDw.png)
+![GBC Gameplay](https://villadelfia.org/i/Hj2P8Pk5.png)
 
 
 ## Building and Development

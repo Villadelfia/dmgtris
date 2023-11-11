@@ -31,14 +31,11 @@ hLCDCCtr:: ds 1
 
 
 SECTION "Interrupt Initialization Functions", ROM0
-    ; Zeroes out the interrupt counter.
-IntrInit::
+EnableScreenSquish::
+    di
+    nop
     xor a, a
     ldh [hLCDCCtr], a
-    ret
-
-    ; Sets up the STAT interrupt.
-InitializeLCDCInterrupt::
     ld a, STATF_LYC
     ldh [rSTAT], a
     ld a, INIT_LYC
@@ -49,6 +46,16 @@ InitializeLCDCInterrupt::
     ldh [rIE], a
     xor a, a
     ldh [rIF], a
+    ei
+    ret
+
+DisableScreenSquish::
+    di
+    nop
+    xor a, a
+    ldh [rIE], a
+    ldh [rIF], a
+    ldh [rSCY], a
     ei
     ret
 

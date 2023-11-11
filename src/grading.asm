@@ -43,6 +43,9 @@ wCOOLIsActive::        ds 1
 wSubgrade:             ds 1
 wREGRETIsActive::      ds 1
 wGradeBoosts:          ds 1
+wTGM1level300RequirementMet:    ds 1
+wTGM1level500RequirementMet:    ds 1
+wTGM1level999RequirementMet:    ds 1
 
 
 SECTION "Grading Data", ROM0
@@ -248,39 +251,39 @@ sDMGTGrading:
     db 125, 10, 20, 40, 50 ; Grade 9   — frames/decay, single base, double base, triple base, tetris base
     db 80,  10, 20, 30, 40 ; Grade 8   — frames/decay, single base, double base, triple base, tetris base
     db 80,  10, 20, 30, 40 ; Grade 7   — frames/decay, single base, double base, triple base, tetris base
-    db 50,  10, 20, 30, 40 ; Grade 6   — frames/decay, single base, double base, triple base, tetris base
-    db 45,   5, 20, 30, 40 ; Grade 5   — frames/decay, single base, double base, triple base, tetris base
-    db 45,   5, 20, 30, 40 ; Grade 4   — frames/decay, single base, double base, triple base, tetris base
-    db 45,   5, 20, 30, 40 ; Grade 3   — frames/decay, single base, double base, triple base, tetris base
-    db 40,   5, 20, 20, 30 ; Grade 2   — frames/decay, single base, double base, triple base, tetris base
-    db 40,   5, 20, 20, 30 ; Grade 1   — frames/decay, single base, double base, triple base, tetris base
-    db 40,   2, 20, 20, 30 ; Grade S1  — frames/decay, single base, double base, triple base, tetris base
-    db 40,   2, 20, 20, 30 ; Grade S2  — frames/decay, single base, double base, triple base, tetris base
-    db 40,   2, 20, 20, 30 ; Grade S3  — frames/decay, single base, double base, triple base, tetris base
-    db 30,   2, 20, 20, 30 ; Grade S4  — frames/decay, single base, double base, triple base, tetris base
-    db 30,   2, 15, 20, 30 ; Grade S5  — frames/decay, single base, double base, triple base, tetris base
-    db 30,   2, 15, 20, 30 ; Grade S6  — frames/decay, single base, double base, triple base, tetris base
+    db 40,  10, 20, 30, 40 ; Grade 6   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   5, 20, 30, 40 ; Grade 5   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   5, 20, 30, 40 ; Grade 4   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   5, 20, 30, 40 ; Grade 3   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   2, 20, 20, 30 ; Grade 2   — frames/decay, single base, double base, triple base, tetris base
+    db 40,   2, 15, 20, 30 ; Grade 1   — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S1  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S2  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S3  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S4  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S5  — frames/decay, single base, double base, triple base, tetris base
+    db 20,   2, 15, 20, 30 ; Grade S6  — frames/decay, single base, double base, triple base, tetris base
     db 20,   2, 15, 20, 30 ; Grade S7  — frames/decay, single base, double base, triple base, tetris base
     db 20,   2, 15, 20, 30 ; Grade S8  — frames/decay, single base, double base, triple base, tetris base
-    db 20,   2, 15, 20, 30 ; Grade S9  — frames/decay, single base, double base, triple base, tetris base
-    db 20,   2, 15, 20, 30 ; Grade S10 — frames/decay, single base, double base, triple base, tetris base (hey!, nice idea here to make S10-S13 more useful XD)
-    db 20,   2, 15, 20, 30 ; Grade S11 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 20, 30 ; Grade S9  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 20, 30 ; Grade S10 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 15, 20, 30 ; Grade S11 — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 15, 20, 30 ; Grade S12 — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 20, 30 ; Grade S13 — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 15, 30 ; Grade m1  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 15, 30 ; Grade m2  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 15, 30 ; Grade m3  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 15, 15, 30 ; Grade m4  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade S13 — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m1  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m2  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m3  — frames/decay, single base, double base, triple base, tetris base
+    db 15,   2, 12, 15, 30 ; Grade m4  — frames/decay, single base, double base, triple base, tetris base
     db 15,   2, 12, 15, 30 ; Grade m5  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 12, 15, 30 ; Grade m6  — frames/decay, single base, double base, triple base, tetris base
-    db 15,   2, 12, 15, 30 ; Grade m7  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 15, 30 ; Grade m6  — frames/decay, single base, double base, triple base, tetris base
+    db 10,   2, 12, 15, 30 ; Grade m7  — frames/decay, single base, double base, triple base, tetris base
     db 10,   2, 12, 15, 30 ; Grade m8  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 15, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2, 12, 13, 30 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
-    db 5,    2,  8, 10, 20 ; Grade MM  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2,  8, 13, 30 ; Grade m9  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2,  8, 13, 30 ; Grade M   — frames/decay, single base, double base, triple base, tetris base
+    db 5,    2,  8, 13, 30 ; Grade MK  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    1,  8, 13, 30 ; Grade MV  — frames/decay, single base, double base, triple base, tetris base
+    db 5,    1,  8, 13, 20 ; Grade MO  — frames/decay, single base, double base, triple base, tetris base
+    db 4,    1,  4, 10, 20 ; Grade MM  — frames/decay, single base, double base, triple base, tetris base
                            ; No entry for GM. We're done there.
 
 sDMGTGaugeLUT:
@@ -320,6 +323,9 @@ GradeInit::
     ld [wPrevCOOL], a
     ld [wPrevCOOL+1], a
     ld [wPrevCOOL+2], a
+    ld [wTGM1level300RequirementMet], a
+    ld [wTGM1level500RequirementMet], a
+    ld [wTGM1level999RequirementMet], a
 
     ; Most modes begin ungraded.
     ld a, GRADE_NONE
@@ -591,23 +597,15 @@ UpdateGradeDMGT::
 .levelmult
     ld a, [hCLevel+CLEVEL_THOUSANDS] ; thousands
     cp a, 1
-    jr nc, .mult5
+    jr nc, .mult4
     ld a, [hCLevel+CLEVEL_HUNDREDS] ; hundreds
-    cp a, 7
+    cp a, 9
     jr nc, .mult4
     cp a, 5
     jr nc, .mult3
     cp a, 2
     jr nc, .mult2
     jr .mult1
-
-.mult5
-    ld a, d
-    add a, d
-    add a, d
-    add a, d
-    add a, d
-    jr .processgrade
 
 .mult4
     ld a, d
@@ -751,9 +749,14 @@ UpdateGradeTGM1:
     cp a, GRADE_GM
     ret z
 
+    ; Bail if we didn't make the 999 check.
+    ld a, [wTGM1level999RequirementMet]
+    cp a, 0
+    ret nz
+
     ; Skip to GM check if already S9.
     cp a, GRADE_S9
-    jr nc, .maybegm
+    jp nc, .check999
 
 .trygradeup
     ; Otherwise, check if we can increase the grade.
@@ -792,7 +795,7 @@ UpdateGradeTGM1:
     ; Return if C < E. Otherwise increase the grade.
     ld a, c
     cp a, e
-    ret c
+    jr c, .check300
 
 .increasegrade
     ; Add 1 to the grade.
@@ -816,14 +819,117 @@ UpdateGradeTGM1:
     ; Loop and see if we can increment more grades.
     ld a, [wDisplayedGrade]
     cp a, GRADE_S9 ; Don't go past S9.
-    ret z
-    jr .trygradeup
+    jr nz, .trygradeup
 
-.maybegm
-    ; Level needs to be 1000 or greater.
-    ld a, [hCLevel+CLEVEL_THOUSANDS] ; Level, thousands digit.
-    cp a, 1
+
+.check300
+    ; Are we at level 300?
+    ld a, [hCLevel+CLEVEL_HUNDREDS]
+    cp a, 3
     ret c
+
+    ; Have we judged the requirement before?
+    ld a, [wTGM1level300RequirementMet]
+    cp a, 0
+    jr nz, .check500
+
+    ; Rank?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_1
+    jr c, .fail300
+
+    ; Time?
+    ld b, 4
+    ld c, 15
+    call CheckTorikan
+    cp a, $FF
+    jr nz, .fail300
+
+.success300
+    ld a, $FF
+    ld [wTGM1level300RequirementMet], a
+    jr .check500
+
+.fail300
+    ld a, $01
+    ld [wTGM1level300RequirementMet], a
+    jr .check500
+
+
+.check500
+    ; Are we at level 500?
+    ld a, [hCLevel+CLEVEL_HUNDREDS]
+    cp a, 5
+    ret c
+
+    ; Have we judged the requirement before?
+    ld a, [wTGM1level500RequirementMet]
+    cp a, 0
+    jr nz, .check999
+
+    ; Rank?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_S4
+    jr c, .fail500
+
+    ; Time?
+    ld b, 7
+    ld c, 30
+    call CheckTorikan
+    cp a, $FF
+    jr nz, .fail500
+
+.success500
+    ld a, $FF
+    ld [wTGM1level500RequirementMet], a
+    jr .check999
+
+.fail500
+    ld a, $01
+    ld [wTGM1level500RequirementMet], a
+    jr .check999
+
+
+.check999
+    ; Level needs to be 999.
+    ld a, [hCLevel+CLEVEL_HUNDREDS]
+    cp a, 9
+    ret nz
+    ld a, [hCLevel+CLEVEL_TENS]
+    cp a, 9
+    ret nz
+    ld a, [hCLevel+CLEVEL_ONES]
+    cp a, 9
+    ret nz
+
+    ; Have we judged the requirement before?
+    ld a, [wTGM1level999RequirementMet]
+    cp a, 0
+    ret nz
+
+    ; Did both other checks succeed?
+    ld a, [wTGM1level300RequirementMet]
+    cp a, $FF
+    jr nz, .fail999
+    ld a, [wTGM1level500RequirementMet]
+    cp a, $FF
+    jr nz, .fail999
+
+    ; Rank? (This is technically slightly wrong but it's nearly impossible to miss the real requirement but make this one, 6000 points.)
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_S9
+    jr c, .fail999
+
+    ; Time?
+    ld b, 13
+    ld c, 30
+    call CheckTorikan
+    cp a, $FF
+    jr nz, .fail999
+
+.success999
+    ld a, $FF
+    ld [wTGM1level999RequirementMet], a
 
     ; Set the grade to GM
     ld a, GRADE_GM
@@ -839,6 +945,11 @@ UpdateGradeTGM1:
     ld [wEffectTimer], a
 
     ; Return
+    ret
+
+.fail999
+    ld a, $01
+    ld [wTGM1level999RequirementMet], a
     ret
 
 

@@ -376,6 +376,10 @@ SFXKill::
     ret z
     cp a, SFX_RANKGM
     ret z
+    cp a, SFX_LEVELLOCK
+    ret z
+    cp a, SFX_LEVELUP
+    ret z
 
     ; Kill all sound without pops.
     ld a, %00111111

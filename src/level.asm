@@ -317,16 +317,16 @@ LevelUp::
     ld hl, hCLevel+2
     ld a, [hl+]
     cp a, 9
-    jr nz, .checkspeedup
+    jp nz, .checkspeedup
     ld a, [hl]
     cp a, 8
-    jr nz, .checkspeedup
+    jp nz, .checkspeedup
     ld a, $FF
     ldh [hRequiresLineClear], a
     call SFXKill
     ld a, SFX_LEVELLOCK
     call SFXEnqueue
-    jr .leveljinglemaybe
+    jp .leveljinglemaybe
 
     ; Otherwise check the second digit of wCLevel.
 :   ld hl, hCLevel+1
@@ -352,21 +352,51 @@ LevelUp::
     ld [hl], a
     
     ; Check for regrets or cools
-    ld a, [hCLevel+CLEVEL_TENS] ; Make sure we are at level *70
+    ; Make sure we are at level *70-*78 and that we didn't check for the cool already
+.checkcool
+    ld a, [wCOOLIsActive]
+    cp a, 1
+    jr z, .checkregret
+    ld a, [hCLevel+CLEVEL_TENS] 
     cp a, 7
-    jr nz, .bellmaybe
+    jr nz, .checkregret
     ld a, [hCLevel+CLEVEL_ONES]
-    cp a, 0
-    call z, TGM3COOLHandler
+    cp a, 9
+    call c, TGM3COOLHandler
     cp a, 1
     jr z, .bellmaybe
-    ld a, [hCLevel+CLEVEL_TENS] ; Make sure we are at level *00
+.checkregret
+    ; Make sure we are at level *00-*05 and that we haven't checked already. Reset the section timer, too.
+    ld a, [wREGRETChecked]
+    cp a, 1
+    jr z, .bellmaybe
+    ld a, [hCLevel+CLEVEL_TENS] 
     cp a, 0
-    jr nz, .bellmaybe
+    jr nz, .regretavailable
     ld a, [hCLevel+CLEVEL_ONES]
-    cp a, 0
-    call z, TGM3REGRETHandler
+    cp a, 6
+    call c, TGM3REGRETHandler
+    ld a, [wSectionTimerReset]
+    cp a, 1
+    jr z, .bellmaybe
+.resetsectiontimer
+    ld a, [hCLevel+CLEVEL_HUNDREDS]
+    ld b, a 
+    ld a, [hCLevel+CLEVEL_THOUSANDS]
+    swap a
+    or b
+    cp a, $00
+    jr z, .regretavailable
+    xor a, a
+    ld [wSectionMinutes], a 
+    ld [wSectionSeconds], a 
+    ld [wSectionFrames], a
+    inc a 
+    ld [wSectionTimerReset], a
 
+.regretavailable
+    xor a, a
+    ld [wREGRETChecked], a
 .bellmaybe
     ; If the last two digits of wCLevel are 99, play the bell.
     ld hl, hCLevel+2

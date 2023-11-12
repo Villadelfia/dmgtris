@@ -41,7 +41,7 @@ wQRate:                ds 1
 wPrevCOOL:             ds 3
 wCOOLIsActive::        ds 1    
 wSubgrade:             ds 1
-wREGRETIsActive::      ds 1
+wREGRETChecked::       ds 1
 wGradeBoosts:          ds 1
 wTGM1level300RequirementMet:    ds 1
 wTGM1level500RequirementMet:    ds 1
@@ -319,7 +319,7 @@ GradeInit::
     ld [wSubgrade], a
     ld [wGradeBoosts], a
     ld [wCOOLIsActive], a
-    ld [wREGRETIsActive], a
+    ld [wREGRETChecked], a
     ld [wPrevCOOL], a
     ld [wPrevCOOL+1], a
     ld [wPrevCOOL+2], a
@@ -1257,6 +1257,12 @@ UpdateGradeTGM3:
     ; AND NOW WE ARE DONE!, LOAD THOSE POINTS!
     jp .loadpoints
 .IncreaseInternalGrade
+    ; Are we on level *00-*05?
+    ld a, [hCLevel+CLEVEL_ONES]
+    cp a, 6
+    ; If we are, jump to the update COOL grade funcion just in case we have to apply a section COOL
+    jr c, CheckCOOL
+    ; If not, continue
     ; Do we have 100 Grade Points?
     ld a, [wInternalGradePoints]
     cp a, 100
@@ -1267,6 +1273,9 @@ UpdateGradeTGM3:
     inc a
     ld [wInternalGrade], a
 TGM3UpdateDisplayedGrade:
+    ld a, [wDisplayedGrade] ; If we are a GM Grade, return
+    cp a, GRADE_GM
+    ret z
     ld a, GRADE_9 ; Load the lowest grade into a
     ld b, a ; Then save it into b
     ld hl, sTGM3GradeBoosts ; Make HL point to the Grade boosts table
@@ -1284,12 +1293,13 @@ TGM3UpdateDisplayedGrade:
     ld a, [wCOOLIsActive] ; Did the player get a cool on this section?
     cp a, 1
     jp nz, .nocool ; If not, proceed as normal
-    ; If it did, check if we are at level *00
+    ; If it did, check if we are at level *00-*05
     ld a, [hCLevel+CLEVEL_TENS]
     cp a, 0 
     jr nz, .nocool
     ld a, [hCLevel+CLEVEL_ONES]
-    cp a, 0 
+    cp a, 5
+    jr c, .cool
     jr nz, .nocool ; If not, proceed as normal
 .cool
     ld hl, sTGM3HowManyInternalGradesToIncrease ; Make HL point to the..., yeah.
@@ -1314,6 +1324,11 @@ TGM3UpdateDisplayedGrade:
     cp a, b
     ret z ; If the grade is the same, return.
     ld a, b
+    ; If the grade results in an S10, set it to m1
+    cp a, GRADE_S10
+    jr nz, .continue
+    ld a, GRADE_M1
+.continue
     ld [wDisplayedGrade], a ; Otherwise, set the grade.
     ld [wGradeBoosts], a ; And the grade boosts too.
     ; ...Play the jingle.
@@ -1323,7 +1338,37 @@ TGM3UpdateDisplayedGrade:
     ld a, $0f
     ld [wEffectTimer], a
     ret
-
+CheckCOOL:
+    ld a, [wCOOLIsActive] ; Did the player get a cool on this section?
+    cp a, 1
+    jp nz, nocool ; If not, proceed as normal
+    ; If it did, check if we are at level *00-*05
+    ld a, [hCLevel+CLEVEL_TENS]
+    cp a, 0 
+    jr nz, nocool
+    ld a, [hCLevel+CLEVEL_ONES]
+    cp a, 5
+    jr c, cool
+    jr nz, nocool ; If not, proceed as normal
+cool:
+    ld hl, sTGM3HowManyInternalGradesToIncrease ; Make HL point to the..., yeah.
+    ld a, [wInternalGrade] ; Get the offset
+    ld d, a ; save the internal grade because we need it later 
+    ld b, 0
+    ld c, a
+    add hl, bc
+    ld a, [hl] ; Load the amount of internal grades to increase into a
+    add a, d ; Increase the internal grades
+    ld [wInternalGrade], a ; Load them
+    ld a, [wGradeBoosts] ; Load the boosts variable into A
+    inc a
+    ld [wGradeBoosts], a
+    ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
+    xor a, a
+    ld [wCOOLIsActive], a ; Make the cool no longer be active
+    ret
+nocool:
+    ret
 TGM3DecayRate:
     ; Check if we can decrease the Grade points, if not, decrease the timer
     ld a, [wDecayRate]
@@ -1426,11 +1471,12 @@ TGM3COOLHandler::
     
 
 TGM3REGRETHandler:: ; Check if we took too much time to complete a section
-    ld a, [wREGRETIsActive] ; First, make sure we haven't checked before
+    ld a, [wREGRETChecked] ; First, make sure we haven't checked before
     cp a, 1
-    ret ; If we did, just return
+    ret z ; If we did, just return
     ld hl, sTGM3REGRETConditions
     ld a, [hCLevel+1]
+    dec a
     add a
     ld b, 0
     ld c, a
@@ -1462,9 +1508,37 @@ TGM3REGRETHandler:: ; Check if we took too much time to complete a section
     ld [wInternalGrade], a ; Load them
     ld a, [wGradeBoosts] ; Load the boosts variable into A
     ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
+    ld a, 1
+    ld [wREGRETChecked], a
     ret ; Done
 
-
+TGM3StaffRollGradeUpdate::
+    ; Make HL Point to the Staffroll Table
+    ld hl, sTGM3CHILStaffrollGrading
+    ; Get the offset, if no lines were cleared, return
+    ld a, [hLineClearCt]
+    and a
+    ret z
+    dec a
+    ld b, 0 
+    ld c, a
+    add hl, bc
+    ; Load the value into A
+    ld a, [hl]
+    ; And then add that to the subgrade variable
+    ld b, a
+    ld a, [wSubgrade]
+    add a, b
+    ld [wSubgrade], a
+.UpdateGrade
+    cp a, $a
+    ret c
+    sub a, $a
+    ld [wSubgrade], a
+    ld a, [wDisplayedGrade]
+    inc a
+    ld [wDisplayedGrade], a
+    ret
 
 UpdateGradeCHIL:
     ; Make HL Point to the Staffroll Table

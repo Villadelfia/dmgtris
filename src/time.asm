@@ -36,6 +36,7 @@ wSectionSeconds:: ds 1
 wSectionFrames:: ds 1
 wCountDown:: ds 2
 wCountDownZero:: ds 1
+wSectionTimerReset:: ds 1 
 
 
 SECTION "Time Data", ROM0
@@ -175,7 +176,12 @@ HandleTimers::
     ret z
     cp a, MODE_PRE_GAME_OVER
     ret z
-
+    ld a, [hCLevel+CLEVEL_ONES]
+    cp a, 6 
+    jr c, .continue
+    xor a, a
+    ld [wSectionTimerReset], a
+.continue
     ; Get countdown in BC
     ld a, [wCountDown]
     ld c, a
@@ -234,6 +240,36 @@ HandleTimers::
     inc a
     ld [wMinutes], a
 
+HandleSectionTimers::
+    ldh a, [hFrameCtr]
+    inc a
+    ldh [hFrameCtr], a
+    and 1
+    ldh [hEvenFrame], a
+
+    ldh a, [hMode]
+    cp a, MODE_PAUSED
+    ret z
+    cp a, MODE_GAME_OVER
+    ret z
+    cp a, MODE_PRE_GAME_OVER
+    ret z
+    
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    ret z
+
+    ld a, [wSectionMinutes]
+    cp a, 99
+    jr nz, .sectiongo
+    ld a, [wSectionSeconds]
+    cp a, 59
+    jr nz, .sectiongo
+    ld a, [wSectionFrames]
+    cp a, 59
+    ret z
+
+.sectiongo
     ld a, [wSectionFrames]
     inc a
     ld [wSectionFrames], a
@@ -254,6 +290,5 @@ HandleTimers::
     inc a
     ld [wSectionMinutes], a
     ret
-
 
 ENDC

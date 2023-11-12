@@ -88,6 +88,8 @@ CheckAndAddHiscore::
 .oldgraded
     ld b, a
     ld a, [wDisplayedGrade]
+    cp a, GRADE_NONE
+    jr z, .notbetter ; If we don't have a grade, we're worse than any grade.
     cp a, b
     jr c, .notbetter ; If we're less, we're not better.
     jr nz, .better   ; If we're higher, we're better.

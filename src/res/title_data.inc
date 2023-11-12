@@ -75,6 +75,13 @@ sHIGMode::
 sDisabled::
     db "----"
 
+sFilterMode::
+    db "DLRU"
+    db "ULRD"
+    db "LRUD"
+    db "UDLR"
+    db "NONE"
+
 sTetryButtons::
     db "THIS OPTION WILL"
     db "CHANGE WHICH WAY"
@@ -116,6 +123,12 @@ sTetrySTART::
     db "CHANGE WHERE YOU"
     db "START IN THE SP-"
     db "EED CURVE       "
+
+sTetryFILTER::
+    db "THIS OPTION WILL"
+    db "DETERMINE WHICH "
+    db "D-PAD BUTTONS   "
+    db "HAVE PRIORITY   "
 
 sTetryEXIT::
     db "OH OKAY THEN-   "
@@ -224,10 +237,10 @@ sTitleScreenSettingsMap::
     DB $0C,$1D,$1F,$01,$17,$10,$21,$10,$17,$01
     DB $28,$01,$01,$01,$01,$29,$00,$00,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00,$5D,$01
-    DB $0D,$0C,$0E,$16,$6F,$01,$01,$01,$01,$01
-    DB $01,$01,$01,$01,$01,$01,$01,$01,$00,$00
+    DB $0F,$2A,$1B,$0C,$0F,$01,$11,$14,$17,$1F
+    DB $10,$1D,$28,$01,$01,$01,$01,$29,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-    DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+    DB $5D,$01,$0D,$0C,$0E,$16,$6F,$01,$01,$01
     DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$00,$01,$01,$01,$01,$01,$01,$01,$01

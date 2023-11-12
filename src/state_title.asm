@@ -355,7 +355,10 @@ SwitchTitleMode:
     ldh [hSelectState], a
     ld [wDisplayingScoreMode], a
     ld [wScoreFlipTimer], a
-    jp RenderScores
+    call RenderScores
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
+    ldh [rLCDC], a
+    ret
 
 .switchCredits
     ld de, sTitleScreenCreditsMap
@@ -875,6 +878,20 @@ TitleVBlankHandlerB:
     ld bc, 4
     call UnsafeMemCopy
 
+.filter
+    ld b, 0
+    ldh a, [hFilterMode]
+    sla a
+    sla a
+    ld c, a
+    ld hl, sFilterMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_SETTINGS_FILTER
+    ld bc, 4
+    call UnsafeMemCopy
+
     ; START level.
     call DrawSpeedSettings
 
@@ -1030,6 +1047,7 @@ SettingsHandleLeft:
     jp .curve
     jp .hig
     jp DecrementLevel
+    jp .filter
     no_jump
 
 .buttons
@@ -1112,6 +1130,20 @@ SettingsHandleLeft:
     ld [rAlways20GState], a
     ret
 
+.filter
+    ldh a, [hFilterMode]
+    cp a, 0
+    jr z, :+
+    dec a
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
+    ret
+:   ld a, FILTER_MODE_COUNT-1
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
+    ret
+
+
 
 SettingsHandleRight:
     ld a, [wSelected]
@@ -1135,6 +1167,7 @@ SettingsHandleRight:
     jp .curve
     jp .hig
     jp IncrementLevel
+    jp .filter
     no_jump
 
 .buttons
@@ -1216,6 +1249,20 @@ SettingsHandleRight:
     ld [wAlways20GState], a
     ld [rAlways20GState], a
     ret
+
+.filter
+    ldh a, [hFilterMode]
+    cp a, FILTER_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
+    ret
+:   xor a, a
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
+    ret
+
 
 ProfileHandleA:
     ld a, [wSelected]
@@ -1571,14 +1618,6 @@ RecordsHandleSelect:
     jp RenderScores
 
 RenderScores:
-    ; Turn the screen off if it's on.
-    ldh a, [rLCDC]
-    and LCDCF_ON
-    jr z, :+ ; Screen is already off.
-    wait_vram
-    xor a, a
-    ldh [rLCDC], a
-
     ; Draw the mode.
 :   ld b, 0
     ld a, [wSelected]
@@ -1591,7 +1630,7 @@ RenderScores:
     ld e, l
     ld hl, TITLE_RECORDS_MODE
     ld bc, 4
-    call UnsafeMemCopy
+    call SafeMemCopy
 
     ; Get the correct speed curve.
     ld a, [wSelected]
@@ -1613,35 +1652,59 @@ RenderScores:
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
 
         ; Go render the name.
         jr .name\@
@@ -1659,29 +1722,53 @@ RenderScores:
 
         ; Render it.
         ld a, "L"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, "V"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, "L"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, 115
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, "0"
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
 
         ; And jump back to the name.
         push hl
@@ -1702,13 +1789,22 @@ RenderScores:
         ; Render name.
         ld a, [de]
         inc de
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
 
         ; Jump to tells.
         ld bc, 10
@@ -1721,28 +1817,46 @@ RenderScores:
         jr nz, .grade\@
 .nograde\@
         ld a, 197
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         jr .postgrade\@
 .grade\@
         add a, TITLE_RECORDS_GRADE_BASE
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
 .postgrade\@
         ld a, [de]
         inc de
         add a, TITLE_RECORDS_RNG_BASE
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, TITLE_RECORDS_ROT_BASE
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, TITLE_RECORDS_DROP_BASE
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
         ld a, [de]
         inc de
         add a, TITLE_RECORDS_HIG_BASE
-        ld [hl+], a
+        ld b, a
+        wait_vram
+        ld [hl], b
+        inc hl
 
         ; Jump to next line.
         push hl
@@ -1757,8 +1871,6 @@ RenderScores:
         add hl, bc
     ENDR
 
-    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
-    ldh [rLCDC], a
     ret
 
 

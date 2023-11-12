@@ -921,6 +921,46 @@ TitleVBlankHandlerB:
     jp SafeMemCopy
 
 .vblankRecords
+    ld hl, TITLE_RECORDS_RESET_LOC
+    ld b, TITLE_RECORDS_RESET_BASE
+    ld [hl], b
+    ldh a, [hSelectState]
+    cp a, 0
+    ret z
+    inc b
+    ld [hl], b
+    cp a, 30
+    ret c
+    inc b
+    ld [hl], b
+    cp a, 60
+    ret c
+    inc b
+    ld [hl], b
+    cp a, 90
+    ret c
+    inc b
+    ld [hl], b
+    cp a, 120
+    ret c
+    inc b
+    ld [hl], b
+    cp a, 150
+    ret c
+    inc b
+    ld [hl], b
+    cp a, 180
+    ret c
+    inc b
+    ld [hl], b
+    cp a, 210
+    ret c
+    inc b
+    ld [hl], b
+    cp a, 240
+    ret c
+    inc b
+    ld [hl], b
     ret
 
 .vblankCredits

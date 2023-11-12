@@ -500,13 +500,13 @@ UpdateGradeDMGT::
     ; What is our single/double/triple multiplier?
 .combomult
     ld a, [hComboCt]
-    cp a, 10
-    jr nc, .combo10
-    cp a, 5
-    jr nc, .combo5
+    cp a, 13
+    jr nc, .combo13
+    cp a, 8
+    jr nc, .combo8
     jr .combo1
 
-.combo10
+.combo13
     ld a, 2
     ld [wSMult], a
     ld a, 3
@@ -515,7 +515,7 @@ UpdateGradeDMGT::
     ld [wTMult], a
     jr .prelevel
 
-.combo5
+.combo8
     ld a, 1
     ld [wSMult], a
     ld a, 2

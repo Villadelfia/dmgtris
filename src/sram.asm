@@ -34,7 +34,8 @@ rDropModeState\1:: ds 1
 rSpeedCurveState\1:: ds 1
 rAlways20GState\1:: ds 1
 rSelectedStartLevel\1:: ds 2
-rUnused\1:: ds (64-11)
+rFilterMode\1:: ds 1
+rUnused\1:: ds (64-12)
 ENDU
 ENDM
 
@@ -53,7 +54,8 @@ rDropModeState:: ds 1
 rSpeedCurveState:: ds 1
 rAlways20GState:: ds 1
 rSelectedStartLevel:: ds 2
-rUnused:: ds (PROFILE_SIZE - 11) ; 11 = sum of the above
+rFilterMode:: ds 1
+rUnused:: ds (PROFILE_SIZE - 12) ; 12 = sum of the above
 ENDU
     PROFILE 0
     PROFILE 1
@@ -98,7 +100,7 @@ RestoreSRAM::
     cp a, 0
     jp nz, InitializeSRAM
     ld a, [rCheck+5]
-    cp a, 3
+    cp a, 4
     jp nz, InitializeSRAM
 
     ; SRAM is initialized and for this build, so we can load the data.
@@ -121,6 +123,8 @@ TrustedLoad:
     ld [wProfileName+1], a
     ld a, [rProfileName+2]
     ld [wProfileName+2], a
+    ld a, [rFilterMode]
+    ldh [hFilterMode], a
 
     ; Restore the start level.
     ld b, BANK_OTHER
@@ -228,7 +232,7 @@ InitializeSRAM:
     ld [rCheck+3], a
     ld a, 0
     ld [rCheck+4], a
-    ld a, 3
+    ld a, 4
     ld [rCheck+5], a
 
     xor a, a
@@ -268,6 +272,10 @@ InitializeSRAM:
     ld a, HIG_MODE_OFF
     ld [rAlways20GState], a
     ld [wAlways20GState], a
+
+    ld a, FILTER_MODE_DLRU
+    ld [rFilterMode], a
+    ldh [hFilterMode], a
 
     ; Set to the default start level.
     ld hl, sDMGTSpeedCurve
@@ -339,6 +347,27 @@ InitializeSRAM:
     ld [rProfileName8+2], a
     ld a, "9"
     ld [rProfileName9+2], a
+
+    ld a, 6
+    ld [wSelected], a
+    call ResetScores
+    ld a, 5
+    ld [wSelected], a
+    call ResetScores
+    ld a, 4
+    ld [wSelected], a
+    call ResetScores
+    ld a, 3
+    ld [wSelected], a
+    call ResetScores
+    ld a, 2
+    ld [wSelected], a
+    call ResetScores
+    ld a, 1
+    ld [wSelected], a
+    call ResetScores
+    xor a, a
+    ld [wSelected], a
 
     ; Set the default scores.
 ResetScores::
@@ -640,6 +669,10 @@ ResetProfile::
     ld a, HIG_MODE_OFF
     ld [rAlways20GState], a
     ld [wAlways20GState], a
+
+    ld a, FILTER_MODE_DLRU
+    ld [rFilterMode], a
+    ldh [hFilterMode], a
 
     ; Set to the default start level.
     ld hl, sDMGTSpeedCurve

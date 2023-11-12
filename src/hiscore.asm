@@ -25,25 +25,25 @@ INCLUDE "globals.asm"
 SECTION "Hi Score Data", ROM0
 sHiscoreDefaultData::
     db 0, 0, 0, 0, 0, 0, 0, 0, "DMG", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "TRI", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "SDM", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "GTR", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "ISD", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "MGT", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "RIS", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "DMG", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "TRI", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     db 0, 0, 0, 0, 0, 0, 0, 0, "SDM", GRADE_NONE, RNG_MODE_TGM3, ROT_MODE_ARSTI, DROP_MODE_FIRM, HIG_MODE_OFF
-    db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    db 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 
 SECTION "Hi Score Variables", WRAM0
@@ -67,6 +67,86 @@ CheckAndAddHiscore::
 .checkloop
     ; Load the score at position a.
     call GetHiScoreEntry
+
+    ; Backup HL to DE for later.
+    ld d, h
+    ld e, l
+
+
+    ; Compare grades, HL needs to forwarded 11 bytes.
+.checkgrade
+    ld bc, 11
+    add hl, bc
+
+    ; HL is now pointing to the grade in this high score.
+    ; The handling depends on whether or not the old score had a grade.
+    ld a, [hl]
+    cp a, GRADE_NONE
+    jr z, .oldungraded
+
+    ; The old score had a grade, so compare ours to theirs.
+.oldgraded
+    ld b, a
+    ld a, [wDisplayedGrade]
+    cp a, b
+    jr c, .notbetter ; If we're less, we're not better.
+    jr nz, .better   ; If we're higher, we're better.
+    jr .checklevel   ; Equal, so check level.
+
+    ; The old score did NOT have a grade. So check if we do.
+.oldungraded
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_NONE
+    jr nz, .better   ; We do have a grade, so we win.
+                     ; We don't have a grade either, so continue as equals.
+
+
+    ; Our grade is equal.
+    ; Compare levels. HL needs to be forwarded 5 bytes.
+.checklevel
+    ld bc, 5
+    add hl, bc
+
+    ; HL is now pointing to the level in this high score.
+    ; Make BC point to our level.
+    ld bc, hCLevel
+
+    ; And compare the first digit...
+    ld a, [bc]
+    cp a, [hl]
+    jr c, .notbetter    ; Lower? Not better.
+    jr nz, .better      ; Higher? Better.
+    inc bc              ; Equal? Keep checking...
+    inc hl
+
+    ; Second...
+    ld a, [bc]
+    cp a, [hl]
+    jr c, .notbetter
+    jr nz, .better
+    inc bc
+    inc hl
+
+    ; Third...
+    ld a, [bc]
+    cp a, [hl]
+    jr c, .notbetter
+    jr nz, .better
+    inc bc
+    inc hl
+
+    ; Fourth...
+    ld a, [bc]
+    cp a, [hl]
+    jr c, .notbetter
+    jr nz, .better
+
+
+    ; Our level is equal.
+    ; So now also check the score. Restore the DE from earlier.
+.checkscore
+    ld h, d
+    ld l, e
 
     ; HL is pointing to that score, make BC point to our current score.
     ld bc, hScore
@@ -133,6 +213,8 @@ CheckAndAddHiscore::
     jr c, .notbetter
     jr nz, .better
 
+
+    ; If we fell through all the way to here, we are completely equal. Oldest score has priority.
     ; Loop or return if we didn't make the scores.
 .notbetter
     ld a, [wInsertTarget]
@@ -140,7 +222,7 @@ CheckAndAddHiscore::
     ld [wInsertTarget], a
     cp a, 10
     ret z
-    jr .checkloop
+    jp .checkloop
 
 .better
     jr InsertHiScore
@@ -223,10 +305,26 @@ InsertHiScore::
     ld [hl+], a
     ld a, [wAlways20GState]
     ld [hl+], a
+    ldh a, [hCLevel+0]
+    ld [hl+], a
+    ldh a, [hCLevel+1]
+    ld [hl+], a
+    ldh a, [hCLevel+2]
+    ld [hl+], a
+    ldh a, [hCLevel+3]
+    ld [hl+], a
+    ldh a, [hNLevel+0]
+    ld [hl+], a
+    ldh a, [hNLevel+1]
+    ld [hl+], a
+    ldh a, [hNLevel+2]
+    ld [hl+], a
+    ldh a, [hNLevel+3]
+    ld [hl+], a
 
-    ; 16 filler bytes.
+    ; 8 filler bytes.
     xor a, a
-    REPT 16
+    REPT 8
         ld [hl+], a
     ENDR
 

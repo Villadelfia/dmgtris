@@ -31,6 +31,7 @@ hAState::          ds 1
 hBState::          ds 1
 hStartState::      ds 1
 hSelectState::     ds 1
+hFilterMode::      ds 1
 
 
 
@@ -195,17 +196,91 @@ GetInput::
 
     ; If left or right are pressed, zero out up and down.
 .priorities
+    ldh a, [hFilterMode]
+    ld b, a
+    add a, b
+    add a, b
+    ld c, a
+    ld b, 0
+    ld hl, .jumps
+    add hl, bc
+    jp hl
+
+.jumps
+    jp .dlru
+    jp .ulrd
+    jp .lrud
+    jp .udlr
+    no_jump
+
+.dlru
+    ldh a, [hDownState]
+    cp a, 0
+    jr nz, .zerolru
+
+    ldh a, [hLeftState]
+    cp a, 0
+    jr nz, .zeroud
     ldh a, [hRightState]
     cp a, 0
-    jr nz, .zero
+    ret z
+    jr .zeroud
+
+.ulrd
+    ldh a, [hUpState]
+    cp a, 0
+    jr nz, .zerolrd
+
+    ldh a, [hLeftState]
+    cp a, 0
+    jr nz, .zeroud
+    ldh a, [hRightState]
+    cp a, 0
+    ret z
+    jr .zeroud
+
+.lrud
+    ldh a, [hRightState]
+    cp a, 0
+    jr nz, .zeroud
     ldh a, [hLeftState]
     cp a, 0
     ret z
+    jr .zeroud
 
-.zero
+.udlr
+    ldh a, [hUpState]
+    cp a, 0
+    jr nz, .zerolr
+    ldh a, [hLeftState]
+    cp a, 0
+    ret z
+    jr .zerolr
+
+.zeroud
     xor a, a
     ldh [hUpState], a
     ldh [hDownState], a
+    ret
+
+.zerolr
+    xor a, a
+    ldh [hLeftState], a
+    ldh [hRightState], a
+    ret
+
+.zerolrd
+    xor a, a
+    ldh [hLeftState], a
+    ldh [hRightState], a
+    ldh [hDownState], a
+    ret
+
+.zerolru
+    xor a, a
+    ldh [hLeftState], a
+    ldh [hRightState], a
+    ldh [hUpState], a
     ret
 
 

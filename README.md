@@ -75,6 +75,14 @@ Whether you want instant-drop gravity to be active at any level.
 ### Start Level
 Choose any of the speed breakpoints to start the game at.
 
+### D-Pad Filter
+Choose which D-Pad buttons get priority.
+- DLRU: Down > Left/Right > Up
+- ULRD: Up > Left/Right > Down
+- LRUD: Left/Right > Up/Down
+- UDLR: Up/Down > Left/Right
+- NONE: No filtering or priority.
+
 
 ## Scoring
 After each piece is dropped, a check is made:

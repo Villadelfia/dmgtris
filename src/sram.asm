@@ -98,7 +98,7 @@ RestoreSRAM::
     cp a, 0
     jp nz, InitializeSRAM
     ld a, [rCheck+5]
-    cp a, 3
+    cp a, 4
     jp nz, InitializeSRAM
 
     ; SRAM is initialized and for this build, so we can load the data.
@@ -228,7 +228,7 @@ InitializeSRAM:
     ld [rCheck+3], a
     ld a, 0
     ld [rCheck+4], a
-    ld a, 3
+    ld a, 4
     ld [rCheck+5], a
 
     xor a, a
@@ -339,6 +339,27 @@ InitializeSRAM:
     ld [rProfileName8+2], a
     ld a, "9"
     ld [rProfileName9+2], a
+
+    ld a, 6
+    ld [wSelected], a
+    call ResetScores
+    ld a, 5
+    ld [wSelected], a
+    call ResetScores
+    ld a, 4
+    ld [wSelected], a
+    call ResetScores
+    ld a, 3
+    ld [wSelected], a
+    call ResetScores
+    ld a, 2
+    ld [wSelected], a
+    call ResetScores
+    ld a, 1
+    ld [wSelected], a
+    call ResetScores
+    xor a, a
+    ld [wSelected], a
 
     ; Set the default scores.
 ResetScores::

@@ -27,6 +27,8 @@ SECTION "Title Variables", WRAM0
 wSelected::  ds 1
 wTitleMode:: ds 1
 wProfileName:: ds 3
+wDisplayingScoreMode:: ds 1
+wScoreFlipTimer:: ds 1
 
 
 SECTION "Title Function Trampolines", ROM0
@@ -351,6 +353,8 @@ SwitchTitleMode:
     call GBCTitleInit
     xor a, a
     ldh [hSelectState], a
+    ld [wDisplayingScoreMode], a
+    ld [wScoreFlipTimer], a
     jp RenderScores
 
 .switchCredits
@@ -556,8 +560,19 @@ TitleEventLoopHandlerB:
     ; Select
     ldh a, [hSelectState]
     cp a, 255 ; Max hold duraction
+    jp z, RecordsHandleSelect
+
+    ld a, [wScoreFlipTimer]
+    inc a
+    ld [wScoreFlipTimer], a
+    cp a, 180
     ret nz
-    jp RecordsHandleSelect
+    xor a, a
+    ld [wScoreFlipTimer], a
+    ld a, [wDisplayingScoreMode]
+    cpl
+    ld [wDisplayingScoreMode], a
+    jp RenderScores
 
 .eventLoopCredits
     ldh a, [hAState]
@@ -1522,6 +1537,8 @@ CheckLevelRange:
 RecordsHandleLeft:
     xor a, a
     ldh [hSelectState], a
+    ld [wDisplayingScoreMode], a
+    ld [wScoreFlipTimer], a
     ld a, [wSelected]
     cp a, 0
     jr z, :+
@@ -1535,6 +1552,8 @@ RecordsHandleLeft:
 RecordsHandleRight:
     xor a, a
     ldh [hSelectState], a
+    ld [wDisplayingScoreMode], a
+    ld [wScoreFlipTimer], a
     ld a, [wSelected]
     cp a, SCURVE_COUNT-1
     jr z, :+
@@ -1585,7 +1604,12 @@ RenderScores:
     ld hl, TITLE_RECORDS_SCORE_BASE+4
 
     REPT 10
+        ld a, [wDisplayingScoreMode]
+        cp a, $FF
+        jr z, .level\@
+
         ; Render score.
+.score\@
         ld a, [de]
         inc de
         add a, "0"
@@ -1619,11 +1643,63 @@ RenderScores:
         add a, "0"
         ld [hl+], a
 
+        ; Go render the name.
+        jr .name\@
+
+        ; Jump forward to level in the score.
+.level\@
+        push hl
+        ld h, d
+        ld l, e
+        ld bc, 16
+        add hl, bc
+        ld d, h
+        ld e, l
+        pop hl
+
+        ; Render it.
+        ld a, "L"
+        ld [hl+], a
+        ld a, "V"
+        ld [hl+], a
+        ld a, "L"
+        ld [hl+], a
+        ld a, 115
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+        ld a, [de]
+        inc de
+        add a, "0"
+        ld [hl+], a
+
+        ; And jump back to the name.
+        push hl
+        ld h, d
+        ld l, e
+        ld bc, -12
+        add hl, bc
+        ld d, h
+        ld e, l
+        pop hl
+
+
+.name\@
         ; Jump back to Name.
         ld bc, -12
         add hl, bc
 
-        ; Render it.
+        ; Render name.
         ld a, [de]
         inc de
         ld [hl+], a
@@ -1644,7 +1720,7 @@ RenderScores:
         cp a, GRADE_NONE
         jr nz, .grade\@
 .nograde\@
-        ld a, TILE_BLANK
+        ld a, 197
         ld [hl+], a
         jr .postgrade\@
 .grade\@

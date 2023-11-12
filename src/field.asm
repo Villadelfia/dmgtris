@@ -103,8 +103,8 @@ BlitField::
     REPT 7
         ; Wait until start of drawing, then insert nops.
 :       ldh a, [rSTAT]
-        and a, 3
-        cp a, 3
+        and a, STATF_LCD
+        cp a, STATF_LCD
         jr nz, :-
         REPT 40
             nop
@@ -160,8 +160,8 @@ BigBlitField::
     REPT 7
         ; Wait until start of drawing, then insert nops.
 :       ldh a, [rSTAT]
-        and a, 3
-        cp a, 3
+        and a, STATF_LCD
+        cp a, STATF_LCD
         jr nz, :-
         REPT 40
             nop

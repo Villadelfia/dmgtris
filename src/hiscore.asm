@@ -88,6 +88,8 @@ CheckAndAddHiscore::
 .oldgraded
     ld b, a
     ld a, [wDisplayedGrade]
+    cp a, GRADE_NONE
+    jr z, .notbetter ; If we don't have a grade, we're worse than any grade.
     cp a, b
     jr c, .notbetter ; If we're less, we're not better.
     jr nz, .better   ; If we're higher, we're better.
@@ -244,7 +246,7 @@ InsertHiScore::
     ; Copy the top rows to the working data.
 .copyupper
     ld a, [wInsertTarget]
-    cp a, 0
+    or a, a
     jr z, .findrow
     ld hl, 0
     ld bc, HISCORE_ENTRY_SIZE
@@ -265,7 +267,7 @@ InsertHiScore::
     ld hl, wWorkingCopy
     ld bc, HISCORE_ENTRY_SIZE
     ld a, [wInsertTarget]
-    cp a, 0
+    or a, a
     jr z, .insert
 :   add hl, bc
     dec a
@@ -348,7 +350,7 @@ GetHiScoreEntry::
     ld h, a
     ld bc, HISCORE_ENTRY_SIZE
     ld a, [wWorkingIdx]
-    cp a, 0
+    or a, a
     jr z, .store
 :   add hl, bc
     dec a

@@ -129,9 +129,21 @@ ScoreIncrement points are then awarded.
 
 
 ## Screenshots
-![DMG Gameplay](https://villadelfia.org/i/xAAHfqDw.png)
-![GBC Gameplay](https://villadelfia.org/i/Hj2P8Pk5.png)
+Original Game Boy | Game Boy Color
+:-: | :-:
+<img src="https://villadelfia.org/i/xAAHfqDw.png" width="160" height="144" /> | <img src="https://villadelfia.org/i/Hj2P8Pk5.png" width="160" height="144" />
 
+
+## Videos
+### Original Game Boy
+Normal Mode | Big Mode
+:-: | :-:
+[VIDEO](https://villadelfia.org/dmgtris/demo-dmg-normal.mp4) | [VIDEO](https://villadelfia.org/dmgtris/demo-dmg-big.mp4)
+
+### Game Boy Color
+Normal Mode | Big Mode
+:-: | :-:
+[VIDEO](https://villadelfia.org/dmgtris/demo-gbc-normal.mp4) | [VIDEO](https://villadelfia.org/dmgtris/demo-gbc-big.mp4)
 
 ## Building and Development
 The game can be built using gnu make and the RGBDS toolchain.
@@ -160,6 +172,7 @@ Thanks for playtesting and debugging go to:
 - AntonErgo
 - Lindtobias
 - \_Zaphod77\_
+- bbbbbr
 
 
 ## License

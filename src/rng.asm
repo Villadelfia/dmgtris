@@ -331,7 +331,7 @@ GetNextTGM3Piece:
     jr z, :+    ; Same.
     jr c, :+    ; Nope.
     ld e, a
-    ld a, 0
+    xor a, a
     ld [wTGM3WorstDroughtIdx], a
 
     ; Is idx 1 worse?

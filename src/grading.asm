@@ -465,7 +465,7 @@ DrawGradeProgressDMGT::
 UpdateGradeDMGT::
     ; Did we have line clears?
     ldh a, [hLineClearCt]
-    cp a, 0
+    or a, a
     jp z, DrawGradeProgressDMGT
 
     ; Bail if we're already GM.
@@ -697,7 +697,7 @@ UpdateGradeDMGT::
 DecayGradeDMGT::
     ; Bail if the gauge is empty.
     ld a, [wGradeGauge]
-    cp a, 0
+    or a, a
     jp z, DrawGradeProgressDMGT
 
     ; Bail if we're already GM.
@@ -751,7 +751,7 @@ UpdateGradeTGM1:
 
     ; Bail if we didn't make the 999 check.
     ld a, [wTGM1level999RequirementMet]
-    cp a, 0
+    or a, a
     ret nz
 
     ; Skip to GM check if already S9.
@@ -830,7 +830,7 @@ UpdateGradeTGM1:
 
     ; Have we judged the requirement before?
     ld a, [wTGM1level300RequirementMet]
-    cp a, 0
+    or a, a
     jr nz, .check500
 
     ; Rank?
@@ -864,7 +864,7 @@ UpdateGradeTGM1:
 
     ; Have we judged the requirement before?
     ld a, [wTGM1level500RequirementMet]
-    cp a, 0
+    or a, a
     jr nz, .check999
 
     ; Rank?
@@ -904,7 +904,7 @@ UpdateGradeTGM1:
 
     ; Have we judged the requirement before?
     ld a, [wTGM1level999RequirementMet]
-    cp a, 0
+    or a, a
     ret nz
 
     ; Did both other checks succeed?
@@ -1037,7 +1037,7 @@ UpdateGradeSHIR:
 
     ; We don't give out a grade until level 100.
     ldh a, [hCLevel+CLEVEL_HUNDREDS] ; Level, hundreds digit.
-    cp a, 0
+    or a, a
     ret z
 
     ; Get the hundreds and thousands of the level as a hex number.

@@ -215,45 +215,45 @@ GetInput::
 
 .dlru
     ldh a, [hDownState]
-    cp a, 0
+    or a, a
     jr nz, .zerolru
 
     ldh a, [hLeftState]
-    cp a, 0
+    or a, a
     jr nz, .zeroud
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     ret z
     jr .zeroud
 
 .ulrd
     ldh a, [hUpState]
-    cp a, 0
+    or a, a
     jr nz, .zerolrd
 
     ldh a, [hLeftState]
-    cp a, 0
+    or a, a
     jr nz, .zeroud
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     ret z
     jr .zeroud
 
 .lrud
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     jr nz, .zeroud
     ldh a, [hLeftState]
-    cp a, 0
+    or a, a
     ret z
     jr .zeroud
 
 .udlr
     ldh a, [hUpState]
-    cp a, 0
+    or a, a
     jr nz, .zerolr
     ldh a, [hLeftState]
-    cp a, 0
+    or a, a
     ret z
     jr .zerolr
 

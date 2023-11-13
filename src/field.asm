@@ -96,15 +96,15 @@ BlitField::
 
 .waitendvbloop
     ldh a, [rLY]
-    cp a, 0
+    or a, a
     jr nz, .waitendvbloop
 
     ; The last 6 rows need some care.
     REPT 7
         ; Wait until start of drawing, then insert nops.
 :       ldh a, [rSTAT]
-        and a, 3
-        cp a, 3
+        or a, $FF - STATF_LCD
+        inc a
         jr nz, :-
         REPT 40
             nop
@@ -153,15 +153,15 @@ BigBlitField::
 
 .waitendvbloop
     ldh a, [rLY]
-    cp a, 0
+    or a, a
     jr nz, .waitendvbloop
 
     ; The last 6 rows need some care.
     REPT 7
         ; Wait until start of drawing, then insert nops.
 :       ldh a, [rSTAT]
-        and a, 3
-        cp a, 3
+        or a, $FF - STATF_LCD
+        inc a
         jr nz, :-
         REPT 40
             nop
@@ -310,10 +310,10 @@ FromShadowField:
     ; corresponding to that piece's zero rotation.
 SetPieceData:
     ldh a, [hCurrentPiece]
-    sla a
-    sla a
-    sla a
-    sla a
+    add a, a
+    add a, a
+    add a, a
+    add a, a
     ld c, a
     ld b, 0
 
@@ -336,8 +336,8 @@ SetPieceData:
     ; The rotation state is a further offset of 4 bytes.
 SetPieceDataOffset:
     ldh a, [hCurrentPieceRotationState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ldh [hPieceDataOffset], a
     ret
 
@@ -707,69 +707,14 @@ TrySpawnPiece::
     cp a, $FF
     ret z
 
-    ; Otherwise, try in this order: 0, 1, 3, 2
+    ; If we didn't try to IRS in the first place, too bad. Game over.
     ldh a, [hCurrentPieceRotationState]
-    ldh [hWantRotation], a
+    or a, a
+    ret z
 
     ; Try rotation state 0.
 .try0
-    cp a, 0
-    jr z, .try1
     xor a, a
-    ldh [hCurrentPieceRotationState], a
-    call SetPieceDataOffset
-    ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hCurrentPieceX]
-    call XYToSFieldPtr
-    ld d, h
-    ld e, l
-    call GetPieceDataFast
-    call CanPieceFitFast
-    cp a, $FF
-    ret z
-
-    ; Try rotation state 1.
-.try1
-    ldh a, [hWantRotation]
-    cp a, 1
-    jr z, .try3
-    ld a, 1
-    ldh [hCurrentPieceRotationState], a
-    call SetPieceDataOffset
-    ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hCurrentPieceX]
-    call XYToSFieldPtr
-    ld d, h
-    ld e, l
-    call GetPieceDataFast
-    call CanPieceFitFast
-    cp a, $FF
-    ret z
-
-    ; Try rotation state 3.
-.try3
-    ldh a, [hWantRotation]
-    cp a, 3
-    jr z, .try2
-    ld a, 3
-    ldh [hCurrentPieceRotationState], a
-    call SetPieceDataOffset
-    ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hCurrentPieceX]
-    call XYToSFieldPtr
-    ld d, h
-    ld e, l
-    call GetPieceDataFast
-    call CanPieceFitFast
-    cp a, $FF
-    ret z
-
-    ; Try rotation state 2.
-.try2
-    ld a, 2
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
     ldh a, [hCurrentPieceY]
@@ -973,7 +918,7 @@ FieldProcess::
     ; Is this the first frame of the piece?
 .firstframe
     ldh a, [hStalePiece]
-    cp a, 0
+    or a, a
     jr nz, .handleselect
     ld a, $FF
     ldh [hStalePiece], a
@@ -997,7 +942,7 @@ FieldProcess::
     ; Want rotate CCW?
 .wantrotccw
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .ldb1
 .lda1
     ldh a, [hAState]
@@ -1016,7 +961,7 @@ FieldProcess::
     ; Want rotate CW?
 .wantrotcw
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .lda2
 .ldb2
     ldh a, [hBState]
@@ -1044,8 +989,8 @@ FieldProcess::
     ldh a, [hPieceDataBase+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1125,8 +1070,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1154,7 +1099,7 @@ FieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
-    cp a, 0
+    or a, a
     jr z, .maybetgm3rot
     dec a
     call XYToSFieldPtr
@@ -1165,8 +1110,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1214,8 +1159,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1232,7 +1177,7 @@ FieldProcess::
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
-    cp a, 0
+    or a, a
     jr nz, .tkickupalreadysetforce
     inc a
     ldh [hLockDelayForce], a
@@ -1259,7 +1204,7 @@ FieldProcess::
 
     ; Are we grounded? Don't kick if we aren't.
     ldh a, [hActualG]
-    cp a, 0
+    or a, a
     jp nz, .norot
 
     ; Try up once.
@@ -1276,8 +1221,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1294,7 +1239,7 @@ FieldProcess::
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
-    cp a, 0
+    or a, a
     jr nz, .ikickup1alreadysetforce
     inc a
     ldh [hLockDelayForce], a
@@ -1321,8 +1266,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1340,7 +1285,7 @@ FieldProcess::
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
-    cp a, 0
+    or a, a
     jr nz, .ikickup2alreadysetforce
     inc a
     ldh [hLockDelayForce], a
@@ -1367,8 +1312,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1401,12 +1346,12 @@ FieldProcess::
 
 .wantleft
     ldh a, [hCurrentPieceX]
-    cp a, 0
+    or a, a
     jr z, .precheckright
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
-    cp a, 0             ; We never want to move if the button wasn't held.
+    or a, a             ; We never want to move if the button wasn't held.
     jr z, .wantright
     ld b, a
 .checkdasleft
@@ -1423,7 +1368,7 @@ FieldProcess::
 
 .precheckright
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     jr z, .nomove
 
     ; Do we want to move right?
@@ -1431,7 +1376,7 @@ FieldProcess::
     ldh a, [hRightState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doright
-    cp a, 0             ; We never want to move if the button wasn't held.
+    or a, a             ; We never want to move if the button wasn't held.
     jr z, .noeffect
     ld b, a
 .checkdasright
@@ -1465,7 +1410,7 @@ FieldProcess::
 
 .nomove
     ld a, [wMovementLastFrame]
-    cp a, 0
+    or a, a
     jr z, .noeffect
 
     ; We moved last frame but couldn't move this frame. That means we slammed into a wall.
@@ -1572,7 +1517,7 @@ FieldProcess::
     ; If we press down, we want to do a soft drop.
 .postdrop
     ldh a, [hDownState]
-    cp a, 0
+    or a, a
     jr z, .checkregulargravity
     ldh a, [hDownFrames]
     inc a
@@ -1662,7 +1607,7 @@ FieldProcess::
     cp a, b
     jr z, .postcheckforfirmdropsound ; Never play the sound if we didn't change rows.
     ldh a, [hDownState]
-    cp a, 0
+    or a, a
     jr nz, .postcheckforfirmdropsound ; Don't play the sound if we're holding down.
 
     ; Play the firm drop sound.
@@ -1673,7 +1618,7 @@ FieldProcess::
     ; If the down button is held, lock.
 .postcheckforfirmdropsound
     ldh a, [hDownState]
-    cp a, 0
+    or a, a
     jr z, .neutralcheck
 
     ; Don't lock on down for hard drop mode immediately.
@@ -1699,18 +1644,18 @@ FieldProcess::
     ; If the down button is not held, check if we're neutral and if that should lock.
 .neutralcheck
     ldh a, [hShouldLockIfGrounded]
-    cp a, 0
+    or a, a
     jr z, .dontforcelock
 
     ; Check for neutral.
     ldh a, [hUpState]
-    cp a, 0
+    or a, a
     jr nz, .dontforcelock
     ldh a, [hLeftState]
-    cp a, 0
+    or a, a
     jr nz, .dontforcelock
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     jr nz, .dontforcelock
 
     ; Lock on neutral for a few modes.
@@ -1736,7 +1681,7 @@ FieldProcess::
 
     ; Are we out of lock delay?
 .checklockdelay
-    cp a, 0
+    or a, a
     jr nz, .checkfortgm3lockexception ; If not, check if the TGM3 exception applies.
     jr .dolock ; Otherwise, lock!
 
@@ -1766,7 +1711,7 @@ FieldProcess::
 .draw
     ; If the piece is locked, skip the ghost piece.
     ldh a, [hCurrentLockDelayRemaining]
-    cp a, 0
+    or a, a
     jr z, .postghost
 
     ; If the gravity is <= 1G, draw a ghost piece.
@@ -1812,7 +1757,7 @@ FieldProcess::
     cp a, $FF
     jr nz, .drawpiece
     ldh a, [hCurrentLockDelayRemaining]
-    cp a, 0
+    or a, a
     jr nz, .drawpiece
 
     ; Then bones are made invis.
@@ -1844,7 +1789,7 @@ FieldProcess::
     add a, 7
     ldh [hWantedTile], a
     ldh a, [hCurrentLockDelayRemaining]
-    cp a, 0
+    or a, a
     jr nz, .notlocked
 
     ; This might be invisible!
@@ -2003,14 +1948,14 @@ FieldDelay::
     ; In delay state, DAS increments double speed.
 .incl
     ldh a, [hLeftState]
-    cp a, 0
+    or a, a
     jr z, .incr
     inc a
     ldh [hLeftState], a
 
 .incr
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     jr z, .noinc
     inc a
     ldh [hRightState], a
@@ -2082,7 +2027,7 @@ FieldDelay::
     ld [wDelayState], a
 
     ldh a, [hLineClearCt]
-    cp a, 0
+    or a, a
     jr z, .lineclear ; If not, just skip the phase.
 
     ; There were line clears! Clear the level counter breakpoint.
@@ -2146,7 +2091,7 @@ FieldDelay::
     ; Do we have a bravo? x4 if so.
 .bravo
     ldh a, [hBravo]
-    cp a, 0
+    or a, a
     jr nz, .lineclears
     add hl, bc
     jr c, .forcemax
@@ -2211,7 +2156,7 @@ FieldDelay::
     ldh a, [hRemainingDelay]
     dec a
     ldh [hRemainingDelay], a
-    cp a, 0
+    or a, a
     ret nz
 
     call ClearLines
@@ -2234,7 +2179,7 @@ FieldDelay::
 
     ; Don't do anything if there were line clears
     ldh a, [hLineClearCt]
-    cp a, 0
+    or a, a
     jr nz, .are
 
     ; Otherwise, reset the combo.
@@ -2247,7 +2192,7 @@ FieldDelay::
     ldh a, [hRemainingDelay]
     dec a
     ldh [hRemainingDelay], a
-    cp a, 0
+    or a, a
     ret nz
 
     ; Add one level if we're not at a breakpoint and not in MYCO speed curve.
@@ -2616,10 +2561,10 @@ BigFromShadowField:
     ; corresponding to that piece's zero rotation.
 BigSetPieceData:
     ldh a, [hCurrentPiece]
-    sla a
-    sla a
-    sla a
-    sla a
+    add a, a
+    add a, a
+    add a, a
+    add a, a
     ld c, a
     ld b, 0
 
@@ -2642,8 +2587,8 @@ BigSetPieceData:
     ; The rotation state is a further offset of 4 bytes.
 BigSetPieceDataOffset:
     ldh a, [hCurrentPieceRotationState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ldh [hPieceDataOffset], a
     ret
 
@@ -3013,69 +2958,14 @@ BigTrySpawnPiece::
     cp a, $FF
     ret z
 
-    ; Otherwise, try in this order: 0, 1, 3, 2
+    ; If we didn't try to IRS in the first place, too bad. Game over.
     ldh a, [hCurrentPieceRotationState]
-    ldh [hWantRotation], a
+    or a, a
+    ret z
 
     ; Try rotation state 0.
 .try0
-    cp a, 0
-    jr z, .try1
     xor a, a
-    ldh [hCurrentPieceRotationState], a
-    call BigSetPieceDataOffset
-    ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hCurrentPieceX]
-    call BigXYToSFieldPtr
-    ld d, h
-    ld e, l
-    call BigGetPieceDataFast
-    call BigCanPieceFitFast
-    cp a, $FF
-    ret z
-
-    ; Try rotation state 1.
-.try1
-    ldh a, [hWantRotation]
-    cp a, 1
-    jr z, .try3
-    ld a, 1
-    ldh [hCurrentPieceRotationState], a
-    call BigSetPieceDataOffset
-    ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hCurrentPieceX]
-    call BigXYToSFieldPtr
-    ld d, h
-    ld e, l
-    call BigGetPieceDataFast
-    call BigCanPieceFitFast
-    cp a, $FF
-    ret z
-
-    ; Try rotation state 3.
-.try3
-    ldh a, [hWantRotation]
-    cp a, 3
-    jr z, .try2
-    ld a, 3
-    ldh [hCurrentPieceRotationState], a
-    call BigSetPieceDataOffset
-    ldh a, [hCurrentPieceY]
-    ld b, a
-    ldh a, [hCurrentPieceX]
-    call BigXYToSFieldPtr
-    ld d, h
-    ld e, l
-    call BigGetPieceDataFast
-    call BigCanPieceFitFast
-    cp a, $FF
-    ret z
-
-    ; Try rotation state 2.
-.try2
-    ld a, 2
     ldh [hCurrentPieceRotationState], a
     call BigSetPieceDataOffset
     ldh a, [hCurrentPieceY]
@@ -3279,7 +3169,7 @@ BigFieldProcess::
     ; Is this the first frame of the piece?
 .firstframe
     ldh a, [hStalePiece]
-    cp a, 0
+    or a, a
     jr nz, .handleselect
     ld a, $FF
     ldh [hStalePiece], a
@@ -3303,7 +3193,7 @@ BigFieldProcess::
     ; Want rotate CCW?
 .wantrotccw
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .ldb1
 .lda1
     ldh a, [hAState]
@@ -3322,7 +3212,7 @@ BigFieldProcess::
     ; Want rotate CW?
 .wantrotcw
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .lda2
 .ldb2
     ldh a, [hBState]
@@ -3350,8 +3240,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBase+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3431,8 +3321,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3460,7 +3350,7 @@ BigFieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
-    cp a, 0
+    or a, a
     jr z, .maybetgm3rot
     dec a
     call BigXYToSFieldPtr
@@ -3471,8 +3361,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3520,8 +3410,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3538,7 +3428,7 @@ BigFieldProcess::
     ldh [hCurrentPieceRotationState], a
     call BigSetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
-    cp a, 0
+    or a, a
     jr nz, .tkickupalreadysetforce
     inc a
     ldh [hLockDelayForce], a
@@ -3564,7 +3454,7 @@ BigFieldProcess::
 
     ; Are we grounded? Don't kick if we aren't.
     ldh a, [hActualG]
-    cp a, 0
+    or a, a
     jp nz, .norot
 
     ; Try up once.
@@ -3581,8 +3471,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3599,7 +3489,7 @@ BigFieldProcess::
     ldh [hCurrentPieceRotationState], a
     call BigSetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
-    cp a, 0
+    or a, a
     jr nz, .ikick1upalreadysetforce
     inc a
     ldh [hLockDelayForce], a
@@ -3626,8 +3516,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3645,7 +3535,7 @@ BigFieldProcess::
     ldh [hCurrentPieceRotationState], a
     call BigSetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set lock delay forcing to 1 if it's 0.
-    cp a, 0
+    or a, a
     jr nz, .ikick2upalreadysetforce
     inc a
     ldh [hLockDelayForce], a
@@ -3672,8 +3562,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3706,12 +3596,12 @@ BigFieldProcess::
 
 .wantleft
     ldh a, [hCurrentPieceX]
-    cp a, 0
+    or a, a
     jr z, .precheckright
     ldh a, [hLeftState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doleft
-    cp a, 0             ; We never want to move if the button wasn't held.
+    or a, a             ; We never want to move if the button wasn't held.
     jr z, .wantright
     ld b, a
 .checkdasleft
@@ -3728,7 +3618,7 @@ BigFieldProcess::
 
 .precheckright
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     jr z, .nomove
 
     ; Do we want to move right?
@@ -3736,7 +3626,7 @@ BigFieldProcess::
     ldh a, [hRightState] ; Check if held for 1 frame. If so we move.
     cp a, 1
     jr z, .doright
-    cp a, 0             ; We never want to move if the button wasn't held.
+    or a, a             ; We never want to move if the button wasn't held.
     jr z, .noeffect
     ld b, a
 .checkdasright
@@ -3770,7 +3660,7 @@ BigFieldProcess::
 
 .nomove
     ld a, [wMovementLastFrame]
-    cp a, 0
+    or a, a
     jr z, .noeffect
 
     ; We moved last frame but couldn't move this frame. That means we slammed into a wall.
@@ -3877,7 +3767,7 @@ BigFieldProcess::
     ; If we press down, we want to do a soft drop.
 .postdrop
     ldh a, [hDownState]
-    cp a, 0
+    or a, a
     jr z, .checkregulargravity
     ldh a, [hDownFrames]
     inc a
@@ -3967,7 +3857,7 @@ BigFieldProcess::
     cp a, b
     jr z, .postcheckforfirmdropsound ; Never play the sound if we didn't change rows.
     ldh a, [hDownState]
-    cp a, 0
+    or a, a
     jr nz, .postcheckforfirmdropsound ; Don't play the sound if we're holding down.
 
     ; Play the firm drop sound.
@@ -3978,7 +3868,7 @@ BigFieldProcess::
     ; If the down button is held, lock.
 .postcheckforfirmdropsound
     ldh a, [hDownState]
-    cp a, 0
+    or a, a
     jr z, .neutralcheck
 
     ; Don't lock on down for hard drop mode immediately.
@@ -4004,18 +3894,18 @@ BigFieldProcess::
     ; If the down button is not held, check if we're neutral and if that should lock.
 .neutralcheck
     ldh a, [hShouldLockIfGrounded]
-    cp a, 0
+    or a, a
     jr z, .dontforcelock
 
     ; Check for neutral.
     ldh a, [hUpState]
-    cp a, 0
+    or a, a
     jr nz, .dontforcelock
     ldh a, [hLeftState]
-    cp a, 0
+    or a, a
     jr nz, .dontforcelock
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     jr nz, .dontforcelock
 
     ; Lock on neutral for a few modes.
@@ -4041,7 +3931,7 @@ BigFieldProcess::
 
     ; Are we out of lock delay?
 .checklockdelay
-    cp a, 0
+    or a, a
     jr nz, .checkfortgm3lockexception ; If not, check if the TGM3 exception applies.
     jr .dolock ; Otherwise, lock!
 
@@ -4071,7 +3961,7 @@ BigFieldProcess::
 .draw
     ; If the piece is locked, skip the ghost piece.
     ldh a, [hCurrentLockDelayRemaining]
-    cp a, 0
+    or a, a
     jr z, .postghost
 
     ; If the gravity is <= 1G, draw a ghost piece.
@@ -4117,7 +4007,7 @@ BigFieldProcess::
     cp a, $FF
     jr nz, .drawpiece
     ldh a, [hCurrentLockDelayRemaining]
-    cp a, 0
+    or a, a
     jr nz, .drawpiece
 
     ; Then bones are made invis.
@@ -4149,7 +4039,7 @@ BigFieldProcess::
     add a, 7
     ldh [hWantedTile], a
     ldh a, [hCurrentLockDelayRemaining]
-    cp a, 0
+    or a, a
     jr nz, .notlocked
 
     ; This might be invisible!
@@ -4309,14 +4199,14 @@ BigFieldDelay::
     ; In delay state, DAS increments double speed.
 .incl
     ldh a, [hLeftState]
-    cp a, 0
+    or a, a
     jr z, .incr
     inc a
     ldh [hLeftState], a
 
 .incr
     ldh a, [hRightState]
-    cp a, 0
+    or a, a
     jr z, .noinc
     inc a
     ldh [hRightState], a
@@ -4389,7 +4279,7 @@ BigFieldDelay::
     ld [wDelayState], a
 
     ldh a, [hLineClearCt]
-    cp a, 0
+    or a, a
     jr z, .lineclear ; If not, just skip the phase.
 
     ; There were line clears! Clear the level counter breakpoint.
@@ -4453,7 +4343,7 @@ BigFieldDelay::
     ; Do we have a bravo? x4 if so.
 .bravo
     ldh a, [hBravo]
-    cp a, 0
+    or a, a
     jr nz, .lineclears
     add hl, bc
     jr c, .forcemax
@@ -4519,7 +4409,7 @@ BigFieldDelay::
     ldh a, [hRemainingDelay]
     dec a
     ldh [hRemainingDelay], a
-    cp a, 0
+    or a, a
     jp nz, BigWidenField
 
     call BigClearLines
@@ -4543,7 +4433,7 @@ BigFieldDelay::
 
     ; Don't do anything if there were line clears
     ldh a, [hLineClearCt]
-    cp a, 0
+    or a, a
     jr nz, .are
 
     ; Otherwise, reset the combo.
@@ -4556,7 +4446,7 @@ BigFieldDelay::
     ldh a, [hRemainingDelay]
     dec a
     ldh [hRemainingDelay], a
-    cp a, 0
+    or a, a
     jp nz, BigWidenField
 
     ; Add one level if we're not at a breakpoint and not in MYCO speed curve.
@@ -4782,7 +4672,7 @@ BigClearLines:
     ld [hl+], a
     ld [hl+], a
     ld [hl+], a
-    ld a, 0
+    xor a, a
     ld [hl+], a
     ld [hl+], a
     ld [hl+], a

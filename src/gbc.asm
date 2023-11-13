@@ -109,7 +109,7 @@ ToATTR::
     ldh [rHDMA4], a
     ld a, 41
     ldh [rHDMA5], a
-    ld a, 0
+    xor a, a
     ldh [rVBK], a
     ret
 
@@ -268,7 +268,7 @@ GBCTitleProcess::
     inc a
     cp a, $07
     jr c, .nores
-    ld a, $00
+    xor a, a
 .nores
     ld [wTitlePal], a
 .noinc
@@ -303,7 +303,7 @@ GBCTitleProcess::
     inc a
     cp a, $07
     jr c, .nores3
-    ld a, $00
+    xor a, a
 .nores3
     ld [wTitlePal], a
 .noinc3
@@ -338,7 +338,7 @@ GBCTitleProcess::
     inc a
     cp a, $07
     jr c, .nores1
-    ld a, $00
+    xor a, a
 .nores1
     ld [wTitlePal], a
 .noinc1
@@ -373,7 +373,7 @@ GBCTitleProcess::
     inc a
     cp a, $07
     jr c, .nores4
-    ld a, $00
+    xor a, a
 .nores4
     ld [wTitlePal], a
 .noinc4
@@ -395,7 +395,7 @@ GBCTitleProcess::
     inc a
     cp a, $07
     jr c, .nores2
-    ld a, $00
+    xor a, a
 .nores2
     ld [wTitlePal], a
 .noinc2
@@ -429,11 +429,11 @@ GBCGameplayProcess::
     jr z, .goverride
     ld a, [wSpeedCurveState]
     cp a, SCURVE_DEAT
-    ld a, $00 ;Red
+    xor a, a ;Red
     jr z, .goverride
     ld a, [wSpeedCurveState]
     cp a, SCURVE_SHIR
-    ld a, $00 ;Red
+    xor a, a ;Red
     jr z, .goverride ;Always red
     ld a, [wSpeedCurveState]
     cp a, SCURVE_CHIL
@@ -447,7 +447,7 @@ GBCGameplayProcess::
     ldh a, [hCurrentIntegerGravity]
     cp a, 20
     jr c, :+
-    ld a, $00
+    xor a, a
     ld d, a
     jr .colorfield
 :   cp a, 3
@@ -461,7 +461,7 @@ GBCGameplayProcess::
     ld d, a
     jr .colorfield
 :   ldh a, [hCurrentFractionalGravity]
-    cp a, 0
+    or a, a
     jr nz, .colorfield
     ld a, $05
     ld d, a
@@ -645,11 +645,11 @@ GBCBigGameplayProcess::
     jr z, .goverride
     ld a, [wSpeedCurveState]
     cp a, SCURVE_DEAT
-    ld a, $00 ;Red
+    xor a, a ;Red
     jr z, .goverride
     ld a, [wSpeedCurveState]
     cp a, SCURVE_SHIR
-    ld a, $00 ;Red
+    xor a, a ;Red
     jr z, .goverride ;Always red
     ld a, [wSpeedCurveState]
     cp a, SCURVE_CHIL
@@ -663,7 +663,7 @@ GBCBigGameplayProcess::
     ldh a, [hCurrentIntegerGravity]
     cp a, 20
     jr c, :+
-    ld a, $00
+    xor a, a
     ld d, a
     jr .colorfield
 :   cp a, 3
@@ -677,7 +677,7 @@ GBCBigGameplayProcess::
     ld d, a
     jr .colorfield
 :   ldh a, [hCurrentFractionalGravity]
-    cp a, 0
+    or a, a
     jr nz, .colorfield
     ld a, $05
     ld d, a
@@ -860,7 +860,7 @@ ToVRAM::
     ldh [rHDMA5], a
 
     ; Bank 0
-    ld a, 0
+    xor a, a
     ldh [rVBK], a
     ld a, HIGH(wShadowTilemap)
     ldh [rHDMA1], a

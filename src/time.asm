@@ -241,12 +241,6 @@ HandleTimers::
     ld [wMinutes], a
 
 HandleSectionTimers::
-    ldh a, [hFrameCtr]
-    inc a
-    ldh [hFrameCtr], a
-    and 1
-    ldh [hEvenFrame], a
-
     ldh a, [hMode]
     cp a, MODE_PAUSED
     ret z

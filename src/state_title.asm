@@ -760,7 +760,59 @@ TitleVBlankHandlerB:
     ld a, [wProfileName+2]
     ld hl, TITLE_PROFILE_NAME_2
     ld [hl], a
-    ret
+
+.buttons
+    ld b, 0
+    ld a, [wSwapABState]
+    add a, a
+    add a, a
+    ld c, a
+    ld hl, sBUTTONSMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_PROFILE_BUTTONS
+    ld bc, 4
+    call UnsafeMemCopy
+
+.filter
+    ld b, 0
+    ldh a, [hFilterMode]
+    add a, a
+    add a, a
+    ld c, a
+    ld hl, sFilterMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_PROFILE_FILTER
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Tetry!
+    ld a, [wSelected]
+    ld hl, sTetryProfileNumber
+    ld bc, 64
+:   or a, a
+    jr z, .donetetry2
+    dec a
+    add hl, bc
+    jr :-
+.donetetry2
+    ld d, h
+    ld e, l
+    ld hl, TITLE_PROFILE_TETRY
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_PROFILE_TETRY+(1*32)
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_PROFILE_TETRY+(2*32)
+    ld bc, 16
+    call SafeMemCopy
+    ld hl, TITLE_PROFILE_TETRY+(3*32)
+    ld bc, 16
+    jp SafeMemCopy
 
 
 .vblankSettings
@@ -857,54 +909,27 @@ TitleVBlankHandlerB:
     ld hl, TITLE_SETTINGS_HIG
     ld bc, 4
     call UnsafeMemCopy
-    jr .buttons
+    jr .start
 .disabled1
     ld de, sDisabled
     ld hl, TITLE_SETTINGS_HIG
     ld bc, 4
     call UnsafeMemCopy
 
-.buttons
-    ld b, 0
-    ld a, [wSwapABState]
-    add a, a
-    add a, a
-    ld c, a
-    ld hl, sBUTTONSMode
-    add hl, bc
-    ld d, h
-    ld e, l
-    ld hl, TITLE_SETTINGS_BUTTONS
-    ld bc, 4
-    call UnsafeMemCopy
-
-.filter
-    ld b, 0
-    ldh a, [hFilterMode]
-    add a, a
-    add a, a
-    ld c, a
-    ld hl, sFilterMode
-    add hl, bc
-    ld d, h
-    ld e, l
-    ld hl, TITLE_SETTINGS_FILTER
-    ld bc, 4
-    call UnsafeMemCopy
-
     ; START level.
+.start
     call DrawSpeedSettings
 
     ; Tetry!
     ld a, [wSelected]
-    ld hl, sTetryButtons
+    ld hl, sTetryRNG
     ld bc, 64
 :   or a, a
-    jr z, .donetetry
+    jr z, .donetetry1
     dec a
     add hl, bc
     jr :-
-.donetetry
+.donetetry1
     ld d, h
     ld e, l
     ld hl, TITLE_SETTINGS_TETRY
@@ -1080,28 +1105,13 @@ SettingsHandleLeft:
     jp hl
 
 .jumps
-    jp .buttons
     jp .rng
     jp .rot
     jp .drop
     jp .curve
     jp .hig
     jp DecrementLevel
-    jp .filter
     no_jump
-
-.buttons
-    ld a, [wSwapABState]
-    or a, a
-    jr z, :+
-    dec a
-    ld [wSwapABState], a
-    ld [rSwapABState], a
-    ret
-:   ld a, BUTTON_MODE_COUNT-1
-    ld [wSwapABState], a
-    ld [rSwapABState], a
-    ret
 
 .rng
     ld a, [wRNGModeState]
@@ -1170,20 +1180,6 @@ SettingsHandleLeft:
     ld [rAlways20GState], a
     ret
 
-.filter
-    ldh a, [hFilterMode]
-    or a, a
-    jr z, :+
-    dec a
-    ldh [hFilterMode], a
-    ld [rFilterMode], a
-    ret
-:   ld a, FILTER_MODE_COUNT-1
-    ldh [hFilterMode], a
-    ld [rFilterMode], a
-    ret
-
-
 
 SettingsHandleRight:
     ld a, [wSelected]
@@ -1200,28 +1196,13 @@ SettingsHandleRight:
     jp hl
 
 .jumps
-    jp .buttons
     jp .rng
     jp .rot
     jp .drop
     jp .curve
     jp .hig
     jp IncrementLevel
-    jp .filter
     no_jump
-
-.buttons
-    ld a, [wSwapABState]
-    cp a, BUTTON_MODE_COUNT-1
-    jr z, :+
-    inc a
-    ld [wSwapABState], a
-    ld [rSwapABState], a
-    ret
-:   xor a, a
-    ld [wSwapABState], a
-    ld [rSwapABState], a
-    ret
 
 .rng
     ld a, [wRNGModeState]
@@ -1290,19 +1271,6 @@ SettingsHandleRight:
     ld [rAlways20GState], a
     ret
 
-.filter
-    ldh a, [hFilterMode]
-    cp a, FILTER_MODE_COUNT-1
-    jr z, :+
-    inc a
-    ldh [hFilterMode], a
-    ld [rFilterMode], a
-    ret
-:   xor a, a
-    ldh [hFilterMode], a
-    ld [rFilterMode], a
-    ret
-
 
 ProfileHandleA:
     ld a, [wSelected]
@@ -1337,6 +1305,9 @@ ProfileHandleRight:
     jp .l0
     jp .l1
     jp .l2
+    jp .buttons
+    jp .filter
+    no_jump
     no_jump
 
 .idx
@@ -1381,6 +1352,32 @@ ProfileHandleRight:
     ld [rProfileName+2], a
     ret
 
+.buttons
+    ld a, [wSwapABState]
+    cp a, BUTTON_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wSwapABState], a
+    ld [rSwapABState], a
+    ret
+:   xor a, a
+    ld [wSwapABState], a
+    ld [rSwapABState], a
+    ret
+
+.filter
+    ldh a, [hFilterMode]
+    cp a, FILTER_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
+    ret
+:   xor a, a
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
+    ret
+
 
 ProfileHandleLeft:
     ld a, [wSelected]
@@ -1403,6 +1400,9 @@ ProfileHandleLeft:
     jp .l0
     jp .l1
     jp .l2
+    jp .buttons
+    jp .filter
+    no_jump
     no_jump
 
 .idx
@@ -1445,6 +1445,32 @@ ProfileHandleLeft:
 .doit3
     ld [wProfileName+2], a
     ld [rProfileName+2], a
+    ret
+
+.buttons
+    ld a, [wSwapABState]
+    or a, a
+    jr z, :+
+    dec a
+    ld [wSwapABState], a
+    ld [rSwapABState], a
+    ret
+:   ld a, BUTTON_MODE_COUNT-1
+    ld [wSwapABState], a
+    ld [rSwapABState], a
+    ret
+
+.filter
+    ldh a, [hFilterMode]
+    or a, a
+    jr z, :+
+    dec a
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
+    ret
+:   ld a, FILTER_MODE_COUNT-1
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
     ret
 
 

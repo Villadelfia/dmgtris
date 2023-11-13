@@ -772,6 +772,8 @@ GamePlayEventLoopHandlerB::
 
     ; Always draw the score, level, next piece, and held piece.
 .drawStaticInfo
+    call SetPal
+
     ldh a, [hNextPiece]
     call ApplyNext
 
@@ -1583,6 +1585,8 @@ GamePlayBigEventLoopHandlerB:
 
     ; Always draw the score, level, next piece, and held piece.
 .drawStaticInfo
+    call SetPal
+
     ldh a, [hNextPiece]
     call ApplyNext
 

@@ -67,7 +67,8 @@ wSPRTimeS2::   ds 4
 wSPRTimeCS1::  ds 4
 wSPRTimeCS2::  ds 4
 ENDU
-wScratch:      ds 2
+wScratch:       ds 2
+wSpritePal:     ds 1
 
 
 SECTION "OAM DMA Code", ROM0
@@ -113,6 +114,24 @@ ClearOAM::
 
 
 SECTION "Domain Specific Functions", ROM0
+SetPal::
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr nz, .darker
+    ld hl, hFrameCtr
+    bit 4, [hl]
+    jr z, .lighter
+
+.darker
+    ld a, OAMF_PAL0 | $07
+    ld [wSpritePal], a
+    ret
+.lighter
+    ld a, OAMF_PAL1 | $07
+    ld [wSpritePal], a
+    ret
+
+.setpal
     ; Puts the mode tells into sprites and displays them.
 ApplyTells::
     ld a, TELLS_BASE_Y
@@ -485,7 +504,7 @@ ApplyTime::
     ld [wSPRTimeCS2+1], a
 
     ; Set the palette of the time objects.
-    ld a, OAMF_PAL0 | $07
+    ld a, OAMF_PAL1 | $07
     ld [wSPRTimeM1+3], a
     ld [wSPRTimeM2+3], a
     ld [wSPRTimeS1+3], a
@@ -590,11 +609,6 @@ ApplyTime::
     ld a, [de]
     add a, TILE_SMALL_0
     ld [hl], a
-
-
-
-
-
     ret
 
 
@@ -604,13 +618,15 @@ ApplyTime::
 ApplyNumbers8::
     inc hl
     inc hl
-    ld bc, 4
+    ld bc, 2
 
     ld a, [de]
     or a, a
     jr nz, .one
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -618,7 +634,9 @@ ApplyNumbers8::
     or a, a
     jr nz, .two
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -626,7 +644,9 @@ ApplyNumbers8::
     or a, a
     jr nz, .three
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -634,7 +654,9 @@ ApplyNumbers8::
     or a, a
     jr nz, .four
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -642,7 +664,9 @@ ApplyNumbers8::
     or a, a
     jr nz, .five
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -650,7 +674,9 @@ ApplyNumbers8::
     or a, a
     jr nz, .six
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -658,7 +684,9 @@ ApplyNumbers8::
     or a, a
     jr nz, .seven
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -667,56 +695,72 @@ ApplyNumbers8::
 .one
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .two
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .three
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .four
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .five
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .six
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .seven
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .eight
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     ret
 
 
@@ -726,13 +770,15 @@ ApplyNumbers8::
 ApplyNumbers4::
     inc hl
     inc hl
-    ld bc, 4
+    ld bc, 2
 
     ld a, [de]
     or a, a
     jr nz, .one
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -740,7 +786,9 @@ ApplyNumbers4::
     or a, a
     jr nz, .two
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -748,7 +796,9 @@ ApplyNumbers4::
     or a, a
     jr nz, .three
     ld a, TILE_BLANK
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
@@ -757,27 +807,35 @@ ApplyNumbers4::
 .one
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .two
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .three
     ld a, [de]
     add a, TILE_0
-    ld [hl], a
+    ld [hl+], a
+    ld a, [wSpritePal]
+    ld [hl+], a
     add hl, bc
     inc de
 
 .four
     ld a, [de]
     add a, TILE_0
+    ld [hl+], a
+    ld a, [wSpritePal]
     ld [hl], a
     ret
 
@@ -795,7 +853,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -807,7 +865,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -819,7 +877,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -831,7 +889,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -843,7 +901,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -855,7 +913,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -867,7 +925,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -878,7 +936,7 @@ SetNumberSpritePositions::
     ld [hl], a
     inc hl
     inc hl
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
 
     ldh a, [rSCX]
@@ -892,7 +950,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -904,7 +962,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -916,7 +974,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -927,7 +985,7 @@ SetNumberSpritePositions::
     ld [hl], a
     inc hl
     inc hl
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
 
     ldh a, [rSCX]
@@ -941,7 +999,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -953,7 +1011,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -965,7 +1023,7 @@ SetNumberSpritePositions::
     inc hl
     inc hl
     ld b, a
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ld a, b
     add a, 8
@@ -976,7 +1034,7 @@ SetNumberSpritePositions::
     ld [hl], a
     inc hl
     inc hl
-    ld a, OAMF_PAL1 | $07
+    ld a, [wSpritePal]
     ld [hl], a
     ret
 
@@ -1021,7 +1079,7 @@ GradeRendering::
     ld a, [wSPRGrade1+3]
     inc a
     and a, OAMF_PALMASK
-    or a, OAMF_PAL1
+    or a, OAMF_PAL0
     ld [wSPRGrade1+3], a
     ld [wSPRGrade2+3], a
     jr .drawgrade

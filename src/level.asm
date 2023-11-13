@@ -399,6 +399,9 @@ LevelUp::
     or b
     cp a, $00
     jr z, .regretavailable
+    ld a, [hCLevel+CLEVEL_TENS]
+    cp a, 0
+    jr nz, .regretavailable
     xor a, a
     ld [wSectionMinutes], a 
     ld [wSectionSeconds], a 

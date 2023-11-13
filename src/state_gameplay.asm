@@ -290,7 +290,7 @@ GamePlayEventLoopHandlerB::
     ; Apply the hold if so.
 .checkIHS
     ldh a, [hSelectState]
-    cp a, 0
+    or a, a
     jr z, .loaddefaultjingle
     call DoHold
     jr .postjingle
@@ -304,18 +304,18 @@ GamePlayEventLoopHandlerB::
     ; Apply the rotation if so.
 .checkIRSA
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .lda1
 .ldb1
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .checkIRSB
     ld a, $FF
     ldh [hBState], a
     jr .cp1
 .lda1
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .checkIRSB
     ld a, $FF
     ldh [hAState], a
@@ -331,18 +331,18 @@ GamePlayEventLoopHandlerB::
 
 .checkIRSB
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .ldb2
 .lda2
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .postjingle
     ld a, $FF
     ldh [hAState], a
     jr .cp2
 .ldb2
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .postjingle
     ld a, $FF
     ldh [hBState], a
@@ -421,7 +421,7 @@ GamePlayEventLoopHandlerB::
     ; Do we go into delay state?
 .nohold
     ldh a, [hCurrentLockDelayRemaining]
-    cp a, 0
+    or a, a
     jp nz, .drawStaticInfo
     ld a, MODE_DELAY
     ldh [hMode], a
@@ -445,7 +445,7 @@ GamePlayEventLoopHandlerB::
     call FieldDelay
 
     ldh a, [hRemainingDelay]
-    cp a, 0
+    or a, a
     jp nz, .drawStaticInfo
     ld a, [wInStaffRoll]
     cp a, $FF
@@ -619,14 +619,14 @@ GamePlayEventLoopHandlerB::
 .gameOverMode
     ; Wait for A and B to not be held down.
     ld a, [wGameOverIgnoreInput]
-    cp a, 0
+    or a, a
     jr z, .checkretry
 
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jp nz, .drawStaticInfo
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jp nz, .drawStaticInfo
 
     xor a, a
@@ -665,13 +665,13 @@ GamePlayEventLoopHandlerB::
 .pauseMode
     ; Quick reset.
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .noqr
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .noqr
     ldh a, [hSelectState]
-    cp a, 0
+    or a, a
     jr z, .noqr
     jp SwitchToTitle
 
@@ -807,18 +807,18 @@ DoHold:
     ; Apply the rotation if so.
 .checkIRSA
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .lda3
 .ldb3
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .checkIRSB
     ld a, $FF
     ldh [hBState], a
     jr .cp3
 .lda3
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .checkIRSB
     ld a, $FF
     ldh [hAState], a
@@ -832,18 +832,18 @@ DoHold:
 
 .checkIRSB
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .ldb4
 .lda4
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .noRotation
     ld a, $FF
     ldh [hAState], a
     jr .cp4
 .ldb4
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .noRotation
     ld a, $FF
     ldh [hBState], a
@@ -1087,7 +1087,7 @@ GamePlayBigEventLoopHandlerB:
     ; Apply the hold if so.
 .checkIHS
     ldh a, [hSelectState]
-    cp a, 0
+    or a, a
     jr z, .loaddefaultjingle
     call BigDoHold
     jr .postjingle
@@ -1101,18 +1101,18 @@ GamePlayBigEventLoopHandlerB:
     ; Apply the rotation if so.
 .checkIRSA
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .lda1
 .ldb1
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .checkIRSB
     ld a, $FF
     ldh [hBState], a
     jr .cp1
 .lda1
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .checkIRSB
     ld a, $FF
     ldh [hAState], a
@@ -1128,18 +1128,18 @@ GamePlayBigEventLoopHandlerB:
 
 .checkIRSB
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .ldb2
 .lda2
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .postjingle
     ld a, $FF
     ldh [hAState], a
     jr .cp2
 .ldb2
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .postjingle
     ld a, $FF
     ldh [hBState], a
@@ -1218,7 +1218,7 @@ GamePlayBigEventLoopHandlerB:
     ; Do we go into delay state?
 .nohold
     ldh a, [hCurrentLockDelayRemaining]
-    cp a, 0
+    or a, a
     jp nz, .drawStaticInfo
     ld a, MODE_DELAY
     ldh [hMode], a
@@ -1240,7 +1240,7 @@ GamePlayBigEventLoopHandlerB:
     call BigFieldDelay
 
     ldh a, [hRemainingDelay]
-    cp a, 0
+    or a, a
     jp nz, .drawStaticInfo
     ld a, [wInStaffRoll]
     cp a, $FF
@@ -1415,14 +1415,14 @@ GamePlayBigEventLoopHandlerB:
 .gameOverMode
     ; Wait for A and B to not be held down.
     ld a, [wGameOverIgnoreInput]
-    cp a, 0
+    or a, a
     jr z, .checkretry
 
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jp nz, .drawStaticInfo
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jp nz, .drawStaticInfo
 
     xor a, a
@@ -1481,13 +1481,13 @@ GamePlayBigEventLoopHandlerB:
 .pauseMode
     ; Quick reset.
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .noqr
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .noqr
     ldh a, [hSelectState]
-    cp a, 0
+    or a, a
     jr z, .noqr
     jp SwitchToTitle
 
@@ -1618,18 +1618,18 @@ BigDoHold:
     ; Apply the rotation if so.
 .checkIRSA
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .lda3
 .ldb3
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .checkIRSB
     ld a, $FF
     ldh [hBState], a
     jr .cp3
 .lda3
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .checkIRSB
     ld a, $FF
     ldh [hAState], a
@@ -1643,18 +1643,18 @@ BigDoHold:
 
 .checkIRSB
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, .ldb4
 .lda4
     ldh a, [hAState]
-    cp a, 0
+    or a, a
     jr z, .noRotation
     ld a, $FF
     ldh [hAState], a
     jr .cp4
 .ldb4
     ldh a, [hBState]
-    cp a, 0
+    or a, a
     jr z, .noRotation
     ld a, $FF
     ldh [hBState], a

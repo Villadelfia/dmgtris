@@ -493,7 +493,7 @@ AdjustSpeedCurveForced:
 
     ; Do we want to force 20G?
     ld a, [wAlways20GState]
-    cp a, 0
+    or a, a
     jr z, .continue
     ld a, 20
     ldh [hCurrentIntegerGravity], a
@@ -511,7 +511,7 @@ AdjustSpeedCurveForced:
 BuildTrueCLevel:
     ; Except in TGM3 mode, this will always just be the same as the real level, so check for the most common case and bail.
     ld a, [wSkippedSectionsBCD]
-    cp a, 0
+    or a, a
     ret z
 
     ; Otherwise, to the thing.

@@ -97,7 +97,7 @@ RestoreSRAM::
     cp a, "T"
     jp nz, InitializeSRAM
     ld a, [rCheck+4]
-    cp a, 0
+    or a, a
     jp nz, InitializeSRAM
     ld a, [rCheck+5]
     cp a, 4
@@ -446,7 +446,7 @@ ChangeProfile::
 .backup
     ld [wTarget], a
     ld a, [rLastProfile]
-    cp a, 0
+    or a, a
     jr z, .first
     cp a, 1
     jr z, .second
@@ -541,7 +541,7 @@ ChangeProfile::
 .restore
     ld a, [wTarget]
     ld [rLastProfile], a
-    cp a, 0
+    or a, a
     jr z, .lfirst
     cp a, 1
     jr z, .lsecond

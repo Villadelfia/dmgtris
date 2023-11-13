@@ -461,7 +461,7 @@ GBCGameplayProcess::
     ld d, a
     jr .colorfield
 :   ldh a, [hCurrentFractionalGravity]
-    cp a, 0
+    or a, a
     jr nz, .colorfield
     ld a, $05
     ld d, a
@@ -677,7 +677,7 @@ GBCBigGameplayProcess::
     ld d, a
     jr .colorfield
 :   ldh a, [hCurrentFractionalGravity]
-    cp a, 0
+    or a, a
     jr nz, .colorfield
     ld a, $05
     ld d, a

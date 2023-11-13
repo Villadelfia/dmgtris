@@ -110,7 +110,7 @@ CheckTorikan::
 
     ; Okay if frames are exactly 0.
     ld a, [wFrames]
-    cp a, 0
+    or a, a
     jr z, .success
 
 .failure

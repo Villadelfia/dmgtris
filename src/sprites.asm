@@ -226,7 +226,7 @@ ApplyNext::
     ld hl, sPieceXOffsets
     ld de, sPieceYOffsets
 .postoffsets
-    cp 0
+    or a, a
     jr z, .skipoffn
 .getoffn
     inc hl
@@ -369,7 +369,7 @@ ApplyHold::
     ld a, b
     jr z, .show
     ldh a, [hEvenFrame]
-    cp a, 0
+    or a, a
     ld a, b
     jr z, .show
 
@@ -405,7 +405,7 @@ ApplyHold::
     ld hl, sPieceXOffsets
     ld de, sPieceYOffsets
 .postoffsets
-    cp 0
+    or a, a
     jr z, .skipoffh
 .getoffh
     inc hl
@@ -607,7 +607,7 @@ ApplyNumbers8::
     ld bc, 4
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .one
     ld a, TILE_BLANK
     ld [hl], a
@@ -615,7 +615,7 @@ ApplyNumbers8::
     inc de
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .two
     ld a, TILE_BLANK
     ld [hl], a
@@ -623,7 +623,7 @@ ApplyNumbers8::
     inc de
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .three
     ld a, TILE_BLANK
     ld [hl], a
@@ -631,7 +631,7 @@ ApplyNumbers8::
     inc de
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .four
     ld a, TILE_BLANK
     ld [hl], a
@@ -639,7 +639,7 @@ ApplyNumbers8::
     inc de
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .five
     ld a, TILE_BLANK
     ld [hl], a
@@ -647,7 +647,7 @@ ApplyNumbers8::
     inc de
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .six
     ld a, TILE_BLANK
     ld [hl], a
@@ -655,7 +655,7 @@ ApplyNumbers8::
     inc de
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .seven
     ld a, TILE_BLANK
     ld [hl], a
@@ -729,7 +729,7 @@ ApplyNumbers4::
     ld bc, 4
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .one
     ld a, TILE_BLANK
     ld [hl], a
@@ -737,7 +737,7 @@ ApplyNumbers4::
     inc de
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .two
     ld a, TILE_BLANK
     ld [hl], a
@@ -745,7 +745,7 @@ ApplyNumbers4::
     inc de
 
     ld a, [de]
-    cp a, 0
+    or a, a
     jr nz, .three
     ld a, TILE_BLANK
     ld [hl], a
@@ -1008,10 +1008,10 @@ GradeRendering::
 
     ; If the effect timer is greater than 0 and on even frames, decrement it and do some palette magic.
     ldh a, [hFrameCtr]
-    cp a, 0
+    or a, a
     jr z, .noeffect
     ld a, [wEffectTimer]
-    cp a, 0
+    or a, a
     jr z, .noeffect
     dec a
     ld [wEffectTimer], a

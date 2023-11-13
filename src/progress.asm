@@ -253,7 +253,7 @@ SECTION "Progress Functions", ROM0
     ; Progress in A, 0-32.
 SetProgress::
     ld hl, sProgressData
-    cp a, 0
+    or a, a
     jr z, .correct
     ld b, a
     ld de, 10

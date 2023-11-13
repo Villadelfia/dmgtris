@@ -899,7 +899,7 @@ TitleVBlankHandlerB:
     ld a, [wSelected]
     ld hl, sTetryButtons
     ld bc, 64
-:   cp a, 0
+:   or a, a
     jr z, .donetetry
     dec a
     add hl, bc
@@ -925,7 +925,7 @@ TitleVBlankHandlerB:
     ld b, TITLE_RECORDS_RESET_BASE
     ld [hl], b
     ldh a, [hSelectState]
-    cp a, 0
+    or a, a
     ret z
     inc b
     ld [hl], b
@@ -1005,7 +1005,7 @@ MainHandleA:
 
 MainHandleUp:
     ld a, [wSelected]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wSelected], a
@@ -1055,7 +1055,7 @@ SettingsHandleDown:
 
 SettingsHandleUp:
     ld a, [wSelected]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wSelected], a
@@ -1092,7 +1092,7 @@ SettingsHandleLeft:
 
 .buttons
     ld a, [wSwapABState]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wSwapABState], a
@@ -1105,7 +1105,7 @@ SettingsHandleLeft:
 
 .rng
     ld a, [wRNGModeState]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wRNGModeState], a
@@ -1118,7 +1118,7 @@ SettingsHandleLeft:
 
 .rot
     ld a, [wRotModeState]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wRotModeState], a
@@ -1131,7 +1131,7 @@ SettingsHandleLeft:
 
 .drop
     ld a, [wDropModeState]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wDropModeState], a
@@ -1144,7 +1144,7 @@ SettingsHandleLeft:
 
 .curve
     ld a, [wSpeedCurveState]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wSpeedCurveState], a
@@ -1159,7 +1159,7 @@ SettingsHandleLeft:
 
 .hig
     ld a, [wAlways20GState]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wAlways20GState], a
@@ -1172,7 +1172,7 @@ SettingsHandleLeft:
 
 .filter
     ldh a, [hFilterMode]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ldh [hFilterMode], a
@@ -1462,7 +1462,7 @@ ProfileHandleDown:
 
 ProfileHandleUp:
     ld a, [wSelected]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wSelected], a
@@ -1627,7 +1627,7 @@ RecordsHandleLeft:
     ld [wDisplayingScoreMode], a
     ld [wScoreFlipTimer], a
     ld a, [wSelected]
-    cp a, 0
+    or a, a
     jr z, :+
     dec a
     ld [wSelected], a

@@ -246,7 +246,7 @@ InsertHiScore::
     ; Copy the top rows to the working data.
 .copyupper
     ld a, [wInsertTarget]
-    cp a, 0
+    or a, a
     jr z, .findrow
     ld hl, 0
     ld bc, HISCORE_ENTRY_SIZE
@@ -267,7 +267,7 @@ InsertHiScore::
     ld hl, wWorkingCopy
     ld bc, HISCORE_ENTRY_SIZE
     ld a, [wInsertTarget]
-    cp a, 0
+    or a, a
     jr z, .insert
 :   add hl, bc
     dec a
@@ -350,7 +350,7 @@ GetHiScoreEntry::
     ld h, a
     ld bc, HISCORE_ENTRY_SIZE
     ld a, [wWorkingIdx]
-    cp a, 0
+    or a, a
     jr z, .store
 :   add hl, bc
     dec a

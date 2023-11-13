@@ -1406,6 +1406,7 @@ cool:
     ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
     xor a, a
     ld [wCOOLIsActive], a ; Make the cool no longer be active
+    call SkipSection
     ret
 nocool:
     ret

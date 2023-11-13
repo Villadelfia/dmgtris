@@ -123,18 +123,19 @@ ScoreIncrement points are then awarded.
 ## Screenshots
 Original Game Boy | Game Boy Color
 :-: | :-:
-![DMG Gameplay](https://villadelfia.org/i/xAAHfqDw.png) | ![GBC Gameplay](https://villadelfia.org/i/Hj2P8Pk5.png)
+<img src="https://villadelfia.org/i/xAAHfqDw.png" width="160" height="144" /> | <img src="https://villadelfia.org/i/Hj2P8Pk5.png" width="160" height="144" />
+
 
 ## Videos
 ### Original Game Boy
 Normal Mode | Big Mode
 :-: | :-:
-<video src="https://villadelfia.org/dmgtris/demo-dmg-normal.mp4"></video> | <video src="https://villadelfia.org/dmgtris/demo-dmg-big.mp4"></video>
+<video src="https://villadelfia.org/dmgtris/demo-dmg-normal.mp4" width="160" height="144" /> | <video src="https://villadelfia.org/dmgtris/demo-dmg-big.mp4" width="160" height="144" />
 
 ### Game Boy Color
 Normal Mode | Big Mode
 :-: | :-:
-<video src="https://villadelfia.org/dmgtris/demo-gbc-normal.mp4"></video> | <video src="https://villadelfia.org/dmgtris/demo-gbc-big.mp4"></video>
+<video src="https://villadelfia.org/dmgtris/demo-gbc-normal.mp4" width="160" height="144" /> | <video src="https://villadelfia.org/dmgtris/demo-gbc-big.mp4" width="160" height="144" />
 
 
 ## Building and Development

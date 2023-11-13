@@ -130,13 +130,12 @@ Original Game Boy | Game Boy Color
 ### Original Game Boy
 Normal Mode | Big Mode
 :-: | :-:
-<video src="./assets/demo-dmg-normal.mp4" width=160 height=144></video> | <video src="./assets/demo-dmg-big.mp4" width=160 height=144></video>
+[VIDEO](https://villadelfia.org/dmgtris/demo-dmg-normal.mp4) | [VIDEO](https://villadelfia.org/dmgtris/demo-dmg-big.mp4)
 
 ### Game Boy Color
 Normal Mode | Big Mode
 :-: | :-:
-<video src="./assets/demo-gbc-normal.mp4" width=160 height=144></video> | <video src="./assets/demo-gbc-big.mp4" width=160 height=144></video>
-
+[VIDEO](https://villadelfia.org/dmgtris/demo-gbc-normal.mp4) | [VIDEO](https://villadelfia.org/dmgtris/demo-gbc-big.mp4)
 
 ## Building and Development
 The game can be built using gnu make and the RGBDS toolchain.

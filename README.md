@@ -125,6 +125,13 @@ ScoreIncrement points are then awarded.
 ![GBC Gameplay](https://villadelfia.org/i/Hj2P8Pk5.png)
 
 
+## Videos
+![DMG Gameplay Normal](https://villadelfia.org/dmgtris/demo-dmg-normal.mp4)
+![DMG Gameplay Big](https://villadelfia.org/dmgtris/demo-dmg-big.mp4)
+![GBC Gameplay Normal](https://villadelfia.org/dmgtris/demo-gbc-normal.mp4)
+![GBC Gameplay Big](https://villadelfia.org/dmgtris/demo-gbc-big.mp4)
+
+
 ## Building and Development
 The game can be built using gnu make and the RGBDS toolchain.
 

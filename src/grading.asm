@@ -463,7 +463,45 @@ DrawGradeProgressDMGT::
     ret
 
 UpdateGradeDMGT::
+    ; Check if the torikan hasn't been calculated.
+    ld a, [wRankingDisqualified]
+    cp a, $FF
+    jr z, .checklineclears
+
+    ; Have we hit the torikan level?
+    ldh a, [hCLevel+CLEVEL_HUNDREDS]
+    cp a, 5
+    jr nz, .checklineclears
+
+    ; Mark it as checked and do the check.
+    ld a, $FF
+    ld [wRankingDisqualified], a
+
+    ; There's a 8:00 torikan at 500.
+    ld b, 8
+    ld c, 0
+    call CheckTorikan
+
+    ; If we failed it: DIE.
+    cp a, $FF
+    jp z, .checklineclears
+    ld a, $FF
+    ld [wLockLevel], a
+    ld a, 5
+    ldh [hCLevel+1], a
+    ldh [hNLevel+1], a
+    xor a, a
+    ldh [hCLevel], a
+    ldh [hNLevel], a
+    ldh [hCLevel+2], a
+    ldh [hNLevel+2], a
+    ldh [hCLevel+3], a
+    ldh [hNLevel+3], a
+    jp TriggerKillScreen
+
+
     ; Did we have line clears?
+.checklineclears
     ldh a, [hLineClearCt]
     or a, a
     jp z, DrawGradeProgressDMGT
@@ -741,6 +779,7 @@ DecayGradeDMGT::
     xor a, a
     ld [wDecayCounter], a
     jp DrawGradeProgressDMGT
+
 
 
 UpdateGradeTGM1:

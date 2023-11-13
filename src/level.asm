@@ -221,6 +221,11 @@ SpecialLevelInit:
     ; Increment level and speed up if necessary. Level increment in E.
     ; Levels may only increment by single digits.
 LevelUp::
+    ; Return if our level is hard locked.
+    ld a, [wLockLevel]
+    cp a, $FF
+    ret z
+    
     ; Return if we're maxed out.
     ld hl, hCLevel
     ld a, $09

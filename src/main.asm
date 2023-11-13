@@ -99,6 +99,8 @@ Main::
     call BankingInit
 
     xor a, a
+    ld [wKillScreenActive], a
+    ld [wSkippedSectionsBCD], a
     ldh [hMode], a
 
     ; Switch to title state.

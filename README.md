@@ -152,6 +152,7 @@ Thanks for playtesting and debugging go to:
 - AntonErgo
 - Lindtobias
 - \_Zaphod77\_
+- bbbbbr
 
 
 ## License

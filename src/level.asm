@@ -36,7 +36,8 @@ hStartSpeed:: ds 2
 hRequiresLineClear:: ds 1
 hLevel:: ds 2
 hCLevel:: ds 4
-hNLevel:: ds 6 ; The extra 2 bytes will be clobbered by the sprite drawing functions.
+hNLevel:: ds 4
+hTrueCLevel:: ds 4
 hPrevHundreds:: ds 1
 
 SECTION "Level Variables", WRAM0
@@ -53,6 +54,7 @@ wKillScreenActive:: ds 1
 wLockLevel:: ds 1
 wShouldGoStaffRoll:: ds 1
 wNoMoreLocks:: ds 1
+wSkippedSectionsBCD:: ds 1
 
 
 SECTION "Level Functions", ROM0
@@ -70,6 +72,7 @@ LevelInit::
     ld [wLockLevel], a
     ld [wShouldGoStaffRoll], a
     ld [wNoMoreLocks], a
+    ld [wSkippedSectionsBCD], a
 
     ldh a, [hStartSpeed]
     ld l, a
@@ -81,18 +84,22 @@ LevelInit::
     ld b, a
     and a, $0F
     ldh [hCLevel+3], a
+    ldh [hTrueCLevel+3], a
     ld a, b
     swap a
     and a, $0F
     ldh [hCLevel+2], a
+    ldh [hTrueCLevel+2], a
     ld a, [hl+]
     ld b, a
     and a, $0F
     ldh [hCLevel+1], a
+    ldh [hTrueCLevel+1], a
     ld a, b
     swap a
     and a, $0F
     ldh [hCLevel], a
+    ldh [hTrueCLevel], a
 
     ld a, l
     ldh [hSpeedCurvePtr], a
@@ -126,10 +133,11 @@ LevelInit::
     ; Get special data.
     call SpecialLevelInit
 
-    ; Restore the bank before returning.
+    ; Restore the bank to keep the stack balanced.
     rst RSTRestoreBank
 
-    jp DoSpeedUp
+    ; Get the speed curve
+    jp AdjustSpeedCurveForced
 
 
 SpecialLevelInit:
@@ -300,8 +308,7 @@ LevelUp::
     ldh [hLevel], a
     ld a, h
     ldh [hLevel+1], a
-    call DoSpeedUp
-    jp CheckSpecialLevelConditions
+    jp AdjustSpeedCurve
 
 .checknlevel
     ; Make wNLevel make sense.
@@ -322,10 +329,10 @@ LevelUp::
     ld hl, hCLevel+2
     ld a, [hl+]
     cp a, 9
-    jr nz, .checkspeedup
+    jr nz, AdjustSpeedCurve
     ld a, [hl]
     cp a, 8
-    jr nz, .checkspeedup
+    jr nz, AdjustSpeedCurve
     ld a, $FF
     ldh [hRequiresLineClear], a
     call SFXKill
@@ -365,7 +372,7 @@ LevelUp::
     jr nz, .leveljinglemaybe
     ld a, [wNoMoreLocks]
     cp a, $FF
-    jr z, .checkspeedup
+    jr z, AdjustSpeedCurve
     ld a, $FF
     ldh [hRequiresLineClear], a
     call SFXKill
@@ -377,52 +384,71 @@ LevelUp::
     ld b, a
     ldh a, [hCLevel+1]
     cp a, b
-    jr z, .checkspeedup
+    jr z, AdjustSpeedCurve
     call SFXKill
     ld a, SFX_LEVELUP
     call SFXEnqueue
+    ; This falls through to AdjustSpeedCurve, this is intended.
 
-.checkspeedup
+
+AdjustSpeedCurve:
+    call BuildTrueCLevel
     call CheckSpecialLevelConditions
+
+.docheck
+.checkthousands
+    ; Get the thousands level of the next speed up.
     ldh a, [hNextSpeedUp]
-    and a, $F0
-    jr z, :+
     swap a
     and a, $0F
-    ld hl, hCLevel
-    cp a, [hl]
-    jr z, :+
-    ret nc
 
-:   ldh a, [hNextSpeedUp]
+    ; Compare to ours.
+    ld hl, hTrueCLevel+CLEVEL_THOUSANDS
+    cp a, [hl]
+    jr z, .checkhundreds ; Equal? We need to check deeper.
+    jr c, AdjustSpeedCurveForced    ; Ours higher? We need to increase.
+    ret                  ; Ours lower? We're done.
+
+.checkhundreds
+    ; Get the hundreds level of the next speed up.
+    ldh a, [hNextSpeedUp]
     and a, $0F
-    jr z, :+
-    ld hl, hCLevel+1
-    cp a, [hl]
-    jr z, :+
-    ret nc
 
-:   ldh a, [hNextSpeedUp+1]
-    and a, $F0
-    jr z, :+
+    ; Compare to ours.
+    ld hl, hCLevel+CLEVEL_HUNDREDS
+    cp a, [hl]
+    jr z, .checktens     ; Equal? We need to check deeper.
+    jr c, AdjustSpeedCurveForced    ; Ours higher? We need to increase.
+    ret                  ; Ours lower? We're done.
+
+.checktens
+    ; Get the tens level of the next speed up.
+    ldh a, [hNextSpeedUp+1]
     swap a
     and a, $0F
-    ld hl, hCLevel+2
-    cp a, [hl]
-    jr z, :+
-    ret nc
 
-:   ldh a, [hNextSpeedUp+1]
+    ; Compare to ours.
+    ld hl, hCLevel+CLEVEL_TENS
+    cp a, [hl]
+    jr z, .checkones     ; Equal? We need to check deeper.
+    jr c, AdjustSpeedCurveForced    ; Ours higher? We need to increase.
+    ret                  ; Ours lower? We're done.
+
+.checkones
+    ; Get the ones level of the next speed up.
+    ldh a, [hNextSpeedUp+1]
     and a, $0F
-    jr z, DoSpeedUp
-    ld hl, hCLevel+3
+
+    ; Compare to ours.
+    ld hl, hCLevel+CLEVEL_ONES
     cp a, [hl]
-    jr z, DoSpeedUp
-    ret nc  ; This can fall through to the next function here. This is intentional.
+    jr c, AdjustSpeedCurveForced    ; Ours higher? We need to increase.
+    ret nz               ; Ours lower? We're done.
+                         ; Equal? We need to increase.
 
 
-    ; Iterates over the speed curve and loads the new constants.
-DoSpeedUp:
+AdjustSpeedCurveForced:
+    ; Update all data to the next speed curve data.
     ; Bank to speed curve data.
     ld b, BANK_OTHER
     rst RSTSwitchBank
@@ -468,12 +494,72 @@ DoSpeedUp:
     ; Do we want to force 20G?
     ld a, [wAlways20GState]
     cp a, 0
-    jp z, RSTRestoreBank
+    jr z, .continue
     ld a, 20
     ldh [hCurrentIntegerGravity], a
     ld a, $00
     ldh [hCurrentFractionalGravity], a
-    jp RSTRestoreBank
+
+.continue
+    call RSTRestoreBank
+
+    ; Jump back, we may need to increase more than once.
+    jr AdjustSpeedCurve.docheck
+
+
+    ; Builds an internal level that is the displayed level skipped an amount of sections ahead.
+BuildTrueCLevel:
+    ; Except in TGM3 mode, this will always just be the same as the real level, so check for the most common case and bail.
+    ld a, [wSkippedSectionsBCD]
+    cp a, 0
+    ret z
+
+    ; Otherwise, to the thing.
+    ld de, hCLevel
+    ld hl, hTrueCLevel
+    ld bc, 4
+    call UnsafeMemCopy
+
+    ; Amount of steps to increment hundreds.
+    ld a, [wSkippedSectionsBCD]
+    and a, $0F
+    ld b, a
+
+    ; Increase hundreds
+    ldh a, [hTrueCLevel+CLEVEL_HUNDREDS]
+    add a, b
+    ldh [hTrueCLevel+CLEVEL_HUNDREDS], a
+
+    ; Is hundreds overflowing?
+    cp a, $0A
+    jr c, .thousands
+
+    ; Yes, it was, so decrease by 10, and increment thousands.
+    sub a, 10
+    ldh [hTrueCLevel+CLEVEL_HUNDREDS], a
+    ld hl, hTrueCLevel+CLEVEL_THOUSANDS
+    inc [hl]
+
+.thousands
+    ; Amount of steps to increment thousands.
+    ld a, [wSkippedSectionsBCD]
+    swap a
+    and a, $0F
+    ld b, a
+
+    ; Increase thousands
+    ldh a, [hTrueCLevel+CLEVEL_THOUSANDS]
+    add a, b
+    ldh [hTrueCLevel+CLEVEL_THOUSANDS], a
+
+    ; This may cause a nonsense number. Fix it if that happens.
+    cp a, $0A
+    ret c
+    ld a, $09
+    ldh [hTrueCLevel+CLEVEL_THOUSANDS], a
+    ret
+
+
 
 
 CheckSpecialLevelConditions:
@@ -728,5 +814,44 @@ TriggerKillScreen::
     ld [wKillScreenActive], a
     ret
 
+
+    ; Gets a 0-indexed section number, returned in A as binary.
+    ; Levels 0000-0099 would return 0, levels 0100-0199 would return 1, ... levels 9900-9999 would return 99.
+GetSection::
+    ; Load thousands.
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
+
+    ; Multiply by 10, which is equal to multiply by 8 + multiply by 2
+    ld b, a
+    sla b
+    sla a
+    sla a
+    sla a
+    add a, b
+
+    ; Add hundreds.
+    ld hl, hCLevel+CLEVEL_HUNDREDS
+    add a, [hl]
+    ret
+
+
+    ; Gets the current section, but as BCD in A.
+GetSectionBCD::
+    ldh a, [hCLevel+CLEVEL_THOUSANDS]
+    swap a
+    ld hl, hCLevel+CLEVEL_HUNDREDS
+    or a, [hl]
+    ret
+
+
+    ; Will skip the virtual level forward by 100 levels.
+    ; This will NOT affect the displayed level, nor will it affect scoring.
+    ; It will only make it so the internal speed pointer will be ahead by N*100 levels.
+SkipSection::
+    ld a, [wSkippedSectionsBCD]
+    add a, $01
+    daa ; Yes, this is the rare case where this instruction is useful!
+    ld [wSkippedSectionsBCD], a
+    jp AdjustSpeedCurve
 
 ENDC

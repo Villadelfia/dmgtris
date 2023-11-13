@@ -824,9 +824,9 @@ GetSection::
     ; Multiply by 10, which is equal to multiply by 8 + multiply by 2
     ld b, a
     sla b
-    sla a
-    sla a
-    sla a
+    add a, a
+    add a, a
+    add a, a
     add a, b
 
     ; Add hundreds.
@@ -854,9 +854,9 @@ GetAdjustedSection::
     ; Multiply by 10, which is equal to multiply by 8 + multiply by 2
     ld b, a
     sla b
-    sla a
-    sla a
-    sla a
+    add a, a
+    add a, a
+    add a, a
     add a, b
 
     ; Add hundreds.

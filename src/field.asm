@@ -103,7 +103,7 @@ BlitField::
     REPT 7
         ; Wait until start of drawing, then insert nops.
 :       ldh a, [rSTAT]
-        or a, ~STATF_LCD
+        or a, $FF - STATF_LCD
         inc a
         jr nz, :-
         REPT 40
@@ -160,7 +160,7 @@ BigBlitField::
     REPT 7
         ; Wait until start of drawing, then insert nops.
 :       ldh a, [rSTAT]
-        or a, ~STATF_LCD
+        or a, $FF - STATF_LCD
         inc a
         jr nz, :-
         REPT 40
@@ -310,10 +310,10 @@ FromShadowField:
     ; corresponding to that piece's zero rotation.
 SetPieceData:
     ldh a, [hCurrentPiece]
-    sla a
-    sla a
-    sla a
-    sla a
+    add a, a
+    add a, a
+    add a, a
+    add a, a
     ld c, a
     ld b, 0
 
@@ -336,8 +336,8 @@ SetPieceData:
     ; The rotation state is a further offset of 4 bytes.
 SetPieceDataOffset:
     ldh a, [hCurrentPieceRotationState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ldh [hPieceDataOffset], a
     ret
 
@@ -989,8 +989,8 @@ FieldProcess::
     ldh a, [hPieceDataBase+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1070,8 +1070,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1110,8 +1110,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1159,8 +1159,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1221,8 +1221,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1266,8 +1266,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -1312,8 +1312,8 @@ FieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -2559,10 +2559,10 @@ BigFromShadowField:
     ; corresponding to that piece's zero rotation.
 BigSetPieceData:
     ldh a, [hCurrentPiece]
-    sla a
-    sla a
-    sla a
-    sla a
+    add a, a
+    add a, a
+    add a, a
+    add a, a
     ld c, a
     ld b, 0
 
@@ -2585,8 +2585,8 @@ BigSetPieceData:
     ; The rotation state is a further offset of 4 bytes.
 BigSetPieceDataOffset:
     ldh a, [hCurrentPieceRotationState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ldh [hPieceDataOffset], a
     ret
 
@@ -3238,8 +3238,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBase+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3319,8 +3319,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3359,8 +3359,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3408,8 +3408,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3469,8 +3469,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3514,8 +3514,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a
@@ -3560,8 +3560,8 @@ BigFieldProcess::
     ldh a, [hPieceDataBaseFast+1]
     ld h, a
     ldh a, [hWantRotation]
-    sla a
-    sla a
+    add a, a
+    add a, a
     push bc
     ld c, a
     xor a, a

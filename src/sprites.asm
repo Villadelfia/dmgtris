@@ -296,7 +296,7 @@ ApplyNext::
     ldh a, [hUpcomingPiece1]
     ld [wSPRQueue1A+3], a
     ld [wSPRQueue1B+3], a
-    sla a
+    add a, a
     add a, TILE_PIECE_SMALL_0
     ld [wSPRQueue1A+2], a
     inc a
@@ -305,7 +305,7 @@ ApplyNext::
     ldh a, [hUpcomingPiece2]
     ld [wSPRQueue2A+3], a
     ld [wSPRQueue2B+3], a
-    sla a
+    add a, a
     add a, TILE_PIECE_SMALL_0
     ld [wSPRQueue2A+2], a
     inc a

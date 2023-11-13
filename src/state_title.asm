@@ -636,8 +636,8 @@ TitleVBlankHandlerB:
     ; RNG mode.
     ld b, 0
     ld a, [wRNGModeState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sRNGMode
     add hl, bc
@@ -650,8 +650,8 @@ TitleVBlankHandlerB:
     ; ROT mode.
     ld b, 0
     ld a, [wRotModeState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sROTMode
     add hl, bc
@@ -664,8 +664,8 @@ TitleVBlankHandlerB:
     ; DROP mode.
     ld b, 0
     ld a, [wDropModeState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sDROPMode
     add hl, bc
@@ -678,8 +678,8 @@ TitleVBlankHandlerB:
     ; CURVE mode.
     ld b, 0
     ld a, [wSpeedCurveState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sCURVEMode
     add hl, bc
@@ -698,8 +698,8 @@ TitleVBlankHandlerB:
     xor a, a
     ld b, a
     ld a, [wAlways20GState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sHIGMode
     add hl, bc
@@ -785,8 +785,8 @@ TitleVBlankHandlerB:
     ; RNG mode.
     ld b, 0
     ld a, [wRNGModeState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sRNGMode
     add hl, bc
@@ -799,8 +799,8 @@ TitleVBlankHandlerB:
     ; ROT mode.
     ld b, 0
     ld a, [wRotModeState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sROTMode
     add hl, bc
@@ -813,8 +813,8 @@ TitleVBlankHandlerB:
     ; DROP mode.
     ld b, 0
     ld a, [wDropModeState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sDROPMode
     add hl, bc
@@ -827,8 +827,8 @@ TitleVBlankHandlerB:
     ; CURVE mode.
     ld b, 0
     ld a, [wSpeedCurveState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sCURVEMode
     add hl, bc
@@ -847,8 +847,8 @@ TitleVBlankHandlerB:
     xor a, a
     ld b, a
     ld a, [wAlways20GState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sHIGMode
     add hl, bc
@@ -867,8 +867,8 @@ TitleVBlankHandlerB:
 .buttons
     ld b, 0
     ld a, [wSwapABState]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sBUTTONSMode
     add hl, bc
@@ -881,8 +881,8 @@ TitleVBlankHandlerB:
 .filter
     ld b, 0
     ldh a, [hFilterMode]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sFilterMode
     add hl, bc
@@ -1661,8 +1661,8 @@ RenderScores:
     ; Draw the mode.
 :   ld b, 0
     ld a, [wSelected]
-    sla a
-    sla a
+    add a, a
+    add a, a
     ld c, a
     ld hl, sCURVEMode
     add hl, bc

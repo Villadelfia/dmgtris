@@ -1311,6 +1311,7 @@ UpdateGradeTGM3:
     ld a, [wInternalGrade]
     inc a
     ld [wInternalGrade], a
+    ; This falls to the next function, this is intentional
 TGM3UpdateDisplayedGrade:
     ld a, [wDisplayedGrade] ; If we are a GM Grade, return
     cp a, GRADE_GM

@@ -230,7 +230,7 @@ InitializeSRAM:
     ld [rCheck+2], a
     ld a, "T"
     ld [rCheck+3], a
-    ld a, 0
+    xor a, a
     ld [rCheck+4], a
     ld a, 4
     ld [rCheck+5], a

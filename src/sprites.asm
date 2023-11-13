@@ -163,7 +163,7 @@ ApplyTells::
     ld [wSPRModeRot+3], a
     ld a, 4
     ld [wSPRModeDrop+3], a
-    ld a, 0
+    xor a, a
     ld [wSPRModeHiG+3], a
     ret
 

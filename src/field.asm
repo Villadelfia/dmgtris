@@ -4667,7 +4667,7 @@ BigClearLines:
     ld [hl+], a
     ld [hl+], a
     ld [hl+], a
-    ld a, 0
+    xor a, a
     ld [hl+], a
     ld [hl+], a
     ld [hl+], a

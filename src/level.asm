@@ -497,7 +497,7 @@ AdjustSpeedCurveForced:
     jr z, .continue
     ld a, 20
     ldh [hCurrentIntegerGravity], a
-    ld a, $00
+    xor a, a
     ldh [hCurrentFractionalGravity], a
 
 .continue

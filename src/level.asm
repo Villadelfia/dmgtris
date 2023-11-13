@@ -844,6 +844,37 @@ GetSectionBCD::
     ret
 
 
+    ; Gets a 0-indexed section number, returned in A as binary.
+    ; Levels 0000-0099 would return 0, levels 0100-0199 would return 1, ... levels 9900-9999 would return 99.
+    ; This version calculates the amount of skipped sections in.
+GetAdjustedSection::
+    ; Load thousands.
+    ldh a, [hTrueCLevel+CLEVEL_THOUSANDS]
+
+    ; Multiply by 10, which is equal to multiply by 8 + multiply by 2
+    ld b, a
+    sla b
+    sla a
+    sla a
+    sla a
+    add a, b
+
+    ; Add hundreds.
+    ld hl, hTrueCLevel+CLEVEL_HUNDREDS
+    add a, [hl]
+    ret
+
+
+    ; Gets the current section, but as BCD in A.
+    ; This version calculates the amount of skipped sections in.
+GetAdjustedSectionBCD::
+    ldh a, [hTrueCLevel+CLEVEL_THOUSANDS]
+    swap a
+    ld hl, hTrueCLevel+CLEVEL_HUNDREDS
+    or a, [hl]
+    ret
+
+
     ; Will skip the virtual level forward by 100 levels.
     ; This will NOT affect the displayed level, nor will it affect scoring.
     ; It will only make it so the internal speed pointer will be ahead by N*100 levels.

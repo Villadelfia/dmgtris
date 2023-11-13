@@ -130,12 +130,12 @@ Original Game Boy | Game Boy Color
 ### Original Game Boy
 Normal Mode | Big Mode
 :-: | :-:
-<video src="https://villadelfia.org/dmgtris/demo-dmg-normal.mp4" width="160" height="144"></video> | <video src="https://villadelfia.org/dmgtris/demo-dmg-big.mp4" width="160" height="144"></video>
+<video src="https://villadelfia.org/dmgtris/demo-dmg-normal.mp4" width=160 height=144></video> | <video src="https://villadelfia.org/dmgtris/demo-dmg-big.mp4" width=160 height=144></video>
 
 ### Game Boy Color
 Normal Mode | Big Mode
 :-: | :-:
-<video src="https://villadelfia.org/dmgtris/demo-gbc-normal.mp4" width="160" height="144"></video> | <video src="https://villadelfia.org/dmgtris/demo-gbc-big.mp4" width="160" height="144"></video>
+<video src="https://villadelfia.org/dmgtris/demo-gbc-normal.mp4" width=160 height=144></video> | <video src="https://villadelfia.org/dmgtris/demo-gbc-big.mp4" width=160 height=144></video>
 
 
 ## Building and Development

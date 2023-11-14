@@ -1,5 +1,5 @@
-# DMGTRIS
-DMGTRIS is a block stacking game for the original game boy written in assembly.
+# Pandora's Blocks
+Pandora's Blocks (formerly DMGTRIS) is a block stacking game for the original game boy written in assembly.
 
 The game is heavily inspired by the TGM series of games and has the following features:
 - TLS (ghost piece) until 1G speeds.

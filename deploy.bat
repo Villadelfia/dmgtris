@@ -9,9 +9,9 @@ copy src\include\hardware.analogue src\include\hardware.inc > NUL
 make > NUL
 
 echo Fixing pocket version header...
-ren bin\DMGTRIS.GBC DMGTRIS.pocket > NUL
+ren bin\PandorasBlocks.gbc PandorasBlocks.pocket > NUL
 python patch_pocket.py > NUL
-rgbfix -fhg -O bin\DMGTRIS.pocket > NUL
+rgbfix -fhg -O bin\PandorasBlocks.pocket > NUL
 
 echo Making GB version...
 rd /S /Q obj > NUL

@@ -276,8 +276,8 @@ GBCTitleProcess::
     ; Set the palette for the title.
     ld a, [wTitlePal]
     ld d, a
-    ld hl, wShadowTileAttrs + (2*32)
-    ld bc, (3*32)
+    ld hl, wShadowTileAttrs + (0*32)
+    ld bc, (5*32)
     call UnsafeMemSet
 
     ; And the selected row.

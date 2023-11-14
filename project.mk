@@ -11,8 +11,8 @@ TITLE := DMGTRIS
 LICENSEE := NR
 
 # Output options
-ROMNAME := DMGTRIS
-ROMEXT  := GBC
+ROMNAME := PandorasBlocks
+ROMEXT  := gbc
 
 # Mapper
 MAPPER := 0x1B

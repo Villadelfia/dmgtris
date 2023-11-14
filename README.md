@@ -1,5 +1,6 @@
-# DMGTRIS
-DMGTRIS is a block stacking game for the original game boy written in assembly.
+
+# Pandora's Blocks
+Pandora's Blocks (formerly DMGTRIS) is a block stacking game for the original game boy written in assembly.
 
 The game is heavily inspired by the TGM series of games and has the following features:
 - TLS (ghost piece) until 1G speeds.
@@ -18,10 +19,11 @@ The game is heavily inspired by the TGM series of games and has the following fe
 - A challenging final challenge awaits you at the end of all the finite modes.
 - High scores.
 
+
 ## Playing
 Try the game online [here](https://villadelfia.org/dmgtris/). Controls are arrow keys, Z, X, Space, and Enter. The online version has no sound though, so the better thing would be to run it in an emulator locally.
 
-You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/bin/DMGTRIS.GBC) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/bin/DMGTRIS.GBC).
+You can build the game yourself, or use the binary [here](https://git.villadelfia.org/villadelfia/dmgtris/raw/branch/master/bin/PandorasBlocks.gbc) or [here](https://github.com/Villadelfia/DMGTRIS/raw/master/bin/PandorasBlocks.gbc).
 
 The game should run in any accurate emulator. For Windows or Linux using Wine [bgb](https://bgb.bircd.org/) is generally regarded as the best option. For macOS [SameBoy](https://sameboy.github.io/) comes recommended.
 
@@ -59,15 +61,6 @@ Choose how the up and down buttons act:
 Select between several speed curves including the DMGTRIS default speed curve, TGM1, TGM3, as well as DEATH and SHIRASE mode. In addition there's a "CHILL" curve for when you just want to enjoy some tetris. It doesn't speed up very fast at all. The MYCO speed curve mimics the excellent game Tromi by Mycophobia.
 
 Note that all modes use the same scoring.
-
-Some curves have their own grading system
-
-- DMGT: It's like the TAP Grading system, but you keep the remainder of the grade points and you need to reach 150 points instead of 100
-- TGM1: The Score-Based TGM1 Grading system, the Score thresholds have been reduced to compensate for the different scoring
-- TGM3: The Ti grading system with cools and regrets, although cools don't skip a section here
-- DEAT: The T.A Death grading system awards you the M grade at level 500 if you beat the torikan, and GM at level 1000
-- SHIR: The Shirase Level-Based grading system, it has no regrets here tho...
-- CHIL: A chill grading system to get a GM without any effort, just clear lines and you will eventually reach it
 
 ### Always 20G
 Whether you want instant-drop gravity to be active at any level.
@@ -190,3 +183,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+

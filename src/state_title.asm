@@ -262,64 +262,6 @@ SwitchTitleMode:
     ld bc, sTitleScreenMainMapEnd - sTitleScreenMainMap
     call UnsafeMemCopy
 
-    ; Title screen easter egg.
-    ld a, [wInitialC]
-    cp a, $14
-    jr nz, .notsgb
-    ld de, sEasterS0
-    ld hl, EASTER_0
-    ld bc, 5
-    call UnsafeMemCopy
-    ld de, sEasterS1
-    ld hl, EASTER_1
-    ld bc, 5
-    call UnsafeMemCopy
-    jr .done
-
-.notsgb
-    ld a, [wInitialA]
-    cp a, $FF
-    jr nz, .notmgb
-    ld de, sEasterM0
-    ld hl, EASTER_0
-    ld bc, 5
-    call UnsafeMemCopy
-    ld de, sEasterM1
-    ld hl, EASTER_1
-    ld bc, 5
-    call UnsafeMemCopy
-    jr .done
-
-.notmgb
-    ld a, [wInitialA]
-    cp a, $11
-    jr nz, .done
-
-    ld a, [wInitialB]
-    bit 0, a
-    jr nz, .agb
-    ld de, sEasterC0
-    ld hl, EASTER_0-1
-    ld bc, 11
-    call UnsafeMemCopy
-    ld de, sEasterC1
-    ld hl, EASTER_1-1
-    ld bc, 11
-    call UnsafeMemCopy
-    jr .done
-
-.agb
-    ld de, sEasterA0
-    ld hl, EASTER_0-1
-    ld bc, 11
-    call UnsafeMemCopy
-    ld de, sEasterA1
-    ld hl, EASTER_1-1
-    ld bc, 11
-    call UnsafeMemCopy
-    jr .done
-
-.done
     call GBCTitleInit
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
     ldh [rLCDC], a
@@ -355,6 +297,8 @@ SwitchTitleMode:
     ldh [hSelectState], a
     ld [wDisplayingScoreMode], a
     ld [wScoreFlipTimer], a
+    ld a, [wSpeedCurveState]
+    ld [wSelected], a
     call RenderScores
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
     ldh [rLCDC], a

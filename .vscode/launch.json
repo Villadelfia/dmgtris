@@ -8,7 +8,7 @@
             "type": "emulicious-debugger",
             "request": "launch",
             "name": "Launch in Emulicious",
-            "program": "${workspaceFolder}\\bin\\DMGTRIS.gbc",
+            "program": "${workspaceFolder}\\bin\\PandorasBlocks.gbc",
             "port": 58870,
             "stopOnEntry": false,
             "preLaunchTask": "buildrom"

@@ -297,6 +297,8 @@ SwitchTitleMode:
     ldh [hSelectState], a
     ld [wDisplayingScoreMode], a
     ld [wScoreFlipTimer], a
+    ld a, [wSpeedCurveState]
+    ld [wSelected], a
     call RenderScores
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BLK01
     ldh [rLCDC], a

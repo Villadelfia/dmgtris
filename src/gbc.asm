@@ -74,6 +74,33 @@ INCLUDE "globals.asm"
     DEF_RGB555_FROM24 GOLD_0,  $36, $2C, $05
     DEF_RGB555_FROM24 GOLD_1,  $99, $73, $16
 
+    ; Title Palettes.
+    DEF_RGB555_FROM24 TITLE_PAL0_0, 0, 0, 0
+    DEF_RGB555_FROM24 TITLE_PAL0_1, 255, 255, 255
+    DEF_RGB555_FROM24 TITLE_PAL0_2, 106, 190, 48
+    DEF_RGB555_FROM24 TITLE_PAL0_3, 153, 229, 80
+
+    DEF_RGB555_FROM24 TITLE_PAL1_0, 0, 0, 0
+    DEF_RGB555_FROM24 TITLE_PAL1_1, 34, 32, 52
+    DEF_RGB555_FROM24 TITLE_PAL1_2, 63, 63, 116
+    DEF_RGB555_FROM24 TITLE_PAL1_3, 99, 155, 255
+
+    DEF_RGB555_FROM24 TITLE_PAL2_0, 0, 0, 0
+    DEF_RGB555_FROM24 TITLE_PAL2_1, 34, 32, 52
+    DEF_RGB555_FROM24 TITLE_PAL2_2, 69, 40, 60
+    DEF_RGB555_FROM24 TITLE_PAL2_3, 102, 57, 49
+
+    DEF_RGB555_FROM24 TITLE_PAL3_0, 0, 0, 0
+    DEF_RGB555_FROM24 TITLE_PAL3_1, 89, 86, 82
+    DEF_RGB555_FROM24 TITLE_PAL3_2, 132, 126, 135
+    DEF_RGB555_FROM24 TITLE_PAL3_3, 155, 173, 183
+
+    DEF_RGB555_FROM24 TITLE_PAL4_0, 0, 0, 0
+    DEF_RGB555_FROM24 TITLE_PAL4_1, 34, 32, 52
+    DEF_RGB555_FROM24 TITLE_PAL4_2, 132, 126, 135
+    DEF_RGB555_FROM24 TITLE_PAL4_3, 155, 173, 183
+
+
 
 SECTION "GBC Shadow Tilemap", WRAM0, ALIGN[8]
 wShadowTilemap:: ds 32*32
@@ -86,7 +113,6 @@ wShadowTileAttrs:: ds 32*32
 SECTION "GBC Variables", WRAM0
 wOuterReps:: ds 1
 wInnerReps:: ds 1
-wTitlePal:: ds 1
 
 
 SECTION "GBC Functions", ROM0
@@ -124,24 +150,24 @@ GBCTitleInit::
     ld a, [wInitialB]
     bit 0, a
     jp nz, .agb
-    WRITEPAL_A 0, BLACK_C, RED_0_C,    RED_1_C,    RED_2_C
-    WRITEPAL_A 1, BLACK_C, GREEN_0_C,  GREEN_1_C,  GREEN_2_C
-    WRITEPAL_A 2, BLACK_C, PURPLE_0_C, PURPLE_1_C, PURPLE_2_C
-    WRITEPAL_A 3, BLACK_C, BLUE_0_C,   BLUE_1_C,   BLUE_2_C
-    WRITEPAL_A 4, BLACK_C, ORANGE_0_C, ORANGE_1_C, ORANGE_2_C
-    WRITEPAL_A 5, BLACK_C, YELLOW_0_C, YELLOW_1_C, YELLOW_2_C
-    WRITEPAL_A 6, BLACK_C, CYAN_0_C,   CYAN_1_C,   CYAN_2_C
-    WRITEPAL_A 7, BLACK_C, GRAY_0_C,   GRAY_1_C,   WHITE_C
+    WRITEPAL_A 0, TITLE_PAL0_0_C, TITLE_PAL0_1_C, TITLE_PAL0_2_C, TITLE_PAL0_3_C
+    WRITEPAL_A 1, TITLE_PAL1_0_C, TITLE_PAL1_1_C, TITLE_PAL1_2_C, TITLE_PAL1_3_C
+    WRITEPAL_A 2, TITLE_PAL2_0_C, TITLE_PAL2_1_C, TITLE_PAL2_2_C, TITLE_PAL2_3_C
+    WRITEPAL_A 3, TITLE_PAL3_0_C, TITLE_PAL3_1_C, TITLE_PAL3_2_C, TITLE_PAL3_3_C
+    WRITEPAL_A 4, TITLE_PAL4_0_C, TITLE_PAL4_1_C, TITLE_PAL4_2_C, TITLE_PAL4_3_C
+    WRITEPAL_A 5, BLACK_C,        GRAY_0_C,       GRAY_1_C,       WHITE_C
+    WRITEPAL_A 6, BLACK_C,        BLUE_0_C,       BLUE_1_C,       BLUE_2_C
+    WRITEPAL_A 7, BLACK_C,        GRAY_0_C,       GRAY_1_C,       WHITE_C
     jp .postpalettes
 .agb
-    WRITEPAL_A 0, BLACK_A, RED_0_A,    RED_1_A,    RED_2_A
-    WRITEPAL_A 1, BLACK_A, GREEN_0_A,  GREEN_1_A,  GREEN_2_A
-    WRITEPAL_A 2, BLACK_A, PURPLE_0_A, PURPLE_1_A, PURPLE_2_A
-    WRITEPAL_A 3, BLACK_A, BLUE_0_A,   BLUE_1_A,   BLUE_2_A
-    WRITEPAL_A 4, BLACK_A, ORANGE_0_A, ORANGE_1_A, ORANGE_2_A
-    WRITEPAL_A 5, BLACK_A, YELLOW_0_A, YELLOW_1_A, YELLOW_2_A
-    WRITEPAL_A 6, BLACK_A, CYAN_0_A,   CYAN_1_A,   CYAN_2_A
-    WRITEPAL_A 7, BLACK_A, GRAY_0_A,   GRAY_1_A,   WHITE_A
+    WRITEPAL_A 0, TITLE_PAL0_0_A, TITLE_PAL0_1_A, TITLE_PAL0_2_A, TITLE_PAL0_3_A
+    WRITEPAL_A 1, TITLE_PAL1_0_A, TITLE_PAL1_1_A, TITLE_PAL1_2_A, TITLE_PAL1_3_A
+    WRITEPAL_A 2, TITLE_PAL2_0_A, TITLE_PAL2_1_A, TITLE_PAL2_2_A, TITLE_PAL2_3_A
+    WRITEPAL_A 3, TITLE_PAL3_0_A, TITLE_PAL3_1_A, TITLE_PAL3_2_A, TITLE_PAL3_3_A
+    WRITEPAL_A 4, TITLE_PAL4_0_A, TITLE_PAL4_1_A, TITLE_PAL4_2_A, TITLE_PAL4_3_A
+    WRITEPAL_A 5, BLACK_A,        GRAY_0_A,       GRAY_1_A,       WHITE_A
+    WRITEPAL_A 6, BLACK_A,        BLUE_0_A,       BLUE_1_A,       BLUE_2_A
+    WRITEPAL_A 7, BLACK_A,        GRAY_0_A,       GRAY_1_A,       WHITE_A
 .postpalettes
 
     ; Copy the tilemap to shadow.
@@ -153,15 +179,12 @@ GBCTitleInit::
     ; Set attrs to pal 7 and copy to shadow.
     ld a, 1
     ldh [rVBK], a
-    ld d, $03
+    ld de, sTitleAttrs
     ld hl, $9800
-    ld bc, 32
-    call UnsafeMemSet
-    ld d, $01
     ld bc, (5*32)
-    call UnsafeMemSet
+    call UnsafeMemCopy
     ld d, $07
-    ld bc, (14*32)
+    ld bc, (13*32)
     call UnsafeMemSet
     ld de, $9800
     ld hl, wShadowTileAttrs
@@ -171,10 +194,6 @@ GBCTitleInit::
     ; Reset back to bank 0.
     xor a, a
     ldh [rVBK], a
-
-    ; Save the current title palette.
-    ld a, $07
-    ld [wTitlePal], a
     ret
 
     ; Sets the GBC registers for the gameplay state.
@@ -255,30 +274,14 @@ GBCTitleProcess::
     jp .eventLoopMain
     jp .eventLoopProfile
     jp .eventLoopSettings
-    jp .eventLoopRecords
-    jp .eventLoopCredits
+    no_jump
+    no_jump
 
 .eventLoopMain
-    ; Palette for the title?
-    ldh a, [hFrameCtr]
-    and $0F
-    cp a, $01
-    jr nz, .noinc
-    ld a, [wTitlePal]
-    inc a
-    cp a, $07
-    jr c, .nores
-    xor a, a
-.nores
-    ld [wTitlePal], a
-.noinc
-
-    ; Set the palette for the title.
-    ld a, [wTitlePal]
-    ld d, a
-    ld hl, wShadowTileAttrs + (0*32)
+    ld de, sTitleAttrs
+    ld hl, wShadowTileAttrs
     ld bc, (5*32)
-    call UnsafeMemSet
+    call UnsafeMemCopy
 
     ; And the selected row.
     ld a, [wSelected]
@@ -288,33 +291,11 @@ GBCTitleProcess::
 :   add hl, bc
     dec a
     jr nz, :-
-    ld a, 3
-    ld d, a
+    ld d, 6
     ld bc, 32
     jp UnsafeMemSet
 
 .eventLoopProfile
-    ; Palette for the title?
-    ldh a, [hFrameCtr]
-    and $0F
-    cp a, $01
-    jr nz, .noinc3
-    ld a, [wTitlePal]
-    inc a
-    cp a, $07
-    jr c, .nores3
-    xor a, a
-.nores3
-    ld [wTitlePal], a
-.noinc3
-
-    ; Set the palette for the title.
-    ld a, [wTitlePal]
-    ld d, a
-    ld hl, wShadowTileAttrs + (0*32)
-    ld bc, (1*32)
-    call UnsafeMemSet
-
     ; And the selected row.
     ld a, [wSelected]
     inc a
@@ -323,33 +304,11 @@ GBCTitleProcess::
 :   add hl, bc
     dec a
     jr nz, :-
-    ld a, 3
-    ld d, a
+    ld d, 6
     ld bc, 32
     jp UnsafeMemSet
 
 .eventLoopSettings
-    ; Palette for the title?
-    ldh a, [hFrameCtr]
-    and $0F
-    cp a, $01
-    jr nz, .noinc1
-    ld a, [wTitlePal]
-    inc a
-    cp a, $07
-    jr c, .nores1
-    xor a, a
-.nores1
-    ld [wTitlePal], a
-.noinc1
-
-    ; Set the palette for the title.
-    ld a, [wTitlePal]
-    ld d, a
-    ld hl, wShadowTileAttrs + (0*32)
-    ld bc, (1*32)
-    call UnsafeMemSet
-
     ; And the selected row.
     ld a, [wSelected]
     inc a
@@ -358,53 +317,8 @@ GBCTitleProcess::
 :   add hl, bc
     dec a
     jr nz, :-
-    ld a, 3
-    ld d, a
+    ld d, 6
     ld bc, 32
-    jp UnsafeMemSet
-
-.eventLoopRecords
-    ; Palette for the title?
-    ldh a, [hFrameCtr]
-    and $0F
-    cp a, $01
-    jr nz, .noinc4
-    ld a, [wTitlePal]
-    inc a
-    cp a, $07
-    jr c, .nores4
-    xor a, a
-.nores4
-    ld [wTitlePal], a
-.noinc4
-
-    ; Set the palette for the title.
-    ld a, [wTitlePal]
-    ld d, a
-    ld hl, wShadowTileAttrs + (0*32)
-    ld bc, (1*32)
-    jp UnsafeMemSet
-
-.eventLoopCredits
-    ; Palette for the title?
-    ldh a, [hFrameCtr]
-    and $0F
-    cp a, $01
-    jr nz, .noinc2
-    ld a, [wTitlePal]
-    inc a
-    cp a, $07
-    jr c, .nores2
-    xor a, a
-.nores2
-    ld [wTitlePal], a
-.noinc2
-
-    ; Set the palette for the title.
-    ld a, [wTitlePal]
-    ld d, a
-    ld hl, wShadowTileAttrs + (0*32)
-    ld bc, (1*32)
     jp UnsafeMemSet
 
 

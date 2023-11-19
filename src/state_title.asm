@@ -1746,7 +1746,7 @@ RenderScores:
         wait_vram
         ld [hl], b
         inc hl
-        ld a, 115
+        ld a, 58
         ld b, a
         wait_vram
         ld [hl], b
@@ -1826,7 +1826,7 @@ RenderScores:
         cp a, GRADE_NONE
         jr nz, .grade\@
 .nograde\@
-        ld a, 197
+        ld a, 149
         ld b, a
         wait_vram
         ld [hl], b

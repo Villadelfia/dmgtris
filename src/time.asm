@@ -31,8 +31,12 @@ SECTION "Time Variables", WRAM0
 wMinutes:: ds 1
 wSeconds:: ds 1
 wFrames:: ds 1
+wSectionMinutes:: ds 1
+wSectionSeconds:: ds 1
+wSectionFrames:: ds 1
 wCountDown:: ds 2
 wCountDownZero:: ds 1
+wSectionTimerReset:: ds 1
 
 
 SECTION "Time Data", ROM0
@@ -61,6 +65,9 @@ TimeInit::
     ld [wFrames], a
     ld [wCountDown], a
     ld [wCountDown+1], a
+    ld [wSectionMinutes], a
+    ld [wSectionSeconds], a
+    ld [wSectionFrames], a
     ld a , $FF
     ld [wCountDownZero], a
     ld a, TACF_262KHZ | TACF_START
@@ -86,6 +93,9 @@ ResetGameTime::
     ld [wMinutes], a
     ld [wSeconds], a
     ld [wFrames], a
+    ld [wSectionMinutes], a
+    ld [wSectionSeconds], a
+    ld [wSectionFrames], a
     ret
 
     ; Checks if the minute-second timer has reached a certain value.
@@ -195,6 +205,90 @@ HandleTimers::
     ld a, [wMinutes]
     inc a
     ld [wMinutes], a
+    ret
+
+
+CheckCOOL_REGRET::
+    ; Okay if minutes are less than max minutes.
+    ld a, [wSectionMinutes]
+    cp a, b
+    jr c, .success
+
+    ; Check seconds if minutes are equal.
+    jr nz, .failure
+
+    ; Okay if seconds are less than max seconds.
+    ld a, [wSectionSeconds]
+    cp a, c
+    jr c, .success
+
+    ; Check frames if seconds are equal.
+    jr nz, .failure
+
+    ; Okay if frames are exactly 0.
+    ld a, [wSectionFrames]
+    cp a, 0
+    jr z, .success
+
+.failure
+    xor a, a
+    ret
+
+.success
+    ld a, $FF
+    ret
+
+
+HandleSectionTimers::
+    ldh a, [hMode]
+    cp a, MODE_PAUSED
+    ret z
+    cp a, MODE_GAME_OVER
+    ret z
+    cp a, MODE_PRE_GAME_OVER
+    ret z
+
+    ld a, [wKillScreenActive]
+    cp a, $FF
+    ret z
+
+    ld a, [hCLevel+CLEVEL_ONES]
+    cp a, 6
+    jr c, .continue
+    xor a, a
+    ld [wSectionTimerReset], a
+.continue
+
+    ld a, [wSectionMinutes]
+    cp a, 99
+    jr nz, .sectiongo
+    ld a, [wSectionSeconds]
+    cp a, 59
+    jr nz, .sectiongo
+    ld a, [wSectionFrames]
+    cp a, 59
+    ret z
+
+.sectiongo
+    ld a, [wSectionFrames]
+    inc a
+    ld [wSectionFrames], a
+    cp a, 60
+    ret nz
+
+    xor a, a
+    ld [wSectionFrames], a
+    ld a, [wSectionSeconds]
+    inc a
+    ld [wSectionSeconds], a
+    cp a, 60
+    ret nz
+
+    xor a, a
+    ld [wSectionSeconds], a
+    ld a, [wSectionMinutes]
+    inc a
+    ld [wSectionMinutes], a
     ret
 
 

@@ -116,6 +116,7 @@ EventLoop::
     ; Wrangle inputs and timers at the start of every frame.
     call GetInput
     call HandleTimers
+    call HandleSectionTimers
 
     ; Call the current state's event handler.
     ld hl, .eventloopjumps

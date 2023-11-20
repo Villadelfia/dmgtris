@@ -178,6 +178,10 @@ GamePlayEventLoopHandlerB::
     cp a, $FF
     jr nz, .normalevent
 
+    ; No pausing in staff roll.
+    xor a, a
+    ldh [hStartState], a
+
     ; Are we in a non-game over mode?
     ldh a, [hMode]
     cp a, MODE_GAME_OVER
@@ -466,6 +470,8 @@ GamePlayEventLoopHandlerB::
 
 
 .preGameOverMode
+    call SFXEndOfGame
+
     ld a, $FF
     ld [wGameOverIgnoreInput], a
 
@@ -765,7 +771,8 @@ GamePlayEventLoopHandlerB::
     ld a, [hl+]
     ld c, a
     ld b, [hl]
-    jp StartCountdown
+    call StartCountdown
+    jp SFXGoRoll
 
 
     ; Always draw the score, level, next piece, and held piece.
@@ -976,6 +983,10 @@ GamePlayBigEventLoopHandlerB:
     ld a, [wInStaffRoll]
     cp a, $FF
     jr nz, .normalevent
+
+    ; No pausing in staff roll.
+    xor a, a
+    ldh [hStartState], a
 
     ; Are we in a non-game over mode?
     ldh a, [hMode]
@@ -1263,6 +1274,8 @@ GamePlayBigEventLoopHandlerB:
 
 
 .preGameOverMode
+    call SFXEndOfGame
+
     ld a, $FF
     ld [wGameOverIgnoreInput], a
 
@@ -1579,6 +1592,7 @@ GamePlayBigEventLoopHandlerB:
     ld c, a
     ld b, [hl]
     call StartCountdown
+    jp SFXGoRoll
 
 
     ; Always draw the score, level, next piece, and held piece.

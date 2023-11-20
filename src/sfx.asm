@@ -21,7 +21,10 @@ DEF SFX_ASM EQU 1
 
 INCLUDE "globals.asm"
 INCLUDE "res/sfx_data.inc"
-INCLUDE "res/music_data.inc"
+INCLUDE "res/music_data_0.inc"
+INCLUDE "res/music_data_1.inc"
+INCLUDE "res/music_data_2.inc"
+INCLUDE "res/music_data_3.inc"
 
 
 SECTION "High SFX Variables", HRAM
@@ -29,6 +32,12 @@ hPlayhead:: ds 2
 hCurrentlyPlaying:: ds 1
 hPlayQueue:: ds 4
 hNoisePlayhead:: ds 2
+
+
+SECTION "SFX Variables", WRAM0
+wCurrentBank:: ds 1
+wBankSwitchTarget:: ds 1
+wPlayHeadTarget:: ds 2
 
 
 SECTION "SFX Functions", ROM0
@@ -53,6 +62,10 @@ SFXInit::
     ldh [hPlayhead+1], a
     ldh [hNoisePlayhead], a
     ldh [hNoisePlayhead+1], a
+    ld [wCurrentBank], a
+    ld [wBankSwitchTarget], a
+    ld [wPlayHeadTarget], a
+    ld [wPlayHeadTarget+1], a
     ret
 
 
@@ -121,6 +134,21 @@ SFXProcessQueue:
 
     ; Noise effects use their own playhead that can play at the same time as the normal queue.
 SFXTriggerNoise::
+    cp a, SFX_LOCK
+    jr nz, :+
+    ld a, LOW(sSFXLock)
+    ldh [hNoisePlayhead], a
+    ld a, HIGH(sSFXLock)
+    ldh [hNoisePlayhead+1], a
+    ret
+
+    ; Other noise stops when the staff roll is going.
+:   ld b, a
+    ldh a, [hCurrentlyPlaying]
+    cp a, MUSIC_ROLL
+    ret z
+    ld a, b
+
     cp a, SFX_LINE_CLEAR
     jr nz, :+
     ld a, LOW(sSFXLineClear)
@@ -130,30 +158,24 @@ SFXTriggerNoise::
     ret
 
 :   cp a, SFX_LAND
-    jr nz, :+
+    ret nz
     ld a, LOW(sSFXLand)
     ldh [hNoisePlayhead], a
     ld a, HIGH(sSFXLand)
     ldh [hNoisePlayhead+1], a
     ret
 
-:   cp a, SFX_LOCK
-    ret nz
-    ld a, LOW(sSFXLock)
-    ldh [hNoisePlayhead], a
-    ld a, HIGH(sSFXLock)
-    ldh [hNoisePlayhead+1], a
-    ret
-
 
     ; Attempt to play the sound effect in A. Will enqueue the sound effect if the play routine is currently busy.
 SFXEnqueue::
-    ; If we're playing the grade up sound, it has absolute prio.
+    ; If we're playing the grade up sound, or the ROLL music, it has absolute prio.
     ld b, a
     ldh a, [hCurrentlyPlaying]
     cp a, SFX_RANKUP
     ret z
     cp a, SFX_RANKGM
+    ret z
+    cp a, MUSIC_ROLL
     ret z
 
     ; If the playhead isn't null, then we're already playing something.
@@ -164,11 +186,13 @@ SFXEnqueue::
     or a, l
     jr z, .findsfx
     ld a, b
-    jr SFXPushQueue
+    jp SFXPushQueue
 
 .findsfx
     ld a, b
     ldh [hCurrentlyPlaying], a
+    ld a, BANK_SFX
+    ld [wCurrentBank], a
 
     ; Menu music
     ld a, b
@@ -179,6 +203,8 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sMusicMenu)
     ldh [hPlayhead+1], a
+    ld a, BANK_MUSIC_0
+    ld [wCurrentBank], a
     jp SFXPlay
 
     ; Piece jingles.
@@ -349,7 +375,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXRankUp)
     ldh [hPlayhead+1], a
-    jr SFXPlay
+    jp SFXPlay
 
 :   cp a, SFX_RANKGM
     jr nz, :+
@@ -357,7 +383,7 @@ SFXEnqueue::
     ldh [hPlayhead], a
     ld a, HIGH(sSFXRankGM)
     ldh [hPlayhead+1], a
-    jr SFXPlay
+    jp SFXPlay
 
 :   cp a, SFX_READYGO
     ret nz
@@ -379,6 +405,8 @@ SFXKill::
     cp a, SFX_LEVELLOCK
     ret z
     cp a, SFX_LEVELUP
+    ret z
+    cp a, MUSIC_ROLL
     ret z
 
     ; Kill all sound without pops.
@@ -464,13 +492,8 @@ SFXPlayNoise::
     ; Must be called every frame.
 SFXPlay::
     ; Bank to correct bank.
-    ldh a, [hPlayQueue]
-    cp a, MUSIC_MENU
-    jr nz, :+
-    ld b, BANK_MUSIC
-    rst RSTSwitchBank
-    jr .play
-:   ld b, BANK_SFX
+    ld a, [wCurrentBank]
+    ld b, a
     rst RSTSwitchBank
 
     ; Load the playhead position into HL.
@@ -482,30 +505,67 @@ SFXPlay::
 
     ; Nothing to do if it's a null ptr.
     or a, l
-    jr nz, .getRegister
-    jp RSTRestoreBank
+    jp z, RSTRestoreBank
 
     ; Otherwise, get the register to write to.
 .getRegister
-    ld a, [hl]
-    inc hl
+    ld a, [hl+]
 
-    ; If it's $FE, then we're done. Check if there's more for us in the queue.
-    cp a, $FE
-    jr nz, :+
+    ; If it's END_OF_SONG (or END_OF_SFX), then we're done. Check if there's more for us in the queue.
+.checkEndOfSong
+    cp a, END_OF_SONG
+    jr nz, .checkEndOfSample
     rst RSTRestoreBank
-    jp SFXProcessQueue
+    ldh a, [hCurrentlyPlaying]
+    cp a, MUSIC_ROLL
+    jp nz, SFXProcessQueue
+    xor a, a
+    ldh [hPlayhead], a
+    ldh [hPlayhead+1], a
+    ret
 
-    ; If it's $FF, then we're done for this frame.
-:   cp a, $FF
+    ; If it's END_OF_SAMPLE, then we're done for this frame.
+.checkEndOfSample
+    cp a, END_OF_SAMPLE
     jr z, .savePlayhead
 
+    ; If it's CHANGE_BANK, ready a bank switch.
+.checkChangeBank
+    cp a, CHANGE_BANK
+    jr nz, .checkChangePlayHead
+
+    ; What bank?
+    ld a, [hl+]
+    ld [wBankSwitchTarget], a
+
+    ; Loop
+    jr .getRegister
+
+    ; If it's CHANGE_PLAYHEAD, change the playhead and apply the bank switch.
+.checkChangePlayHead
+    cp a, CHANGE_PLAYHEAD
+    jr nz, .applyRegister
+
+    ; Get the new playhead position.
+    ld a, [hl+]
+    ldh [hPlayhead], a
+    ld a, [hl]
+    ldh [hPlayhead+1], a
+
+    ; Apply the bank switch.
+    ld a, [wBankSwitchTarget]
+    ld [wCurrentBank], a
+
+    ; Make sure we don't overflow the bank stack, and loop.
+    rst RSTRestoreBank
+    jr SFXPlay
+
     ; Otherwise, put the register in C.
+.applyRegister
     ld c, a
 
     ; Get the value to write.
-    ld a, [hl]
-    inc hl
+    ld a, [hl+]
 
     ; Write it and loop.
     ldh [$ff00+c], a
@@ -518,6 +578,100 @@ SFXPlay::
     ld a, h
     ldh [hPlayhead+1], a
     jp RSTRestoreBank
+
+
+    ; The final challenge song overrides everything and it also causes the sound engine to ignore everything else.
+SFXGoRoll::
+    ; It kills all sound.
+    ld a, %00111111
+    ldh [rNR11], a
+    ldh [rNR21], a
+    ld a, $FF
+    ldh [rNR31], a
+    ldh [rNR41], a
+    ld a, %01000000
+    ldh [rNR14], a
+    ldh [rNR24], a
+    ldh [rNR34], a
+    ldh [rNR44], a
+
+    ; Clears the queue.
+    ld a, $FF
+    ldh [hPlayQueue], a
+    ldh [hPlayQueue+1], a
+    ldh [hPlayQueue+2], a
+    ldh [hPlayQueue+3], a
+
+    ; And all playheads.
+    xor a, a
+    ldh [hPlayhead], a
+    ldh [hPlayhead+1], a
+    ldh [hNoisePlayhead], a
+    ldh [hNoisePlayhead+1], a
+
+    ; Sets the playhead to the start of the music.
+    ld a, MUSIC_ROLL
+    ldh [hCurrentlyPlaying], a
+    ld a, LOW(sMusicRoll1)
+    ldh [hPlayhead], a
+    ld a, HIGH(sMusicRoll1)
+    ldh [hPlayhead+1], a
+
+    ; Makes sure to start in the correct bank.
+    ld a, BANK_MUSIC_1
+    ld [wCurrentBank], a
+
+    ; And begins playing.
+    jp SFXPlay
+
+
+    ; When the game ends, we kill all the sound unconditionaly.
+    ; If we're GM, also play the GM jingle.
+SFXEndOfGame::
+    ; Reset everything.
+    ld a, $FF
+    ldh [hPlayQueue], a
+    ldh [hPlayQueue+1], a
+    ldh [hPlayQueue+2], a
+    ldh [hPlayQueue+3], a
+    ldh [hCurrentlyPlaying], a
+    xor a, a
+    ldh [hPlayhead], a
+    ldh [hPlayhead+1], a
+    ldh [hNoisePlayhead], a
+    ldh [hNoisePlayhead+1], a
+    ld [wCurrentBank], a
+    ld [wBankSwitchTarget], a
+    ld [wPlayHeadTarget], a
+    ld [wPlayHeadTarget+1], a
+
+    ; Kill remaining sound.
+    ld a, %00111111
+    ldh [rNR11], a
+    ldh [rNR21], a
+    ld a, $FF
+    ldh [rNR31], a
+    ldh [rNR41], a
+    ld a, %01000000
+    ldh [rNR14], a
+    ldh [rNR24], a
+    ldh [rNR34], a
+    ldh [rNR44], a
+
+    ; If we're GM, play the GM jingle.
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    ret nz
+
+    ld a, BANK_SFX
+    ld [wCurrentBank], a
+    ld a, SFX_RANKGM
+    ldh [hCurrentlyPlaying], a
+    ld a, LOW(sSFXRankGM)
+    ldh [hPlayhead], a
+    ld a, HIGH(sSFXRankGM)
+    ldh [hPlayhead+1], a
+    jp SFXPlay
 
 
 ENDC

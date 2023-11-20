@@ -166,6 +166,12 @@ Thanks for playtesting and debugging go to:
 - \_Zaphod77\_
 - bbbbbr
 
+The amazing logo was created by Lindtobias.
+
+The tracks in this game were created by Pandora Nova, but the title screen was inspired by TGM2's Mode Select music, and the final challenge roll is a demake of Kenet & Rez' Unreal Superhero 3.
+
+Parts of the grading system were contributed by CreeperCraftYT™
+
 
 ## License
 Copyright (C) 2023 - Randy Thiemann <randy.thiemann@gmail.com>

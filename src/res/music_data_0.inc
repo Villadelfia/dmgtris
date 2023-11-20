@@ -15,15 +15,14 @@
 ; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-IF !DEF(MUSIC_DATA_INC)
-DEF MUSIC_DATA_INC EQU 1
+IF !DEF(MUSIC_DATA_0_INC)
+DEF MUSIC_DATA_0_INC EQU 1
 
 
 INCLUDE "globals.asm"
 
 
-SECTION "Music Data", ROMX, BANK[BANK_MUSIC]
-
+SECTION "Music Data 0", ROMX, BANK[BANK_MUSIC_0]
 sMusicMenu::
     db REG_NR12_CH1_VOLEV, $F2, REG_NR32_CH3_VOLUM, $40, REG_NR42_CH4_VOLEV, $F2, REG_NR11_CH1_LENDT, $BF
     db REG_NR11_CH1_LENDT, $BF, REG_NR12_CH1_VOLEV, $F2, REG_NR13_CH1_FRQLO, $4F, REG_NR14_CH1_FRQHI, $87
@@ -2214,7 +2213,6 @@ sMusicMenu::
 
     db REG_NR42_CH4_VOLEV, $08, REG_NR43_CH4_FQRND, $00, REG_NR44_CH4_CNTRL, $80, $FE
 sMusicMenuEnd::
-
 
 
 ENDC

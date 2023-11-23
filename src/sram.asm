@@ -106,29 +106,78 @@ RestoreSRAM::
     jp nz, InitializeSRAM
 
     ; SRAM is initialized and for this build, so we can load the data.
+    ; We do check for corruption and make sure all the values make sense.
 TrustedLoad:
     ld a, [rSwapABState]
     ld [wSwapABState], a
-    ld a, [rRNGModeState]
+    cp a, BUTTON_MODE_COUNT
+    jr c, :+
+    xor a, a
+    ld [wSwapABState], a
+    ld [rSwapABState], a
+
+:   ld a, [rRNGModeState]
     ld [wRNGModeState], a
-    ld a, [rRotModeState]
+    cp a, RNG_MODE_COUNT
+    jr c, :+
+    xor a, a
+    ld [wRNGModeState], a
+    ld [rRNGModeState], a
+
+:   ld a, [rRotModeState]
     ld [wRotModeState], a
-    ld a, [rDropModeState]
+    cp a, ROT_MODE_COUNT
+    jr c, :+
+    xor a, a
+    ld [wRotModeState], a
+    ld [rRotModeState], a
+
+:   ld a, [rDropModeState]
     ld [wDropModeState], a
-    ld a, [rSpeedCurveState]
+    cp a, DROP_MODE_COUNT
+    jr c, :+
+    xor a, a
+    ld [wDropModeState], a
+    ld [rDropModeState], a
+
+:   ld a, [rSpeedCurveState]
     ld [wSpeedCurveState], a
-    ld a, [rAlways20GState]
+    cp a, SCURVE_COUNT
+    jr c, :+
+    xor a, a
+    ld [wSpeedCurveState], a
+    ld [rSpeedCurveState], a
+
+:   ld a, [rAlways20GState]
     ld [wAlways20GState], a
-    ld a, [rProfileName]
+    cp a, HIG_MODE_COUNT
+    jr c, :+
+    xor a, a
+    ld [wAlways20GState], a
+    ld [rAlways20GState], a
+
+:   ld a, [rFilterMode]
+    ldh [hFilterMode], a
+    cp a, FILTER_MODE_COUNT
+    jr c, :+
+    xor a, a
+    ldh [hFilterMode], a
+    ld [rFilterMode], a
+
+:   ld a, [rBGMode]
+    ld [wBGMode], a
+    cp a, BG_MODE_COUNT
+    jr c, :+
+    xor a, a
+    ld [wBGMode], a
+    ld [rBGMode], a
+
+:   ld a, [rProfileName]
     ld [wProfileName], a
     ld a, [rProfileName+1]
     ld [wProfileName+1], a
     ld a, [rProfileName+2]
     ld [wProfileName+2], a
-    ld a, [rFilterMode]
-    ldh [hFilterMode], a
-    ld a, [rBGMode]
-    ld [wBGMode], a
 
     ; Restore the start level.
     ld b, BANK_OTHER

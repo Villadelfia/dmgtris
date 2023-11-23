@@ -79,8 +79,10 @@ Main::
     ; Harvest entropy
     call HarvestEntropy
 
-    ; Let the DMG have some fun with the initial screen.
-    call DoDMGEffect
+    ; Let the console have some fun with the initial screen.
+    call InputInit
+    call BankingInit
+    call DoIntroEffect
 
     ; Turn off LCD during initialization.
     wait_vram
@@ -94,8 +96,8 @@ Main::
 
     ; Other initialization.
     call RestoreSRAM
-    call TimeInit
     call InputInit
+    call TimeInit
     call SFXInit
     call BankingInit
 

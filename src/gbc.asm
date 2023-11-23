@@ -103,7 +103,6 @@ INCLUDE "globals.asm"
     DEF_RGB555_FROM24 TITLE_PAL4_3, 155, 173, 183
 
 
-
 SECTION "GBC Shadow Tilemap", WRAM0, ALIGN[8]
 wShadowTilemap:: ds 32*32
 

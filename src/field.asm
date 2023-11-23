@@ -1559,6 +1559,11 @@ FieldProcess::
     ldh a, [hCurrentPieceY]
     add a, b
     ldh [hCurrentPieceY], a
+    ldh a, [hAwardDownBonus]
+    cp a, $FF
+    jr nz, .postgrav
+    ld a, b
+    ldh [hAwardDownBonus], a
     jr .postgrav
 
     ; No. Smaller distance.
@@ -1568,6 +1573,11 @@ FieldProcess::
     ldh a, [hCurrentPieceY]
     add a, b
     ldh [hCurrentPieceY], a
+    ldh a, [hAwardDownBonus]
+    cp a, $FF
+    jr nz, .postgrav
+    ld a, b
+    ldh [hAwardDownBonus], a
 
 
     ; **************************************************************
@@ -2067,16 +2077,12 @@ FieldDelay::
     ; Add soft drop points.
     ldh a, [hDownFrames]
     ld c, a
-    xor a, a
-    ld b, a
-
-    ; Lock bonus?
     ldh a, [hAwardDownBonus]
-    cp a, $FF
-    jr nz, .premultiplier
-    ld a, 10
+    add a, a
     add a, c
     ld c, a
+    xor a, a
+    ld b, a
 
     ; Final total pre-multipliers.
 .premultiplier
@@ -3807,6 +3813,11 @@ BigFieldProcess::
     ldh a, [hCurrentPieceY]
     add a, b
     ldh [hCurrentPieceY], a
+    ldh a, [hAwardDownBonus]
+    cp a, $FF
+    jr nz, .postgrav
+    ld a, b
+    ldh [hAwardDownBonus], a
     jr .postgrav
 
     ; No. Smaller distance.
@@ -3816,6 +3827,11 @@ BigFieldProcess::
     ldh a, [hCurrentPieceY]
     add a, b
     ldh [hCurrentPieceY], a
+    ldh a, [hAwardDownBonus]
+    cp a, $FF
+    jr nz, .postgrav
+    ld a, b
+    ldh [hAwardDownBonus], a
 
 
     ; **************************************************************
@@ -4317,16 +4333,12 @@ BigFieldDelay::
     ; Add soft drop points.
     ldh a, [hDownFrames]
     ld c, a
-    xor a, a
-    ld b, a
-
-    ; Lock bonus?
     ldh a, [hAwardDownBonus]
-    cp a, $FF
-    jr nz, .premultiplier
-    ld a, 10
+    add a, a
     add a, c
     ld c, a
+    xor a, a
+    ld b, a
 
     ; Final total pre-multipliers.
 .premultiplier

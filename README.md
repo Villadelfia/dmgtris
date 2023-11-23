@@ -87,7 +87,7 @@ Lines = Lines cleared.
 
 Level = The level before the lines were cleared.
 
-Soft = Amount of frames the down button was held during this piece + 10 if the piece was sonic or hard dropped.
+Soft = Amount of frames the down button was held during this piece + double the rows the piece was sonic or hard dropped.
 
 Combo = Old combo + (2 x Lines) - 2
 

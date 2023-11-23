@@ -33,12 +33,12 @@ MACRO DEF_RGB555
     DEF COLOR   EQUS "\1"
 
     ; Uncorrected
-    DEF RED_A   EQU (\2 & $1F)
-    DEF GREEN_A EQU (\3 & $1F)
-    DEF BLUE_A  EQU (\4 & $1F)
+    DEF R_A   EQU (\2 & $1F)
+    DEF G_A EQU (\3 & $1F)
+    DEF B_A  EQU (\4 & $1F)
 
-    DEF {COLOR}   EQU (RED_A << 0) | (GREEN_A << 5) | (BLUE_A << 10)
-    DEF {COLOR}_A EQU (RED_A << 0) | (GREEN_A << 5) | (BLUE_A << 10)
+    DEF {COLOR}   EQU (R_A << 0) | (G_A << 5) | (B_A << 10)
+    DEF {COLOR}_A EQU (R_A << 0) | (G_A << 5) | (B_A << 10)
 
     ; Transfer function.
     DEF GAMMA     EQU 2.0q25

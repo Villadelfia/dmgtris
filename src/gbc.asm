@@ -116,6 +116,17 @@ wOuterReps:: ds 1
 wInnerReps:: ds 1
 
 
+SECTION "Palette Data", ROM0
+sModeColors:
+    db 5 ; DMGT
+    db 6 ; TGM1
+    db 3 ; TGM3
+    db 0 ; DEAT
+    db 0 ; SHIR
+    db 1 ; CHIL
+    db 4 ; MYCO
+
+
 SECTION "GBC Functions", ROM0
     ; Copies the shadow tile attribute map to vram using instant HDMA.
 ToATTR::
@@ -251,22 +262,6 @@ GBCGameplayInit::
 .postpalettes
 
 
-
-    ldh a, [hBState]
-    and a, a
-    jp z, .skip
-    WRITEPAL_B 0, BLACK_C,    RED_2_C,    RED_1_C,    RED_0_C
-    WRITEPAL_B 1, BLACK_C,  GREEN_2_C,  GREEN_1_C,  GREEN_0_C
-    WRITEPAL_B 2, BLACK_C, PURPLE_2_C, PURPLE_1_C, PURPLE_0_C
-    WRITEPAL_B 3, BLACK_C,   BLUE_2_C,   BLUE_1_C,   BLUE_0_C
-    WRITEPAL_B 4, BLACK_C, ORANGE_2_C, ORANGE_1_C, ORANGE_0_C
-    WRITEPAL_B 5, BLACK_C, YELLOW_2_C, YELLOW_1_C, YELLOW_0_C
-    WRITEPAL_B 6, BLACK_C,   CYAN_2_C,   CYAN_1_C,   CYAN_0_C
-    WRITEPAL_B 7, BLACK_C,    GRAY_0_C,   GRAY_1_C,   WHITE_C
-.skip
-
-
-
     ; Copy the tilemap to shadow.
     ld de, $9800
     ld hl, wShadowTilemap
@@ -370,31 +365,12 @@ GBCGameplayProcess::
     ret nz
 
     ; Color based on mode.
+    ld hl, sModeColors
+    ld b, 0
     ld a, [wSpeedCurveState]
-    cp a, SCURVE_DMGT
-    ld a, $05 ;Blue
-    jr z, .goverride
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_TGM1
-    ld a, $06 ;Cyan
-    jr z, .goverride
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_TGM3
-    ld a, $03 ;Blue
-    jr z, .goverride
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_DEAT
-    xor a, a ;Red
-    jr z, .goverride
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_SHIR
-    xor a, a ;Red
-    jr z, .goverride ;Always red
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_CHIL
-    ld a, $01 ;Green
-    jr z, .goverride
-    ld a, $02 ;Purple
+    ld c, a
+    add hl, bc
+    ld a, [hl]
 
     ; Are we 20G?
 .goverride
@@ -600,31 +576,12 @@ GBCBigGameplayProcess::
     ret nz
 
     ; Color based on mode.
+    ld hl, sModeColors
+    ld b, 0
     ld a, [wSpeedCurveState]
-    cp a, SCURVE_DMGT
-    ld a, $05 ;Blue
-    jr z, .goverride
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_TGM1
-    ld a, $06 ;Cyan
-    jr z, .goverride
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_TGM3
-    ld a, $03 ;Blue
-    jr z, .goverride
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_DEAT
-    xor a, a ;Red
-    jr z, .goverride
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_SHIR
-    xor a, a ;Red
-    jr z, .goverride ;Always red
-    ld a, [wSpeedCurveState]
-    cp a, SCURVE_CHIL
-    ld a, $01 ;Green
-    jr z, .goverride
-    ld a, $02 ;Purple
+    ld c, a
+    add hl, bc
+    ld a, [hl]
 
     ; Are we 20G?
 .goverride

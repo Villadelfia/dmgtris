@@ -909,8 +909,6 @@ SwitchToGameplayBigB:
     jr z, .ungraded
     cp a, SCURVE_MYCO
     jr z, .ungraded
-    cp a, SCURVE_TGM3 ; TODO: Remove when this one has grades.
-    jr z, .ungraded
 
 .graded
     ld de, sBigGameplayTileMap

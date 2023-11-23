@@ -799,9 +799,23 @@ GBCBigGameplayProcess::
     ret
 
 .black
+    ld a, [wBGMode]
+    cp a, BG_MODE_DARK
+    jr z, .white
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
     ld bc, BLACK_F_C
+    wait_vram
+    ld a, c
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rOCPD], a
+    ret
+
+.white
+    ld a, OCPSF_AUTOINC | (7*8)+(3*2)
+    ldh [rOCPS], a
+    ld bc, WHITE_F_C
     wait_vram
     ld a, c
     ldh [rOCPD], a

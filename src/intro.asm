@@ -71,7 +71,9 @@ DoDMGEffect:
     ; Yeet the logo
     ld c, 10
 .loop0
+    push bc
     call GetInput
+    pop bc
     ldh a, [hStartState]
     ld hl, hAState
     or a, [hl]
@@ -88,7 +90,9 @@ DoDMGEffect:
 
     ld c, 45
 .loop1
+    push bc
     call GetInput
+    pop bc
     ldh a, [hStartState]
     ld hl, hAState
     or a, [hl]
@@ -111,7 +115,9 @@ DoDMGEffect:
 
     ld c, 20
 .loop2
+    push bc
     call GetInput
+    pop bc
     ldh a, [hStartState]
     ld hl, hAState
     or a, [hl]
@@ -129,7 +135,9 @@ DoDMGEffect:
 
     ld c, 20
 .loop3
+    push bc
     call GetInput
+    pop bc
     ldh a, [hStartState]
     ld hl, hAState
     or a, [hl]
@@ -147,7 +155,9 @@ DoDMGEffect:
 
     ld c, 20
 .loop4
+    push bc
     call GetInput
+    pop bc
     ldh a, [hStartState]
     ld hl, hAState
     or a, [hl]

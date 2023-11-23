@@ -73,6 +73,8 @@ INCLUDE "globals.asm"
     DEF_RGB555_FROM24 BLACK_F, $20, $20, $20
     DEF_RGB555_FROM24 GOLD_0,  $36, $2C, $05
     DEF_RGB555_FROM24 GOLD_1,  $99, $73, $16
+    DEF_RGB555_FROM24 WHITE_F, $FF, $FF, $FF
+
 
     ; Title Palettes.
     DEF_RGB555_FROM24 TITLE_PAL0_0, 0, 0, 0
@@ -214,7 +216,19 @@ GBCGameplayInit::
     WRITEPAL_A 5, YELLOW_3_C, YELLOW_2_C, YELLOW_1_C, YELLOW_0_C
     WRITEPAL_A 6, CYAN_3_C,   CYAN_2_C,   CYAN_1_C,   CYAN_0_C
     WRITEPAL_A 7, WHITE_C,    GRAY_1_C,   GRAY_0_C,   BLACK_C
+    ld a, [wBGMode]
+    cp a, BG_MODE_DARK
+    jp nz, .postpalettes
+    WRITEPAL_B 0, BLACK_C,    RED_2_C,    RED_1_C,    RED_0_C
+    WRITEPAL_B 1, BLACK_C,  GREEN_2_C,  GREEN_1_C,  GREEN_0_C
+    WRITEPAL_B 2, BLACK_C, PURPLE_2_C, PURPLE_1_C, PURPLE_0_C
+    WRITEPAL_B 3, BLACK_C,   BLUE_2_C,   BLUE_1_C,   BLUE_0_C
+    WRITEPAL_B 4, BLACK_C, ORANGE_2_C, ORANGE_1_C, ORANGE_0_C
+    WRITEPAL_B 5, BLACK_C, YELLOW_2_C, YELLOW_1_C, YELLOW_0_C
+    WRITEPAL_B 6, BLACK_C,   CYAN_2_C,   CYAN_1_C,   CYAN_0_C
+    WRITEPAL_A 7, BLACK_C,    GRAY_0_C,   GRAY_1_C,   WHITE_C
     jp .postpalettes
+
 .agb
     WRITEPAL_A 0, RED_3_A,    RED_2_A,    RED_1_A,    RED_0_A
     WRITEPAL_A 1, GREEN_3_A,  GREEN_2_A,  GREEN_1_A,  GREEN_0_A
@@ -224,7 +238,35 @@ GBCGameplayInit::
     WRITEPAL_A 5, YELLOW_3_A, YELLOW_2_A, YELLOW_1_A, YELLOW_0_A
     WRITEPAL_A 6, CYAN_3_A,   CYAN_2_A,   CYAN_1_A,   CYAN_0_A
     WRITEPAL_A 7, WHITE_A,    GRAY_1_A,   GRAY_0_A,   BLACK_A
+    ld a, [wBGMode]
+    cp a, BG_MODE_DARK
+    jp nz, .postpalettes
+    WRITEPAL_B 0, BLACK_A,    RED_2_A,    RED_1_A,    RED_0_A
+    WRITEPAL_B 1, BLACK_A,  GREEN_2_A,  GREEN_1_A,  GREEN_0_A
+    WRITEPAL_B 2, BLACK_A, PURPLE_2_A, PURPLE_1_A, PURPLE_0_A
+    WRITEPAL_B 3, BLACK_A,   BLUE_2_A,   BLUE_1_A,   BLUE_0_A
+    WRITEPAL_B 4, BLACK_A, ORANGE_2_A, ORANGE_1_A, ORANGE_0_A
+    WRITEPAL_B 5, BLACK_A, YELLOW_2_A, YELLOW_1_A, YELLOW_0_A
+    WRITEPAL_B 6, BLACK_A,   CYAN_2_A,   CYAN_1_A,   CYAN_0_A
+    WRITEPAL_A 7, BLACK_A,   GRAY_1_A,   GRAY_0_A,    WHITE_A
 .postpalettes
+
+
+
+    ldh a, [hBState]
+    and a, a
+    jp z, .skip
+    WRITEPAL_B 0, BLACK_C,    RED_2_C,    RED_1_C,    RED_0_C
+    WRITEPAL_B 1, BLACK_C,  GREEN_2_C,  GREEN_1_C,  GREEN_0_C
+    WRITEPAL_B 2, BLACK_C, PURPLE_2_C, PURPLE_1_C, PURPLE_0_C
+    WRITEPAL_B 3, BLACK_C,   BLUE_2_C,   BLUE_1_C,   BLUE_0_C
+    WRITEPAL_B 4, BLACK_C, ORANGE_2_C, ORANGE_1_C, ORANGE_0_C
+    WRITEPAL_B 5, BLACK_C, YELLOW_2_C, YELLOW_1_C, YELLOW_0_C
+    WRITEPAL_B 6, BLACK_C,   CYAN_2_C,   CYAN_1_C,   CYAN_0_C
+    WRITEPAL_B 7, BLACK_C,    GRAY_0_C,   GRAY_1_C,   WHITE_C
+.skip
+
+
 
     ; Copy the tilemap to shadow.
     ld de, $9800
@@ -528,9 +570,23 @@ GBCGameplayProcess::
     ret
 
 .black
+    ld a, [wBGMode]
+    cp a, BG_MODE_DARK
+    jr z, .white
     ld a, OCPSF_AUTOINC | (7*8)+(3*2)
     ldh [rOCPS], a
     ld bc, BLACK_F_C
+    wait_vram
+    ld a, c
+    ldh [rOCPD], a
+    ld a, b
+    ldh [rOCPD], a
+    ret
+
+.white
+    ld a, OCPSF_AUTOINC | (7*8)+(3*2)
+    ldh [rOCPS], a
+    ld bc, WHITE_F_C
     wait_vram
     ld a, c
     ldh [rOCPD], a

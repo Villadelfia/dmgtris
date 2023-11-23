@@ -35,7 +35,8 @@ rSpeedCurveState\1:: ds 1
 rAlways20GState\1:: ds 1
 rSelectedStartLevel\1:: ds 2
 rFilterMode\1:: ds 1
-rUnused\1:: ds (64-12)
+rBGMode\1:: ds 1
+rUnused\1:: ds (64-13)
 ENDU
 ENDM
 
@@ -55,7 +56,8 @@ rSpeedCurveState:: ds 1
 rAlways20GState:: ds 1
 rSelectedStartLevel:: ds 2
 rFilterMode:: ds 1
-rUnused:: ds (PROFILE_SIZE - 12) ; 12 = sum of the above
+rBGMode:: ds 1
+rUnused:: ds (PROFILE_SIZE - 13) ; 13 = sum of the above
 ENDU
     PROFILE 0
     PROFILE 1
@@ -125,6 +127,8 @@ TrustedLoad:
     ld [wProfileName+2], a
     ld a, [rFilterMode]
     ldh [hFilterMode], a
+    ld a, [rBGMode]
+    ld [wBGMode], a
 
     ; Restore the start level.
     ld b, BANK_OTHER
@@ -276,6 +280,10 @@ InitializeSRAM:
     ld a, FILTER_MODE_DLRU
     ld [rFilterMode], a
     ldh [hFilterMode], a
+
+    ld a, BG_MODE_LITE
+    ld [rBGMode], a
+    ld [wBGMode], a
 
     ; Set to the default start level.
     ld hl, sDMGTSpeedCurve

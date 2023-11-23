@@ -34,6 +34,7 @@ wRotModeState:: ds 1
 wDropModeState:: ds 1
 wSpeedCurveState:: ds 1
 wAlways20GState:: ds 1
+wBGMode:: ds 1
 wInitialA:: ds 1
 wInitialB:: ds 1
 wInitialC:: ds 1

@@ -70,6 +70,10 @@ sFilterMode::
     db "UDLR"
     db "NONE"
 
+sBGMode::
+    db "LITE"
+    db "DARK"
+
 sTetryRNG::
     db "THIS OPTION WILL"
     db "CHANGE THE WAY  "
@@ -140,13 +144,19 @@ sTetryButtons::
     db "THIS OPTION WILL"
     db "CHANGE WHICH WAY"
     db "THE BUTTONS RO- "
-    db "TATE THE PIECE  "
+    db "TATE THE PIECE! "
 
 sTetryFILTER::
     db "THIS OPTION WILL"
     db "DETERMINE WHICH "
     db "D-PAD BUTTONS   "
-    db "HAVE PRIORITY   "
+    db "HAVE PRIORITY!  "
+
+sTetryBG::
+    db "THIS OPTION WILL"
+    db "CHANGE THE BACK-"
+    db "GROUND COLOR IN-"
+    db "GAME!           "
 
 sTetryReset::
     db "THIS OPTION WILL"
@@ -406,14 +416,14 @@ sTitleScreenProfileMap::
     DB $00,$00,$00,$00,$5D,$01,$0F,$2A,$1B,$0C
     DB $0F,$01,$11,$14,$17,$1F,$10,$1D,$28,$01
     DB $01,$01,$01,$29,$00,$00,$00,$00,$00,$00
-    DB $00,$00,$00,$00,$00,$00,$5D,$01,$1D,$10
-    DB $1E,$10,$1F,$01,$1B,$1D,$1A,$11,$14,$17
-    DB $10,$01,$01,$01,$01,$01,$00,$00,$00,$00
+    DB $00,$00,$00,$00,$00,$00,$5D,$01,$0D,$0C
+    DB $0E,$16,$12,$1D,$1A,$20,$19,$0F,$01,$01
+    DB $28,$01,$01,$01,$01,$29,$00,$00,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00,$5D,$01
-    DB $0D,$0C,$0E,$16,$01,$01,$01,$01,$01,$01
-    DB $01,$01,$01,$01,$01,$01,$01,$01,$00,$00
+    DB $1D,$10,$1E,$10,$1F,$01,$1B,$1D,$1A,$11
+    DB $14,$17,$10,$01,$01,$01,$01,$01,$00,$00
     DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-    DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+    DB $5D,$01,$0D,$0C,$0E,$16,$01,$01,$01,$01
     DB $01,$01,$01,$01,$01,$01,$01,$01,$01,$01
     DB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     DB $00,$00,$01,$01,$01,$01,$01,$01,$01,$01

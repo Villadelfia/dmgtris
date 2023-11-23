@@ -125,11 +125,22 @@ SwitchToGameplayB:
     call ApplyTells
 
     ; Set up the palettes.
+    ld a, [wBGMode]
+    cp a, BG_MODE_DARK
+    jr z, .dark
     ld a, PALETTE_REGULAR
     set_bg_palette
     set_obj0_palette
     ld a, PALETTE_LIGHTER_1
     set_obj1_palette
+    jr .done
+.dark
+    ld a, PALETTE_INVERTED
+    set_bg_palette
+    set_obj0_palette
+    ld a, PALETTE_INVERTED_L
+    set_obj1_palette
+.done
 
     ; Initialize the RNG.
     call RNGInit
@@ -931,11 +942,22 @@ SwitchToGameplayBigB:
     call ApplyTells
 
     ; Set up the palettes.
+    ld a, [wBGMode]
+    cp a, BG_MODE_DARK
+    jr z, .dark
     ld a, PALETTE_REGULAR
     set_bg_palette
     set_obj0_palette
     ld a, PALETTE_LIGHTER_1
     set_obj1_palette
+    jr .done
+.dark
+    ld a, PALETTE_INVERTED
+    set_bg_palette
+    set_obj0_palette
+    ld a, PALETTE_INVERTED_L
+    set_obj1_palette
+.done
 
     ; Initialize the RNG.
     call RNGInit

@@ -733,6 +733,20 @@ TitleVBlankHandlerB:
     ld bc, 4
     call UnsafeMemCopy
 
+.bg
+    ld b, 0
+    ld a, [wBGMode]
+    add a, a
+    add a, a
+    ld c, a
+    ld hl, sBGMode
+    add hl, bc
+    ld d, h
+    ld e, l
+    ld hl, TITLE_PROFILE_BG
+    ld bc, 4
+    call UnsafeMemCopy
+
     ; Tetry!
     ld a, [wSelected]
     ld hl, sTetryProfileNumber
@@ -1251,6 +1265,7 @@ ProfileHandleRight:
     jp .l2
     jp .buttons
     jp .filter
+    jp .bg
     no_jump
     no_jump
 
@@ -1322,6 +1337,19 @@ ProfileHandleRight:
     ld [rFilterMode], a
     ret
 
+.bg
+    ld a, [wBGMode]
+    cp a, BG_MODE_COUNT-1
+    jr z, :+
+    inc a
+    ld [wBGMode], a
+    ld [rBGMode], a
+    ret
+:   xor a, a
+    ld [wBGMode], a
+    ld [rBGMode], a
+    ret
+
 
 ProfileHandleLeft:
     ld a, [wSelected]
@@ -1346,6 +1374,7 @@ ProfileHandleLeft:
     jp .l2
     jp .buttons
     jp .filter
+    jp .bg
     no_jump
     no_jump
 
@@ -1415,6 +1444,19 @@ ProfileHandleLeft:
 :   ld a, FILTER_MODE_COUNT-1
     ldh [hFilterMode], a
     ld [rFilterMode], a
+    ret
+
+.bg
+    ld a, [wBGMode]
+    or a, a
+    jr z, :+
+    dec a
+    ld [wBGMode], a
+    ld [rBGMode], a
+    ret
+:   ld a, BG_MODE_COUNT-1
+    ld [wBGMode], a
+    ld [rBGMode], a
     ret
 
 

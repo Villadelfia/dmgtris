@@ -2206,6 +2206,8 @@ FieldDelay::
     ld a, [wSpeedCurveState]
     cp a, SCURVE_MYCO
     jr z, .generatenextpiece
+    cp a, SCURVE_CHIL
+    jr z, .generatenextpiece
     ld e, 1
     call LevelUp
 
@@ -4462,6 +4464,8 @@ BigFieldDelay::
     jr z, .generatenextpiece
     ld a, [wSpeedCurveState]
     cp a, SCURVE_MYCO
+    jr z, .generatenextpiece
+    cp a, SCURVE_CHIL
     jr z, .generatenextpiece
     ld e, 1
     call LevelUp

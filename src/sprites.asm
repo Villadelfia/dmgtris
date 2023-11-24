@@ -350,7 +350,19 @@ ApplyNext::
     ; Draws the held piece.
     ; Index of held piece in A.
 ApplyHold::
+    ; Do we have a piece to draw?
+    cp a, PIECE_NONE
+    jr nz, .drawhold
+    ld a, TILE_BLANK
+    ld [wSPRHold1+2], a
+    ld [wSPRHold2+2], a
+    ld [wSPRHold3+2], a
+    ld [wSPRHold4+2], a
+    ret
+
+
     ; If we're in Shirase mode and past level 1000...
+.drawhold
     ld b, a
     ld a, [wBonesActive]
     cp a, $FF

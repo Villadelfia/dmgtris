@@ -209,6 +209,7 @@ DEF PIECE_J             EQU 3
 DEF PIECE_L             EQU 4
 DEF PIECE_O             EQU 5
 DEF PIECE_T             EQU 6
+DEF PIECE_NONE          EQU 7
 
 ; Sound effect names
 DEF REG_NR10_CH1_SWEEP  EQU $10

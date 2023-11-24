@@ -104,18 +104,16 @@ RNGInit::
     call UnsafeMemCopy
     rst RSTRestoreBank
 
-    ; Start with a random non-S/Z piece held.
-:   call Next7Piece
-    cp a, PIECE_Z
-    jr z, :-
-    cp a, PIECE_S
-    jr z, :-
+    ; Start with no piece held.
+    ld a, PIECE_NONE
     ldh [hHeldPiece], a
 
     ; If we're in HELL mode, we don't care about anything but a random piece to start with.
     ld a, [wRNGModeState]
     cp a, RNG_MODE_HELL
     jr nz, .complexinit
+
+.hellinit
     call Next7Piece
     ld [hUpcomingPiece2], a
     call Next7Piece
@@ -139,19 +137,20 @@ RNGInit::
 
     ld a, [wRNGModeState]
     cp a, RNG_MODE_TGM1
-    jr z, :+
+    jr z, .getfirstpiece
     ld a, PIECE_S
     ldh [hPieceHistory+2], a
     ldh [hPieceHistory+3], a
 
     ; Get the first piece and make sure it's not Z, S or O.
-:   call Next7Piece
+.getfirstpiece
+    call Next7Piece
     cp a, PIECE_Z
-    jr z, :-
+    jr z, .getfirstpiece
     cp a, PIECE_S
-    jr z, :-
+    jr z, .getfirstpiece
     cp a, PIECE_O
-    jr z, :-
+    jr z, .getfirstpiece
 
     ; Save the generated piece and put it in the history.
     ldh [hPieceHistory], a
@@ -159,6 +158,7 @@ RNGInit::
     ldh [hUpcomingPiece2], a
 
     ; Generate the next 2 to fill up the queue.
+.getqueue
     call GetNextPiece
     jp GetNextPiece
 

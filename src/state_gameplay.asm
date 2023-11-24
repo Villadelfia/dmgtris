@@ -887,7 +887,13 @@ DoHold:
     ldh [hHeldPiece], a
     ld a, b
     ldh [hCurrentPiece], a
-    ret
+    cp a, PIECE_NONE
+    ret nz
+
+    ; This is the first piece, in this case we need to fetch a new one.
+    ldh a, [hNextPiece]
+    ldh [hCurrentPiece], a
+    jp GetNextPiece
 
 
 
@@ -1716,7 +1722,13 @@ BigDoHold:
     ldh [hHeldPiece], a
     ld a, b
     ldh [hCurrentPiece], a
-    ret
+    cp a, PIECE_NONE
+    ret nz
+
+    ; This is the first piece, in this case we need to fetch a new one.
+    ldh a, [hNextPiece]
+    ldh [hCurrentPiece], a
+    jp GetNextPiece
 
 
 ENDC

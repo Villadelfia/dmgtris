@@ -276,15 +276,15 @@ sTGM3LevelMultiplier:
     db 4 ; 750-999
 
 sTGM3BaselineCOOL:
-    db 52 ;070 (value in seconds)
-    db 52 ;170
-    db 49 ;270
-    db 45 ;370
-    db 45 ;470
-    db 42 ;570
-    db 42 ;670
-    db 38 ;770
-    db 38 ;870
+    db 00,52 ;070 (minutes, seconds)
+    db 00,52 ;170
+    db 00,49 ;270
+    db 00,45 ;370
+    db 00,45 ;470
+    db 00,42 ;570
+    db 00,42 ;670
+    db 00,38 ;770
+    db 00,38 ;870
 
 sTGM3REGRETConditions:
     db 1, 30 ;minutes, seconds
@@ -1033,10 +1033,16 @@ UpdateGradeDEAT:
     cp a, GRADE_M
     jr nz, .notm
 
-    ; We should be GM if we're at or past level 1000.
-    ldh a, [hCLevel+CLEVEL_THOUSANDS] ; Level, thousands digit.
-    cp a, 1
-    ret c ; If less than 1000, return.
+    ; We should be GM if we're at or past level 999.
+    ldh a, [hCLevel+CLEVEL_HUNDREDS] ; Level, hundreds digit.
+    cp a, 9
+    ret c ; If hundreds are less than 9, return.
+    ldh a, [hCLevel+CLEVEL_TENS] ; Level, tens digit.
+    cp a, 9
+    ret c ; If tens are less than 9, 
+    ldh a, [hCLevel+CLEVEL_ONES] ; Level, ones digit.
+    cp a, 9
+    ret c ; If ones are less than 9, return
 
     ; Otherwise give the grade!
     ld a, GRADE_GM
@@ -1492,7 +1498,7 @@ CheckCOOL:
     ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
     xor a, a
     ld [wCOOLIsActive], a ; Make the cool no longer be active
-    jp SkipSection
+    call SkipSection
 
 
 DecayGradeTGM3:
@@ -1576,8 +1582,10 @@ TGM3COOLHandlerB:
     ld b, a
     ld a, [wPrevCOOL+1]
     ; Give the player 2 seconds to spare
-    sub a, 2
+    add a, 2
     ld c, a
+    ld a, [wPrevCOOL+3]
+    ld d, a
 
 .checkBaselineCOOL
     call CheckCOOL_REGRET

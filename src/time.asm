@@ -225,10 +225,10 @@ CheckCOOL_REGRET::
     ; Check frames if seconds are equal.
     jr nz, .failure
 
-    ; Okay if frames are exactly 0.
-    ld a, [wSectionFrames]
-    cp a, 0
-    jr z, .success
+    ; Okay if frames are less than max seconds.
+    ld a, [wSectionSeconds]
+    cp a, d
+    jr c, .success
 
 .failure
     xor a, a

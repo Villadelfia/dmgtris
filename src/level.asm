@@ -471,7 +471,7 @@ AdjustSpeedCurve:
     and a, $0F
 
     ; Compare to ours.
-    ld hl, hCLevel+CLEVEL_HUNDREDS
+    ld hl, hTrueCLevel+CLEVEL_HUNDREDS
     cp a, [hl]
     jr z, .checktens     ; Equal? We need to check deeper.
     jr c, AdjustSpeedCurveForced    ; Ours higher? We need to increase.

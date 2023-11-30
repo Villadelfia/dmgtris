@@ -226,7 +226,7 @@ CheckCOOL_REGRET::
     jr nz, .failure
 
     ; Okay if frames are less than max seconds.
-    ld a, [wSectionSeconds]
+    ld a, [wSectionFrames]
     cp a, d
     jr c, .success
 

@@ -568,8 +568,18 @@ BuildTrueCLevel:
     ; Except in TGM3 mode, this will always just be the same as the real level, so check for the most common case and bail.
     ld a, [wSkippedSectionsBCD]
     or a, a
-    ret z
+    jr nz, .doit
+    ld a, [hCLevel]
+    ld [hTrueCLevel],a
+    ld a, [hCLevel+1]
+    ld [hTrueCLevel+1],a
+    ld a, [hCLevel+2]
+    ld [hTrueCLevel+2],a
+    ld a, [hCLevel+3]
+    ld [hTrueCLevel+3],a
+    ret
 
+.doit
     ; Otherwise, to the thing.
     ld de, hCLevel
     ld hl, hTrueCLevel

@@ -1133,10 +1133,13 @@ GradeRendering::
     ret
 
 .hisgrade
+    cp a, GRADE_S10 ; Is the grade Actually S10?
+    jr nc, .skipmcheck ; If so, skip the m check
     ; Is the grade M1 or better?
     cp a, GRADE_M1
     jr nc, .mgrade
 
+.skipmcheck
     ; Draw as high S grade.
     ld a, "S"
     ld [wSPRGrade1+2], a

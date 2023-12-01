@@ -43,6 +43,7 @@ wCOOLIsActive::                 ds 1
 wSubgrade:                      ds 1
 wREGRETChecked::                ds 1
 wGradeBoosts:                   ds 1
+wCOOLBoosts:                    ds 1
 wTGM1level300RequirementMet:    ds 1
 wTGM1level500RequirementMet:    ds 1
 wTGM1level999RequirementMet:    ds 1
@@ -106,24 +107,43 @@ sDMGTGaugeLUT:
     db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
     db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
 
+sTGM3GaugeLUT:
+    db 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5
+    db 5, 5, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10
+    db 10,10,11,11,11,12,12,12,13,13,13,14,14,14,15,15
+    db 15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20
+    db 20,21,21,21,22,22,22,23,23,23,23,24,24,24,25,25
+    db 25,26,26,26,27,27,27,28,28,28,29,29,29,30,30,30
+    db 31,31,31,31,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+    db 32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32
+
 sTGM1GradeScores:
-    dw $0003 ;00 — 8
-    dw $0006 ;00 — 7
-    dw $0009 ;00 — 6
-    dw $0015 ;00 — 5
-    dw $0021 ;00 — 4
-    dw $0039 ;00 — 3
-    dw $0060 ;00 — 2
-    dw $0090 ;00 — 1
-    dw $0120 ;00 — S1
-    dw $0165 ;00 — S2
-    dw $0225 ;00 — S3
-    dw $0300 ;00 — S4
-    dw $0390 ;00 — S5
-    dw $0495 ;00 — S6
-    dw $0615 ;00 — S7
-    dw $0750 ;00 — S8
-    dw $0900 ;00 — S9
+    dw $0004 ;00 — 8
+    dw $0008 ;00 — 7
+    dw $0014 ;00 — 6
+    dw $0020 ;00 — 5
+    dw $0035 ;00 — 4
+    dw $0055 ;00 — 3
+    dw $0080 ;00 — 2
+    dw $0120 ;00 — 1
+    dw $0160 ;00 — S1
+    dw $0220 ;00 — S2
+    dw $0300 ;00 — S3
+    dw $0400 ;00 — S4
+    dw $0520 ;00 — S5
+    dw $0660 ;00 — S6
+    dw $0820 ;00 — S7
+    dw $1000 ;00 — S8
+    dw $1200 ;00 — S9
 
 sTGM3InternalGradeSystem:
     db 125, 10, 20, 40, 50 ;Decay rate, (Internal grade points awarded for:) Single, Double, Triple, Tetris
@@ -225,39 +245,6 @@ sTGM3HowManyInternalGradesToDecrease:
     db 2 ;S8
     db 1 ;S9
 
-sTGM3HowManyInternalGradesToIncrease:
-    db 1 ;9 (0 = add 0, 1 = add 1, etc.)
-    db 1 ;8
-    db 1 ;7
-    db 1 ;6
-    db 1 ;5
-    db 2 ;4
-    db 1 ;4
-    db 2 ;3
-    db 1 ;3
-    db 3 ;2
-    db 2 ;2
-    db 1 ;2
-    db 3 ;1
-    db 2 ;1
-    db 1 ;1
-    db 2 ;S1
-    db 1 ;S1
-    db 1 ;S2
-    db 1 ;S3
-    db 3 ;S4
-    db 2 ;S4
-    db 1 ;S4
-    db 2 ;S5
-    db 1 ;S5
-    db 2 ;S6
-    db 1 ;S6
-    db 2 ;S7
-    db 1 ;S7
-    db 2 ;S8
-    db 1 ;S8
-    db 1 ;S9
-
 sTGM3ComboMultipliers:
     db 1,  1, 1, 1, 1   ; Combo size, (Multiplier for: ) Single, Double, Triple, Tetris (Screw the fractional part, x.5 gets rounded down)
     db 2,  1, 1, 1, 1
@@ -357,6 +344,7 @@ GradeInitB:
     ld [wGradeGauge], a
     ld [wSubgrade], a
     ld [wGradeBoosts], a
+    ld [wCOOLBoosts], a
     ld [wCOOLIsActive], a
     ld [wREGRETChecked], a
     ld [wPrevCOOL], a
@@ -480,6 +468,22 @@ DrawGradeProgressDMGT:
     ld [wGradeGauge], a
 :   ld hl, sDMGTGaugeLUT
     ld a, [wGradeGauge]
+    ld b, 0
+    ld c, a
+    add hl, bc
+
+    ld a, [hl]
+    call SetProgress
+    ret
+
+DrawGradeProgressTGM3:
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    jr nz, :+
+    ld a, $FF
+    ld [wInternalGradePoints], a
+:   ld hl, sTGM3GaugeLUT
+    ld a, [wInternalGradePoints]
     ld b, 0
     ld c, a
     add hl, bc
@@ -865,11 +869,7 @@ UpdateGradeTGM1:
     ; Add 1 to the grade.
     ld a, [wDisplayedGrade]
     inc a
-    ; If our new grade is S10, change it to GM
-    cp a, GRADE_S10
-    jr nz, :+
-    ld a, GRADE_GM
-:   ld [wDisplayedGrade], a
+    ld [wDisplayedGrade], a
 
     ; Play the jingle, if not already doing so.
     ldh a, [hCurrentlyPlaying]
@@ -1144,8 +1144,17 @@ UpdateGradeSHIR:
     and a, $0F  ; A = A & $0F. A is now $00 to $09 if the number was correct BCD.
     add a, b    ; Adding B to A gives us the converted number.
 
+    ; Should we get S10 or higher?
+    cp a, $0a
+    jr nc, .overs10 ; If so, jump to the correct code
+    ; If not, proceed as normal
     ; Adding GRADE_1 to this will give us the grade.
+.unders10
     add a, GRADE_1
+    jr .continue
+.overs10
+    add a, GRADE_M6
+.continue
     ld b, a
     ld a, [wDisplayedGrade]
     cp a, b
@@ -1263,6 +1272,8 @@ UpdateGradeTGM3:
     ld hl, wInternalGradePoints
     add a, [hl]
     ld [wInternalGradePoints], a
+    ; Draw the progress
+    call DrawGradeProgressTGM3
     jp .IncreaseInternalGrade
 
 .multipliers
@@ -1354,7 +1365,7 @@ UpdateGradeTGM3:
     jp .Multiply
 
 .Level250 ; There is no Offset, so just get the multiplier
-    ; Is our level 250 or higher?
+    ; Is our level 750 or higher?
     ld a, b
     cp a, LEVEL_MULT_1A
     ; If B is less than 2, that means we are not even in level 200, so no multiplier
@@ -1384,11 +1395,15 @@ UpdateGradeTGM3:
 
 .IncreaseInternalGrade
     ; Are we on level *00-*05?
+    ld a, [hCLevel+CLEVEL_TENS]
+    cp a, 0
+    jr nz, .nocool
     ld a, [hCLevel+CLEVEL_ONES]
     cp a, 6
     ; If we are, jump to the update COOL grade funcion just in case we have to apply a section COOL
-    jr c, CheckCOOL
+    call c, CheckCOOL
     ; If not, continue
+.nocool
     ; Do we have 100 Grade Points?
     ld a, [wInternalGradePoints]
     cp a, 100
@@ -1398,12 +1413,13 @@ UpdateGradeTGM3:
     ld a, [wInternalGrade]
     inc a
     ld [wInternalGrade], a
+    call DrawGradeProgressTGM3
     ; This falls to the next function, this is intentional
 
 
 TGM3UpdateDisplayedGrade:
-    ld a, [wDisplayedGrade] ; If we are a GM Grade, return
-    cp a, GRADE_GM
+    ld a, [wDisplayedGrade] ; If we are an m9 Grade, return
+    cp a, GRADE_M9
     ret z
     ld a, GRADE_9 ; Load the lowest grade into a
     ld b, a ; Then save it into b
@@ -1419,49 +1435,14 @@ TGM3UpdateDisplayedGrade:
     ld a, [wGradeBoosts] ; Load the boosts variable into A
     add a, b ;Add the boosts
     ld b, a
-    ; HOLD IT!
-    ld a, [wCOOLIsActive] ; Did the player get a cool on this section?
-    cp a, 1
-    jp nz, .nocool ; If not, proceed as normal
-    ; If it did, check if we are at level *00-*05
-    ld a, [hCLevel+CLEVEL_TENS]
-    cp a, 0
-    jr nz, .nocool
-    ld a, [hCLevel+CLEVEL_ONES]
-    cp a, 5
-    jr c, .cool
-    jr nz, .nocool ; If not, proceed as normal
-
-.cool
-    ld hl, sTGM3HowManyInternalGradesToIncrease ; Make HL point to the..., yeah.
-    ld a, [wInternalGrade] ; Get the offset
-    ld d, a ; save the internal grade because we need it later
-    ld b, 0
-    ld c, a
-    add hl, bc
-    ld a, [hl] ; Load the amount of internal grades to increase into a
-    add a, d ; Increase the internal grades
-    ld [wInternalGrade], a ; Load them
-    ld a, [wGradeBoosts] ; Load the boosts variable into A
-    inc a
-    ld [wGradeBoosts], a
-    ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
-    xor a, a
-    ld [wCOOLIsActive], a ; Make the cool no longer be active
-    ret
-
-.nocool
+    ld a, [wCOOLBoosts] ; Add our Section COOL boosts
+    add a, b
+    ld b, a
     ;ld [wDisplayedGrade], a ; HOLD IT!
     ld a, [wDisplayedGrade]
     cp a, b
     ret z ; If the grade is the same, return.
     ld a, b
-    ; If the grade results in an S10, set it to m1
-    cp a, GRADE_S10
-    jr nz, .continue
-    ld a, GRADE_M1
-
-.continue
     ld [wDisplayedGrade], a ; Otherwise, set the grade.
     ld [wGradeBoosts], a ; And the grade boosts too.
     ; ...Play the jingle.
@@ -1487,18 +1468,13 @@ CheckCOOL:
     ret nz ; If not, proceed as normal
 
 .cool
-    ld hl, sTGM3HowManyInternalGradesToIncrease ; Make HL point to the..., yeah.
-    ld a, [wInternalGrade] ; Get the offset
-    ld d, a ; save the internal grade because we need it later
-    ld b, 0
-    ld c, a
-    add hl, bc
-    ld a, [hl] ; Load the amount of internal grades to increase into a
-    add a, d ; Increase the internal grades
-    ld [wInternalGrade], a ; Load them
-    ld a, [wGradeBoosts] ; Load the boosts variable into A
-    inc a
-    ld [wGradeBoosts], a
+    ld a, [wCOOLBoosts] ; Load our COOL Boosts into A
+    inc a ; Increase A
+    ld [wCOOLBoosts], a ; And load the result
+    ; Now let's display our new grade!
+    ld b, a
+    ld a, [wDisplayedGrade]
+    add a, b
     ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
     xor a, a
     ld [wCOOLIsActive], a ; Make the cool no longer be active
@@ -1511,10 +1487,10 @@ DecayGradeTGM3:
     cp a, 0
     jr z, .points
     ld b, a ; Save the timer
-    ld a, [hComboCt] ; If there is an active combo, do not decrease the counter, return instead
+    ld a, [hComboCt] ; If there is an active combo, do not decrease the counter, check if we can increase our internal grade instead
     dec a
     and a
-    ret nz
+    call nz, UpdateGradeTGM3.IncreaseInternalGrade
     ld a, b ; Load the timer back
     dec a
     ld [wDecayRate], a
@@ -1529,6 +1505,7 @@ DecayGradeTGM3:
     jr z, .lpoints ; If so, load the points, since we don't have any points to decay
     ; Else, load the points and the corresponding Decay Rate
     ld [wInternalGradePoints], a
+    call DrawGradeProgressTGM3
     ; Get the Decay Rate required
     ld hl, sTGM3InternalGradeSystem
     ld a, [wInternalGrade] ; Example: 3
@@ -1552,6 +1529,7 @@ DecayGradeTGM3:
 
 .lpoints
     ld [wInternalGradePoints], a
+    call DrawGradeProgressTGM3
     ret
 
 

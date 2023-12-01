@@ -865,7 +865,11 @@ UpdateGradeTGM1:
     ; Add 1 to the grade.
     ld a, [wDisplayedGrade]
     inc a
-    ld [wDisplayedGrade], a
+    ; If our new grade is S10, change it to GM
+    cp a, GRADE_S10
+    jr nz, :+
+    ld a, GRADE_GM
+:   ld [wDisplayedGrade], a
 
     ; Play the jingle, if not already doing so.
     ldh a, [hCurrentlyPlaying]
@@ -1350,7 +1354,7 @@ UpdateGradeTGM3:
     jp .Multiply
 
 .Level250 ; There is no Offset, so just get the multiplier
-    ; Is our level 750 or higher?
+    ; Is our level 250 or higher?
     ld a, b
     cp a, LEVEL_MULT_1A
     ; If B is less than 2, that means we are not even in level 200, so no multiplier

@@ -1418,8 +1418,8 @@ UpdateGradeTGM3:
 
 
 TGM3UpdateDisplayedGrade:
-    ld a, [wDisplayedGrade] ; If we are an m9 Grade, return
-    cp a, GRADE_M9
+    ld a, [wDisplayedGrade] ; If we are an S9 Grade, return
+    cp a, GRADE_S9
     ret z
     ld a, GRADE_9 ; Load the lowest grade into a
     ld b, a ; Then save it into b

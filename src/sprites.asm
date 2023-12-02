@@ -516,7 +516,14 @@ ApplyTime::
     ld [wSPRTimeCS2+1], a
 
     ; Set the palette of the time objects.
+    ld a, [wCOOLIsActive]
+    cp a, 1
+    jr nz, .nocool
+    ld a, 01
+    jr .yescool
+.nocool
     ld a, OAMF_PAL1 | $07
+.yescool
     ld [wSPRTimeM1+3], a
     ld [wSPRTimeM2+3], a
     ld [wSPRTimeS1+3], a
@@ -1133,13 +1140,10 @@ GradeRendering::
     ret
 
 .hisgrade
-    cp a, GRADE_S10 ; Is the grade Actually S10?
-    jr nc, .skipmcheck ; If so, skip the m check
     ; Is the grade M1 or better?
     cp a, GRADE_M1
     jr nc, .mgrade
 
-.skipmcheck
     ; Draw as high S grade.
     ld a, "S"
     ld [wSPRGrade1+2], a

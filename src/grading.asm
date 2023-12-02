@@ -1144,17 +1144,8 @@ UpdateGradeSHIR:
     and a, $0F  ; A = A & $0F. A is now $00 to $09 if the number was correct BCD.
     add a, b    ; Adding B to A gives us the converted number.
 
-    ; Should we get S10 or higher?
-    cp a, $0a
-    jr nc, .overs10 ; If so, jump to the correct code
-    ; If not, proceed as normal
     ; Adding GRADE_1 to this will give us the grade.
-.unders10
     add a, GRADE_1
-    jr .continue
-.overs10
-    add a, GRADE_M6
-.continue
     ld b, a
     ld a, [wDisplayedGrade]
     cp a, b
@@ -1418,7 +1409,7 @@ UpdateGradeTGM3:
 
 
 TGM3UpdateDisplayedGrade:
-    ld a, [wDisplayedGrade] ; If we are an S9 Grade, return
+    ld a, [wGradeBoosts] ; If we are an S9 Grade, return
     cp a, GRADE_S9
     ret z
     ld a, GRADE_9 ; Load the lowest grade into a
@@ -1429,11 +1420,12 @@ TGM3UpdateDisplayedGrade:
     ld c, a
     add hl, bc
     ld a, [hl] ; Load the boosts to add into a...
-    ld b, a
+    ld b, a ; and then into b
 
 .update
     ld a, [wGradeBoosts] ; Load the boosts variable into A
     add a, b ;Add the boosts
+    ld [wGradeBoosts], a ; And load them.
     ld b, a
     ld a, [wCOOLBoosts] ; Add our Section COOL boosts
     add a, b
@@ -1443,8 +1435,12 @@ TGM3UpdateDisplayedGrade:
     cp a, b
     ret z ; If the grade is the same, return.
     ld a, b
+    ; Is our Grade S10 or higher?
+    cp a, GRADE_S10
+    jr c, .notaboves10 ; No, it isn't
+    add a, GRADE_S10_PLUS ; Yes, it is
+.notaboves10
     ld [wDisplayedGrade], a ; Otherwise, set the grade.
-    ld [wGradeBoosts], a ; And the grade boosts too.
     ; ...Play the jingle.
     ld a, SFX_RANKUP
     call SFXEnqueue
@@ -1474,7 +1470,12 @@ CheckCOOL:
     ; Now let's display our new grade!
     ld b, a
     ld a, [wDisplayedGrade]
-    add a, b
+    inc a
+    ; Does it result in an S10 grade?
+    cp a, GRADE_S10
+    jr nz, .nots10 ; No, it doesn't
+    add a, GRADE_S10_PLUS ; Yes, it does
+.nots10
     ld [wDisplayedGrade], a ; Load the boosts into the displayed grade
     xor a, a
     ld [wCOOLIsActive], a ; Make the cool no longer be active

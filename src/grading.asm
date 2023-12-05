@@ -1231,6 +1231,10 @@ UpdateGradeSHIR:
 
 
 UpdateGradeTGM3:
+    ; Are we in the Staff Roll?
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jp z, TGM3StaffRollGradeUpdate
     ; First things first, Update our grade points.
 .GradePoints
     ; Load the Table address to HL.
@@ -1652,6 +1656,18 @@ TGM3REGRETHandlerB: ; Check if we took too much time to complete a section
 
 
 TGM3StaffRollGradeUpdate:
+    ; Did the player survive the staff roll?
+    ld a, [wCountDownZero]
+    cp a, $FF
+    jr nz, .didnotfinish ; If not, continue
+    ; If it did, award the clear points
+    ld a, 5
+    ld [hLineClearCt], a
+.didnotfinish
+    ; Is the player already a GM?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_GM
+    ret z ; If so, return
     ; Make HL Point to the Staffroll Table
     ld hl, sTGM3StaffrollGrading
     ; Get the offset, if no lines were cleared, return

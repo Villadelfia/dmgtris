@@ -1655,7 +1655,7 @@ TGM3REGRETHandlerB: ; Check if we took too much time to complete a section
     ret ; Done
 
 
-TGM3StaffRollGradeUpdate:
+TGM3StaffRollGradeUpdate::
     ; Is the player already a GM?
     ld a, [wDisplayedGrade]
     cp a, GRADE_GM

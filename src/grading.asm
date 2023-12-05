@@ -823,6 +823,7 @@ UpdateGradeTGM1:
     ret nz
 
     ; Skip to GM check if already S9.
+    ld a, [wDisplayedGrade]
     cp a, GRADE_S9
     jp nc, .check999
 

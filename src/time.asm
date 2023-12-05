@@ -241,6 +241,10 @@ CheckCOOL_REGRET::
 
 
 HandleSectionTimers::
+    ldh a, [hGameState]
+    cp a, STATE_TITLE
+    ret z
+
     ldh a, [hMode]
     cp a, MODE_PAUSED
     ret z

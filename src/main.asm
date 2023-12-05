@@ -82,12 +82,15 @@ Main::
     ; Let the console have some fun with the initial screen.
     call InputInit
     call BankingInit
+    xor a, a
+    ldh [hFilterMode], a
     call DoIntroEffect
 
     ; Turn off LCD during initialization.
     wait_vram
     xor a, a
     ldh [rLCDC], a
+    ld [wSpritePal], a
 
     ; Clear OAM.
     call ClearOAM

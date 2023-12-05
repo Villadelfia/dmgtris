@@ -404,141 +404,141 @@ ROM0 bank #0:
 	         $3077 = InitTargetHSTable.chil
 	         $307c = InitTargetHSTable.myco
 	         $307f = InitTargetHSTable.store
-	SECTION: $3092-$31db ($014a bytes) ["Progress Data"]
-	         $3092 = sProgressData
-	SECTION: $31dc-$3323 ($0148 bytes) ["Time Functions"]
-	         $31dc = TimeInit
-	         $3205 = StartCountdown
-	         $3213 = ResetGameTime
-	         $3227 = CheckTorikan
-	         $323d = CheckTorikan.failure
-	         $323f = CheckTorikan.success
-	         $3242 = HandleTimers
-	         $3268 = HandleTimers.reduce
-	         $3275 = HandleTimers.clock
-	         $328f = HandleTimers.go
-	         $32b3 = CheckCOOL_REGRET
-	         $32cb = CheckCOOL_REGRET.failure
-	         $32cd = CheckCOOL_REGRET.success
-	         $32d0 = HandleSectionTimers
-	         $32ec = HandleSectionTimers.continue
-	         $3300 = HandleSectionTimers.sectiongo
-	SECTION: $3324-$3463 ($0140 bytes) ["Hi Score Data"]
-	         $3324 = sHiscoreDefaultData
-	SECTION: $3464-$358d ($012a bytes) ["Input Functions"]
-	         $3464 = InputInit
-	         $3476 = GetInput
-	         $3476 = GetInput.btns
-	         $3483 = GetInput.readA
-	         $3487 = GetInput.setA
-	         $3492 = GetInput.clearA
-	         $3495 = GetInput.readB
-	         $3499 = GetInput.setB
-	         $34a4 = GetInput.clearB
-	         $34a7 = GetInput.readSelect
-	         $34ab = GetInput.setSelect
-	         $34b6 = GetInput.clearSelect
-	         $34b9 = GetInput.readStart
-	         $34bd = GetInput.setStart
-	         $34c8 = GetInput.clearStart
-	         $34cb = GetInput.dpad
-	         $34d8 = GetInput.readUp
-	         $34dc = GetInput.setUp
-	         $34e7 = GetInput.clearUp
-	         $34ea = GetInput.readDown
-	         $34ee = GetInput.setDown
-	         $34f9 = GetInput.clearDown
-	         $34fc = GetInput.readLeft
-	         $3500 = GetInput.setLeft
-	         $350b = GetInput.clearLeft
-	         $350e = GetInput.readRight
-	         $3512 = GetInput.setRight
-	         $351d = GetInput.clearRight
-	         $3520 = GetInput.priorities
-	         $352d = GetInput.jumps
-	         $353c = GetInput.dlru
-	         $354c = GetInput.ulrd
-	         $355c = GetInput.lrud
-	         $3567 = GetInput.udlr
-	         $3572 = GetInput.zeroud
-	         $3578 = GetInput.zerolr
-	         $357e = GetInput.zerolrd
-	         $3586 = GetInput.zerolru
-	SECTION: $358e-$366d ($00e0 bytes) ["Score Functions"]
-	         $358e = ScoreInit
-	         $35b6 = IncreaseScore
-	         $35ee = IncreaseScore.doConvert
-	         $35f0 = !0
-	         $3606 = IncreaseScore.carry
-	         $3608 = IncreaseScore.postConvert
-	         $3615 = !1
-	         $361c = IncreaseScore.preAddDigit
-	         $3644 = IncreaseScore.addDigit
-	         $365a = IncreaseScore.nextDigit
-	SECTION: $366e-$3738 ($00cb bytes) ["Title Function Trampolines"]
-	         $366e = SwitchToTitle
-	         $3677 = TitleEventLoopHandler
-	         $3681 = TitleVBlankHandler
-	         $368b = PersistLevel
-	         $3699 = DrawSpeedMain
-	         $36e9 = DrawSpeedSettings
-	SECTION: $3739-$37e9 ($00b1 bytes) ["Progress Functions"]
-	         $3739 = SetProgress
-	         $3743 = SetProgress.loop
-	         $3747 = SetProgress.correct
-	         $376e = SetProgress.wvr_u1
-	         $377a = SetProgress.wvr_u2
-	         $3788 = SetProgress.wvr_u3
-	         $3794 = SetProgress.wvr_u4
-	         $37a2 = SetProgress.wvr_u5
-	         $37ae = SetProgress.wvr_u6
-	         $37bc = SetProgress.wvr_u7
-	         $37c8 = SetProgress.wvr_u8
-	         $37d6 = SetProgress.wvr_u9
-	         $37e2 = SetProgress.wvr_u10
-	SECTION: $37ea-$388a ($00a1 bytes) ["Code Entry Point"]
-	         $37ea = Main
-	         $3813 = Main.notgbc
-	         $381f = Main.wvr_u1
-	         $384c = EventLoop
-	         $3865 = EventLoop.eventloopjumps
-	         $386e = EventLoopPostHandler
-	         $3870 = EventLoopPostHandler.wvb_u2
-	         $3882 = EventLoopPostHandler.vblankjumps
-	SECTION: $388b-$38c0 ($0036 bytes) ["Grading Functions Unbanked"]
-	         $388b = GradeInit
-	         $3894 = UpdateGrade
-	         $389d = DecayGradeProcess
-	         $38a6 = DecayGradeDelay
-	         $38af = TGM3REGRETHandler
-	         $38b8 = TGM3COOLHandler
-	SECTION: $38c1-$38ee ($002e bytes) ["Memory Functions"]
-	         $38c1 = UnsafeMemCopy
-	         $38ca = SafeMemCopy.wvr_u1
-	         $38ca = SafeMemCopy
-	         $38d9 = UnsafeMemSet
-	         $38e1 = SafeMemSet
-	         $38e1 = SafeMemSet.wvr_u2
-	SECTION: $38ef-$3914 ($0026 bytes) ["Gameplay Function Trampolines"]
-	         $38ef = SwitchToGameplay
-	         $38f8 = SwitchToGameplayBig
-	         $3901 = GamePlayEventLoopHandler
-	         $390b = GamePlayBigEventLoopHandler
-	SECTION: $3915-$3939 ($0025 bytes) ["Interrupt Initialization Functions"]
-	         $3915 = EnableScreenSquish
-	         $392f = DisableScreenSquish
-	SECTION: $393a-$395b ($0022 bytes) ["OAM Functions"]
-	         $393a = CopyOAMHandler
-	         $3946 = ClearOAM
-	SECTION: $395c-$396c ($0011 bytes) ["Intro Effect Trampoline"]
-	         $395c = DoIntroEffect
-	SECTION: $396d-$397b ($000f bytes) ["Banking Functions"]
-	         $396d = BankingInit
-	SECTION: $397c-$3985 ($000a bytes) ["OAM DMA Code"]
-	         $397c = OAMDMA
-	         $3986 = OAMDMAEnd
-	EMPTY: $3986-$3fff ($067a bytes)
-	TOTAL EMPTY: $0682 bytes
+	SECTION: $3092-$31de ($014d bytes) ["Time Functions"]
+	         $3092 = TimeInit
+	         $30bb = StartCountdown
+	         $30c9 = ResetGameTime
+	         $30dd = CheckTorikan
+	         $30f3 = CheckTorikan.failure
+	         $30f5 = CheckTorikan.success
+	         $30f8 = HandleTimers
+	         $311e = HandleTimers.reduce
+	         $312b = HandleTimers.clock
+	         $3145 = HandleTimers.go
+	         $3169 = CheckCOOL_REGRET
+	         $3181 = CheckCOOL_REGRET.failure
+	         $3183 = CheckCOOL_REGRET.success
+	         $3186 = HandleSectionTimers
+	         $31a7 = HandleSectionTimers.continue
+	         $31bb = HandleSectionTimers.sectiongo
+	SECTION: $31df-$3328 ($014a bytes) ["Progress Data"]
+	         $31df = sProgressData
+	SECTION: $3329-$3468 ($0140 bytes) ["Hi Score Data"]
+	         $3329 = sHiscoreDefaultData
+	SECTION: $3469-$3592 ($012a bytes) ["Input Functions"]
+	         $3469 = InputInit
+	         $347b = GetInput
+	         $347b = GetInput.btns
+	         $3488 = GetInput.readA
+	         $348c = GetInput.setA
+	         $3497 = GetInput.clearA
+	         $349a = GetInput.readB
+	         $349e = GetInput.setB
+	         $34a9 = GetInput.clearB
+	         $34ac = GetInput.readSelect
+	         $34b0 = GetInput.setSelect
+	         $34bb = GetInput.clearSelect
+	         $34be = GetInput.readStart
+	         $34c2 = GetInput.setStart
+	         $34cd = GetInput.clearStart
+	         $34d0 = GetInput.dpad
+	         $34dd = GetInput.readUp
+	         $34e1 = GetInput.setUp
+	         $34ec = GetInput.clearUp
+	         $34ef = GetInput.readDown
+	         $34f3 = GetInput.setDown
+	         $34fe = GetInput.clearDown
+	         $3501 = GetInput.readLeft
+	         $3505 = GetInput.setLeft
+	         $3510 = GetInput.clearLeft
+	         $3513 = GetInput.readRight
+	         $3517 = GetInput.setRight
+	         $3522 = GetInput.clearRight
+	         $3525 = GetInput.priorities
+	         $3532 = GetInput.jumps
+	         $3541 = GetInput.dlru
+	         $3551 = GetInput.ulrd
+	         $3561 = GetInput.lrud
+	         $356c = GetInput.udlr
+	         $3577 = GetInput.zeroud
+	         $357d = GetInput.zerolr
+	         $3583 = GetInput.zerolrd
+	         $358b = GetInput.zerolru
+	SECTION: $3593-$3672 ($00e0 bytes) ["Score Functions"]
+	         $3593 = ScoreInit
+	         $35bb = IncreaseScore
+	         $35f3 = IncreaseScore.doConvert
+	         $35f5 = !0
+	         $360b = IncreaseScore.carry
+	         $360d = IncreaseScore.postConvert
+	         $361a = !1
+	         $3621 = IncreaseScore.preAddDigit
+	         $3649 = IncreaseScore.addDigit
+	         $365f = IncreaseScore.nextDigit
+	SECTION: $3673-$373d ($00cb bytes) ["Title Function Trampolines"]
+	         $3673 = SwitchToTitle
+	         $367c = TitleEventLoopHandler
+	         $3686 = TitleVBlankHandler
+	         $3690 = PersistLevel
+	         $369e = DrawSpeedMain
+	         $36ee = DrawSpeedSettings
+	SECTION: $373e-$37ee ($00b1 bytes) ["Progress Functions"]
+	         $373e = SetProgress
+	         $3748 = SetProgress.loop
+	         $374c = SetProgress.correct
+	         $3773 = SetProgress.wvr_u1
+	         $377f = SetProgress.wvr_u2
+	         $378d = SetProgress.wvr_u3
+	         $3799 = SetProgress.wvr_u4
+	         $37a7 = SetProgress.wvr_u5
+	         $37b3 = SetProgress.wvr_u6
+	         $37c1 = SetProgress.wvr_u7
+	         $37cd = SetProgress.wvr_u8
+	         $37db = SetProgress.wvr_u9
+	         $37e7 = SetProgress.wvr_u10
+	SECTION: $37ef-$3895 ($00a7 bytes) ["Code Entry Point"]
+	         $37ef = Main
+	         $3818 = Main.notgbc
+	         $3827 = Main.wvr_u1
+	         $3857 = EventLoop
+	         $3870 = EventLoop.eventloopjumps
+	         $3879 = EventLoopPostHandler
+	         $387b = EventLoopPostHandler.wvb_u2
+	         $388d = EventLoopPostHandler.vblankjumps
+	SECTION: $3896-$38cb ($0036 bytes) ["Grading Functions Unbanked"]
+	         $3896 = GradeInit
+	         $389f = UpdateGrade
+	         $38a8 = DecayGradeProcess
+	         $38b1 = DecayGradeDelay
+	         $38ba = TGM3REGRETHandler
+	         $38c3 = TGM3COOLHandler
+	SECTION: $38cc-$38f9 ($002e bytes) ["Memory Functions"]
+	         $38cc = UnsafeMemCopy
+	         $38d5 = SafeMemCopy.wvr_u1
+	         $38d5 = SafeMemCopy
+	         $38e4 = UnsafeMemSet
+	         $38ec = SafeMemSet
+	         $38ec = SafeMemSet.wvr_u2
+	SECTION: $38fa-$391f ($0026 bytes) ["Gameplay Function Trampolines"]
+	         $38fa = SwitchToGameplay
+	         $3903 = SwitchToGameplayBig
+	         $390c = GamePlayEventLoopHandler
+	         $3916 = GamePlayBigEventLoopHandler
+	SECTION: $3920-$3944 ($0025 bytes) ["Interrupt Initialization Functions"]
+	         $3920 = EnableScreenSquish
+	         $393a = DisableScreenSquish
+	SECTION: $3945-$3966 ($0022 bytes) ["OAM Functions"]
+	         $3945 = CopyOAMHandler
+	         $3951 = ClearOAM
+	SECTION: $3967-$3977 ($0011 bytes) ["Intro Effect Trampoline"]
+	         $3967 = DoIntroEffect
+	SECTION: $3978-$3986 ($000f bytes) ["Banking Functions"]
+	         $3978 = BankingInit
+	SECTION: $3987-$3990 ($000a bytes) ["OAM DMA Code"]
+	         $3987 = OAMDMA
+	         $3991 = OAMDMAEnd
+	EMPTY: $3991-$3fff ($066f bytes)
+	TOTAL EMPTY: $0677 bytes
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]
@@ -2192,123 +2192,123 @@ ROMX bank #4:
 	         $68c0 = sGameplayUngradedTileMap
 	         $68c0 = sGameplayTileMapEnd
 	         $6b60 = sGameplayUngradedTileMapEnd
-	SECTION: $6b60-$7284 ($0725 bytes) ["Grading Functions Banked"]
+	SECTION: $6b60-$7287 ($0728 bytes) ["Grading Functions Banked"]
 	         $6b60 = GradeInitB
-	         $6bad = GradeInitB.grade9start
-	         $6bb2 = UpdateGradeB
-	         $6bb2 = GradeInitB.end
-	         $6bc0 = UpdateGradeB.gradejumptable
-	         $6bd5 = DecayGradeProcessB
-	         $6be3 = DecayGradeProcessB.gradejumptable
-	         $6bf8 = DecayGradeDelayB
-	         $6c06 = DecayGradeDelayB.gradejumptable
-	         $6c1b = PrepareScore
-	         $6c2e = DrawGradeProgressDMGT
-	         $6c3a = !0
-	         $6c49 = DrawGradeProgressTGM3
-	         $6c55 = !1
-	         $6c64 = UpdateGradeDMGT
-	         $6c9d = UpdateGradeDMGT.checklineclears
-	         $6cb6 = UpdateGradeDMGT.clearrate
-	         $6cc7 = UpdateGradeDMGT.combomult
-	         $6cd4 = UpdateGradeDMGT.combo13
-	         $6ce5 = UpdateGradeDMGT.combo8
-	         $6cf6 = UpdateGradeDMGT.combo1
-	         $6d05 = UpdateGradeDMGT.prelevel
-	         $6d14 = UpdateGradeDMGT.single
-	         $6d24 = UpdateGradeDMGT.double
-	         $6d35 = UpdateGradeDMGT.adddonce
-	         $6d39 = UpdateGradeDMGT.triple
-	         $6d4a = UpdateGradeDMGT.addtonce
-	         $6d4e = UpdateGradeDMGT.tetris
-	         $6d52 = UpdateGradeDMGT.levelmult
-	         $6d6a = UpdateGradeDMGT.mult4
-	         $6d70 = UpdateGradeDMGT.mult3
-	         $6d75 = UpdateGradeDMGT.mult2
-	         $6d79 = UpdateGradeDMGT.mult1
-	         $6d7a = UpdateGradeDMGT.processgrade
-	         $6da3 = UpdateGradeDMGT.increasegrademaybe
-	         $6dc7 = UpdateGradeDMGT.gotgm
-	         $6dd5 = DecayGradeDMGT
-	         $6df8 = DecayGradeDMGT.nodecay
-	         $6dff = DecayGradeDMGT.decay
-	         $6e0d = UpdateGradeTGM1
-	         $6e20 = UpdateGradeTGM1.trygradeup
-	         $6e3b = UpdateGradeTGM1.increasegrade
-	         $6e50 = UpdateGradeTGM1.skipjingle
-	         $6e5c = UpdateGradeTGM1.check300
-	         $6e7a = UpdateGradeTGM1.success300
-	         $6e81 = UpdateGradeTGM1.fail300
-	         $6e88 = UpdateGradeTGM1.check500
-	         $6ea6 = UpdateGradeTGM1.success500
-	         $6ead = UpdateGradeTGM1.fail500
-	         $6eb4 = UpdateGradeTGM1.check999
-	         $6eeb = UpdateGradeTGM1.success999
-	         $6f03 = UpdateGradeTGM1.fail999
-	         $6f09 = UpdateGradeDEAT
-	         $6f15 = UpdateGradeDEAT.notgm
-	         $6f3b = UpdateGradeDEAT.notm
-	         $6f5e = UpdateGradeDEAT.disqualify
-	         $6f7c = UpdateGradeSHIR
-	         $6fbe = UpdateGradeSHIR.s5torikan
-	         $6fce = UpdateGradeSHIR.s10torikan
-	         $6fdd = UpdateGradeSHIR.disqualify
-	         $6fec = UpdateGradeSHIR.l1000
-	         $7002 = UpdateGradeSHIR.l500
-	         $7018 = UpdateGradeTGM3
-	         $7018 = UpdateGradeTGM3.GradePoints
-	         $7027 = !2
-	         $702c = UpdateGradeTGM3.GetOffset
-	         $703e = UpdateGradeTGM3.loadpoints
-	         $704b = UpdateGradeTGM3.multipliers
-	         $7058 = !3
-	         $7072 = !4
-	         $7077 = UpdateGradeTGM3.levelmultiplier
-	         $7090 = UpdateGradeTGM3.Level750
-	         $70a4 = UpdateGradeTGM3.under750
-	         $70aa = UpdateGradeTGM3.Level500
-	         $70b8 = UpdateGradeTGM3.Level250
-	         $70c7 = UpdateGradeTGM3.under250
-	         $70cb = UpdateGradeTGM3.Multiply
-	         $70ce = !5
-	         $70d5 = UpdateGradeTGM3.IncreaseInternalGrade
-	         $70e4 = UpdateGradeTGM3.nocool
-	         $70f8 = TGM3UpdateDisplayedGrade
-	         $710d = TGM3UpdateDisplayedGrade.update
-	         $7126 = TGM3UpdateDisplayedGrade.notaboves10
-	         $7134 = CheckCOOL
-	         $7148 = CheckCOOL.cool
-	         $715a = CheckCOOL.nots10
-	         $7164 = DecayGradeTGM3
-	         $7179 = DecayGradeTGM3.points
-	         $7199 = !6
-	         $719d = DecayGradeTGM3.GetOffset
-	         $71a6 = DecayGradeTGM3.lpoints
-	         $71ac = TGM3COOLHandlerB
-	         $71d3 = TGM3COOLHandlerB.checkCOOL
-	         $71e3 = TGM3COOLHandlerB.nocarry
-	         $71e8 = TGM3COOLHandlerB.checkBaselineCOOL
-	         $71f0 = TGM3COOLHandlerB.cool
-	         $720a = TGM3COOLHandlerB.nocool
-	         $7216 = TGM3REGRETHandlerB
-	         $7232 = TGM3REGRETHandlerB.regret
-	         $725f = TGM3StaffRollGradeUpdate
-	         $7275 = TGM3StaffRollGradeUpdate.UpdateGrade
-	SECTION: $7285-$76a8 ($0424 bytes) ["Grading Data"]
-	         $7285 = sDMGTGrading
-	         $7339 = sDMGTGaugeLUT
-	         $7439 = sTGM3GaugeLUT
-	         $7549 = sTGM1GradeScores
-	         $756b = sTGM3InternalGradeSystem
-	         $760b = sTGM3GradeBoosts
-	         $762a = sTGM3HowManyInternalGradesToDecrease
-	         $7649 = sTGM3ComboMultipliers
-	         $767b = sTGM3LevelMultiplier
-	         $767e = sTGM3BaselineCOOL
-	         $7690 = sTGM3REGRETConditions
-	         $76a4 = sTGM3StaffrollGrading
-	EMPTY: $76a9-$7fff ($0957 bytes)
-	TOTAL EMPTY: $0957 bytes
+	         $6bb0 = GradeInitB.grade9start
+	         $6bb5 = UpdateGradeB
+	         $6bb5 = GradeInitB.end
+	         $6bc3 = UpdateGradeB.gradejumptable
+	         $6bd8 = DecayGradeProcessB
+	         $6be6 = DecayGradeProcessB.gradejumptable
+	         $6bfb = DecayGradeDelayB
+	         $6c09 = DecayGradeDelayB.gradejumptable
+	         $6c1e = PrepareScore
+	         $6c31 = DrawGradeProgressDMGT
+	         $6c3d = !0
+	         $6c4c = DrawGradeProgressTGM3
+	         $6c58 = !1
+	         $6c67 = UpdateGradeDMGT
+	         $6ca0 = UpdateGradeDMGT.checklineclears
+	         $6cb9 = UpdateGradeDMGT.clearrate
+	         $6cca = UpdateGradeDMGT.combomult
+	         $6cd7 = UpdateGradeDMGT.combo13
+	         $6ce8 = UpdateGradeDMGT.combo8
+	         $6cf9 = UpdateGradeDMGT.combo1
+	         $6d08 = UpdateGradeDMGT.prelevel
+	         $6d17 = UpdateGradeDMGT.single
+	         $6d27 = UpdateGradeDMGT.double
+	         $6d38 = UpdateGradeDMGT.adddonce
+	         $6d3c = UpdateGradeDMGT.triple
+	         $6d4d = UpdateGradeDMGT.addtonce
+	         $6d51 = UpdateGradeDMGT.tetris
+	         $6d55 = UpdateGradeDMGT.levelmult
+	         $6d6d = UpdateGradeDMGT.mult4
+	         $6d73 = UpdateGradeDMGT.mult3
+	         $6d78 = UpdateGradeDMGT.mult2
+	         $6d7c = UpdateGradeDMGT.mult1
+	         $6d7d = UpdateGradeDMGT.processgrade
+	         $6da6 = UpdateGradeDMGT.increasegrademaybe
+	         $6dca = UpdateGradeDMGT.gotgm
+	         $6dd8 = DecayGradeDMGT
+	         $6dfb = DecayGradeDMGT.nodecay
+	         $6e02 = DecayGradeDMGT.decay
+	         $6e10 = UpdateGradeTGM1
+	         $6e23 = UpdateGradeTGM1.trygradeup
+	         $6e3e = UpdateGradeTGM1.increasegrade
+	         $6e53 = UpdateGradeTGM1.skipjingle
+	         $6e5f = UpdateGradeTGM1.check300
+	         $6e7d = UpdateGradeTGM1.success300
+	         $6e84 = UpdateGradeTGM1.fail300
+	         $6e8b = UpdateGradeTGM1.check500
+	         $6ea9 = UpdateGradeTGM1.success500
+	         $6eb0 = UpdateGradeTGM1.fail500
+	         $6eb7 = UpdateGradeTGM1.check999
+	         $6eee = UpdateGradeTGM1.success999
+	         $6f06 = UpdateGradeTGM1.fail999
+	         $6f0c = UpdateGradeDEAT
+	         $6f18 = UpdateGradeDEAT.notgm
+	         $6f3e = UpdateGradeDEAT.notm
+	         $6f61 = UpdateGradeDEAT.disqualify
+	         $6f7f = UpdateGradeSHIR
+	         $6fc1 = UpdateGradeSHIR.s5torikan
+	         $6fd1 = UpdateGradeSHIR.s10torikan
+	         $6fe0 = UpdateGradeSHIR.disqualify
+	         $6fef = UpdateGradeSHIR.l1000
+	         $7005 = UpdateGradeSHIR.l500
+	         $701b = UpdateGradeTGM3
+	         $701b = UpdateGradeTGM3.GradePoints
+	         $702a = !2
+	         $702f = UpdateGradeTGM3.GetOffset
+	         $7041 = UpdateGradeTGM3.loadpoints
+	         $704e = UpdateGradeTGM3.multipliers
+	         $705b = !3
+	         $7075 = !4
+	         $707a = UpdateGradeTGM3.levelmultiplier
+	         $7093 = UpdateGradeTGM3.Level750
+	         $70a7 = UpdateGradeTGM3.under750
+	         $70ad = UpdateGradeTGM3.Level500
+	         $70bb = UpdateGradeTGM3.Level250
+	         $70ca = UpdateGradeTGM3.under250
+	         $70ce = UpdateGradeTGM3.Multiply
+	         $70d1 = !5
+	         $70d8 = UpdateGradeTGM3.IncreaseInternalGrade
+	         $70e7 = UpdateGradeTGM3.nocool
+	         $70fb = TGM3UpdateDisplayedGrade
+	         $7110 = TGM3UpdateDisplayedGrade.update
+	         $7129 = TGM3UpdateDisplayedGrade.notaboves10
+	         $7137 = CheckCOOL
+	         $714b = CheckCOOL.cool
+	         $715d = CheckCOOL.nots10
+	         $7167 = DecayGradeTGM3
+	         $717c = DecayGradeTGM3.points
+	         $719c = !6
+	         $71a0 = DecayGradeTGM3.GetOffset
+	         $71a9 = DecayGradeTGM3.lpoints
+	         $71af = TGM3COOLHandlerB
+	         $71d6 = TGM3COOLHandlerB.checkCOOL
+	         $71e6 = TGM3COOLHandlerB.nocarry
+	         $71eb = TGM3COOLHandlerB.checkBaselineCOOL
+	         $71f3 = TGM3COOLHandlerB.cool
+	         $720d = TGM3COOLHandlerB.nocool
+	         $7219 = TGM3REGRETHandlerB
+	         $7235 = TGM3REGRETHandlerB.regret
+	         $7262 = TGM3StaffRollGradeUpdate
+	         $7278 = TGM3StaffRollGradeUpdate.UpdateGrade
+	SECTION: $7288-$76ab ($0424 bytes) ["Grading Data"]
+	         $7288 = sDMGTGrading
+	         $733c = sDMGTGaugeLUT
+	         $743c = sTGM3GaugeLUT
+	         $754c = sTGM1GradeScores
+	         $756e = sTGM3InternalGradeSystem
+	         $760e = sTGM3GradeBoosts
+	         $762d = sTGM3HowManyInternalGradesToDecrease
+	         $764c = sTGM3ComboMultipliers
+	         $767e = sTGM3LevelMultiplier
+	         $7681 = sTGM3BaselineCOOL
+	         $7693 = sTGM3REGRETConditions
+	         $76a7 = sTGM3StaffrollGrading
+	EMPTY: $76ac-$7fff ($0954 bytes)
+	TOTAL EMPTY: $0954 bytes
 
 ROMX bank #5:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_GAMEPLAY_BIG"]
@@ -3575,8 +3575,8 @@ HRAM bank #0:
 	TOTAL EMPTY: $0000 bytes
 
 SUMMARY:
-	ROM0: 14718 bytes used / 1666 free
-	ROMX: 110845 bytes used / 36611 free in 9 banks
+	ROM0: 14729 bytes used / 1655 free
+	ROMX: 110848 bytes used / 36608 free in 9 banks
 	SRAM: 2951 bytes used / 5241 free in 1 bank
 	WRAM0: 3927 bytes used / 169 free
 	HRAM: 127 bytes used / 0 free

@@ -68,7 +68,7 @@ wSPRTimeCS1::  ds 4
 wSPRTimeCS2::  ds 4
 ENDU
 wScratch:       ds 2
-wSpritePal:     ds 1
+wSpritePal::     ds 1
 
 
 SECTION "OAM DMA Code", ROM0

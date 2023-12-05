@@ -336,6 +336,7 @@ SECTION "Grading Functions Banked", ROMX, BANK[BANK_GAMEPLAY]
 GradeInitB:
     xor a, a
     ld [wDecayRate], a
+    ld [wInternalGrade], a
     ld [wInternalGradePoints], a
     ld [wDisplayedGrade], a
     ld [wRankingDisqualified], a

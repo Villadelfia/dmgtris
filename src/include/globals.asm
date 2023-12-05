@@ -424,6 +424,7 @@ DEF GRADE_MO            EQU 34
 DEF GRADE_MM            EQU 35
 DEF GRADE_GM            EQU 36
 DEF GRADE_NONE          EQU 255
+DEF GRADE_S10_PLUS      EQU 4
 
 ; Game mode
 DEF MODE_LEADY              EQU 0

@@ -471,7 +471,7 @@ AdjustSpeedCurve:
     and a, $0F
 
     ; Compare to ours.
-    ld hl, hCLevel+CLEVEL_HUNDREDS
+    ld hl, hTrueCLevel+CLEVEL_HUNDREDS
     cp a, [hl]
     jr z, .checktens     ; Equal? We need to check deeper.
     jr c, AdjustSpeedCurveForced    ; Ours higher? We need to increase.
@@ -484,7 +484,7 @@ AdjustSpeedCurve:
     and a, $0F
 
     ; Compare to ours.
-    ld hl, hCLevel+CLEVEL_TENS
+    ld hl, hTrueCLevel+CLEVEL_TENS
     cp a, [hl]
     jr z, .checkones     ; Equal? We need to check deeper.
     jr c, AdjustSpeedCurveForced    ; Ours higher? We need to increase.
@@ -496,7 +496,7 @@ AdjustSpeedCurve:
     and a, $0F
 
     ; Compare to ours.
-    ld hl, hCLevel+CLEVEL_ONES
+    ld hl, hTrueCLevel+CLEVEL_ONES
     cp a, [hl]
     jr c, AdjustSpeedCurveForced    ; Ours higher? We need to increase.
     ret nz               ; Ours lower? We're done.
@@ -565,17 +565,22 @@ AdjustSpeedCurveForced:
 
     ; Builds an internal level that is the displayed level skipped an amount of sections ahead.
 BuildTrueCLevel:
+    ld hl, hCLevel
+    ld a, [hl+]
+    ldh [hTrueCLevel], a
+    ld a, [hl+]
+    ldh [hTrueCLevel+1], a
+    ld a, [hl+]
+    ldh [hTrueCLevel+2], a
+    ld a, [hl]
+    ldh [hTrueCLevel+3], a
+
     ; Except in TGM3 mode, this will always just be the same as the real level, so check for the most common case and bail.
     ld a, [wSkippedSectionsBCD]
     or a, a
     ret z
 
     ; Otherwise, to the thing.
-    ld de, hCLevel
-    ld hl, hTrueCLevel
-    ld bc, 4
-    call UnsafeMemCopy
-
     ; Amount of steps to increment hundreds.
     ld a, [wSkippedSectionsBCD]
     and a, $0F

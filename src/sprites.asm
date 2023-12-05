@@ -516,7 +516,14 @@ ApplyTime::
     ld [wSPRTimeCS2+1], a
 
     ; Set the palette of the time objects.
+    ld a, [wCOOLIsActive]
+    cp a, 1
+    jr nz, .nocool
+    ld a, OAMF_PAL1 | $01
+    jr .yescool
+.nocool
     ld a, OAMF_PAL1 | $07
+.yescool
     ld [wSPRTimeM1+3], a
     ld [wSPRTimeM2+3], a
     ld [wSPRTimeS1+3], a

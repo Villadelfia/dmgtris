@@ -1468,7 +1468,7 @@ ROMX bank #4:
 	         $4702 = FieldProcess.noeffect
 	         $4706 = FieldProcess.skipmovement
 	         $4706 = FieldProcess.donemanipulating
-	         $4728 = FieldProcess.sonicdrop
+	         $4722 = FieldProcess.sonicdrop
 	         $4733 = FieldProcess.sonicneutrallockskip
 	         $473d = FieldProcess.harddrop
 	         $474c = FieldProcess.donedeterminingharddropdistance
@@ -2422,7 +2422,7 @@ ROMX bank #5:
 	         $4728 = BigFieldProcess.noeffect
 	         $472c = BigFieldProcess.skipmovement
 	         $472c = BigFieldProcess.donemanipulating
-	         $474e = BigFieldProcess.sonicdrop
+	         $4748 = BigFieldProcess.sonicdrop
 	         $4759 = BigFieldProcess.sonicneutrallockskip
 	         $4763 = BigFieldProcess.harddrop
 	         $4772 = BigFieldProcess.donedeterminingharddropdistance

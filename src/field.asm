@@ -1460,10 +1460,7 @@ FieldProcess::
     ld a, 1
     ldh [hWantedG], a
 
-    ; Is a hard/sonic drop requested? Skip if in 20G mode.
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 20
-    jr z, .postdrop
+    ; Is a hard/sonic drop requested?
     ldh a, [hUpState]
     cp a, 1
     jr nz, .postdrop
@@ -1479,6 +1476,10 @@ FieldProcess::
 
     ; Sonic drop.
 .sonicdrop
+    ; Skip in 20G mode.
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr z, .postdrop
     ld a, [wDropModeState]
     cp a, DROP_MODE_SNIC
     jr z, .sonicneutrallockskip
@@ -3716,10 +3717,7 @@ BigFieldProcess::
     ld a, 1
     ldh [hWantedG], a
 
-    ; Is a hard/sonic drop requested? Skip if in 20G mode.
-    ldh a, [hCurrentIntegerGravity]
-    cp a, 20
-    jr z, .postdrop
+    ; Is a hard/sonic drop requested?
     ldh a, [hUpState]
     cp a, 1
     jr nz, .postdrop
@@ -3735,6 +3733,10 @@ BigFieldProcess::
 
     ; Sonic drop.
 .sonicdrop
+    ; Skip in 20G mode.
+    ldh a, [hCurrentIntegerGravity]
+    cp a, 20
+    jr z, .postdrop
     ld a, [wDropModeState]
     cp a, DROP_MODE_SNIC
     jr z, .sonicneutrallockskip

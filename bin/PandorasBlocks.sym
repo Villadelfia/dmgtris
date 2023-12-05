@@ -1282,7 +1282,7 @@
 04:4702 FieldProcess.noeffect
 04:4706 FieldProcess.skipmovement
 04:4706 FieldProcess.donemanipulating
-04:4728 FieldProcess.sonicdrop
+04:4722 FieldProcess.sonicdrop
 04:4733 FieldProcess.sonicneutrallockskip
 04:473d FieldProcess.harddrop
 04:474c FieldProcess.donedeterminingharddropdistance
@@ -2147,7 +2147,7 @@
 05:4728 BigFieldProcess.noeffect
 05:472c BigFieldProcess.skipmovement
 05:472c BigFieldProcess.donemanipulating
-05:474e BigFieldProcess.sonicdrop
+05:4748 BigFieldProcess.sonicdrop
 05:4759 BigFieldProcess.sonicneutrallockskip
 05:4763 BigFieldProcess.harddrop
 05:4772 BigFieldProcess.donedeterminingharddropdistance

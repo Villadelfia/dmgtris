@@ -2173,6 +2173,8 @@ FieldDelay::
     ldh a, [hLineClearCt]
     dec a
     jr z, .dont
+    cp a, $ff
+    jr z, .dont
 .applycombo
     ldh a, [hComboCt] ; Old combo count.
     inc a

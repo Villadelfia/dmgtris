@@ -1692,6 +1692,11 @@ TGM3StaffRollGradeUpdate::
     ld [wSubgrade], a
     ld a, [wDisplayedGrade]
     inc a
+    ; will the grade be S10?
+    cp a, GRADE_S10
+    jr nz, .nots10 ;If not, continue as normal
+    ld a, GRADE_M1
+.nots10
     ld [wDisplayedGrade], a
     ret
 

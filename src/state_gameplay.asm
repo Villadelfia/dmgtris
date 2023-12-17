@@ -486,6 +486,11 @@ GamePlayEventLoopHandlerB::
     ld a, $FF
     ld [wGameOverIgnoreInput], a
 
+    ; Are we in the Staff Roll?
+    ld a, [wInStaffRoll]
+    cp a, $FF
+    jp nz, .didnotfinish ; No we aren't
+    ; Yes, we are
     ; Did the player survive the staff roll?
     ld a, [wCountDownZero]
     cp a, $FF

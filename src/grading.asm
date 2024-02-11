@@ -855,7 +855,7 @@ UpdateGradeTGM1:
     ; Return if B < D.
     ld a, b
     cp a, d
-    ret c
+    jr c, .check300
 
     ; We can confidently increase the grade if B > D.
     jr nz, .increasegrade

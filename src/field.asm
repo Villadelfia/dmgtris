@@ -2037,7 +2037,7 @@ FieldDelay::
 
     ldh a, [hLineClearCt]
     or a, a
-    jr z, .lineclear ; If not, just skip the phase.
+    jp z, .lineclear ; If not, just skip the phase.
 
     ; There were line clears! Clear the level counter breakpoint.
     xor a, a
@@ -2056,6 +2056,29 @@ FieldDelay::
     ; Increment the level counter by the amount of lines.
 .applylines
     ldh a, [hLineClearCt]
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_TGM3
+    jr z, .addbonus
+    cp a, SCURVE_SHIR
+    jr z, .addbonus
+    ld a, b
+    jr .neither
+.addbonus
+    ld a, b
+    cp a, 3
+    jr z, .istriple
+    cp a, 4
+    jr z, .istetris
+    jr .neither
+.istriple
+    inc a
+    jr .neither
+.istetris
+    inc a
+    inc a
+    jr .neither
+.neither
     ld e, a
     call LevelUp
 
@@ -4296,7 +4319,7 @@ BigFieldDelay::
 
     ldh a, [hLineClearCt]
     or a, a
-    jr z, .lineclear ; If not, just skip the phase.
+    jp z, .lineclear ; If not, just skip the phase.
 
     ; There were line clears! Clear the level counter breakpoint.
     xor a, a
@@ -4315,6 +4338,29 @@ BigFieldDelay::
     ; Increment the level counter by the amount of lines.
 .applylines
     ldh a, [hLineClearCt]
+    ld b, a
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_TGM3
+    jr z, .addbonus
+    cp a, SCURVE_SHIR
+    jr z, .addbonus
+    ld a, b
+    jr .neither
+.addbonus
+    ld a, b
+    cp a, 3
+    jr z, .istriple
+    cp a, 4
+    jr z, .istetris
+    jr .neither
+.istriple
+    inc a
+    jr .neither
+.istetris
+    inc a
+    inc a
+    jr .neither
+.neither
     ld e, a
     call LevelUp
 

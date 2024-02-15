@@ -42,6 +42,7 @@ wLeftSlamTimer: ds 1
 wRightSlamTimer: ds 1
 wMovementLastFrame: ds 1
 wReturnToSmall:: ds 1
+wComboSize:: ds 1
 
 
 SECTION "High Field Variables", HRAM
@@ -272,6 +273,7 @@ FieldInit::
     ld [wMovementLastFrame], a
     ld a, 1
     ldh [hComboCt], a
+    ld [wComboSize], a
     ld hl, wField
     ld bc, 10*24
     ld d, TILE_BLANK
@@ -2684,16 +2686,24 @@ FieldDelay::
     ldh [hScoreIncrement+1], a
     call IncreaseScore
 
-    ; Update the combo counter.
+    ; Update the combo counters.
+    ldh a, [hLineClearCt]
+    ld b, a
+    ldh a, [hComboCt] ; Old combo count.
+    add a, b          ; + lines
+    add a, b          ; + lines
+    sub a, 2          ; - 2
+    ldh [hComboCt], a
+
     ldh a, [hLineClearCt]
     dec a
     jr z, .dont
     cp a, $ff
     jr z, .dont
 .applycombo
-    ldh a, [hComboCt] ; Old combo count.
+    ld a, [wComboSize] ; Old combo count.
     inc a
-    ldh [hComboCt], a
+    ld [wComboSize], a
 .dont
 
     ; Line clear delay.
@@ -2731,6 +2741,7 @@ FieldDelay::
     ; Otherwise, reset the combo.
     ld a, 1
     ldh [hComboCt], a
+    ld [wComboSize], a
 
     ; ARE delay.
     ; Count down the delay. If it hits 0, award levels and score if necessary, then end the delay phase.
@@ -3043,6 +3054,7 @@ BigFieldInit::
     ld [wMovementLastFrame], a
     ld a, 1
     ldh [hComboCt], a
+    ld [wComboSize], a
     ld hl, wField
     ld bc, 10*24
     ld d, TILE_BLANK
@@ -3088,6 +3100,7 @@ GoSmall::
     ld [wMovementLastFrame], a
     ld a, 1
     ldh [hComboCt], a
+    ld [wComboSize], a
     ld hl, wField
     ld bc, 10*24
     ld d, TILE_BLANK
@@ -5466,7 +5479,7 @@ BigFieldDelay::
     ldh [hScoreIncrement+1], a
     call IncreaseScore
 
-    ; Update the combo counter.
+    ; Update the combo counters.
     ldh a, [hLineClearCt]
     ld b, a
     ldh a, [hComboCt] ; Old combo count.
@@ -5474,6 +5487,17 @@ BigFieldDelay::
     add a, b          ; + lines
     sub a, 2          ; - 2
     ldh [hComboCt], a
+
+    ldh a, [hLineClearCt]
+    dec a
+    jr z, .dont
+    cp a, $ff
+    jr z, .dont
+.applycombo
+    ld a, [wComboSize] ; Old combo count.
+    inc a
+    ld [wComboSize], a
+.dont
 
     ; Line clear delay.
     ; Count down the delay. If we're out of delay, clear the lines and go to LINE_ARE.
@@ -5511,6 +5535,7 @@ BigFieldDelay::
     ; Otherwise, reset the combo.
     ld a, 1
     ldh [hComboCt], a
+    ld [wComboSize], a
 
     ; ARE delay.
     ; Count down the delay. If it hits 0, award levels and score if necessary, then end the delay phase.

@@ -1297,7 +1297,7 @@ UpdateGradeTGM3:
 .multipliers
     ; There are some multipliers to help us increase our grade faster
     ld hl, sTGM3ComboMultipliers
-    ld a, [hComboCt] ; Example: 3
+    ld a, [wComboSize] ; Example: 3
     cp a, 0 ; If we got no combo, skip all this part
     jr z, .levelmultiplier
     cp a, 11 ; If the combo is greater than 10, make it 10
@@ -1524,7 +1524,7 @@ DecayGradeTGM3:
     cp a, 0
     jr z, .points
     ld b, a ; Save the timer
-    ldh a, [hComboCt] ; If there is an active combo, do not decrease the counter, check if we can increase our internal grade instead
+    ld a, [wComboSize] ; If there is an active combo, do not decrease the counter, check if we can increase our internal grade instead
     dec a
     and a
     call nz, UpdateGradeTGM3.IncreaseInternalGrade

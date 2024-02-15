@@ -39,6 +39,7 @@ sROTMode::
     db "ARS2"
     db "SEGA"
     db "MYCO"
+    db "BARS"
 
 sDROPMode::
     db "FIRM"

@@ -41,7 +41,7 @@ sRightDasSlam::
 
 sLeady::     db "  READY?  "
 
-sGo::        db "    GO    "
+sGo::        db "   GO!    "
 
 sPause::
     db "P A U S E "
@@ -311,6 +311,226 @@ sPieceRotationStates:: ; How each piece is rotated.
     db %1100
     db %0100
     db %0000
+
+sBARSPieceXOffsets::    ; How to draw each piece. X-offsets of the sprites.
+    db 0, 8, 8, 16  ; Z
+    db 0, 8, 8, 16  ; S
+    db 0, 8, 8, 16  ; T
+    
+    
+    
+    db 0, 0, 8, 16 ; J
+    db 0, 8, 16, 16  ; L
+    db 8, 8, 16, 16 ; O
+    db 0, 8, 16, 24 ; I
+    
+
+sBARSPieceYOffsets::    ; How to draw each piece. Y-offsets of the sprites.
+    db 0, 0, 7, 7   ; Z
+    db 7, 7, 0, 0   ; S
+    db 7, 7, 0, 7   ; T
+    
+    
+    db 0, 7, 7, 7   ; J
+    db 7, 7, 7, 0   ; L
+    db 0, 7, 0, 7   ; O
+    db 0, 0, 0, 0   ; I
+    
+
+sBARSPieceFastRotationStates::
+    ; Z
+    db 14, 1, 14, 1
+    db 1, 13, 1, 13
+    db 14, 1, 14, 1
+    db 2, 13, 1, 13
+
+    ; S
+    db 15, 1, 12, 1
+    db 0, 14, 1, 14
+    db 15, 1, 12, 1
+    db 1, 14, 1, 14
+    ; T
+    db 15, 13, 1, 1
+    db 1, 13, 1, 14
+    db 14, 1, 1, 13
+    db 1, 14, 1, 13
+   
+
+    
+
+    ; J
+    db 14, 14, 1, 1
+    db 1, 14, 13, 1
+    db 14, 1, 1, 14
+    db 1, 1, 13, 14
+
+    ; L
+    db 16, 12, 1, 1
+    db 0, 1, 14, 14
+    db 14, 1, 1, 12
+    db 1, 14, 14, 1
+
+    ; O
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+    db 15, 1, 13, 1
+    ; I
+    db 14, 1, 1, 1
+    db 1, 14, 14, 14
+    db 28, 1, 1, 1
+    db 2, 14, 14, 14
+
+sBARSPieceRotationStates:: ; How each piece is rotated.
+    ; Z
+    db %0000
+    db %1100
+    db %0110
+    db %0000
+
+    db %0100
+    db %1100
+    db %1000
+    db %0000
+
+    db %0000
+    db %1100
+    db %0110
+    db %0000
+
+    db %0010
+    db %0110
+    db %0100
+    db %0000
+
+    ; S
+    db %0000
+    db %0110
+    db %1100
+    db %0000
+
+    db %1000
+    db %1100
+    db %0100
+    db %0000
+
+    db %0000
+    db %0110
+    db %1100
+    db %0000
+
+    db %0100
+    db %0110
+    db %0010
+    db %0000
+    ; T
+    db %0000
+    db %0100
+    db %1110
+    db %0000
+
+    db %0100
+    db %1100
+    db %0100
+    db %0000
+
+    db %0000
+    db %1110
+    db %0100
+    db %0000
+
+    db %0100
+    db %0110
+    db %0100
+    db %0000
+    
+
+    
+
+    ; J
+    db %0000
+    db %1000
+    db %1110
+    db %0000
+
+    db %0100
+    db %0100
+    db %1100
+    db %0000
+
+    db %0000
+    db %1110
+    db %0010
+    db %0000
+
+    db %0110
+    db %0100
+    db %0100
+    db %0000
+
+    ; L
+    db %0000
+    db %0010
+    db %1110
+    db %0000
+
+    db %1100
+    db %0100
+    db %0100
+    db %0000
+
+    db %0000
+    db %1110
+    db %1000
+    db %0000
+
+    db %0100
+    db %0100
+    db %0110
+    db %0000
+
+    ; O
+    db %0000
+    db %0110
+    db %0110
+    db %0000
+
+    db %0000
+    db %0110
+    db %0110
+    db %0000
+
+    db %0000
+    db %0110
+    db %0110
+    db %0000
+
+    db %0000
+    db %0110
+    db %0110
+    db %0000
+
+    
+    ; I
+    db %0000
+    db %1111
+    db %0000
+    db %0000
+
+    db %0100
+    db %0100
+    db %0100
+    db %0100
+
+    db %0000
+    db %0000
+    db %1111
+    db %0000
+
+    db %0010
+    db %0010
+    db %0010
+    db %0010
 
 sTGM3Bag::
     db 0, 0, 0, 0, 0

@@ -5804,10 +5804,8 @@ BigRiseGarbage::
     ; This is the same function that clears lines, but kinda inverted
 .raiseLines:
     ld de, 10 ; We're copying data from one row and "pasting" it into the one above it
-    ; We're in big mode, rows are twice as "tall"
-    rept 2
         DEF row = 0
-        REPT 23
+        REPT 13
             ld hl, wField+(row*10) ; Load the topmost line address into HL
 .raise\@
             ld bc, wField+(row*10) ; Load the topmost line address into BC
@@ -5851,7 +5849,6 @@ BigRiseGarbage::
 .r\@
             DEF row += 1
         ENDR
-    ENDR
     ; Don't forget to reset the garbage activation
     xor a, a
     ld [wCurrentGarbageActivation], a

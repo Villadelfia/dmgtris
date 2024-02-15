@@ -30,6 +30,7 @@ DEF DELAY_STATE_PRE_ARE         EQU 4
 
 
 SECTION "Field Variables", WRAM0
+wCurrentGarbageActivation:: ds 1 ; We ran out of HRAM
 wField:: ds (10*24)
 wBackupField:: ds (10*24)
 wPreShadowField:: ds (14*2)
@@ -67,6 +68,77 @@ hStalePiece: ds 1
 hBravo: ds 1
 hShouldLockIfGrounded: ds 1
 
+SECTION "BARS Variables", WRAM0
+wKicksPerformed: ds 1
+wStepResetsPerformed:: ds 1
+wOldKickOffset:: ds 2 ; The next 2 variables are needed because the registers that hold these values are clobbered by the code that checks if the piece can fit
+wTestKicks:: ds 2 ; This variable doesn't require Initialization, as the first operation that uses it writes to it, overwriting any value there
+SECTION "BARS Kicks", rom0
+sCW_LJTSZKicks:
+    ; Negative Y kicks up
+    ; North to East
+    dw $ff00 ;Y, X
+    dw $00ff ;Y, X
+    dw $FFFF ;Y, X
+    dw $0300 ;Y, X
+    dw $03ff ;Y, X
+    ; East to South
+    dw $ff00 ;Y, X
+    dw $0001 ;Y, X
+    dw $0101 ;Y, X
+    dw $fe00 ;Y, X
+    dw $fe01 ;Y, X
+    ; South to West
+    dw $ff00 ;Y, X
+    dw $0001 ;Y, X
+    dw $ff01 ;Y, X
+    dw $0200 ;Y, X
+    dw $0201 ;Y, X
+    ; West to North
+    dw $ff00 ;Y, X
+    dw $00ff ;Y, X
+    dw $01ff ;Y, X
+    dw $fd00 ;Y, X
+    dw $fdff ;Y, X
+sCCW_LJTSZKicks:
+    ; North to West
+    dw $ff00 ;Y, X
+    dw $0001 ;Y, X
+    dw $ff01 ;Y, X
+    dw $0300 ;Y, X
+    dw $0301 ;Y, X
+    ; West to South
+    dw $ff00 ;Y, X
+    dw $00ff ;Y, X
+    dw $01ff ;Y, X
+    dw $ff00 ;Y, X
+    dw $ffff ;Y, X
+    ; South to East
+    dw $ff00 ;Y, X
+    dw $00ff ;Y, X
+    dw $ffff ;Y, X
+    dw $0200 ;Y, X
+    dw $02ff ;Y, X
+    ; East to North
+    dw $ff00 ;Y, X
+    dw $0001 ;Y, X
+    dw $0101 ;Y, X
+    dw $fd00 ;Y, X
+    dw $fd01 ;Y, X
+
+sIKicks:
+    ; North to East or West
+    dw $ff00 ;Y, X
+    dw $fe00 ;Y, X
+    ; West to North or South
+    dw $0001 ;Y, X
+    dw $00fe ;Y, X
+    ; South to West or East
+    dw $ff00 ;Y, X
+    dw $0000 ;Y, X
+    ; East to South or North
+    dw $00ff ;Y, X
+    dw $0002 ;Y, X
 
 SECTION "Field Function Unbanked", ROM0
     ; Blits the field onto the tile map.
@@ -191,6 +263,10 @@ SECTION "Field Function Banked Gameplay", ROMX, BANK[BANK_GAMEPLAY]
     ; Initializes the shadow field.
 FieldInit::
     xor a, a
+    ld [wStepResetsPerformed], a 
+    ld [wKicksPerformed], a
+    ld [wOldKickOffset], a
+    ld [wOldKickOffset+1], a
     ldh [hBravo], a
     ldh [hLineClearCt], a
     ld [wMovementLastFrame], a
@@ -281,6 +357,8 @@ ToShadowField::
     inc de
     dec c
     jr nz, .outer
+    ; Do we need to raise garbage?
+    call RiseGarbage
     ret
 
 
@@ -317,6 +395,26 @@ SetPieceData:
     ld c, a
     ld b, 0
 
+.checkBARS ; Are we using the Better Arika Rotation System?
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr nz, .no
+.yes
+    ld hl, sBARSPieceRotationStates
+    add hl, bc
+    ld a, l
+    ldh [hPieceDataBase], a
+    ld a, h
+    ldh [hPieceDataBase+1], a
+
+    ld hl, sBARSPieceFastRotationStates
+    add hl, bc
+    ld a, l
+    ldh [hPieceDataBaseFast], a
+    ld a, h
+    ldh [hPieceDataBaseFast+1], a
+    ret
+.no
     ld hl, sPieceRotationStates
     add hl, bc
     ld a, l
@@ -667,6 +765,7 @@ ForceSpawnPiece::
 TrySpawnPiece::
     ; Always reset these for a new piece.
     xor a, a
+    ld [wStepResetsPerformed], a
     ldh [hStalePiece], a
     ldh [hDownFrames], a
     ldh [hAwardDownBonus], a
@@ -978,9 +1077,24 @@ FieldProcess::
 
     ; Try the rotation.
 .tryrot
+    xor a, a
+    ld [wKicksPerformed], a
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
+    ld c, a
+    ldh a, [hCurrentPiece] ; Is the current piece an I piece?
+    cp a, 6
+    jr nz, .notI
+    ld a, 9
+    cp a, c ; Is the piece's X position equal to 9?
+    jr nz, .notI ; Don't increase it
+    ld a, c ; Do it
+    inc a
+    jr .isI
+.notI ; No, put the X position back in A
+    ld a, c
+.isI
     call XYToSFieldPtr
     ld d, h
     ld e, l
@@ -1002,6 +1116,24 @@ FieldProcess::
     jr nz, .maybekick
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
+    ld a, [wRotModeState] ; Are we using the Better Arika Rotation System?
+    cp a, ROT_MODE_BARS
+    jr nz, .dontrot
+.dostepresetrot
+    ; BARS has Step Resets
+    ; If more than 8 step resets were made, don't reset the lock delay
+    ld a, [wStepResetsPerformed]
+    cp a, 9
+    jr nc, .dontrot
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+    ld a, [hGrounded]
+    cp a, $ff ; Are we Grounded?
+    jr nz, .dontrot ; If not, don't increase the step resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ld [wStepResetsPerformed], a
+.dontrot
     call SetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
@@ -1027,6 +1159,12 @@ FieldProcess::
     ld a, [wRotModeState]
     cp a, ROT_MODE_MYCO
     jp z, .trykickright
+    ldh a, [hCurrentPiece]
+
+    ; BARS has a lot of kicks
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jp z, .BARSrotation
     ldh a, [hCurrentPiece]
 
     ; S/Z always kick.
@@ -1276,7 +1414,7 @@ FieldProcess::
     pop bc
     call CanPieceFitFast
     cp a, $FF
-    jr nz, .norot
+    jp nz, .norot
     ldh a, [hCurrentPieceY]
     dec a
     dec a
@@ -1322,7 +1460,7 @@ FieldProcess::
     pop bc
     call CanPieceFitFast
     cp a, $FF
-    jr nz, .norot
+    jp nz, .norot
     ldh a, [hCurrentPieceX]
     inc a
     inc a
@@ -1335,6 +1473,343 @@ FieldProcess::
     jp nz, .norot
     inc a
     ldh [hLockDelayForce], a
+.BARSrotation ; BARS has a lot of kicks to perform.
+    ld a, [hCurrentPiece]
+    cp a, 6 ; Is the current piece an I piece?
+    jp z, .doIkicks
+.doLJTSZkicks
+    ld a, [hCurrentPieceRotationState]
+    ld b, a
+    ld a, [hWantRotation]
+    cp a, b ; Is the wanted rotation greater or less than the current one?
+    jr c, .iscurrent3 ; If it's less than the current one, is the current one 3?
+    ; If it's Greater than the current one, it's Counter-Clockwise, Unless...
+    push af
+    push bc
+    pop af
+    pop bc
+    cp a, 0 ; Is the Current rotation 0?
+    jr z, .CW ; Then it's also Clockwise
+    jp .CCW 
+.iscurrent3
+    ld a, [hCurrentPieceRotationState]
+    cp a, 3
+    jr nz, .CW
+    ; If it's not, it's clockwise, else, is the wanted rotation 2?
+.iswanted2
+    ld a, [hWantRotation]
+    cp a, 2 ; if it is, it's clockwise, else, it's counter-clockwise
+    jp nz, .CCW
+
+.CW
+    ld hl, sCW_LJTSZKicks ; Make HL point to the Clockwise Kick Table
+    ld c, 15
+    ldh a, [hWantRotation]
+    ;ld b, 5
+    ; We need to get the table offset, so it's math time
+    cp a, 0 ; Is the wanted rotation 0 already?
+    jr z, .isZeroCW ; No need to do math then
+    ; If it's not 0, we need to do math
+    ld b, a
+    ld a, c
+    ld c, 5
+:   sub a, c
+    dec b
+    jr nz, :- ; We're not done, go back
+    jr .postmathCW ; We're done, keep going    
+.isZeroCW
+    ld a, c
+.postmathCW
+    add a, a
+    ld d, 0
+    ld e, a
+    add hl, de ; Now we got the offset
+    inc hl ; The Y goes in b
+.preparetestCW
+    ld a, [hl-]
+    ld [wTestKicks], a
+    ld c, a
+    ld a, [hCurrentPieceY]
+    add a, c
+    ld b, a 
+    ld a, [hl+]
+    ld [wTestKicks+1], a
+    ld c, a
+    ld a, [hCurrentPieceX]
+    add a, c
+    ; Save the current offset
+.dotestCW
+    push af
+    ld a, h
+    ld [wOldKickOffset], a
+    ld a, l
+    ld [wOldKickOffset+1], a
+    pop af
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    add a, a
+    add a, a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFitFast
+    cp a, $FF
+    jr nz, .trynexttestCW
+    ; BARS has Step Resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ; If more than 8 step resets were made, don't reset the lock delay
+    cp a, 9
+    jr nc, .dontstepresetCW
+    ld [wStepResetsPerformed], a
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+.dontstepresetCW
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ld a, [wTestKicks]
+    add a, b
+    ldh [hCurrentPieceY], a
+    ldh a, [hCurrentPieceX]
+    ld b, a
+    ld a, [wTestKicks+1]
+    add a, b
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
+.trynexttestCW ; If we are here, the previous test failed
+    ld a, [wKicksPerformed]
+    inc a
+    ld [wKicksPerformed], a ; So add 1 to the amount of kicks performed
+    cp a, 5 ; have we done all 5 kicks already?
+    jp z, .norot ; If so, don't rotate
+    ; Else, try the next test
+    ld a, [wOldKickOffset]
+    ld h, a
+    ld a, [wOldKickOffset+1]
+    ld l, a
+    inc hl
+    inc hl
+    jp .preparetestCW ; Start performing the tests
+
+    
+.CCW
+    ld hl, sCCW_LJTSZKicks ; Make HL point to the Counter-Clockwise Kick Table
+    ld c, 15
+    ldh a, [hWantRotation]
+    ;ld b, 5
+    ; We need to get the table offset, so it's math time
+    cp a, 0 ; Is the wanted rotation 0 already?
+    jr z, .isZeroCCW ; No need to do math then
+    ; If it's not 0, we need to do math
+    ld b, a
+    ld a, c
+    ld c, 5
+:   sub a, c
+    dec b
+    jr nz, :- ; We're not done, go back
+    jr .postmathCCW ; We're done, keep going    
+.isZeroCCW
+    ld a, c
+.postmathCCW
+    add a, a
+    ld d, 0
+    ld e, a
+    add hl, de ; Now we got the offset
+    inc hl ; The Y goes in b
+.preparetestCCW
+    ld a, [hl-]
+    ld [wTestKicks], a
+    ld c, a
+    ld a, [hCurrentPieceY]
+    add a, c
+    ld b, a 
+    ld a, [hl+]
+    ld [wTestKicks+1], a
+    ld c, a
+    ld a, [hCurrentPieceX]
+    add a, c
+    ; Save the current offset
+.dotestCCW
+    push af
+    ld a, h
+    ld [wOldKickOffset], a
+    ld a, l
+    ld [wOldKickOffset+1], a
+    pop af
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    add a, a
+    add a, a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFitFast
+    cp a, $FF
+    jr nz, .trynexttestCCW
+    ; BARS has Step Resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ; If more than 8 step resets were made, don't reset the lock delay
+    cp a, 9
+    jr nc, .dontstepresetCCW
+    ld [wStepResetsPerformed], a
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+.dontstepresetCCW
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ld a, [wTestKicks]
+    add a, b
+    ldh [hCurrentPieceY], a
+    ldh a, [hCurrentPieceX]
+    ld b, a
+    ld a, [wTestKicks+1]
+    add a, b
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
+.trynexttestCCW ; If we are here, the previous test failed
+    ld a, [wKicksPerformed]
+    inc a
+    ld [wKicksPerformed], a ; So add 1 to the amount of kicks performed
+    cp a, 5 ; have we done all 5 kicks already?
+    jp z, .norot ; If so, don't rotate
+    ; Else, try the next test
+    ld a, [wOldKickOffset]
+    ld h, a
+    ld a, [wOldKickOffset+1]
+    ld l, a
+    inc hl
+    inc hl
+    jp .preparetestCCW ; Start performing the tests
+.doIkicks
+    ld hl, sIKicks ; Make HL point to the I Kick table
+    ld c, 6
+    ldh a, [hCurrentPieceRotationState]
+    ; The I piece works differently
+    add a, a
+    add a, a
+    ld d, 0
+    ld e, a
+    add hl, de ; Now we got the offset
+    inc hl ; The Y goes in b
+.preparetest
+    ld a, [hl-]
+    ld [wTestKicks], a
+    ld c, a
+    ld a, [hCurrentPieceY]
+    add a, c
+    ld b, a 
+    ld a, [hl+]
+    ld [wTestKicks+1], a
+    ld c, a
+    ld a, [hCurrentPieceX]
+    add a, c
+    ; Save the current offset
+.dotest
+    push af
+    ld a, h
+    ld [wOldKickOffset], a
+    ld a, l
+    ld [wOldKickOffset+1], a
+    pop af
+    call XYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    add a, a
+    add a, a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call CanPieceFitFast
+    cp a, $FF
+    jr nz, .trynexttest
+    ; BARS has Step Resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ; If more than 8 step resets were made, don't reset the lock delay
+    cp a, 9
+    jr nc, .dontstepreset
+    ld [wStepResetsPerformed], a
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+.dontstepreset
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ld a, [wTestKicks]
+    add a, b
+    ldh [hCurrentPieceY], a
+    ldh a, [hCurrentPieceX]
+    ld b, a
+    ld a, [wTestKicks+1]
+    add a, b
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call SetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
+.trynexttest ; If we are here, the previous test failed
+    ld a, [wKicksPerformed]
+    inc a
+    ld [wKicksPerformed], a ; So add 1 to the amount of kicks performed
+    cp a, 2 ; have we done both kicks already?
+    jp z, .norot ; If so, don't rotate
+    ; Else, try the next test
+    ld a, [wOldKickOffset]
+    ld h, a
+    ld a, [wOldKickOffset+1]
+    ld l, a
+    inc hl
+    inc hl
+    jp .preparetest ; Start performing the tests 
+    
+
 
 
     ; **************************************************************
@@ -1406,6 +1881,24 @@ FieldProcess::
     ld [wMovementLastFrame], a
     ldh a, [hWantX]
     ldh [hCurrentPieceX], a
+    ld a, [wRotModeState] ; Are we using the Better Arika Rotation System?
+    cp a, ROT_MODE_BARS
+    jr nz, .dont
+.dostepreset
+    ; BARS has Step Resets
+    ; If more than 8 step resets were made, don't reset the lock delay
+    ld a, [wStepResetsPerformed]
+    cp a, 9
+    jr nc, .dont
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+    ld a, [hGrounded]
+    cp a, $ff ; Are we Grounded?
+    jr nz, .dont ; If not, don't increase the step resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ld [wStepResetsPerformed], a
+.dont
     jr .donemanipulating
 
 .nomove
@@ -1704,11 +2197,20 @@ FieldProcess::
     xor a, a ; It is forced, so force it!
     ldh [hCurrentLockDelayRemaining], a
 
-    ; Play the locking sound and draw the piece.
+    ; Play the locking sound, increase the garbage activation and draw the piece.
 .dolock
     ld a, SFX_LOCK
     call SFXTriggerNoise
+    ld a, [wCurrentGarbageThreshold] ; Don't do it if the current speed doesn't have garbage
+    cp a, $ff
+    jr z, .dontinc
+    ld a, [wCurrentGarbageActivation]
+    inc a
+    ld [wCurrentGarbageActivation], a
+.dontinc
     jr .draw
+    ; Do we need to raise garbage?
+    call RiseGarbage
 
     ; If we weren't grounded, reset the lock force.
 .notgrounded
@@ -2057,6 +2559,19 @@ FieldDelay::
 .applylines
     ldh a, [hLineClearCt]
     ld b, a
+    ; Also decrease the garbage activation by the amount of lines
+    ld a, [wCurrentGarbageThreshold] ; Don't do it if the current speed doesn't have garbage 
+    cp a, $ff
+    jr z, .dontdec
+    ld a, [wCurrentGarbageActivation] 
+    sub a, b
+    bit 7, a ; Is the result negative?
+    jr z, .notneg
+.negative
+    xor a, a
+.notneg
+    ld [wCurrentGarbageActivation], a
+.dontdec
     ld a, [wSpeedCurveState]
     cp a, 2
     jr z, .addbonus
@@ -2450,7 +2965,71 @@ ClearLines:
     dec de
     jr .fixgarboloop
 
+RiseGarbage::
+    ; Does the current speed even have garbage rising?
+    ld a, [wCurrentGarbageThreshold]
+    cp a, $ff
+    ; If it doesn't, return
+    ret z
+    ; If it does, do we have to raise garbage?
+    ld b, a
+    ld a, [wCurrentGarbageActivation]
+    cp a, b
+    ret c ; If not, return
+    ; If we have to, do it
+    ; This is the same function that clears lines, but kinda inverted
+.raiseLines:
+    ld de, 10 ; We're copying data from one row and "pasting" it into the one above it
 
+    DEF row = 0
+    REPT 23
+        ld hl, wField+(row*10) ; Load the topmost line address into HL
+.raise\@
+        ld bc, wField+(row*10) ; Load the topmost line address into BC
+        add hl, de ; Make HL point to the row under it
+        ; Swap them
+        push bc
+        push hl
+        pop bc
+        pop hl
+        ; Copy the row
+:       ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+        ld a, [bc]
+        ld [hl+], a
+        inc bc
+.r\@
+        DEF row += 1
+    ENDR
+    ; Don't forget to reset the garbage activation
+    xor a, a
+    ld [wCurrentGarbageActivation], a
+    ret 
 
 SECTION "Field Function Banked Gameplay Big", ROMX, BANK[BANK_GAMEPLAY_BIG]
     ; Initializes the field completely blank.
@@ -2566,6 +3145,8 @@ BigToShadowField::
     inc de
     dec c
     jr nz, .outer
+    ; Do we need to raise garbage?
+    call BigRiseGarbage
     ret
 
 
@@ -2601,6 +3182,26 @@ BigSetPieceData:
     ld c, a
     ld b, 0
 
+.checkBARS ; Are we using the Better Arika Rotation System?
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr nz, .no
+.yes
+    ld hl, sBigBARSPieceRotationStates
+    add hl, bc
+    ld a, l
+    ldh [hPieceDataBase], a
+    ld a, h
+    ldh [hPieceDataBase+1], a
+
+    ld hl, sBigBARSPieceFastRotationStates
+    add hl, bc
+    ld a, l
+    ldh [hPieceDataBaseFast], a
+    ld a, h
+    ldh [hPieceDataBaseFast+1], a
+    ret
+.no
     ld hl, sBigPieceRotationStates
     add hl, bc
     ld a, l
@@ -2951,6 +3552,7 @@ BigForceSpawnPiece::
 BigTrySpawnPiece::
     ; Always reset these for a new piece.
     xor a, a
+    ld [wStepResetsPerformed], a
     ldh [hStalePiece], a
     ldh [hDownFrames], a
     ldh [hAwardDownBonus], a
@@ -3262,9 +3864,24 @@ BigFieldProcess::
 
     ; Try the rotation.
 .tryrot
+    xor a, a
+    ld [wKicksPerformed], a
     ldh a, [hCurrentPieceY]
     ld b, a
     ldh a, [hCurrentPieceX]
+    ld c, a
+    ldh a, [hCurrentPiece] ; Is the current piece an I piece?
+    cp a, 6
+    jr nz, .notI
+    ld a, 4
+    cp a, c ; Is the piece's X position equal to 9?
+    jr nz, .notI ; Don't increase it
+    ld a, c ; Do it
+    inc a
+    jr .isI
+.notI ; No, put the X position back in A
+    ld a, c
+.isI
     call BigXYToSFieldPtr
     ld d, h
     ld e, l
@@ -3286,6 +3903,24 @@ BigFieldProcess::
     jr nz, .maybekick
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
+    ld a, [wRotModeState] ; Are we using the Better Arika Rotation System?
+    cp a, ROT_MODE_BARS
+    jr nz, .bigdont
+.bigdostepreset
+    ; BARS has Step Resets
+    ; If more than 8 step resets were made, don't reset the lock delay
+    ld a, [wStepResetsPerformed]
+    cp a, 9
+    jr nc, .bigdont
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+    ld a, [hGrounded]
+    cp a, $ff ; Are we Grounded?
+    jr nz, .bigdont ; If not, don't increase the step resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ld [wStepResetsPerformed], a
+.bigdont
     call BigSetPieceDataOffset
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
@@ -3311,6 +3946,12 @@ BigFieldProcess::
     ld a, [wRotModeState]
     cp a, ROT_MODE_MYCO
     jp z, .trykickright
+    ldh a, [hCurrentPiece]
+
+    ; BARS has a lot of kicks
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jp z, .BARSrotation
     ldh a, [hCurrentPiece]
 
     ; S/Z always kick.
@@ -3559,7 +4200,7 @@ BigFieldProcess::
     pop bc
     call BigCanPieceFitFast
     cp a, $FF
-    jr nz, .norot
+    jp nz, .norot
     ldh a, [hCurrentPieceY]
     dec a
     dec a
@@ -3605,7 +4246,7 @@ BigFieldProcess::
     pop bc
     call BigCanPieceFitFast
     cp a, $FF
-    jr nz, .norot
+    jp nz, .norot
     ldh a, [hCurrentPieceX]
     inc a
     inc a
@@ -3618,7 +4259,341 @@ BigFieldProcess::
     jp nz, .norot
     inc a
     ldh [hLockDelayForce], a
+    .BARSrotation ; BARS has a lot of kicks to perform.
+    ld a, [hCurrentPiece]
+    cp a, 6 ; Is the current piece an I piece?
+    jp z, .doIkicks
+.doLJTSZkicks
+    ld a, [hCurrentPieceRotationState]
+    ld b, a
+    ld a, [hWantRotation]
+    cp a, b ; Is the wanted rotation greater or less than the current one?
+    jr c, .iscurrent3 ; If it's less than the current one, is the current one 3?
+    ; If it's Greater than the current one, it's Counter-Clockwise, Unless...
+    push af
+    push bc
+    pop af
+    pop bc
+    cp a, 0 ; Is the Current rotation 0?
+    jr z, .CW ; Then it's also Clockwise
+    jp .CCW 
+.iscurrent3
+    ld a, [hCurrentPieceRotationState]
+    cp a, 3
+    jr nz, .CW
+    ; If it's not, it's clockwise, else, is the wanted rotation 2?
+.iswanted2
+    ld a, [hWantRotation]
+    cp a, 2 ; if it is, it's clockwise, else, it's counter-clockwise
+    jp nz, .CCW
+.CW
+    ld hl, sCW_LJTSZKicks ; Make HL point to the Clockwise Kick Table
+    ld c, 15
+    ldh a, [hWantRotation]
+    ;ld b, 5
+    ; We need to get the table offset, so it's math time
+    cp a, 0 ; Is the wanted rotation 0 already?
+    jr z, .isZeroCW ; No need to do math then
+    ; If it's not 0, we need to do math
+    ld b, a
+    ld a, c
+    ld c, 5
+:   sub a, c
+    dec b
+    jr nz, :- ; We're not done, go back
+    jr .postmathCW ; We're done, keep going    
+.isZeroCW
+    ld a, c
+.postmathCW
+    add a, a
+    ld d, 0
+    ld e, a
+    add hl, de ; Now we got the offset
+    inc hl ; The Y goes in b
+.preparetestCW
+    ld a, [hl-]
+    ld [wTestKicks], a
+    ld c, a
+    ld a, [hCurrentPieceY]
+    add a, c
+    ld b, a 
+    ld a, [hl+]
+    ld [wTestKicks+1], a
+    ld c, a
+    ld a, [hCurrentPieceX]
+    add a, c
+    ; Save the current offset
+.dotestCW
+    push af
+    ld a, h
+    ld [wOldKickOffset], a
+    ld a, l
+    ld [wOldKickOffset+1], a
+    pop af
+    call BigXYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    add a, a
+    add a, a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call BigCanPieceFitFast
+    cp a, $FF
+    jr nz, .trynexttestCW
+    ; BARS has Step Resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ; If more than 8 step resets were made, don't reset the lock delay
+    cp a, 9
+    jr nc, .dontstepresetCW
+    ld [wStepResetsPerformed], a
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+.dontstepresetCW
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ld a, [wTestKicks]
+    add a, b
+    ldh [hCurrentPieceY], a
+    ldh a, [hCurrentPieceX]
+    ld b, a
+    ld a, [wTestKicks+1]
+    add a, b
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call BigSetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
+.trynexttestCW ; If we are here, the previous test failed
+    ld a, [wKicksPerformed]
+    inc a
+    ld [wKicksPerformed], a ; So add 1 to the amount of kicks performed
+    cp a, 5 ; have we done all 5 kicks already?
+    jp z, .norot ; If so, don't rotate
+    ; Else, try the next test
+    ld a, [wOldKickOffset]
+    ld h, a
+    ld a, [wOldKickOffset+1]
+    ld l, a
+    inc hl
+    inc hl
+    jp .preparetestCW ; Start performing the tests
 
+    
+.CCW
+    ld hl, sCCW_LJTSZKicks ; Make HL point to the Counter-Clockwise Kick Table
+    ld c, 15
+    ldh a, [hWantRotation]
+    ;ld b, 5
+    ; We need to get the table offset, so it's math time
+    cp a, 0 ; Is the wanted rotation 0 already?
+    jr z, .isZeroCCW ; No need to do math then
+    ; If it's not 0, we need to do math
+    ld b, a
+    ld a, c
+    ld c, 5
+:   sub a, c
+    dec b
+    jr nz, :- ; We're not done, go back
+    jr .postmathCCW ; We're done, keep going    
+.isZeroCCW
+    ld a, c
+.postmathCCW
+    add a, a
+    ld d, 0
+    ld e, a
+    add hl, de ; Now we got the offset
+    inc hl ; The Y goes in b
+.preparetestCCW
+    ld a, [hl-]
+    ld [wTestKicks], a
+    ld c, a
+    ld a, [hCurrentPieceY]
+    add a, c
+    ld b, a 
+    ld a, [hl+]
+    ld [wTestKicks+1], a
+    ld c, a
+    ld a, [hCurrentPieceX]
+    add a, c
+    ; Save the current offset
+.dotestCCW
+    push af
+    ld a, h
+    ld [wOldKickOffset], a
+    ld a, l
+    ld [wOldKickOffset+1], a
+    pop af
+    call BigXYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    add a, a
+    add a, a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call BigCanPieceFitFast
+    cp a, $FF
+    jr nz, .trynexttestCCW
+    ; BARS has Step Resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ; If more than 8 step resets were made, don't reset the lock delay
+    cp a, 9
+    jr nc, .dontstepresetCCW
+    ld [wStepResetsPerformed], a
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+.dontstepresetCCW
+    jp nc, .norot
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ld a, [wTestKicks]
+    add a, b
+    ldh [hCurrentPieceY], a
+    ldh a, [hCurrentPieceX]
+    ld b, a
+    ld a, [wTestKicks+1]
+    add a, b
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call BigSetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
+.trynexttestCCW ; If we are here, the previous test failed
+    ld a, [wKicksPerformed]
+    inc a
+    ld [wKicksPerformed], a ; So add 1 to the amount of kicks performed
+    cp a, 5 ; have we done all 5 kicks already?
+    jp z, .norot ; If so, don't rotate
+    ; Else, try the next test
+    ld a, [wOldKickOffset]
+    ld h, a
+    ld a, [wOldKickOffset+1]
+    ld l, a
+    inc hl
+    inc hl
+    jp .preparetestCCW ; Start performing the tests
+.doIkicks
+    ld hl, sIKicks ; Make HL point to the I Kick table
+    ld c, 6
+    ldh a, [hCurrentPieceRotationState]
+    ; The I piece works differently
+    add a, a
+    add a, a
+    ld d, 0
+    ld e, a
+    add hl, de ; Now we got the offset
+    inc hl ; The Y goes in b
+.preparetest
+    ld a, [hl-]
+    ld [wTestKicks], a
+    ld c, a
+    ld a, [hCurrentPieceY]
+    add a, c
+    ld b, a 
+    ld a, [hl+]
+    ld [wTestKicks+1], a
+    ld c, a
+    ld a, [hCurrentPieceX]
+    add a, c
+    ; Save the current offset
+.dotest
+    push af
+    ld a, h
+    ld [wOldKickOffset], a
+    ld a, l
+    ld [wOldKickOffset+1], a
+    pop af
+    call BigXYToSFieldPtr
+    ld d, h
+    ld e, l
+    ldh a, [hPieceDataBaseFast]
+    ld l, a
+    ldh a, [hPieceDataBaseFast+1]
+    ld h, a
+    ldh a, [hWantRotation]
+    add a, a
+    add a, a
+    push bc
+    ld c, a
+    xor a, a
+    ld b, a
+    add hl, bc
+    pop bc
+    call BigCanPieceFitFast
+    cp a, $FF
+    jr nz, .trynexttest
+    ; BARS has Step Resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ; If more than 8 step resets were made, don't reset the lock delay
+    cp a, 9
+    jr nc, .dontstepreset
+    ld [wStepResetsPerformed], a
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+.dontstepreset
+    ldh a, [hCurrentPieceY]
+    ld b, a
+    ld a, [wTestKicks]
+    add a, b
+    ldh [hCurrentPieceY], a
+    ldh a, [hCurrentPieceX]
+    ld b, a
+    ld a, [wTestKicks+1]
+    add a, b
+    ldh [hCurrentPieceX], a
+    ldh a, [hWantRotation]
+    ldh [hCurrentPieceRotationState], a
+    call BigSetPieceDataOffset
+    ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
+    cp a, 1
+    jp nz, .norot
+    inc a
+    ldh [hLockDelayForce], a
+    jp .norot
+.trynexttest ; If we are here, the previous test failed
+    ld a, [wKicksPerformed]
+    inc a
+    ld [wKicksPerformed], a ; So add 1 to the amount of kicks performed
+    cp a, 2 ; have we done both kicks already?
+    jp z, .norot ; If so, don't rotate
+    ; Else, try the next test
+    ld a, [wOldKickOffset]
+    ld h, a
+    ld a, [wOldKickOffset+1]
+    ld l, a
+    inc hl
+    inc hl
+    jp .preparetest ; Start performing the tests 
 
     ; **************************************************************
     ; HANDLE MOVEMENT
@@ -3689,6 +4664,24 @@ BigFieldProcess::
     ld [wMovementLastFrame], a
     ldh a, [hWantX]
     ldh [hCurrentPieceX], a
+    ld a, [wRotModeState] ; Are we using the Better Arika Rotation System?
+    cp a, ROT_MODE_BARS
+    jr nz, .dont
+.dostepreset
+    ; BARS has Step Resets
+    ; If more than 8 step resets were made, don't reset the lock delay
+    ld a, [wStepResetsPerformed]
+    cp a, 9
+    jr nc, .dont
+    ldh a, [hCurrentLockDelay]
+    ldh [hCurrentLockDelayRemaining], a
+    ld a, [hGrounded]
+    cp a, $ff ; Are we Grounded?
+    jr nz, .dont ; If not, don't increase the step resets
+    ld a, [wStepResetsPerformed]
+    inc a
+    ld [wStepResetsPerformed], a
+.dont
     jr .donemanipulating
 
 .nomove
@@ -3987,10 +4980,17 @@ BigFieldProcess::
     xor a, a ; It is forced, so force it!
     ldh [hCurrentLockDelayRemaining], a
 
-    ; Play the locking sound and draw the piece.
+    ; Play the locking sound, increase the garbage raise progress and draw the piece.
 .dolock
     ld a, SFX_LOCK
     call SFXTriggerNoise
+    ld a, [wCurrentGarbageThreshold] ; Don't do it if the current speed doesn't have garbage
+    cp a, $ff
+    jr z, .dontinc
+    ld a, [wCurrentGarbageActivation]
+    inc a
+    ld [wCurrentGarbageActivation], a
+.dontinc
     jr .draw
 
     ; If we weren't grounded, reset the lock force.
@@ -4341,7 +5341,19 @@ BigFieldDelay::
     ; Increment the level counter by the amount of lines.
 .applylines
     ldh a, [hLineClearCt]
-    ld b, a
+    ld b, a ; Also decrease the Garbage activation by the amount of cleared lines
+    ld a, [wCurrentGarbageThreshold] ; Don't do it if the current speed doesn't have garbage
+    cp a, $ff
+    jr z, .dontdec
+    ld a, [wCurrentGarbageActivation]
+    sub a, b
+    bit 7, a ; Is the result negative?
+    jr z, .notneg
+.negative
+    xor a, a
+.notneg
+    ld [wCurrentGarbageActivation], a
+.dontdec
     ld a, [wSpeedCurveState]
     cp a, 2
     jr z, .addbonus
@@ -4751,6 +5763,74 @@ BigClearLines:
     dec de
     dec de
     jr .fixgarboloop
+
+BigRiseGarbage::
+    ; Does the current speed even have garbage rising?
+    ld a, [wCurrentGarbageThreshold]
+    cp a, $ff
+    ; If it doesn't, return
+    ret z
+    ; If it does, do we have to raise garbage?
+    ld b, a
+    ld a, [wCurrentGarbageActivation]
+    cp a, b
+    ret c ; If not, return
+    ; If we have to, do it
+    ; This is the same function that clears lines, but kinda inverted
+.raiseLines:
+    ld de, 10 ; We're copying data from one row and "pasting" it into the one above it
+    ; We're in big mode, rows are twice as "tall"
+    rept 2
+        DEF row = 0
+        REPT 23
+            ld hl, wField+(row*10) ; Load the topmost line address into HL
+.raise\@
+            ld bc, wField+(row*10) ; Load the topmost line address into BC
+            add hl, de ; Make HL point to the row under it
+            ; Swap them
+            push bc
+            push hl
+            pop bc
+            pop hl
+            ; Copy the row
+:           ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+            ld a, [bc]
+            ld [hl+], a
+            inc bc
+.r\@
+            DEF row += 1
+        ENDR
+    ENDR
+    ; Don't forget to reset the garbage activation
+    xor a, a
+    ld [wCurrentGarbageActivation], a
+    ret 
 
 
 BigWidenField::

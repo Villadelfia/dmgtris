@@ -1169,12 +1169,22 @@ UpdateGradeSHIR:
 .s5torikan
     cp a, GRADE_S5
     jr nz, .s10torikan
-
+    ; Are we using the Better Arika Rotation System?
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr z, .s5world ; BARS is a "world" rotation system, so the torikan is different
+.s5classic
     ; There's a 2:28 torikan after S5.
     ld b, 2
     ld c, 28
     call CheckTorikan
-
+    jr .s5disqualifymaybe
+.s5world
+    ; There's a 3:03 torikan after S5.
+    ld b, 3
+    ld c, 3
+    call CheckTorikan
+.s5disqualifymaybe
     ; If we failed the Torikan, disqualify from ranking up further.
     cp a, $FF
     jr nz, .disqualify
@@ -1183,12 +1193,23 @@ UpdateGradeSHIR:
 .s10torikan
     cp a, GRADE_S10
     ret nz
-
+    
+    ; Are we using the Better Arika Rotation System?
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr z, .s10world ; BARS is a "world" rotation system, so the torikan is different
+.s10classic
     ; There's a 4:56 torikan after S10.
     ld b, 4
     ld c, 56
     call CheckTorikan
-
+    jr .s10disqualifymaybe
+.s10world
+    ; There's a 6:06 torikan after S10.
+    ld b, 6
+    ld c, 6
+    call CheckTorikan
+.s10disqualifymaybe
     ; If we failed the Torikan, disqualify from ranking up further.
     cp a, $FF
     jr nz, .disqualify

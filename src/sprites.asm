@@ -21,6 +21,15 @@ DEF SPRITES_ASM EQU 1
 
 INCLUDE "globals.asm"
 
+SECTION "BARS", ROM0 ; I'll keep this here just in case
+sSEGAtoBARSpiececonversion::
+    db 1
+    db 2
+    db 6
+    db 3
+    db 4 
+    db 5 
+    db 0
 
 SECTION "Shadow OAM", WRAM0, ALIGN[8]
 UNION
@@ -197,6 +206,7 @@ ApplyNext::
     jr nz, .nobone
 
 .bone
+    
     ; Color
     ld a, 7
     ld [wSPRNext1+3], a
@@ -238,13 +248,34 @@ ApplyNext::
     cp a, STATE_GAMEPLAY_BIG
     ld a, b
     jr nz, .regular
-    ld hl, sBigPieceXOffsets
+.checkBARS ; Are we using the Better Arika Rotation System?
+    push af
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr nz, .no
+.yes
+    ld hl, sBigBARSPieceXOffsets ; Load the BARS data then
+    ld de, sBigBARSPieceYOffsets
+    jr .postoffsets
+.no
+    ld hl, sBigPieceXOffsets ; Load the normal data then
     ld de, sBigPieceYOffsets
     jr .postoffsets
 .regular
-    ld hl, sPieceXOffsets
+.regcheckBARS ; Are we using the Better Arika Rotation System?
+    push af
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr nz, .regno
+.regyes
+    ld hl, sBARSPieceXOffsets ; Load the BARS data then
+    ld de, sBARSPieceYOffsets
+    jr .postoffsets
+.regno
+    ld hl, sPieceXOffsets ; Load the normal data then
     ld de, sPieceYOffsets
 .postoffsets
+    pop af
     or a, a
     jr z, .skipoffn
 .getoffn
@@ -313,6 +344,29 @@ ApplyNext::
     ld [wSPRQueue2B+1], a
 
     ldh a, [hUpcomingPiece1]
+.checkBARSqueue ; Are we using the Better Arika Rotation System?
+    push af
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr nz, .noBARS
+.checkLJT ; Is the 2nd next piece a J, L or T piece?
+    pop af
+    cp a, 3
+    jr nz, .noJ
+    add a, $60
+    jr .yesBARSyesLJT
+.noJ
+    cp a, 4
+    jr nz, .noL
+    add a, $60
+    jr .yesBARSyesLJT
+.noL
+    cp a, 2
+    jr nz, .noLJT1 ; No, The 2nd next piece is not a J, L or T
+    add a, $60
+    jr .yesBARSyesLJT
+.noBARS ; We Aren't using the Better Arika Rotation System (skips all previous checks)
+    pop af
     ld [wSPRQueue1A+3], a
     ld [wSPRQueue1B+3], a
     add a, a
@@ -329,7 +383,93 @@ ApplyNext::
     ld [wSPRQueue2A+2], a
     inc a
     ld [wSPRQueue2B+2], a
-
+    jp .continue ; Skip all the checks for the 3rd next piece
+.yesBARSyesLJT ; Yes, we are using the Better Arika Rotation System and the 2nd next piece is a J, L or T
+    ld [wSPRQueue1A+3], a
+    ld [wSPRQueue1B+3], a
+    sub a, $60
+    ld hl, sSEGAtoBARSpiececonversion
+    ld d, 0
+    ld e, a
+    add hl, de
+    ld a, [hl]
+    add a, a
+    add a, TILE_PIECE_SMALL_0
+    ld [wSPRQueue1A+2], a
+    inc a
+    ld [wSPRQueue1B+2], a
+    ld a, [wSPRQueue1A+1]
+    add a, 8
+    ld [wSPRQueue1A+1], a
+    ld a, [wSPRQueue1B+1]
+    sub a, 8
+    ld [wSPRQueue1B+1], a
+    jr .skip ; Skip the next piece of code
+.noLJT1 ;
+    ld [wSPRQueue1A+3], a
+    ld [wSPRQueue1B+3], a
+    ld hl, sSEGAtoBARSpiececonversion
+    ld d, 0
+    ld e, a
+    add hl, de
+    ld a, [hl]
+    add a, a
+    add a, TILE_PIECE_SMALL_0
+    ld [wSPRQueue1A+2], a
+    inc a
+    ld [wSPRQueue1B+2], a
+.skip
+    ldh a, [hUpcomingPiece2]
+.checkLJTagain ; Is the 3rd next piece also a J, L or T?
+    cp a, 3
+    jr nz, .noJ2
+    add a, $60
+    jr .yesBARSyesLJT2
+.noJ2
+    cp a, 4
+    jr nz, .noL2
+    add a, $60
+    jr .yesBARSyesLJT2
+.noL2
+    cp a, 2
+    jr nz, .noLJT2
+    add a, $60
+.yesBARSyesLJT2 ; Yes, it is
+    ld [wSPRQueue2A+3], a
+    ld [wSPRQueue2B+3], a
+    sub a, $60
+    ld hl, sSEGAtoBARSpiececonversion
+    ld d, 0
+    ld e, a
+    add hl, de
+    ld a, [hl]
+    add a, a
+    add a, TILE_PIECE_SMALL_0
+    ld [wSPRQueue2A+2], a
+    inc a
+    ld [wSPRQueue2B+2], a
+    ld a, [wSPRQueue2A+1]
+    add a, 8
+    ld [wSPRQueue2A+1], a
+    ld a, [wSPRQueue2B+1]
+    sub a, 8
+    ld [wSPRQueue2B+1], a
+    jr .continue ; Skip the next piece of code
+.noLJT2 ; No, it's not
+    ldh a, [hUpcomingPiece2]
+    ld [wSPRQueue2A+3], a
+    ld [wSPRQueue2B+3], a
+    ld hl, sSEGAtoBARSpiececonversion
+    ld d, 0
+    ld e, a
+    add hl, de
+    ld a, [hl]
+    add a, a
+    add a, TILE_PIECE_SMALL_0
+    ld [wSPRQueue2A+2], a
+    inc a
+    ld [wSPRQueue2B+2], a
+.continue
     ; Shirase bone colors
     ld a, [wSpeedCurveState]
     cp a, SCURVE_SHIR
@@ -337,6 +477,53 @@ ApplyNext::
     ldh a, [hCLevel+CLEVEL_THOUSANDS]
     cp a, 1
     jr c, .done
+    ld a, 7
+.checkBARSbones ; Are we using the Better Arika Rotation System?
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr nz, .bonenotbars
+.bonecheckLJT1 ; Is the 2nd next piece a J, L or T piece?
+    ld a, [hUpcomingPiece1]
+    cp a, 3
+    jr nz, .bonenoJ
+    jr .xyflip1
+.bonenoJ
+    cp a, 4
+    jr nz, .bonenoL
+    jr .xyflip1
+.bonenoL
+    cp a, 6
+    jr nz, .noflip1 ; No, The 2nd next piece is not a J, L or T
+.xyflip1
+    ld a, $67
+    jr .bonebarsapply1
+.noflip1
+    ld a, 7
+.bonebarsapply1
+    ld [wSPRQueue1A+3], a
+    ld [wSPRQueue1B+3], a
+.bonecheckLJT2 ; Is the 3rd next piece a J, L or T piece?
+    ld a, [hUpcomingPiece2]
+    cp a, 3
+    jr nz, .bonenoJ2
+    jr .xyflip2
+.bonenoJ2
+    cp a, 4
+    jr nz, .bonenoL2
+    jr .xyflip2
+.bonenoL2
+    cp a, 6
+    jr nz, .noflip2 ; No, The 3rd next piece is not a J, L or T
+.xyflip2
+    ld a, $67
+    jr .bonebarsapply2
+.noflip2
+    ld a, 7
+.bonebarsapply2
+    ld [wSPRQueue2A+3], a
+    ld [wSPRQueue2B+3], a
+    jr .done
+.bonenotbars
     ld a, 7
     ld [wSPRQueue1A+3], a
     ld [wSPRQueue1B+3], a
@@ -429,13 +616,34 @@ ApplyHold::
     cp a, STATE_GAMEPLAY_BIG
     ld a, b
     jr nz, .regular
-    ld hl, sBigPieceXOffsets
+.checkBARS ; Are we using the Better Arika Rotation System?
+    push af
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr nz, .no
+.yes
+    ld hl, sBigBARSPieceXOffsets ; Load the BARS data then
+    ld de, sBigBARSPieceYOffsets
+    jr .postoffsets
+.no
+    ld hl, sBigPieceXOffsets ; Load the normal data then
     ld de, sBigPieceYOffsets
     jr .postoffsets
 .regular
-    ld hl, sPieceXOffsets
+.regcheckBARS ; Are we using the Better Arika Rotation System?
+    push af
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr nz, .regno
+.regyes
+    ld hl, sBARSPieceXOffsets ; Load the BARS data then
+    ld de, sBARSPieceYOffsets
+    jr .postoffsets
+.regno
+    ld hl, sPieceXOffsets ; Load the normal data then
     ld de, sPieceYOffsets
 .postoffsets
+    pop af
     or a, a
     jr z, .skipoffh
 .getoffh

@@ -42,6 +42,7 @@ hPrevHundreds:: ds 1
 
 SECTION "Level Variables", WRAM0
 wBoneActivationLevel: ds 2
+wCurrentGarbageThreshold:: ds 1 ; We ran out of HRAM
 wInvisActivationLevel: ds 2
 wKillScreenActivationLevel: ds 2
 wKillScreenActivationLevelBCD: ds 2
@@ -65,6 +66,7 @@ LevelInit::
     rst RSTSwitchBank
 
     xor a, a
+    ld [wCurrentGarbageActivation], a
     ldh [hRequiresLineClear], a
     ld [wBonesActive], a
     ld [wInvisActive], a
@@ -73,6 +75,7 @@ LevelInit::
     ld [wShouldGoStaffRoll], a
     ld [wNoMoreLocks], a
     ld [wSkippedSectionsBCD], a
+
 
     ldh a, [hStartSpeed]
     ld l, a
@@ -511,6 +514,7 @@ AdjustSpeedCurveForced:
 
     ; Load curve ptr.
     ldh a, [hSpeedCurvePtr]
+
     ld l, a
     ldh a, [hSpeedCurvePtr+1]
     ld h, a
@@ -536,6 +540,8 @@ AdjustSpeedCurveForced:
     ldh [hCurrentLockDelay], a
     ld a, [hl+]
     ldh [hCurrentLineClearDelay], a
+    ld a, [hl+]
+    ld [wCurrentGarbageThreshold], a
     ld a, [hl+]
     ldh [hNextSpeedUp+1], a
     ld a, [hl+]

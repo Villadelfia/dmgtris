@@ -74,6 +74,7 @@ wKicksPerformed: ds 1
 wStepResetsPerformed:: ds 1
 wOldKickOffset:: ds 2 ; The next 2 variables are needed because the registers that hold these values are clobbered by the code that checks if the piece can fit
 wTestKicks:: ds 2 ; This variable doesn't require Initialization, as the first operation that uses it writes to it, overwriting any value there
+wVerticalKicks:: ds 1
 SECTION "BARS Kicks", rom0
 sCW_LJTSZKicks:
     ; Negative Y kicks up
@@ -417,6 +418,7 @@ SetPieceData:
     ldh [hPieceDataBaseFast+1], a
     ret
 .no
+    
     ld hl, sPieceRotationStates
     add hl, bc
     ld a, l
@@ -775,6 +777,7 @@ TrySpawnPiece::
     ldh [hShouldLockIfGrounded], a
     ldh [hGravityCtr], a
     ldh [hGrounded], a
+    ld [wVerticalKicks], a
     ld [wMovementLastFrame], a
     ld a, SLAM_ANIMATION_LEN
     ld [wLeftSlamTimer], a
@@ -1579,6 +1582,15 @@ FieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ld a, [wTestKicks]
+    cp a, 4
+    jr c, .isnotverticalcw
+.isverticalcw
+    ld c, a
+    ld a, [wVerticalKicks]
+    inc a
+    ld [wVerticalKicks], a
+    ld a, c 
+.isnotverticalcw
     add a, b
     ldh [hCurrentPieceY], a
     ldh a, [hCurrentPieceX]
@@ -1589,6 +1601,12 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
+    ld a, [wVerticalKicks]
+    cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
+    jr nz, .dontlockcw
+    xor a, a
+    ld [hCurrentLockDelayRemaining], a
+.dontlockcw
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
     jp nz, .norot
@@ -1687,6 +1705,15 @@ FieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ld a, [wTestKicks]
+    cp a, 4
+    jr c, .isnotverticalccw
+.isverticalccw
+    ld c, a
+    ld a, [wVerticalKicks]
+    inc a
+    ld [wVerticalKicks], a
+    ld a, c
+.isnotverticalccw
     add a, b
     ldh [hCurrentPieceY], a
     ldh a, [hCurrentPieceX]
@@ -1697,6 +1724,12 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
+    ld a, [wVerticalKicks]
+    cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
+    jr nz, .dontlockccw
+    xor a, a
+    ld [hCurrentLockDelayRemaining], a
+.dontlockccw
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
     jp nz, .norot
@@ -1780,6 +1813,15 @@ FieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ld a, [wTestKicks]
+    cp a, 3
+    jr c, .isnotvertical
+.isvertical
+    ld c, a
+    ld a, [wVerticalKicks]
+    inc a
+    ld [wVerticalKicks], a
+    ld a, c
+.isnotvertical
     add a, b
     ldh [hCurrentPieceY], a
     ldh a, [hCurrentPieceX]
@@ -1790,6 +1832,12 @@ FieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call SetPieceDataOffset
+    ld a, [wVerticalKicks]
+    cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
+    jr nz, .dontlock
+    xor a, a
+    ld [hCurrentLockDelayRemaining], a
+.dontlock
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
     jp nz, .norot
@@ -2008,6 +2056,13 @@ FieldProcess::
     ldh [hGrounded], a
     ld a, SFX_LOCK
     call SFXTriggerNoise
+    ld a, [wCurrentGarbageThreshold] ; Increase the garbage activation, but Don't do it if the current speed doesn't have garbage
+    cp a, $ff
+    jr z, .hddontinc
+    ld a, [wCurrentGarbageActivation]
+    inc a
+    ld [wCurrentGarbageActivation], a
+.hddontinc
     jp .draw
 
     ; If we press down, we want to do a soft drop.
@@ -4375,6 +4430,15 @@ BigFieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ld a, [wTestKicks]
+    cp a, 4
+    jr c, .isnotverticalcw
+.isverticalcw
+    ld c, a
+    ld a, [wVerticalKicks]
+    inc a
+    ld [wVerticalKicks], a
+    ld a, c 
+.isnotverticalcw
     add a, b
     ldh [hCurrentPieceY], a
     ldh a, [hCurrentPieceX]
@@ -4385,6 +4449,12 @@ BigFieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call BigSetPieceDataOffset
+    ld a, [wVerticalKicks]
+    cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
+    jr nz, .dontlockcw
+    xor a, a
+    ld [hCurrentLockDelayRemaining], a
+.dontlockcw
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
     jp nz, .norot
@@ -4484,6 +4554,17 @@ BigFieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ld a, [wTestKicks]
+    ld b, a
+    ld a, [wTestKicks]
+    cp a, 4
+    jr c, .isnotverticalccw
+.isverticalccw
+    ld c, a
+    ld a, [wVerticalKicks]
+    inc a
+    ld [wVerticalKicks], a
+    ld a, c
+.isnotverticalccw
     add a, b
     ldh [hCurrentPieceY], a
     ldh a, [hCurrentPieceX]
@@ -4494,6 +4575,12 @@ BigFieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call BigSetPieceDataOffset
+    ld a, [wVerticalKicks]
+    cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
+    jr nz, .dontlockccw
+    xor a, a
+    ld [hCurrentLockDelayRemaining], a
+.dontlockccw
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
     jp nz, .norot
@@ -4577,6 +4664,15 @@ BigFieldProcess::
     ldh a, [hCurrentPieceY]
     ld b, a
     ld a, [wTestKicks]
+    cp a, 3
+    jr c, .isnotvertical
+.isvertical
+    ld c, a
+    ld a, [wVerticalKicks]
+    inc a
+    ld [wVerticalKicks], a
+    ld a, c
+.isnotvertical
     add a, b
     ldh [hCurrentPieceY], a
     ldh a, [hCurrentPieceX]
@@ -4587,6 +4683,12 @@ BigFieldProcess::
     ldh a, [hWantRotation]
     ldh [hCurrentPieceRotationState], a
     call BigSetPieceDataOffset
+    ld a, [wVerticalKicks]
+    cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
+    jr nz, .dontlock
+    xor a, a
+    ld [hCurrentLockDelayRemaining], a
+.dontlock
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
     jp nz, .norot
@@ -4802,6 +4904,13 @@ BigFieldProcess::
     ldh [hGrounded], a
     ld a, SFX_LOCK
     call SFXTriggerNoise
+    ld a, [wCurrentGarbageThreshold] ; Increase the garbage activation, but Don't do it if the current speed doesn't have garbage
+    cp a, $ff
+    jr z, .hddontinc
+    ld a, [wCurrentGarbageActivation]
+    inc a
+    ld [wCurrentGarbageActivation], a
+.hddontinc
     jp .draw
 
     ; If we press down, we want to do a soft drop.

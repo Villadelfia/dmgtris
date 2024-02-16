@@ -492,7 +492,7 @@ ApplyNext::
     jr nz, .bonenoL
     jr .xyflip1
 .bonenoL
-    cp a, 6
+    cp a, 2
     jr nz, .noflip1 ; No, The 2nd next piece is not a J, L or T
 .xyflip1
     ld a, $67
@@ -512,7 +512,7 @@ ApplyNext::
     jr nz, .bonenoL2
     jr .xyflip2
 .bonenoL2
-    cp a, 6
+    cp a, 2
     jr nz, .noflip2 ; No, The 3rd next piece is not a J, L or T
 .xyflip2
     ld a, $67
@@ -728,10 +728,28 @@ ApplyTime::
     cp a, 1
     jr nz, .nocool
     ld a, OAMF_PAL1 | $01
-    jr .yescool
+    jr .yescoolornotgm1reqmet
 .nocool
+    ld a, [wTGM1level300RequirementMet]
+    cp a, 1
+    jr nz, .yestgm1300req
+    ld a, OAMF_PAL1 | $00
+    jr .yescoolornotgm1reqmet
+.yestgm1300req
+    ld a, [wTGM1level500RequirementMet]
+    cp a, 1
+    jr nz, .yestgm1500req
+    ld a, OAMF_PAL1 | $00
+    jr .yescoolornotgm1reqmet
+.yestgm1500req
+    ld a, [wTGM1level999RequirementMet]
+    cp a, 1
+    jr nz, .yestgm1999req
+    ld a, OAMF_PAL1 | $00
+    jr .yescoolornotgm1reqmet
+.yestgm1999req
     ld a, OAMF_PAL1 | $07
-.yescool
+.yescoolornotgm1reqmet
     ld [wSPRTimeM1+3], a
     ld [wSPRTimeM2+3], a
     ld [wSPRTimeS1+3], a

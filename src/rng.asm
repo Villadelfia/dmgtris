@@ -144,13 +144,30 @@ RNGInit::
 
     ; Get the first piece and make sure it's not Z, S or O.
 .getfirstpiece
+    ; If we are using the all I piece rng, make an I piece out of thin air
+    ld a, [wRNGModeState]
+    cp a, RNG_MODE_I
+    jr nz, .notI
+    ; Depending on the Rotation System, return a 0 or a 6 
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr z, .BARSi
+.Normali
+    xor a, a
+    jr .yesI
+.BARSi
+    ld a, 6
+    jr .yesI
+.notI
     call Next7Piece
+.yesI
     cp a, PIECE_Z
     jr z, .getfirstpiece
     cp a, PIECE_S
     jr z, .getfirstpiece
     cp a, PIECE_O
     jr z, .getfirstpiece
+    
 
     ; Save the generated piece and put it in the history.
     ldh [hPieceHistory], a
@@ -401,6 +418,19 @@ GetNextTGM3Piece:
     ld [hl], a
     ret
 
+GetNextIPiece::
+    ; Depending on the Rotation System, return a 0 or a 6 
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    jr z, .BARSi
+.Normali
+    xor a, a
+    jp ShiftHistory
+.BARSi
+    ld a, 6
+    jp ShiftHistory
+
+
     ; Gets the next piece depending on RNG mode.
 GetNextPiece::
     ld hl, .nextpiecejumps
@@ -419,6 +449,7 @@ GetNextPiece::
     jp GetNextTGM3Piece
     jp GetNextHellPiece
     jp GetNextNesPiece
+    JP GetNextIPiece
 
 
     ; Tries generating bytes until it gets one in [0; 35)

@@ -33,6 +33,7 @@ sRNGMode::
     db "TGM3"
     db "HELL"
     db "1ROL"
+    DB "   I"
 
 sROTMode::
     db "ARS1"

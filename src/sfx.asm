@@ -218,7 +218,7 @@ SFXEnqueue::
     bit 7, a
     jr z, .noirs
 .yesirs
-    cp a, 87 ; Is the SFX to play in the IRS piece range?
+    cp a, $87 ; Is the SFX to play in the IRS piece range?
     jr nc, .dont ; No, it's not a piece sfx
     ld d, a
     and a, $80

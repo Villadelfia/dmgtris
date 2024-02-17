@@ -208,7 +208,38 @@ SFXEnqueue::
     jp SFXPlay
 
     ; Piece jingles.
-:   ld a, b
+:   ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS ; Are we using the Better Arika Rotation System?
+    ld a, b
+    jr nz, .dont ; No, don't convert the jingles
+.convertpiece
+    ; Is the jingle combined with the IRS sound?
+    bit 7, a
+    jr z, .noirs
+.yesirs
+    ld d, a
+    and a, $80
+    ld c, a
+    ld a, d
+    and a, $7f
+    ld hl, sSEGAtoBARSpiececonversion ; If we're using BARS, the piece jingles will be wrong, so we have to convert the piece ids
+    ld d, 0
+    ld e, a
+    add hl, de
+    ld a, [hl]
+    or a, c
+    ld c, b
+    ld b, a ; (Insert Troll Face)
+    jr .dont
+.noirs
+    ld hl, sSEGAtoBARSpiececonversion ; If we're using BARS, the piece jingles will be wrong, so we have to convert the piece ids
+    ld d, 0
+    ld e, a
+    add hl, de
+    ld a, [hl]
+    ld c, b
+    ld b, a ; (Insert Troll Face)
+.dont
     cp a, PIECE_I
     jr nz, :+
     ld a, LOW(sSFXPieceI)
@@ -334,8 +365,16 @@ SFXEnqueue::
     ldh [hPlayhead+1], a
     jp SFXPlay
 
-    ; IRS
-:   cp a, SFX_IHS
+    ; IHS
+:   ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS ; Are we using the Better Arika Rotation System?
+    jr nz, .no ; No
+.yes
+    ; We previously loaded the converted piece jingle into B, but we saved the original value in C.
+    ld b, c; Restore it
+.no
+    ld a, b
+    cp a, SFX_IHS
     jr nz, :+
     ld a, LOW(sSFXIHS)
     ldh [hPlayhead], a

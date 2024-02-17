@@ -38,6 +38,7 @@ SECTION "SFX Variables", WRAM0
 wCurrentBank:: ds 1
 wBankSwitchTarget:: ds 1
 wPlayHeadTarget:: ds 2
+wLoadedAinB:: ds 1
 
 
 SECTION "SFX Functions", ROM0
@@ -217,11 +218,15 @@ SFXEnqueue::
     bit 7, a
     jr z, .noirs
 .yesirs
+    cp a, 87 ; Is the SFX to play in the IRS piece range?
+    jr nc, .dont ; No, it's not a piece sfx
     ld d, a
     and a, $80
     ld c, a
     ld a, d
     and a, $7f
+    cp a, 7 ; Is the SFX to play in the piece range?
+    jr nc, .dont ; No, it's not a piece sfx
     ld hl, sSEGAtoBARSpiececonversion ; If we're using BARS, the piece jingles will be wrong, so we have to convert the piece ids
     ld d, 0
     ld e, a
@@ -230,8 +235,13 @@ SFXEnqueue::
     or a, c
     ld c, b
     ld b, a ; (Insert Troll Face)
-    jr .dont
+    ld a, 1
+    ld [wLoadedAinB], a
+    ld a, b
+    jr .did
 .noirs
+    cp a, 7 ; Is the SFX to play in the piece range?
+    jr nc, .dont ; No, it's not a piece sfx
     ld hl, sSEGAtoBARSpiececonversion ; If we're using BARS, the piece jingles will be wrong, so we have to convert the piece ids
     ld d, 0
     ld e, a
@@ -239,7 +249,16 @@ SFXEnqueue::
     ld a, [hl]
     ld c, b
     ld b, a ; (Insert Troll Face)
+    ld a, 1
+    ld [wLoadedAinB], a
+    ld a, b
+    jr .did
 .dont
+    ld b, a
+    ld a, 0
+    ld [wLoadedAinB], a
+    ld a, b
+.did
     cp a, PIECE_I
     jr nz, :+
     ld a, LOW(sSFXPieceI)
@@ -366,11 +385,17 @@ SFXEnqueue::
     jp SFXPlay
 
     ; IHS
-:   ld a, [wRotModeState]
+:   ld b, a
+    ld a, [wRotModeState]
     cp a, ROT_MODE_BARS ; Are we using the Better Arika Rotation System?
     jr nz, .no ; No
 .yes
+    ld a, b
     ; We previously loaded the converted piece jingle into B, but we saved the original value in C.
+    ld b, a
+    ld a, [wLoadedAinB] ; Or did we?
+    cp a, 1
+    jr nz, .no ; No, we didn't
     ld b, c; Restore it
 .no
     ld a, b

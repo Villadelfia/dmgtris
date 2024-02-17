@@ -81,7 +81,7 @@ sCW_LJTSZKicks:
     ; North to East
     dw $ff00 ;Y, X
     dw $00ff ;Y, X
-    dw $FFFF ;Y, X
+    dw $01FF ;Y, X
     dw $0300 ;Y, X
     dw $03ff ;Y, X
     ; East to South
@@ -99,22 +99,22 @@ sCW_LJTSZKicks:
     ; West to North
     dw $ff00 ;Y, X
     dw $00ff ;Y, X
-    dw $01ff ;Y, X
+    dw $ffff ;Y, X
     dw $fd00 ;Y, X
     dw $fdff ;Y, X
 sCCW_LJTSZKicks:
     ; North to West
     dw $ff00 ;Y, X
     dw $0001 ;Y, X
-    dw $ff01 ;Y, X
+    dw $0101 ;Y, X
     dw $0300 ;Y, X
     dw $0301 ;Y, X
     ; West to South
     dw $ff00 ;Y, X
     dw $00ff ;Y, X
     dw $01ff ;Y, X
-    dw $ff00 ;Y, X
-    dw $ffff ;Y, X
+    dw $fe00 ;Y, X
+    dw $feff ;Y, X
     ; South to East
     dw $ff00 ;Y, X
     dw $00ff ;Y, X
@@ -124,7 +124,7 @@ sCCW_LJTSZKicks:
     ; East to North
     dw $ff00 ;Y, X
     dw $0001 ;Y, X
-    dw $0101 ;Y, X
+    dw $ff01 ;Y, X
     dw $fd00 ;Y, X
     dw $fd01 ;Y, X
 

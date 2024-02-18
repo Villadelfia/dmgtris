@@ -1604,8 +1604,7 @@ FieldProcess::
     ld a, [wVerticalKicks]
     cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
     jr nz, .dontlockcw
-    xor a, a
-    ld [hCurrentLockDelayRemaining], a
+    jp .forcelock ; We don't want the player to stall forever, lock the piece
 .dontlockcw
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
@@ -1727,8 +1726,7 @@ FieldProcess::
     ld a, [wVerticalKicks]
     cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
     jr nz, .dontlockccw
-    xor a, a
-    ld [hCurrentLockDelayRemaining], a
+    jp .forcelock ; We don't want the player to stall forever, lock the piece
 .dontlockccw
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
@@ -1835,8 +1833,7 @@ FieldProcess::
     ld a, [wVerticalKicks]
     cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
     jr nz, .dontlock
-    xor a, a
-    ld [hCurrentLockDelayRemaining], a
+    jp .forcelock ; We don't want the player to stall forever, lock the piece
 .dontlock
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
@@ -4452,8 +4449,7 @@ BigFieldProcess::
     ld a, [wVerticalKicks]
     cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
     jr nz, .dontlockcw
-    xor a, a
-    ld [hCurrentLockDelayRemaining], a
+    jp .forcelock ; We don't want the player to stall forever, lock the piece
 .dontlockcw
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
@@ -4578,8 +4574,7 @@ BigFieldProcess::
     ld a, [wVerticalKicks]
     cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
     jr nz, .dontlockccw
-    xor a, a
-    ld [hCurrentLockDelayRemaining], a
+    jp .forcelock ; We don't want the player to stall forever, lock the piece
 .dontlockccw
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1
@@ -4686,8 +4681,7 @@ BigFieldProcess::
     ld a, [wVerticalKicks]
     cp a, VERTICAL_KICK_LIMIT ; Did we run out of vertical kicks?
     jr nz, .dontlock
-    xor a, a
-    ld [hCurrentLockDelayRemaining], a
+    jp .forcelock ; We don't want the player to stall forever, lock the piece
 .dontlock
     ldh a, [hLockDelayForce] ; Set the forced lock delay to 2 if it's 1.
     cp a, 1

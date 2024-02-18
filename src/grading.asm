@@ -1123,11 +1123,16 @@ UpdateGradeSHIR:
     ret z
 
     ; We don't give out a grade until level 100.
+    ; But we do if we are on level 1000
+    ldh a, [hCLevel+CLEVEL_THOUSANDS] ; Level, hundreds digit.
+    or a, a
+    jr nz, .lv1000plus
     ldh a, [hCLevel+CLEVEL_HUNDREDS] ; Level, hundreds digit.
     or a, a
     ret z
-
+.lv1000plus
     ; Get the hundreds and thousands of the level as a hex number.
+    ldh a, [hCLevel+CLEVEL_HUNDREDS] ; Level, hundreds digit.
     ld b, a ; Hundreds
     ldh a, [hCLevel+CLEVEL_THOUSANDS] ; Thousands
     swap a

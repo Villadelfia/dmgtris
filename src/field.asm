@@ -142,6 +142,12 @@ sIKicks:
     dw $00ff ;Y, X
     dw $0002 ;Y, X
 
+sWantedKicks:
+    db 30
+    db 0
+    db 10
+    db 20
+
 SECTION "Field Function Unbanked", ROM0
     ; Blits the field onto the tile map.
     ; On the GBC, this chain calls into a special version that takes
@@ -1483,29 +1489,32 @@ FieldProcess::
     cp a, 6 ; Is the current piece an I piece?
     jp z, .doIkicks
 .doLJTSZkicks
-    ld a, [hCurrentPieceRotationState]
-    ld b, a
-    ld a, [hWantRotation]
-    cp a, b ; Is the wanted rotation greater or less than the current one?
-    jr c, .iscurrent3 ; If it's less than the current one, is the current one 3?
-    ; If it's Greater than the current one, it's Counter-Clockwise, Unless...
-    push af
-    push bc
-    pop af
-    pop bc
-    cp a, 0 ; Is the Current rotation 0?
-    jr z, .CW ; Then it's also Clockwise
-    jp .CCW 
-.iscurrent3
-    ld a, [hCurrentPieceRotationState]
-    cp a, 3
-    jr nz, .CW
-    ; If it's not, it's clockwise, else, is the wanted rotation 2?
-.iswanted2
-    ld a, [hWantRotation]
-    cp a, 2 ; if it is, it's clockwise, else, it's counter-clockwise
-    jp nz, .CCW
-
+.barswantrotccw
+    ld a, [wSwapABState]
+    or a, a
+    jr z, .barsldb1
+.barslda1
+    ldh a, [hAState]
+    jr .barscp1
+.barsldb1
+    ldh a, [hBState]
+.barscp1
+    cp a, 1
+    jr nz, .barswantrotcw
+    jp .CCW
+    ; Want rotate CW?
+.barswantrotcw
+    ld a, [wSwapABState]
+    or a, a
+    jr z, .barslda2
+.barsldb2
+    ldh a, [hBState]
+    jr .barscp2
+.barslda2
+    ldh a, [hAState]
+.barscp2
+    cp a, 1
+    jp nz, .norot
 .CW
     ld hl, sCW_LJTSZKicks ; Make HL point to the Clockwise Kick Table
     ld c, 15
@@ -1629,25 +1638,13 @@ FieldProcess::
 
     
 .CCW
-    ld hl, sCCW_LJTSZKicks ; Make HL point to the Counter-Clockwise Kick Table
-    ld c, 15
     ldh a, [hWantRotation]
-    ;ld b, 5
-    ; We need to get the table offset, so it's math time
-    cp a, 0 ; Is the wanted rotation 0 already?
-    jr z, .isZeroCCW ; No need to do math then
-    ; If it's not 0, we need to do math
-    ld b, a
-    ld a, c
-    ld c, 5
-:   sub a, c
-    dec b
-    jr nz, :- ; We're not done, go back
-    jr .postmathCCW ; We're done, keep going    
-.isZeroCCW
-    ld a, c
-.postmathCCW
-    add a, a
+    ld hl, sWantedKicks ; I had to make this table specifically for this direction...
+    ld d, 0
+    ld e, a
+    add hl, de ; Now we got the offset
+    ld a, [hl]
+    ld hl, sCCW_LJTSZKicks ; Make HL point to the Counter-Clockwise Kick Table
     ld d, 0
     ld e, a
     add hl, de ; Now we got the offset
@@ -4329,19 +4326,32 @@ BigFieldProcess::
     cp a, 6 ; Is the current piece an I piece?
     jp z, .doIkicks
 .doLJTSZkicks
-    ld a, [hCurrentPieceRotationState]
-    ld b, a
-    ld a, [hWantRotation]
-    cp a, b ; Is the wanted rotation greater or less than the current one?
-    jr c, .iscurrent3 ; If it's less than the current one, is the current one 3?
-    ; If it's Greater than the current one, it's Counter-Clockwise, Unless...
-    push af
-    push bc
-    pop af
-    pop bc
-    cp a, 0 ; Is the Current rotation 0?
-    jr z, .CW ; Then it's also Clockwise
-    jp .CCW 
+.barswantrotccw
+    ld a, [wSwapABState]
+    or a, a
+    jr z, .barsldb1
+.barslda1
+    ldh a, [hAState]
+    jr .barscp1
+.barsldb1
+    ldh a, [hBState]
+.barscp1
+    cp a, 1
+    jr nz, .barswantrotcw
+    jp .CCW
+    ; Want rotate CW?
+.barswantrotcw
+    ld a, [wSwapABState]
+    or a, a
+    jr z, .barslda2
+.barsldb2
+    ldh a, [hBState]
+    jr .barscp2
+.barslda2
+    ldh a, [hAState]
+.barscp2
+    cp a, 1
+    jp nz, .norot
 .iscurrent3
     ld a, [hCurrentPieceRotationState]
     cp a, 3

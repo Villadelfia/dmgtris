@@ -44,9 +44,9 @@ wSubgrade:                      ds 1
 wREGRETChecked::                ds 1
 wGradeBoosts:                   ds 1
 wCOOLBoosts:                    ds 1
-wTGM1level300RequirementMet:    ds 1
-wTGM1level500RequirementMet:    ds 1
-wTGM1level999RequirementMet:    ds 1
+wTGM1level300RequirementMet::   ds 1
+wTGM1level500RequirementMet::   ds 1
+wTGM1level999RequirementMet::   ds 1
 
 
 SECTION "Grading Data", ROMX, BANK[BANK_GAMEPLAY]
@@ -354,6 +354,7 @@ GradeInitB:
     ld [wTGM1level300RequirementMet], a
     ld [wTGM1level500RequirementMet], a
     ld [wTGM1level999RequirementMet], a
+    call DrawGradeProgressTGM3
 
     ; Most modes begin ungraded.
     ld a, GRADE_NONE

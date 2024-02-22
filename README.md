@@ -40,6 +40,7 @@ Choose between a few randomizer options:
 - TGM3: The TGM3 RNG system.
 - HELL: Pure Random.
 - 1ROL: Reroll once if you get the same piece as the previous one.
+-    I: Pure I pieces.
 
 ### Rot Mode
 Select the rotation rules:
@@ -47,6 +48,7 @@ Select the rotation rules:
 - ARS2: ARS from TGM3.
 - SEGA: No kicks.
 - MYCO: Like ARS1, but without I, L, J and T restrictions.
+- BARS: A mix between TI-ARS and TI-SRS. Uses Guideline colors.
 
 ### Drop Mode
 Choose how the up and down buttons act:

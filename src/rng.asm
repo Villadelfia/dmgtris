@@ -161,12 +161,28 @@ RNGInit::
 .notI
     call Next7Piece
 .yesI
+    ; The Z and S pieces have different IDs in BARS, so we gotta check for them too if we're using that rotation system
+    ld b, a
+    ld a, [wRotModeState]
+    cp a, ROT_MODE_BARS
+    ld a, b
+    jr z, .isbars
+.notbars
     cp a, PIECE_Z
     jr z, .getfirstpiece
     cp a, PIECE_S
     jr z, .getfirstpiece
     cp a, PIECE_O
     jr z, .getfirstpiece
+    jr .continue
+.isbars
+    cp a, PIECE_I
+    jr z, .getfirstpiece
+    cp a, PIECE_Z
+    jr z, .getfirstpiece
+    cp a, PIECE_O
+    jr z, .getfirstpiece
+.continue
     
 
     ; Save the generated piece and put it in the history.

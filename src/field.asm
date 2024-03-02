@@ -366,8 +366,6 @@ ToShadowField::
     inc de
     dec c
     jr nz, .outer
-    ; Do we need to raise garbage?
-    call RiseGarbage
     ret
 
 
@@ -2261,7 +2259,6 @@ FieldProcess::
 .dontinc
     jr .draw
     ; Do we need to raise garbage?
-    call RiseGarbage
 
     ; If we weren't grounded, reset the lock force.
 .notgrounded
@@ -2882,7 +2879,8 @@ FindClearedLines:
         DEF row -= 1
 .next\@
     ENDR
-
+    ; Do we need to raise garbage?
+    call RiseGarbage
     ret
 
     ; Goes through the list of cleared lines and marks those lines with the "line clear" tile.
@@ -3210,8 +3208,6 @@ BigToShadowField::
     inc de
     dec c
     jr nz, .outer
-    ; Do we need to raise garbage?
-    call BigRiseGarbage
     ret
 
 
@@ -5743,6 +5739,8 @@ BigFindClearedLines:
         DEF row -= 1
 .next\@
     ENDR
+    ; Do we need to raise garbage?
+    call BigRiseGarbage
     ret
 
 
@@ -5916,7 +5914,10 @@ BigRiseGarbage::
     ld a, [wCurrentGarbageActivation]
     cp a, b
     ret c ; If not, return
-    ; If we have to, do it
+    ; If we have to, do it, unless there were line clears
+    ld a, [hLineClearCt]
+    cp a, 0
+    ret nz ; If there were line clears, return
     ; This is the same function that clears lines, but kinda inverted
 .raiseLines:
     ld de, 10 ; We're copying data from one row and "pasting" it into the one above it

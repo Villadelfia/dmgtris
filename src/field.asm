@@ -3036,7 +3036,10 @@ RiseGarbage::
     ld a, [wCurrentGarbageActivation]
     cp a, b
     ret c ; If not, return
-    ; If we have to, do it
+    ; If we have to, do it, unless there were line clears
+    ld a, [hLineClearCt]
+    cp a, 0
+    ret nz ; If there were line clears, return
     ; This is the same function that clears lines, but kinda inverted
 .raiseLines:
     ld de, 10 ; We're copying data from one row and "pasting" it into the one above it

@@ -1330,6 +1330,11 @@ GamePlayBigEventLoopHandlerB:
     cp a, GRADE_GM
     jr z, .gm
 
+    ; S13 congratulations?
+    ld a, [wDisplayedGrade]
+    cp a, GRADE_S13
+    jr z, .s13
+
     ; Condescend if we're not NONE grade.
     cp a, GRADE_NONE
     jr nz, .condescend
@@ -1344,6 +1349,18 @@ GamePlayBigEventLoopHandlerB:
     ld de, sBigYouAreGM
     ld hl, wWideBlittedField+(3*10)
     ld bc, 100
+    call UnsafeMemCopy
+
+    ld a, MODE_GAME_OVER
+    ldh [hMode], a
+
+    jp .gameOverMode
+
+.s13
+    call BigFieldInit
+    ld de, sBigShiraseModeALLCLEAR
+    ld hl, wWideBlittedField+(3*10)
+    ld bc, 160
     call UnsafeMemCopy
 
     ld a, MODE_GAME_OVER

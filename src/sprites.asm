@@ -1334,9 +1334,28 @@ GradeRendering::
     ld a, 7 | OAMF_PAL1
     ld [wSPRGrade1+3], a
     ld [wSPRGrade2+3], a
-
     ; Do we draw this as a regular grade?
 .drawgrade
+    ; oi, check if we need to get a line of a specific color!
+    ; Are we on a Staff Roll?
+    ld a, [wInStaffRoll]
+    cp a, 00
+    jr z, .linedone ; Nope
+    ; If we are, has it ended?
+    ld a, [wCountDownZero]
+    cp a, $ff
+    jr z, .ol ; Yes
+    
+.gl ; Give Green Line
+    ld a, 1
+    ld [wSPRGrade1+3], a
+    ld [wSPRGrade2+3], a
+    jr .linedone 
+.ol ; Give Orange Line
+    ld a, 4
+    ld [wSPRGrade1+3], a
+    ld [wSPRGrade2+3], a
+.linedone
     ld a, [wDisplayedGrade]
     cp a, GRADE_S1
     jr nc, .sgrade ; No. S or better.

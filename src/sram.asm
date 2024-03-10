@@ -76,6 +76,7 @@ rScoreTableDEAT:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
 rScoreTableSHIR:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
 rScoreTableCHIL:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
 rScoreTableMYCO:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
+rScoreTableSHRT:: ds (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
 
 
 SECTION "SRAM Variables", WRAM0
@@ -207,6 +208,7 @@ TrustedLoad:
     jp .shir
     jp .chil
     jp .myco
+    jp .shrt
     jp .fallback
 
 .dmgt
@@ -229,6 +231,10 @@ TrustedLoad:
     jp .search
 .myco
     ld hl, sMYCOSpeedCurve
+    jp .search
+
+.shrt
+    ld hl, sSHRTSpeedCurve
     jp .search
 
 .search
@@ -446,6 +452,7 @@ ResetScores::
     jp .shir
     jp .chil
     jp .myco
+    jp .shrt
 
 .dmgt
     ld hl, rScoreTableDMGT
@@ -488,6 +495,12 @@ ResetScores::
     ld de, sHiscoreDefaultData
     ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
     jp UnsafeMemCopy
+.shrt
+    ld hl, rScoreTableSHRT
+    ld de, sHiscoreDefaultData
+    ld bc, (HISCORE_ENTRY_COUNT * HISCORE_ENTRY_SIZE)
+    jp UnsafeMemCopy
+
 
 NextProfile::
     ld a, [rLastProfile]

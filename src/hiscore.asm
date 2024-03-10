@@ -383,6 +383,7 @@ InitTargetHSTable::
     jp .shir
     jp .chil
     jp .myco
+    jp .shrt
 
 .dmgt
     ld hl, rScoreTableDMGT
@@ -410,7 +411,10 @@ InitTargetHSTable::
 
 .myco
     ld hl, rScoreTableMYCO
+    jr .store
 
+.shrt
+    ld hl, rScoreTableSHRT
 .store
     ld a, l
     ld [wTargetHSTable], a

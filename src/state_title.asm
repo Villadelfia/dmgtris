@@ -1556,7 +1556,11 @@ GetEnd:
     jr nz, :+
     ld bc, sCHILSpeedCurveEnd
     ret
-:   ld bc, sMYCOSpeedCurveEnd
+:   cp a, SCURVE_MYCO
+    jr nz, :+
+    ld bc, sMYCOSpeedCurveEnd
+    ret
+:   ld bc, sSHRTSpeedCurveEnd
     ret
 
 
@@ -1587,7 +1591,11 @@ GetStart:
     jr nz, :+
     ld hl, sCHILSpeedCurve
     ret
-:   ld hl, sMYCOSpeedCurve
+:   cp a, SCURVE_MYCO
+    jr nz, :+
+    ld hl, sMYCOSpeedCurve
+    ret
+:   ld hl, sSHRTSpeedCurve
     ret
 
 

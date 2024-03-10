@@ -246,16 +246,16 @@ sTGM3HowManyInternalGradesToDecrease:
     db 1 ;S9
 
 sTGM3ComboMultipliers:
-    db 1,  1, 1, 1, 1   ; Combo size, (Multiplier for: ) Single, Double, Triple, Tetris (Screw the fractional part, x.5 gets rounded down)
-    db 2,  1, 1, 1, 1
-    db 3,  1, 1, 1, 2
-    db 4,  1, 1, 2, 2
-    db 5,  1, 1, 2, 2
-    db 6,  1, 1, 2, 2
-    db 7,  1, 1, 2, 2
-    db 8,  1, 1, 2, 2
-    db 9,  1, 1, 2, 3
-    db 10, 2, 2, 3, 3
+    db 1, 1, 1, 1   ; (Multiplier for: ) Single, Double, Triple, Tetris (Screw the fractional part, x.5 gets rounded down)
+    db 1, 1, 1, 1
+    db 1, 1, 1, 2
+    db 1, 1, 2, 2
+    db 1, 1, 2, 2
+    db 1, 1, 2, 2
+    db 1, 1, 2, 2
+    db 1, 1, 2, 2
+    db 1, 1, 2, 3
+    db 2, 2, 3, 3
 
 sTGM3LevelMultiplier:
     db 2 ; 250-499
@@ -360,13 +360,15 @@ GradeInitB:
     ld a, GRADE_NONE
     ld [wDisplayedGrade], a
 
-    ; TGM1, TGM3, and DMGT are the exceptions.
+    ; TGM1, TGM3, DMGT and SHRT are the exceptions.
     ld a, [wSpeedCurveState]
     cp a, SCURVE_TGM1
     jr z, .grade9start
     cp a, SCURVE_TGM3
     jr z, .grade9start
     cp a, SCURVE_DMGT
+    jr z, .grade9start
+    cp a, SCURVE_SHRT
     jr z, .grade9start
     jr .end
 
@@ -398,6 +400,7 @@ UpdateGradeB:
     jp UpdateGradeSHIR ;SHIR
     no_jump            ;CHIL
     no_jump            ;MYCO
+    jp TGM3StaffRollGradeUpdate ;SHRT
 
 
     ; Jumps to the grade decay function for the current mode.
@@ -1311,14 +1314,13 @@ UpdateGradeTGM3:
     ld a, 10
 .notover10
     ld d, a ; ld d, 3
-    ld b, 5
-    ld a, b ; ld a, 5
+    ld a, 4 ; ld a, 4
     dec d ;dec 3 to 2, so we don't accidentally add more than intended
 :   add a, b ; 5+5 = 10 ; 10+5 = 15
     dec d
     jr nz, :- ; go back if d isn't 0
     sub a, 4 ; Decrease 4 so we don't get the pointer wrong 
-    ld b, a ; ld b, 15
+    ld b, a ; ld b, 12
     ld a, [hLineClearCt]
     cp a, 0 ; If no lines were cleared, we don't need to do anything, just continue
     jr z, .levelmultiplier
@@ -1725,7 +1727,8 @@ TGM3StaffRollGradeUpdate::
     ld a, GRADE_M1
 .nots10
     ld [wDisplayedGrade], a
+    ; Play the jingle
+    ld a, SFX_RANKUP
+    call SFXEnqueue
     ret
-
-
 ENDC

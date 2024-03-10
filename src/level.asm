@@ -162,6 +162,7 @@ SpecialLevelInit:
     jp .shir
     jp .chil
     jp .myco
+    jp .shrt
 
 .dmgt
     ld hl, sDMGTSpeedCurveSpecialData
@@ -189,6 +190,9 @@ SpecialLevelInit:
 
 .myco
     ld hl, sMYCOSpeedCurveSpecialData
+    jr .loaddata
+.shrt
+    ld hl, sSHRTSpeedCurveSpecialData
     jr .loaddata
 
 .loaddata
@@ -314,6 +318,10 @@ LevelUp::
     jp AdjustSpeedCurve
 
 .checknlevel
+    ; Check if we are on the SHRT speed curve, since it has a different nlevel processing
+    ld a, [wSpeedCurveState]
+    cp a, SCURVE_SHRT
+    jp z, .shrt
     ; Make wNLevel make sense.
     ld hl, hCLevel
     ld a, $09
@@ -357,7 +365,7 @@ LevelUp::
     inc a
     ld hl, hNLevel
     ld [hl], a
-    jr .bellmaybe
+    jp .bellmaybe
 
     ; Otherwise just set the second digit of wNLevel to the second digit of wCLevel + 1.
 :   ld hl, hCLevel+1
@@ -365,13 +373,112 @@ LevelUp::
     inc a
     ld hl, hNLevel+1
     ld [hl], a
+    jp .checkcool
+.shrt
+    ; Make wNLevel make sense.
+    ld hl, hCLevel
+    ld a, $09
+    and a, [hl]
+    inc hl
+    and a, [hl]
+    cp a, $09
+    ; If wCLevel begins 99, wNLevel should be 9999.
+    jr nz, :+
+    ld a, 9
+    ldh [hNLevel], a
+    ldh [hNLevel+1], a
+    ldh [hNLevel+2], a
+    ldh [hNLevel+3], a
+    ; If the last two digits of wCLevel are one less than hNlevel, play the bell.
+    ld de, hNLevel+2
+    ld a, [de]
+    inc de
+    swap a
+    ld b, a
+    ld a, [de]
+    dec a
+    or b
+    ld a, b ; Make sure that the result doesn't contain Hexadecimal digits
+    and a, $0f
+    cp a, $0F
+    sub a, 6 ; Skip $F, $E, $D, $C, $B and $A
+    ld b, a
+    ld hl, hCLevel+2
+    ld a, [hl+]
+    swap a
+    or a, [hl]
+    cp a, b
+    jp nz, AdjustSpeedCurve
+    ld a, $FF
+    ldh [hRequiresLineClear], a
+    call SFXKill
+    ld a, SFX_LEVELLOCK
+    call SFXEnqueue
+    jp .leveljinglemaybe
+    ; Otherwise check the second digit of wCLevel.
+:   ld hl, hCLevel+1
+    ld a, [hl]
+    ; If it's 9, wNLevel should be y0xx. With y being the first digit of wCLevel+1
+    cp a, 9
+    jr nz, :+
+    ld hl, hNLevel+1
+    xor a, a
+    ld [hl], a
+    ld hl, hCLevel
+    ld a, [hl]
+    inc a
+    ld hl, hNLevel
+    ld [hl], a
+    jp .bellmaybe
 
+    ; Otherwise set wNLevel to the next speed increase if the second hClevel digit isn't 1
+:   ; For it to be always correct, first adjust the speed curve if needed
+    call AdjustSpeedCurve
+    ld hl, hCLevel+1
+    ld a, [hl]
+    cp a, 1
+    jr nc, :+
+
+    ldh a, [hSpeedCurvePtr]
+    ld l, a
+    ldh a, [hSpeedCurvePtr+1]
+    ld h, a
+    ; we need to go back 2 bytes
+    dec hl
+    dec hl
+    ; Bank to speed curve data.
+    ld b, BANK_OTHER
+    rst RSTSwitchBank
+    ld a, [hl+]
+    ld b, a
+    and a, $0F
+    ldh [hNLevel+3], a
+    ld a, b
+    swap a
+    and a, $0F
+    ldh [hNLevel+2], a
+    ld a, [hl+]
+    ld b, a
+    and a, $0F
+    ldh [hNLevel+1], a
+    ld a, b
+    swap a
+    and a, $0F
+    ldh [hNLevel], a
+    rst RSTRestoreBank
+    jp .bellmaybe
+    ; Or set the second hNLevel digit to the second hCLevel digit +1 if it is 1 or greater
+:   ld hl, hCLevel+1
+    ld a, [hl]
+    inc a
+    ld hl, hNLevel+1
+    ld [hl], a
     ; Check for regrets or cools
     ; Make sure we are at level *70-*78 and that we didn't check for the cool already
 .checkcool
     ld a, [wSpeedCurveState]
     cp a, SCURVE_TGM3
-    jr nz, .bellmaybe
+    jp nz, .bellmaybe
 
     ld a, [wCOOLIsActive]
     cp a, 1
@@ -383,13 +490,13 @@ LevelUp::
     cp a, 9
     call c, TGM3COOLHandler
     cp a, 1
-    jr z, .bellmaybe
+    jp z, .bellmaybe
 
 .checkregret
     ; Make sure we are at level *00-*05 and that we haven't checked already. Reset the section timer, too.
     ld a, [wREGRETChecked]
     cp a, 1
-    jr z, .bellmaybe
+    jp z, .bellmaybe
     ld a, [hCLevel+CLEVEL_TENS]
     cp a, 0
     jr nz, .regretavailable

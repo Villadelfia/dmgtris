@@ -5,3 +5,4 @@
 /src/res/sources/*.z80
 /src/res/sources/*.inc
 /bin/*.sav
+.DS_Store

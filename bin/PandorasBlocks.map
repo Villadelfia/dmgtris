@@ -3446,27 +3446,27 @@ WRAM0 bank #0:
 	         $cf20 = wShouldGoStaffRoll
 	         $cf21 = wNoMoreLocks
 	         $cf22 = wSkippedSectionsBCD
-	SECTION: $cf23-$cf2c ($000a bytes) ["Time Variables"]
-	         $cf23 = wMinutes
-	         $cf24 = wSeconds
-	         $cf25 = wFrames
-	         $cf26 = wSectionMinutes
-	         $cf27 = wSectionSeconds
-	         $cf28 = wSectionFrames
-	         $cf29 = wCountDown
-	         $cf2b = wCountDownZero
-	         $cf2c = wSectionTimerReset
-	SECTION: $cf2d-$cf36 ($000a bytes) ["Progress Variables"]
-	         $cf2d = wProgress0B1
-	         $cf2e = wProgress0B2
-	         $cf2f = wProgress1B1
-	         $cf30 = wProgress1B2
-	         $cf31 = wProgress2B1
-	         $cf32 = wProgress2B2
-	         $cf33 = wProgress3B1
-	         $cf34 = wProgress3B2
-	         $cf35 = wProgress4B1
-	         $cf36 = wProgress4B2
+	SECTION: $cf23-$cf2c ($000a bytes) ["Progress Variables"]
+	         $cf23 = wProgress0B1
+	         $cf24 = wProgress0B2
+	         $cf25 = wProgress1B1
+	         $cf26 = wProgress1B2
+	         $cf27 = wProgress2B1
+	         $cf28 = wProgress2B2
+	         $cf29 = wProgress3B1
+	         $cf2a = wProgress3B2
+	         $cf2b = wProgress4B1
+	         $cf2c = wProgress4B2
+	SECTION: $cf2d-$cf36 ($000a bytes) ["Time Variables"]
+	         $cf2d = wMinutes
+	         $cf2e = wSeconds
+	         $cf2f = wFrames
+	         $cf30 = wSectionMinutes
+	         $cf31 = wSectionSeconds
+	         $cf32 = wSectionFrames
+	         $cf33 = wCountDown
+	         $cf35 = wCountDownZero
+	         $cf36 = wSectionTimerReset
 	SECTION: $cf37-$cf40 ($000a bytes) ["Globals"]
 	         $cf37 = wSwapABState
 	         $cf38 = wRNGModeState
@@ -3554,20 +3554,20 @@ HRAM bank #0:
 	         $ffd2 = hNextPiece
 	         $ffd3 = hUpcomingPiece1
 	         $ffd4 = hUpcomingPiece2
-	SECTION: $ffd5-$ffde ($000a bytes) ["High Gameplay Variables"]
-	         $ffd5 = hCurrentPiece
-	         $ffd6 = hCurrentPieceX
-	         $ffd7 = hCurrentPieceY
-	         $ffd8 = hCurrentPieceRotationState
-	         $ffd9 = hHeldPiece
-	         $ffda = hHoldSpent
-	         $ffdb = hMode
-	         $ffdc = hModeCounter
-	         $ffdd = hPrePause
-	         $ffde = hRequestedJingle
-	SECTION: $ffdf-$ffe8 ($000a bytes) ["OAM DMA"]
-	         $ffdf = hOAMDMA
-	         $ffe5 = \u00210
+	SECTION: $ffd5-$ffde ($000a bytes) ["OAM DMA"]
+	         $ffd5 = hOAMDMA
+	         $ffdb = \u00210
+	SECTION: $ffdf-$ffe8 ($000a bytes) ["High Gameplay Variables"]
+	         $ffdf = hCurrentPiece
+	         $ffe0 = hCurrentPieceX
+	         $ffe1 = hCurrentPieceY
+	         $ffe2 = hCurrentPieceRotationState
+	         $ffe3 = hHeldPiece
+	         $ffe4 = hHoldSpent
+	         $ffe5 = hMode
+	         $ffe6 = hModeCounter
+	         $ffe7 = hPrePause
+	         $ffe8 = hRequestedJingle
 	SECTION: $ffe9-$fff1 ($0009 bytes) ["High SFX Variables"]
 	         $ffe9 = hPlayhead
 	         $ffeb = hCurrentlyPlaying
@@ -3586,8 +3586,8 @@ HRAM bank #0:
 	SECTION: $fffb-$fffc ($0002 bytes) ["High Time Variables"]
 	         $fffb = hFrameCtr
 	         $fffc = hEvenFrame
-	SECTION: $fffd-$fffd ($0001 byte) ["High Globals"]
-	         $fffd = hGameState
-	SECTION: $fffe-$fffe ($0001 byte) ["High Interrupt Variables"]
-	         $fffe = hLCDCCtr
+	SECTION: $fffd-$fffd ($0001 byte) ["High Interrupt Variables"]
+	         $fffd = hLCDCCtr
+	SECTION: $fffe-$fffe ($0001 byte) ["High Globals"]
+	         $fffe = hGameState
 	TOTAL EMPTY: $0000 bytes

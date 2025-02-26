@@ -7,11 +7,20 @@
         {
             "type": "emulicious-debugger",
             "request": "launch",
-            "name": "Launch in Emulicious",
+            "name": "Launch in Emulicious (gbc)",
             "program": "${workspaceFolder}/bin/PandorasBlocks.gbc",
             "port": 58870,
             "stopOnEntry": false,
-            "preLaunchTask": "buildrom"
+            "preLaunchTask": "rebuildrom"
+        },
+        {
+            "type": "emulicious-debugger",
+            "request": "launch",
+            "name": "Launch in Emulicious (pocket)",
+            "program": "${workspaceFolder}/bin/PandorasBlocks.pocket",
+            "port": 58870,
+            "stopOnEntry": false,
+            "preLaunchTask": "rebuildrom"
         }
     ]
 }

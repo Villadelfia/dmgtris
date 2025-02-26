@@ -4,7 +4,17 @@
         {
             "label": "buildrom",
             "type": "shell",
-            "command": "make"
+            "command": "./build.py"
+        },
+        {
+            "label": "rebuildrom",
+            "type": "shell",
+            "command": "./build.py rebuild"
+        },
+        {
+            "label": "cleanrom",
+            "type": "shell",
+            "command": "./build.py clean"
         }
     ]
 }

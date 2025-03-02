@@ -71,6 +71,8 @@ Main::
     ld a, [wInitialA]
     cp a, $11
     jr nz, .notgbc
+    ld a, P1F_GET_NONE
+    ldh [rP1], a
     ld a, KEY1F_PREPARE
     ldh [rKEY1], a
     stop

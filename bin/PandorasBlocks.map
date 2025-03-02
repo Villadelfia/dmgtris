@@ -1,5 +1,5 @@
 SUMMARY:
-	ROM0: 14729 bytes used / 1655 free
+	ROM0: 14733 bytes used / 1651 free
 	ROMX: 110971 bytes used / 36485 free in 9 banks
 	SRAM: 2951 bytes used / 5241 free in 1 bank
 	WRAM0: 3927 bytes used / 169 free
@@ -503,49 +503,49 @@ ROM0 bank #0:
 	         $37cd = SetProgress.wvr_u8
 	         $37db = SetProgress.wvr_u9
 	         $37e7 = SetProgress.wvr_u10
-	SECTION: $37ef-$3895 ($00a7 bytes) ["Code Entry Point"]
+	SECTION: $37ef-$3899 ($00ab bytes) ["Code Entry Point"]
 	         $37ef = Main
-	         $3818 = Main.notgbc
-	         $3827 = Main.wvr_u1
-	         $3857 = EventLoop
-	         $3870 = EventLoop.eventloopjumps
-	         $3879 = EventLoopPostHandler
-	         $387b = EventLoopPostHandler.wvb_u2
-	         $388d = EventLoopPostHandler.vblankjumps
-	SECTION: $3896-$38cb ($0036 bytes) ["Grading Functions Unbanked"]
-	         $3896 = GradeInit
-	         $389f = UpdateGrade
-	         $38a8 = DecayGradeProcess
-	         $38b1 = DecayGradeDelay
-	         $38ba = TGM3REGRETHandler
-	         $38c3 = TGM3COOLHandler
-	SECTION: $38cc-$38f9 ($002e bytes) ["Memory Functions"]
-	         $38cc = UnsafeMemCopy
-	         $38d5 = SafeMemCopy
-	         $38d5 = SafeMemCopy.wvr_u1
-	         $38e4 = UnsafeMemSet
-	         $38ec = SafeMemSet.wvr_u2
-	         $38ec = SafeMemSet
-	SECTION: $38fa-$391f ($0026 bytes) ["Gameplay Function Trampolines"]
-	         $38fa = SwitchToGameplay
-	         $3903 = SwitchToGameplayBig
-	         $390c = GamePlayEventLoopHandler
-	         $3916 = GamePlayBigEventLoopHandler
-	SECTION: $3920-$3944 ($0025 bytes) ["Interrupt Initialization Functions"]
-	         $3920 = EnableScreenSquish
-	         $393a = DisableScreenSquish
-	SECTION: $3945-$3966 ($0022 bytes) ["OAM Functions"]
-	         $3945 = CopyOAMHandler
-	         $3951 = ClearOAM
-	SECTION: $3967-$3977 ($0011 bytes) ["Intro Effect Trampoline"]
-	         $3967 = DoIntroEffect
-	SECTION: $3978-$3986 ($000f bytes) ["Banking Functions"]
-	         $3978 = BankingInit
-	SECTION: $3987-$3990 ($000a bytes) ["OAM DMA Code"]
-	         $3987 = OAMDMA
-	         $3991 = OAMDMAEnd
-	EMPTY: $3991-$3fff ($066f bytes)
-	TOTAL EMPTY: $0677 bytes
+	         $381c = Main.notgbc
+	         $382b = Main.wvr_u1
+	         $385b = EventLoop
+	         $3874 = EventLoop.eventloopjumps
+	         $387d = EventLoopPostHandler
+	         $387f = EventLoopPostHandler.wvb_u2
+	         $3891 = EventLoopPostHandler.vblankjumps
+	SECTION: $389a-$38cf ($0036 bytes) ["Grading Functions Unbanked"]
+	         $389a = GradeInit
+	         $38a3 = UpdateGrade
+	         $38ac = DecayGradeProcess
+	         $38b5 = DecayGradeDelay
+	         $38be = TGM3REGRETHandler
+	         $38c7 = TGM3COOLHandler
+	SECTION: $38d0-$38fd ($002e bytes) ["Memory Functions"]
+	         $38d0 = UnsafeMemCopy
+	         $38d9 = SafeMemCopy
+	         $38d9 = SafeMemCopy.wvr_u1
+	         $38e8 = UnsafeMemSet
+	         $38f0 = SafeMemSet.wvr_u2
+	         $38f0 = SafeMemSet
+	SECTION: $38fe-$3923 ($0026 bytes) ["Gameplay Function Trampolines"]
+	         $38fe = SwitchToGameplay
+	         $3907 = SwitchToGameplayBig
+	         $3910 = GamePlayEventLoopHandler
+	         $391a = GamePlayBigEventLoopHandler
+	SECTION: $3924-$3948 ($0025 bytes) ["Interrupt Initialization Functions"]
+	         $3924 = EnableScreenSquish
+	         $393e = DisableScreenSquish
+	SECTION: $3949-$396a ($0022 bytes) ["OAM Functions"]
+	         $3949 = CopyOAMHandler
+	         $3955 = ClearOAM
+	SECTION: $396b-$397b ($0011 bytes) ["Intro Effect Trampoline"]
+	         $396b = DoIntroEffect
+	SECTION: $397c-$398a ($000f bytes) ["Banking Functions"]
+	         $397c = BankingInit
+	SECTION: $398b-$3994 ($000a bytes) ["OAM DMA Code"]
+	         $398b = OAMDMA
+	         $3995 = OAMDMAEnd
+	EMPTY: $3995-$3fff ($066b bytes)
+	TOTAL EMPTY: $0673 bytes
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]

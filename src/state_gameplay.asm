@@ -302,7 +302,6 @@ GamePlayEventLoopHandlerB::
     ; Check if IHS is requested.
     ; Apply the hold if so.
 .checkIHS
-    jr .loaddefaultjingle
     ldh a, [hSelectState]
     or a, a
     jr z, .loaddefaultjingle
@@ -415,7 +414,6 @@ GamePlayEventLoopHandlerB::
     call FieldProcess
 
     ; Do we hold?
-    jr .nohold
     ldh a, [hSelectState]
     cp a, 1
     jr nz, .nohold
@@ -1140,7 +1138,6 @@ GamePlayBigEventLoopHandlerB:
     ; Check if IHS is requested.
     ; Apply the hold if so.
 .checkIHS
-    jr .loaddefaultjingle
     ldh a, [hSelectState]
     or a, a
     jr z, .loaddefaultjingle
@@ -1253,7 +1250,6 @@ GamePlayBigEventLoopHandlerB:
     call BigFieldProcess
 
     ; Do we hold?
-    jr .nohold
     ldh a, [hSelectState]
     cp a, 1
     jr nz, .nohold

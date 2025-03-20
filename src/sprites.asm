@@ -293,7 +293,6 @@ ApplyNext::
     ld a, [hl]
     add a, NEXT_BASE_Y
     ld [wSPRNext4+0], a
-    jp GradeRendering
 
     ; Queue
     ld a, QUEUE_BASE_Y

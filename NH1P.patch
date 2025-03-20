@@ -1,0 +1,48 @@
+diff --git a/src/sprites.asm b/src/sprites.asm
+index af97da5..da155cb 100644
+--- a/src/sprites.asm
++++ b/src/sprites.asm
+@@ -293,6 +293,7 @@ ApplyNext::
+     ld a, [hl]
+     add a, NEXT_BASE_Y
+     ld [wSPRNext4+0], a
++    jp GradeRendering
+ 
+     ; Queue
+     ld a, QUEUE_BASE_Y
+diff --git a/src/state_gameplay.asm b/src/state_gameplay.asm
+index 1cab55a..d526d14 100644
+--- a/src/state_gameplay.asm
++++ b/src/state_gameplay.asm
+@@ -302,6 +302,7 @@ GamePlayEventLoopHandlerB::
+     ; Check if IHS is requested.
+     ; Apply the hold if so.
+ .checkIHS
++    jr .loaddefaultjingle
+     ldh a, [hSelectState]
+     or a, a
+     jr z, .loaddefaultjingle
+@@ -414,6 +415,7 @@ GamePlayEventLoopHandlerB::
+     call FieldProcess
+ 
+     ; Do we hold?
++    jr .nohold
+     ldh a, [hSelectState]
+     cp a, 1
+     jr nz, .nohold
+@@ -1138,6 +1140,7 @@ GamePlayBigEventLoopHandlerB:
+     ; Check if IHS is requested.
+     ; Apply the hold if so.
+ .checkIHS
++    jr .loaddefaultjingle
+     ldh a, [hSelectState]
+     or a, a
+     jr z, .loaddefaultjingle
+@@ -1250,6 +1253,7 @@ GamePlayBigEventLoopHandlerB:
+     call BigFieldProcess
+ 
+     ; Do we hold?
++    jr .nohold
+     ldh a, [hSelectState]
+     cp a, 1
+     jr nz, .nohold

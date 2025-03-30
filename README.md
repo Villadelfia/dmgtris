@@ -165,6 +165,7 @@ Thanks for playtesting and debugging go to:
 - Lindtobias
 - \_Zaphod77\_
 - bbbbbr
+- Matthew C.
 
 The amazing logo was created by Lindtobias.
 

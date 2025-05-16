@@ -249,69 +249,7 @@ GetNextNesPiece:
     call Next7Piece
     jr ShiftHistory
 
-
-    ; TGM3 mode... It's complex.
-GetNextTGM3Piece:
-    ld a, 7
-    ld e, a
-
-:   dec e
-    jr z, :+
-
-    ; Get a random index into the 35bag
-    call Next35Piece
-    ld [wTGM3GeneratedIdx], a
-
-    ; Fetch the piece from the 35bag.
-    ld c, a
-    xor a, a
-    ld b, a
-    ld hl, wTGM3Bag
-    add hl, bc
-    ld a, [hl]
-
-    ; Is it in the history?
-    ld hl, hPieceHistory
-    cp a, [hl]
-    jr z, :-
-    inc hl
-    cp a, [hl]
-    jr z, :-
-    inc hl
-    cp a, [hl]
-    jr z, :-
-    inc hl
-    cp a, [hl]
-    jr z, :-
-
-    ; We have a piece. Save it.
-:   call ShiftHistory
-
-    ; Increment all drought counters.
-:   ld hl, wTGM3Droughts
-    inc [hl]
-    inc hl
-    inc [hl]
-    inc hl
-    inc [hl]
-    inc hl
-    inc [hl]
-    inc hl
-    inc [hl]
-    inc hl
-    inc [hl]
-    inc hl
-    inc [hl]
-
-    ; Set the drought of our most recently drawn piece to 0.
-:   ldh a, [hUpcomingPiece2]
-    ld c, a
-    xor a, a
-    ld b, a
-    ld hl, wTGM3Droughts
-    add hl, bc
-    ld [hl], a
-
+TGM3SwapBag:
     ; We pick an arbitrary piece to have the worst drought.
 :   call Next7Piece
     ld [wTGM3WorstDroughtIdx], a
@@ -400,6 +338,92 @@ GetNextTGM3Piece:
     ; Replace that slot.
     ld [hl], a
     ret
+
+    ; TGM3 mode... It's complex.
+GetNextTGM3Piece:
+    ld a, 7
+    ld e, a
+
+.retryGenerate
+    dec e
+    jr z, .giveUp
+
+    ; Get a random index into the 35bag
+    call Next35Piece
+    ld [wTGM3GeneratedIdx], a
+
+    ; Fetch the piece from the 35bag.
+    ld c, a
+    xor a, a
+    ld b, a
+    ld hl, wTGM3Bag
+    add hl, bc
+    ld a, [hl]
+
+    ; Is it in the history?
+    ld hl, hPieceHistory
+    cp a, [hl]
+    jr z, .replacePiece
+    inc hl
+    cp a, [hl]
+    jr z, .replacePiece
+    inc hl
+    cp a, [hl]
+    jr z, .replacePiece
+    inc hl
+    cp a, [hl]
+    jr z, .replacePiece
+    jr .havePiece
+
+.replacePiece
+    push de
+    call TGM3SwapBag
+    pop de
+    jr .retryGenerate
+
+.giveUp
+    ; Get a random index into the 35bag
+    call Next35Piece
+    ld [wTGM3GeneratedIdx], a
+
+    ; Fetch the piece from the 35bag.
+    ld c, a
+    xor a, a
+    ld b, a
+    ld hl, wTGM3Bag
+    add hl, bc
+    ld a, [hl]
+
+.havePiece
+    ; We have a piece. Save it.
+    call ShiftHistory
+
+    ; Increment all drought counters.
+:   ld hl, wTGM3Droughts
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+    inc hl
+    inc [hl]
+
+    ; Set the drought of our most recently drawn piece to 0.
+:   ldh a, [hUpcomingPiece2]
+    ld c, a
+    xor a, a
+    ld b, a
+    ld hl, wTGM3Droughts
+    add hl, bc
+    ld [hl], a
+
+    jp TGM3SwapBag
 
     ; Gets the next piece depending on RNG mode.
 GetNextPiece::

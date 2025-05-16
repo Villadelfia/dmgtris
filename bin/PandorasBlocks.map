@@ -1,5 +1,5 @@
 SUMMARY:
-	ROM0: 14733 bytes used / 1651 free
+	ROM0: 14759 bytes used / 1625 free
 	ROMX: 110971 bytes used / 36485 free in 9 banks
 	SRAM: 2951 bytes used / 5241 free in 1 bank
 	WRAM0: 3927 bytes used / 169 free
@@ -342,7 +342,7 @@ ROM0 bank #0:
 	         $2c0f = SFXPlay.savePlayhead
 	         $2c18 = SFXGoRoll
 	         $2c55 = SFXEndOfGame
-	SECTION: $2ca6-$2ecc ($0227 bytes) ["RNG Functions"]
+	SECTION: $2ca6-$2ee6 ($0241 bytes) ["RNG Functions"]
 	         $2ca6 = HarvestEntropy
 	         $2cac = HarvestEntropy.loop
 	         $2ccd = RNGInit
@@ -359,193 +359,196 @@ ROM0 bank #0:
 	         $2d9e = \u00212
 	         $2db6 = \u00213
 	         $2db8 = GetNextNesPiece
-	         $2dc6 = GetNextTGM3Piece
-	         $2dc9 = \u00214
-	         $2dec = \u00215
-	         $2def = \u00216
-	         $2dff = \u00217
-	         $2e09 = \u00218
-	         $2e17 = \u00219
-	         $2e25 = \u002110
-	         $2e31 = \u002111
-	         $2e3d = \u002112
-	         $2e49 = \u002113
-	         $2e55 = \u002114
-	         $2e61 = \u002115
-	         $2e6d = \u002116
-	         $2e7c = GetNextPiece
-	         $2e8a = GetNextPiece.nextpiecejumps
-	         $2e99 = Next35Piece
-	         $2e99 = \u002117
-	         $2ea3 = Next7Piece
-	         $2ea3 = \u002118
-	         $2ead = NextByte
-	SECTION: $2ecd-$3091 ($01c5 bytes) ["Hi Score Functions"]
-	         $2ecd = CheckAndAddHiscore
-	         $2ed7 = CheckAndAddHiscore.checkloop
-	         $2edc = CheckAndAddHiscore.checkgrade
-	         $2ee5 = CheckAndAddHiscore.oldgraded
-	         $2ef4 = CheckAndAddHiscore.oldungraded
-	         $2efb = CheckAndAddHiscore.checklevel
-	         $2f20 = CheckAndAddHiscore.checkscore
-	         $2f63 = CheckAndAddHiscore.notbetter
-	         $2f70 = CheckAndAddHiscore.better
-	         $2f72 = InsertHiScore
-	         $2f72 = InsertHiScore.copylower
-	         $2f83 = InsertHiScore.copyupper
-	         $2f8f = \u00210
-	         $2fa3 = InsertHiScore.findrow
-	         $2faf = \u00211
-	         $2fb3 = InsertHiScore.insert
-	         $300c = InsertHiScore.persist
-	         $301d = GetHiScoreEntry
-	         $3031 = \u00212
-	         $3035 = GetHiScoreEntry.store
-	         $303e = InitTargetHSTable
-	         $3049 = InitTargetHSTable.jumps
-	         $305e = InitTargetHSTable.dmgt
-	         $3063 = InitTargetHSTable.tgm1
-	         $3068 = InitTargetHSTable.tgm3
-	         $306d = InitTargetHSTable.deat
-	         $3072 = InitTargetHSTable.shir
-	         $3077 = InitTargetHSTable.chil
-	         $307c = InitTargetHSTable.myco
-	         $307f = InitTargetHSTable.store
-	SECTION: $3092-$31de ($014d bytes) ["Time Functions"]
-	         $3092 = TimeInit
-	         $30bb = StartCountdown
-	         $30c9 = ResetGameTime
-	         $30dd = CheckTorikan
-	         $30f3 = CheckTorikan.failure
-	         $30f5 = CheckTorikan.success
-	         $30f8 = HandleTimers
-	         $311e = HandleTimers.reduce
-	         $312b = HandleTimers.clock
-	         $3145 = HandleTimers.go
-	         $3169 = CheckCOOL_REGRET
-	         $3181 = CheckCOOL_REGRET.failure
-	         $3183 = CheckCOOL_REGRET.success
-	         $3186 = HandleSectionTimers
-	         $31a7 = HandleSectionTimers.continue
-	         $31bb = HandleSectionTimers.sectiongo
-	SECTION: $31df-$3328 ($014a bytes) ["Progress Data"]
-	         $31df = sProgressData
-	SECTION: $3329-$3468 ($0140 bytes) ["Hi Score Data"]
-	         $3329 = sHiscoreDefaultData
-	SECTION: $3469-$3592 ($012a bytes) ["Input Functions"]
-	         $3469 = InputInit
-	         $347b = GetInput.btns
-	         $347b = GetInput
-	         $3488 = GetInput.readA
-	         $348c = GetInput.setA
-	         $3497 = GetInput.clearA
-	         $349a = GetInput.readB
-	         $349e = GetInput.setB
-	         $34a9 = GetInput.clearB
-	         $34ac = GetInput.readSelect
-	         $34b0 = GetInput.setSelect
-	         $34bb = GetInput.clearSelect
-	         $34be = GetInput.readStart
-	         $34c2 = GetInput.setStart
-	         $34cd = GetInput.clearStart
-	         $34d0 = GetInput.dpad
-	         $34dd = GetInput.readUp
-	         $34e1 = GetInput.setUp
-	         $34ec = GetInput.clearUp
-	         $34ef = GetInput.readDown
-	         $34f3 = GetInput.setDown
-	         $34fe = GetInput.clearDown
-	         $3501 = GetInput.readLeft
-	         $3505 = GetInput.setLeft
-	         $3510 = GetInput.clearLeft
-	         $3513 = GetInput.readRight
-	         $3517 = GetInput.setRight
-	         $3522 = GetInput.clearRight
-	         $3525 = GetInput.priorities
-	         $3532 = GetInput.jumps
-	         $3541 = GetInput.dlru
-	         $3551 = GetInput.ulrd
-	         $3561 = GetInput.lrud
-	         $356c = GetInput.udlr
-	         $3577 = GetInput.zeroud
-	         $357d = GetInput.zerolr
-	         $3583 = GetInput.zerolrd
-	         $358b = GetInput.zerolru
-	SECTION: $3593-$3672 ($00e0 bytes) ["Score Functions"]
-	         $3593 = ScoreInit
-	         $35bb = IncreaseScore
-	         $35f3 = IncreaseScore.doConvert
-	         $35f5 = \u00210
-	         $360b = IncreaseScore.carry
-	         $360d = IncreaseScore.postConvert
-	         $361a = \u00211
-	         $3621 = IncreaseScore.preAddDigit
-	         $3649 = IncreaseScore.addDigit
-	         $365f = IncreaseScore.nextDigit
-	SECTION: $3673-$373d ($00cb bytes) ["Title Function Trampolines"]
-	         $3673 = SwitchToTitle
-	         $367c = TitleEventLoopHandler
-	         $3686 = TitleVBlankHandler
-	         $3690 = PersistLevel
-	         $369e = DrawSpeedMain
-	         $36ee = DrawSpeedSettings
-	SECTION: $373e-$37ee ($00b1 bytes) ["Progress Functions"]
-	         $373e = SetProgress
-	         $3748 = SetProgress.loop
-	         $374c = SetProgress.correct
-	         $3773 = SetProgress.wvr_u1
-	         $377f = SetProgress.wvr_u2
-	         $378d = SetProgress.wvr_u3
-	         $3799 = SetProgress.wvr_u4
-	         $37a7 = SetProgress.wvr_u5
-	         $37b3 = SetProgress.wvr_u6
-	         $37c1 = SetProgress.wvr_u7
-	         $37cd = SetProgress.wvr_u8
-	         $37db = SetProgress.wvr_u9
-	         $37e7 = SetProgress.wvr_u10
-	SECTION: $37ef-$3899 ($00ab bytes) ["Code Entry Point"]
-	         $37ef = Main
-	         $381c = Main.notgbc
-	         $382b = Main.wvr_u1
-	         $385b = EventLoop
-	         $3874 = EventLoop.eventloopjumps
-	         $387d = EventLoopPostHandler
-	         $387f = EventLoopPostHandler.wvb_u2
-	         $3891 = EventLoopPostHandler.vblankjumps
-	SECTION: $389a-$38cf ($0036 bytes) ["Grading Functions Unbanked"]
-	         $389a = GradeInit
-	         $38a3 = UpdateGrade
-	         $38ac = DecayGradeProcess
-	         $38b5 = DecayGradeDelay
-	         $38be = TGM3REGRETHandler
-	         $38c7 = TGM3COOLHandler
-	SECTION: $38d0-$38fd ($002e bytes) ["Memory Functions"]
-	         $38d0 = UnsafeMemCopy
-	         $38d9 = SafeMemCopy
-	         $38d9 = SafeMemCopy.wvr_u1
-	         $38e8 = UnsafeMemSet
-	         $38f0 = SafeMemSet.wvr_u2
-	         $38f0 = SafeMemSet
-	SECTION: $38fe-$3923 ($0026 bytes) ["Gameplay Function Trampolines"]
-	         $38fe = SwitchToGameplay
-	         $3907 = SwitchToGameplayBig
-	         $3910 = GamePlayEventLoopHandler
-	         $391a = GamePlayBigEventLoopHandler
-	SECTION: $3924-$3948 ($0025 bytes) ["Interrupt Initialization Functions"]
-	         $3924 = EnableScreenSquish
-	         $393e = DisableScreenSquish
-	SECTION: $3949-$396a ($0022 bytes) ["OAM Functions"]
-	         $3949 = CopyOAMHandler
-	         $3955 = ClearOAM
-	SECTION: $396b-$397b ($0011 bytes) ["Intro Effect Trampoline"]
-	         $396b = DoIntroEffect
-	SECTION: $397c-$398a ($000f bytes) ["Banking Functions"]
-	         $397c = BankingInit
-	SECTION: $398b-$3994 ($000a bytes) ["OAM DMA Code"]
-	         $398b = OAMDMA
-	         $3995 = OAMDMAEnd
-	EMPTY: $3995-$3fff ($066b bytes)
-	TOTAL EMPTY: $0673 bytes
+	         $2dc6 = TGM3SwapBag
+	         $2dc6 = \u00214
+	         $2dd4 = \u00215
+	         $2de2 = \u00216
+	         $2dee = \u00217
+	         $2dfa = \u00218
+	         $2e06 = \u00219
+	         $2e12 = \u002110
+	         $2e1e = \u002111
+	         $2e2a = \u002112
+	         $2e39 = GetNextTGM3Piece
+	         $2e3c = GetNextTGM3Piece.retryGenerate
+	         $2e61 = GetNextTGM3Piece.replacePiece
+	         $2e68 = GetNextTGM3Piece.giveUp
+	         $2e76 = GetNextTGM3Piece.havePiece
+	         $2e79 = \u002113
+	         $2e89 = \u002114
+	         $2e96 = GetNextPiece
+	         $2ea4 = GetNextPiece.nextpiecejumps
+	         $2eb3 = Next35Piece
+	         $2eb3 = \u002115
+	         $2ebd = Next7Piece
+	         $2ebd = \u002116
+	         $2ec7 = NextByte
+	SECTION: $2ee7-$30ab ($01c5 bytes) ["Hi Score Functions"]
+	         $2ee7 = CheckAndAddHiscore
+	         $2ef1 = CheckAndAddHiscore.checkloop
+	         $2ef6 = CheckAndAddHiscore.checkgrade
+	         $2eff = CheckAndAddHiscore.oldgraded
+	         $2f0e = CheckAndAddHiscore.oldungraded
+	         $2f15 = CheckAndAddHiscore.checklevel
+	         $2f3a = CheckAndAddHiscore.checkscore
+	         $2f7d = CheckAndAddHiscore.notbetter
+	         $2f8a = CheckAndAddHiscore.better
+	         $2f8c = InsertHiScore
+	         $2f8c = InsertHiScore.copylower
+	         $2f9d = InsertHiScore.copyupper
+	         $2fa9 = \u00210
+	         $2fbd = InsertHiScore.findrow
+	         $2fc9 = \u00211
+	         $2fcd = InsertHiScore.insert
+	         $3026 = InsertHiScore.persist
+	         $3037 = GetHiScoreEntry
+	         $304b = \u00212
+	         $304f = GetHiScoreEntry.store
+	         $3058 = InitTargetHSTable
+	         $3063 = InitTargetHSTable.jumps
+	         $3078 = InitTargetHSTable.dmgt
+	         $307d = InitTargetHSTable.tgm1
+	         $3082 = InitTargetHSTable.tgm3
+	         $3087 = InitTargetHSTable.deat
+	         $308c = InitTargetHSTable.shir
+	         $3091 = InitTargetHSTable.chil
+	         $3096 = InitTargetHSTable.myco
+	         $3099 = InitTargetHSTable.store
+	SECTION: $30ac-$31f8 ($014d bytes) ["Time Functions"]
+	         $30ac = TimeInit
+	         $30d5 = StartCountdown
+	         $30e3 = ResetGameTime
+	         $30f7 = CheckTorikan
+	         $310d = CheckTorikan.failure
+	         $310f = CheckTorikan.success
+	         $3112 = HandleTimers
+	         $3138 = HandleTimers.reduce
+	         $3145 = HandleTimers.clock
+	         $315f = HandleTimers.go
+	         $3183 = CheckCOOL_REGRET
+	         $319b = CheckCOOL_REGRET.failure
+	         $319d = CheckCOOL_REGRET.success
+	         $31a0 = HandleSectionTimers
+	         $31c1 = HandleSectionTimers.continue
+	         $31d5 = HandleSectionTimers.sectiongo
+	SECTION: $31f9-$3342 ($014a bytes) ["Progress Data"]
+	         $31f9 = sProgressData
+	SECTION: $3343-$3482 ($0140 bytes) ["Hi Score Data"]
+	         $3343 = sHiscoreDefaultData
+	SECTION: $3483-$35ac ($012a bytes) ["Input Functions"]
+	         $3483 = InputInit
+	         $3495 = GetInput.btns
+	         $3495 = GetInput
+	         $34a2 = GetInput.readA
+	         $34a6 = GetInput.setA
+	         $34b1 = GetInput.clearA
+	         $34b4 = GetInput.readB
+	         $34b8 = GetInput.setB
+	         $34c3 = GetInput.clearB
+	         $34c6 = GetInput.readSelect
+	         $34ca = GetInput.setSelect
+	         $34d5 = GetInput.clearSelect
+	         $34d8 = GetInput.readStart
+	         $34dc = GetInput.setStart
+	         $34e7 = GetInput.clearStart
+	         $34ea = GetInput.dpad
+	         $34f7 = GetInput.readUp
+	         $34fb = GetInput.setUp
+	         $3506 = GetInput.clearUp
+	         $3509 = GetInput.readDown
+	         $350d = GetInput.setDown
+	         $3518 = GetInput.clearDown
+	         $351b = GetInput.readLeft
+	         $351f = GetInput.setLeft
+	         $352a = GetInput.clearLeft
+	         $352d = GetInput.readRight
+	         $3531 = GetInput.setRight
+	         $353c = GetInput.clearRight
+	         $353f = GetInput.priorities
+	         $354c = GetInput.jumps
+	         $355b = GetInput.dlru
+	         $356b = GetInput.ulrd
+	         $357b = GetInput.lrud
+	         $3586 = GetInput.udlr
+	         $3591 = GetInput.zeroud
+	         $3597 = GetInput.zerolr
+	         $359d = GetInput.zerolrd
+	         $35a5 = GetInput.zerolru
+	SECTION: $35ad-$368c ($00e0 bytes) ["Score Functions"]
+	         $35ad = ScoreInit
+	         $35d5 = IncreaseScore
+	         $360d = IncreaseScore.doConvert
+	         $360f = \u00210
+	         $3625 = IncreaseScore.carry
+	         $3627 = IncreaseScore.postConvert
+	         $3634 = \u00211
+	         $363b = IncreaseScore.preAddDigit
+	         $3663 = IncreaseScore.addDigit
+	         $3679 = IncreaseScore.nextDigit
+	SECTION: $368d-$3757 ($00cb bytes) ["Title Function Trampolines"]
+	         $368d = SwitchToTitle
+	         $3696 = TitleEventLoopHandler
+	         $36a0 = TitleVBlankHandler
+	         $36aa = PersistLevel
+	         $36b8 = DrawSpeedMain
+	         $3708 = DrawSpeedSettings
+	SECTION: $3758-$3808 ($00b1 bytes) ["Progress Functions"]
+	         $3758 = SetProgress
+	         $3762 = SetProgress.loop
+	         $3766 = SetProgress.correct
+	         $378d = SetProgress.wvr_u1
+	         $3799 = SetProgress.wvr_u2
+	         $37a7 = SetProgress.wvr_u3
+	         $37b3 = SetProgress.wvr_u4
+	         $37c1 = SetProgress.wvr_u5
+	         $37cd = SetProgress.wvr_u6
+	         $37db = SetProgress.wvr_u7
+	         $37e7 = SetProgress.wvr_u8
+	         $37f5 = SetProgress.wvr_u9
+	         $3801 = SetProgress.wvr_u10
+	SECTION: $3809-$38b3 ($00ab bytes) ["Code Entry Point"]
+	         $3809 = Main
+	         $3836 = Main.notgbc
+	         $3845 = Main.wvr_u1
+	         $3875 = EventLoop
+	         $388e = EventLoop.eventloopjumps
+	         $3897 = EventLoopPostHandler
+	         $3899 = EventLoopPostHandler.wvb_u2
+	         $38ab = EventLoopPostHandler.vblankjumps
+	SECTION: $38b4-$38e9 ($0036 bytes) ["Grading Functions Unbanked"]
+	         $38b4 = GradeInit
+	         $38bd = UpdateGrade
+	         $38c6 = DecayGradeProcess
+	         $38cf = DecayGradeDelay
+	         $38d8 = TGM3REGRETHandler
+	         $38e1 = TGM3COOLHandler
+	SECTION: $38ea-$3917 ($002e bytes) ["Memory Functions"]
+	         $38ea = UnsafeMemCopy
+	         $38f3 = SafeMemCopy
+	         $38f3 = SafeMemCopy.wvr_u1
+	         $3902 = UnsafeMemSet
+	         $390a = SafeMemSet.wvr_u2
+	         $390a = SafeMemSet
+	SECTION: $3918-$393d ($0026 bytes) ["Gameplay Function Trampolines"]
+	         $3918 = SwitchToGameplay
+	         $3921 = SwitchToGameplayBig
+	         $392a = GamePlayEventLoopHandler
+	         $3934 = GamePlayBigEventLoopHandler
+	SECTION: $393e-$3962 ($0025 bytes) ["Interrupt Initialization Functions"]
+	         $393e = EnableScreenSquish
+	         $3958 = DisableScreenSquish
+	SECTION: $3963-$3984 ($0022 bytes) ["OAM Functions"]
+	         $3963 = CopyOAMHandler
+	         $396f = ClearOAM
+	SECTION: $3985-$3995 ($0011 bytes) ["Intro Effect Trampoline"]
+	         $3985 = DoIntroEffect
+	SECTION: $3996-$39a4 ($000f bytes) ["Banking Functions"]
+	         $3996 = BankingInit
+	SECTION: $39a5-$39ae ($000a bytes) ["OAM DMA Code"]
+	         $39a5 = OAMDMA
+	         $39af = OAMDMAEnd
+	EMPTY: $39af-$3fff ($0651 bytes)
+	TOTAL EMPTY: $0659 bytes
 
 ROMX bank #1:
 	SECTION: $4000-$4007 ($0008 bytes) ["Bank ID BANK_OTHER"]
